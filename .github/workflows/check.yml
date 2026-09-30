@@ -1,0 +1,30 @@
+name: Check Syolana
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build isolated public and private bundles
+        run: python build.py
+      - name: Backend integration tests
+        run: python -m unittest discover -s tests -v
+      - name: Player and real catalog tests
+        run: |
+          node tests/test_player.mjs
+          node tests/test_catalog.mjs
+      - name: Check JavaScript syntax
+        run: |
+          for file in *.js themes/*.js dist/public/legacy-scripts/*.js; do node --check "$file"; done
+      - name: Check Docker build
+        run: docker build --tag syolana-ci .

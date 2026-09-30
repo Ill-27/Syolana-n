@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ru" data-theme="aurora">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#030309" />
+    <meta
+      name="description"
+      content="Syolana — книги, музыка, языки и личные пространства авторов."
+    />
+    <title>Syolana · Творческое пространство</title>
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+
+
+
+    <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="assets/fonts/fonts.css"></head>
+  <body>
+    <a class="skip-link" href="#page">К содержанию</a>
+    <div class="aurora-background" aria-hidden="true">
+      <div class="aurora-layer one"></div>
+      <div class="aurora-layer two"></div>
+      <div class="aurora-layer three"></div>
+    </div>
+    <canvas id="starCanvas" aria-hidden="true"></canvas>
+    <div id="reading-shade" aria-hidden="true"></div>
+    <header id="chrome" class="top-bar">
+      <a href="#/" class="brand glass" aria-label="Syolana — главная"
+        ><img src="assets/logo.svg" width="47" height="47" alt="" /><span
+          ><strong>Syolana</strong><small>ИММЕРСИВНАЯ ПЛАТФОРМА</small></span
+        ></a
+      >
+      <div class="top-actions">
+        <button
+          id="theme-toggle"
+          class="icon-btn glass"
+          aria-label="Выбрать тему"
+          title="Выбрать тему"
+        >
+          ✧
+        </button>
+        <button
+          id="zen-toggle"
+          class="icon-btn glass"
+          aria-label="Режим созерцания"
+          aria-pressed="false"
+          title="Скрыть интерфейс"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
+        <button
+          id="fullscreen"
+          class="icon-btn glass"
+          aria-label="На весь экран"
+          aria-pressed="false"
+          title="На весь экран"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <div id="content-shell" class="shell">
+      <aside id="banner" class="banner glass" aria-label="О Syolana"></aside>
+      <nav id="main-nav" class="main-nav" aria-label="Разделы Syolana">
+        <a href="#/" data-nav="home">Пространство</a
+        ><a href="#/library" data-nav="library">Книги</a
+        ><a href="#/languages" data-nav="languages">Языки</a
+        ><a href="#/join" data-nav="join">Для авторов</a
+        ><a href="#/studio" data-nav="studio">Моя студия</a>
+      </nav>
+      <main id="page" tabindex="-1">
+        <p class="loading">Открываем пространство…</p>
+      </main>
+      <footer id="footer">
+        <a href="#/">Syolana</a
+        ><span>Творчество, к которому хочется вернуться.</span>
+        <div>
+          <a href="#/terms">Условия пилота</a
+          ><a href="#/report">Сообщить о материале</a
+          ><a href="mailto:sy@syolana.com">Связаться</a>
+        </div>
+        <button id="motion" class="subtle-btn">Остановить анимацию</button>
+      </footer>
+    </div>
+    <aside
+      id="music-dock"
+      class="music-dock glass"
+      aria-label="Музыкальный плеер"
+    >
+      <button
+        id="player-expand"
+        class="track-summary"
+        aria-expanded="false"
+        aria-controls="player-dialog"
+      >
+        <span class="track-art" aria-hidden="true">♫</span
+        ><span
+          ><strong id="dock-title">Музыка Syolana</strong
+          ><small id="dock-subtitle"
+            >Откройте музыкальную библиотеку</small
+          ></span
+        >
+      </button>
+      <div class="dock-transport">
+        <button id="dock-prev" class="icon-btn" aria-label="Предыдущая песня">
+          ‹</button
+        ><button id="dock-play" class="icon-btn play" aria-label="Слушать">
+          ▶</button
+        ><button id="dock-next" class="icon-btn" aria-label="Следующая песня">
+          ›
+        </button>
+      </div>
+      <span id="theme-name" class="dock-theme">Сияние звёзд</span>
+    </aside>
+    <audio id="audio" preload="none"></audio>
+    <dialog id="theme-dialog">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">АТМОСФЕРА</p>
+          <h2>Выберите свой мир</h2>
+        </div>
+        <button class="icon-btn" data-close aria-label="Закрыть">×</button>
+      </div>
+      <div id="theme-list" class="theme-list"></div>
+      <p class="muted">
+        При обновлении страницы откроется другая тема. Во время переходов по
+        сайту выбранная атмосфера сохраняется.
+      </p>
+    </dialog>
+    <dialog id="player-dialog">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">МУЗЫКАЛЬНАЯ БИБЛИОТЕКА</p>
+          <h2>Истории, ставшие песнями</h2>
+        </div>
+        <button class="icon-btn" data-close aria-label="Свернуть плеер">
+          ×
+        </button>
+      </div>
+      <p id="player-name" class="player-name"></p>
+      <a id="source-link" class="text-link" hidden
+        >Открыть источник вдохновения</a
+      >
+      <p id="player-status" class="muted" role="status"></p>
+      <label class="sr-only" for="seek">Позиция воспроизведения</label
+      ><input id="seek" type="range" min="0" max="1000" value="0" disabled />
+      <div class="time-row">
+        <span id="elapsed">0:00</span><span id="duration">0:00</span>
+      </div>
+      <div class="player-transport">
+        <button id="prev" class="icon-btn" aria-label="Предыдущая песня">
+          ‹</button
+        ><button id="play" class="btn primary">Слушать</button
+        ><button id="next" class="icon-btn" aria-label="Следующая песня">
+          ›
+        </button>
+      </div>
+      <div class="player-modes">
+        <button id="shuffle" class="btn" aria-pressed="false">Вперемешку</button
+        ><button id="repeat" class="btn">Повтор: выключен</button>
+      </div>
+      <label class="volume-row"
+        >Громкость<input
+          id="volume"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0.65"
+      /></label>
+      <ol id="playlist" class="playlist"></ol>
+      <p class="muted fine">
+        Музыка запускается по нажатию и продолжается при переходах внутри сайта.
+      </p>
+    </dialog>
+    <dialog id="toc-dialog">
+      <div class="dialog-head">
+        <h2>Оглавление</h2>
+        <button class="icon-btn" data-close aria-label="Закрыть">×</button>
+      </div>
+      <div id="toc-list"></div>
+    </dialog>
+    <div id="toast" class="toast glass" role="status" hidden></div>
+    <noscript
+      ><p class="noscript">
+        Для чтения, плеера и редактора включите JavaScript. Связаться:
+        sy@syolana.com.
+      </p></noscript
+    >
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

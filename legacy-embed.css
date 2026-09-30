@@ -1,0 +1,57 @@
+html.sy-embedded,
+.sy-embedded body {
+  background: transparent !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  color: #f8f6ff;
+}
+.sy-embedded body {
+  font-family: var(--sy-body, "Nunito", sans-serif) !important;
+}
+.sy-embedded h1,
+.sy-embedded h2,
+.sy-embedded h3 {
+  font-family: var(
+    --sy-heading,
+    "Cormorant Garamond",
+    Georgia,
+    serif
+  ) !important;
+}
+.sy-embedded .aurora,
+.sy-embedded .aurora-background,
+.sy-embedded canvas,
+.sy-embedded body > header,
+.sy-embedded .top-bar,
+.sy-embedded .top,
+.sy-embedded .site-footer,
+.sy-embedded footer,
+.sy-embedded .skip,
+.sy-embedded .back,
+.sy-embedded .back-btn,
+.sy-embedded #motion,
+.sy-embedded #motion-button {
+  display: none !important;
+}
+.sy-embedded main {
+  padding: 4px 2px 16px !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+  min-height: 0 !important;
+}
+.sy-embedded .panel,
+.sy-embedded .rules-panel {
+  background: rgba(var(--sy-surface, 12, 12, 25), 0.72) !important;
+  border-radius: var(--sy-radius, 24px) !important;
+  backdrop-filter: none !important;
+}
+.sy-embedded button,
+.sy-embedded input,
+.sy-embedded select,
+.sy-embedded a {
+  font-family: var(--sy-body, "Nunito", sans-serif);
+}
+.sy-embedded .aurora * {
+  animation: none !important;
+}

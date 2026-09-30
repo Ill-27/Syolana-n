@@ -1,0 +1,10 @@
+.git
+.env
+platform/.env
+platform/data
+data
+dist
+__pycache__
+*.pyc
+node_modules
+test-results

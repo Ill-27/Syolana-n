@@ -1,0 +1,1 @@
+{"name":"syolana","private":true,"type":"module","scripts":{"test:player":"node tests/test_player.mjs"}}

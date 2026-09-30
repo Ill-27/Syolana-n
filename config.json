@@ -1,0 +1,53 @@
+{
+  "brand": "Syolana",
+  "contactEmail": "sy@syolana.com",
+  "banner": {
+    "eyebrow": "SYOLANA · ТВОРЧЕСКОЕ ПРОСТРАНСТВО",
+    "title": "У каждой истории — свой мир",
+    "description": "Книги, музыка и языки. Откройте историю или создайте пространство для своего творчества.",
+    "media": {
+      "type": "image",
+      "src": "",
+      "poster": "",
+      "alt": "Творческое пространство Syolana"
+    },
+    "links": [
+      {
+        "label": "Открыть книги",
+        "href": "#/library"
+      },
+      {
+        "label": "Стать автором",
+        "href": "#/join"
+      }
+    ]
+  },
+  "songs": [
+    {
+      "title": "¿Qué es poesía?",
+      "artist": "Syolana",
+      "src": "español-songs/qué_es_poesía.mp3",
+      "sourceTitle": "Густаво Адольфо Беккер · Rima XXI",
+      "sourceUrl": "#/lesson/es/a1/practice/becquer"
+    },
+    {
+      "title": "Cultivo una rosa blanca",
+      "artist": "Syolana",
+      "src": "español-songs/rosa_blanca.mp3",
+      "sourceTitle": "Хосе Марти · Белая роза",
+      "sourceUrl": "#/lesson/es/a1/practice/marti"
+    },
+    {
+      "title": "El león y el ratón",
+      "artist": "Syolana",
+      "src": "español-songs/león_y_ratón.mp3",
+      "sourceTitle": "Феликс Мария де Саманьего · Лев и мышь",
+      "sourceUrl": "#/lesson/es/a1/practice/samaniego"
+    }
+  ],
+  "plan": {
+    "priceRub": 1000,
+    "trialDays": 7,
+    "name": "Первые авторы"
+  }
+}

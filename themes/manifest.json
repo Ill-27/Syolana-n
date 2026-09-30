@@ -1,0 +1,23 @@
+[
+  {
+    "id": "aurora",
+    "name": "Сияние звёзд",
+    "description": "Ваша первая тема · разноцветные звёзды и северное сияние",
+    "module": "./aurora.js",
+    "preview": "linear-gradient(135deg,#101b4b,#45264d,#101922)"
+  },
+  {
+    "id": "golden",
+    "name": "Золотая волна",
+    "description": "Тёплое золото, медленное течение и световая пыль",
+    "module": "./golden.js",
+    "preview": "linear-gradient(135deg,#21192b,#70502f,#181626)"
+  },
+  {
+    "id": "moon",
+    "name": "Лунный сад",
+    "description": "Холодный свет, воздушные лепестки и глубокий индиго",
+    "module": "./moon.js",
+    "preview": "linear-gradient(135deg,#122a38,#40517b,#1b193e)"
+  }
+]

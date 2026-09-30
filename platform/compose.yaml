@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - syolana_data:/data
+    expose:
+      - "8080"
+    networks: [syolana]
+  web:
+    image: caddy:2
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [syolana]
+volumes:
+  syolana_data:
+  caddy_data:
+  caddy_config:
+networks:
+  syolana:

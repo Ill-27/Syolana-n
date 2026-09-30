@@ -1,0 +1,9 @@
+{$SITE_DOMAIN} {
+    request_body {
+        max_size 29MB
+    }
+    encode zstd gzip
+    reverse_proxy app:8080 {
+        header_up X-Syolana-Client-IP {remote_host}
+    }
+}

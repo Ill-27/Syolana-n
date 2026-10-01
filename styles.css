@@ -2133,6 +2133,45 @@ strong {
 .feed-post .row:last-child {
   margin-top: 20px;
 }
+
+.platform-promo {
+  position: relative;
+  overflow: hidden;
+}
+
+.platform-promo::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--accent),
+    transparent
+  );
+  opacity: 0.62;
+}
+
+.platform-promo .promo-kicker {
+  margin: 0 0 12px;
+  font: 600 0.68rem/1.4 var(--interface);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.platform-promo h2 {
+  max-width: 680px;
+}
+
+.platform-promo .promo-actions {
+  margin-top: 22px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
 .feed-media {
   display: block;
   width: 100%;
@@ -2403,8 +2442,22 @@ strong {
   border-radius: 24px;
   padding: 25px;
   width: min(350px, calc(100vw - 32px));
-  background: #171322fa;
-  box-shadow: 0 15px 60px #0006;
+  background: #171322f2;
+  box-shadow:
+    0 15px 60px #0006,
+    inset 0 1px 0 #ffffff0d;
+  transition:
+    opacity 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.discovery-tip[hidden] {
+  display: none !important;
+}
+
+.discovery-tip .tip-action {
+  display: inline-flex;
+  margin-top: 2px;
 }
 .discovery-tip .icon-btn {
   position: absolute;
@@ -2772,7 +2825,7 @@ strong {
 /* Печатная книга: не огромные промежутки между абзацами,
    а обычный абзацный отступ */
 .reader-text p {
-  margin: 0 0 1em;
+  margin: 0 0 1.45em;
   text-indent: 1.2em;
 
   transition:

@@ -101,39 +101,90 @@ export class SceneAudio {
     }
     return out;
   }
-  scene(key, sceneId = "") {
+  async scene(key, sceneId = "") {
     if (!this.enabled || !this.context) return;
     const entries = this.resolve(key);
-    const nextKey = entries.map(e => e.src).join("|");
+    const nextKey = entries.map((e) => e.src).join("|");
     if (nextKey === this.key && sceneId === this.sceneId) return;
-    const sameScene = sceneId === this.sceneId;
-    this.key = nextKey; this.sceneId = sceneId;
+
+    this.key = nextKey;
+    this.sceneId = sceneId;
     const request = ++this.sequence;
-    const wanted = new Set(entries.map(e => e.src));
-    for (const [url, state] of this.tracks) if (!wanted.has(url)) this.fade(url, state, 0);
-    let remaining = entries.length;
-    if (!remaining) this.emit("Для этой сцены звуков пока нет.");
-    for (const entry of entries) {
-      let state = this.tracks.get(entry.src);
-      if (state && (entry.loop || sameScene)) { this.fade(entry.src, state, entry.volume); remaining--; continue; }
-      if (state) this.remove(entry.src, state);
-      this.load(entry).then(buffer => {
-        if (!this.enabled || request !== this.sequence) return;
-        const source = this.context.createBufferSource(), gain = this.context.createGain();
-        source.buffer = buffer; source.loop = entry.loop; gain.gain.value = 0;
-        source.connect(gain); gain.connect(this.master);
-        state = { source, gain, timer: 0, loop: entry.loop, finished: false };
-        this.tracks.set(entry.src, state);
-        source.onended = () => { state.finished = true; };
-        source.start();
-        this.fade(entry.src, state, entry.volume, entry.loop ? 1.8 : 0.12);
-        if (--remaining === 0) this.emit();
-      }).catch(() => {
-        if (request !== this.sequence || !this.enabled) return;
-        this.emit("Один из звуков недоступен. Остальные продолжают звучать; можно выключить и включить атмосферу для повторной попытки.");
-      });
+    const wanted = new Set(entries.map((e) => e.src));
+    const outgoing = [];
+
+    for (const [url, state] of this.tracks) {
+      if (!wanted.has(url)) outgoing.push([url, state]);
     }
-    if (!remaining && entries.length) this.emit();
+
+    const pending = entries.map(async (entry) => {
+      const current = this.tracks.get(entry.src);
+      if (current && !current.finished) return { entry, current, buffer: null };
+      try {
+        return { entry, current: null, buffer: await this.load(entry) };
+      } catch {
+        return { entry, current: null, buffer: null, failed: true };
+      }
+    });
+
+    const fadeOutSeconds = outgoing.length ? 2.4 : 0;
+    for (const [url, state] of outgoing)
+      this.fade(url, state, 0, fadeOutSeconds || 0.01);
+
+    if (fadeOutSeconds)
+      await new Promise((resolve) =>
+        setTimeout(resolve, fadeOutSeconds * 1000 + 90),
+      );
+
+    const prepared = await Promise.all(pending);
+    if (!this.enabled || request !== this.sequence) return;
+
+    let failed = false;
+    for (const item of prepared) {
+      const { entry, current, buffer } = item;
+      if (item.failed || (!current && !buffer)) {
+        failed = true;
+        continue;
+      }
+
+      if (current && !current.finished) {
+        this.fade(entry.src, current, entry.volume, 1.2);
+        continue;
+      }
+
+      const source = this.context.createBufferSource();
+      const gain = this.context.createGain();
+      source.buffer = buffer;
+      source.loop = entry.loop;
+      gain.gain.value = 0;
+      source.connect(gain);
+      gain.connect(this.master);
+
+      const state = {
+        source,
+        gain,
+        timer: 0,
+        loop: entry.loop,
+        finished: false,
+      };
+      this.tracks.set(entry.src, state);
+
+      source.onended = () => {
+        state.finished = true;
+        if (!entry.loop && this.tracks.get(entry.src) === state)
+          this.remove(entry.src, state);
+      };
+
+      source.start();
+      this.fade(entry.src, state, entry.volume, 2.2);
+    }
+
+    if (!entries.length) this.emit("Для этой сцены звуков пока нет.");
+    else if (failed)
+      this.emit(
+        "Один из звуков недоступен. Остальные продолжают звучать.",
+      );
+    else this.emit();
   }
   fade(url, state, target, seconds = 2.8) {
     clearTimeout(state.timer);
@@ -146,7 +197,8 @@ export class SceneAudio {
   remove(url, state) {
     clearTimeout(state.timer);
     try { state.source.stop(); } catch {}
-    state.source.disconnect(); state.gain.disconnect();
+    try { state.source.disconnect(); } catch {}
+    try { state.gain.disconnect(); } catch {}
     if (this.tracks.get(url) === state) this.tracks.delete(url);
   }
   stop() {

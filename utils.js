@@ -74,10 +74,10 @@ export const moods = {
   neutral: "Без изменения",
 };
 export const moodColors = {
-  calm: "#dceafa",
-  hope: "#f3e7ca",
-  tension: "#f2d4df",
-  wonder: "#e4dafa",
+  calm: "#a6d9f8",
+  hope: "#f3d395",
+  tension: "#f3aabc",
+  wonder: "#cbb0fa",
   neutral: "#ece8f5",
 };
 export function moodFor(text) {

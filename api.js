@@ -13,7 +13,7 @@ export class API {
       method,
       credentials: "same-origin",
       headers,
-      signal: AbortSignal.timeout(20000),
+      signal: AbortSignal.timeout(path === "status" ? 3500 : 20000),
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     let data;
@@ -28,6 +28,8 @@ export class API {
     return data;
   }
   async init() {
+    // GitHub Pages has no application server. Do not wait for a nonexistent API.
+    if (location.hostname.endsWith(".github.io")) return this;
     try {
       const s = await this.request("status");
       this.online = s.service === "syolana";
@@ -57,7 +59,7 @@ export class API {
     if (!file) return null;
     const max = 20 * 1024 * 1024;
     if (file.size > max)
-      throw Error("Максимальный размер файла в пилоте — 20 МБ.");
+      throw Error("Максимальный размер файла в тест-драйве — 20 МБ.");
     const data = await new Promise((resolve, reject) => {
       const r = new FileReader();
       r.onload = () => resolve(r.result.split(",")[1]);

@@ -31,7 +31,7 @@ class Client:
 class ServiceTests(unittest.TestCase):
  def setUp(self):
   with s.db() as c:
-   for table in ('events','payments','assets','posts','sites','sessions','reports','rate_limits','users'):c.execute('DELETE FROM '+table)
+   for table in ('events','manual_payments','payments','assets','posts','sites','sessions','reports','rate_limits','users'):c.execute('DELETE FROM '+table)
    c.execute("INSERT INTO users(id,email,password,role,created) VALUES('admin','admin@example.test',?,'admin',?)",(s.password_hash('local-admin-password'),s.now()))
   self.admin=Client();self.assertEqual(self.admin.call('/api/auth/login',{'email':'admin@example.test','password':'local-admin-password'})[0],200)
   self.a=Client();self.b=Client();self.register(self.a,'one');self.register(self.b,'two')
@@ -130,5 +130,24 @@ class ServiceTests(unittest.TestCase):
   with s.db() as c:
    c.execute('UPDATE sites SET locked_until=?,locked_price=100000',(s.now()+86400,));row=c.execute('SELECT * FROM sites').fetchone()
    with patch.object(s,'PRICE',200000):self.assertEqual(s.price_for(row),100000)
+
+ def test_manual_month_is_idempotent_and_preserves_text(self):
+  self.site(self.a,'author-one');pid=self.post(self.a)
+  self.a.call('/api/posts/'+pid+'/submit',{'rights':True});self.approve_all()
+  payload={'slug':'author-one','action':'grant_month','reference':'receipt-0001','reason':'Оплата проверена'}
+  self.assertEqual(self.a.call('/api/admin/access',payload)[0],403)
+  self.assertEqual(self.admin.call('/api/admin/access',payload)[0],200)
+  first=self.a.call('/api/studio')[1]['site']
+  self.assertEqual(self.admin.call('/api/admin/access',payload)[1]['alreadyApplied'],True)
+  after=self.a.call('/api/studio')[1]['site']
+  self.assertEqual(first['paid_until'],after['paid_until']);self.assertEqual(after['locked_price'],100000)
+  self.admin.call('/api/admin/access',{'slug':'author-one','action':'expire','reason':'Завершение доступа'})
+  code,data=Client().call('/api/public/author-one');self.assertEqual(code,200);self.assertFalse(data['active']);self.assertEqual(len(data['posts']),1)
+ def test_feed_only_published_administrator_posts(self):
+  self.site(self.admin,'platform-news');self.site(self.a,'author-one')
+  data={'title':'Новость','kind':'post','description':'','chapters':[{'title':'Новость','text':'Полный текст новости','mood':'auto'}],'cover':'','mediaUrl':''}
+  _,created=self.admin.call('/api/posts',data);self.admin.call('/api/posts/'+created['id']+'/submit',{'rights':True})
+  self.assertEqual(Client().call('/api/feed')[1]['posts'],[]);self.approve_all()
+  published=Client().call('/api/feed')[1]['posts'];self.assertEqual(len(published),1);self.assertEqual(published[0]['text'],'Полный текст новости');self.assertGreater(published[0]['publishedAt'],0)
 
 if __name__=='__main__':unittest.main()

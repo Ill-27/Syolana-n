@@ -73,6 +73,9 @@ def initialize():
           provider_id TEXT UNIQUE,url TEXT,state TEXT NOT NULL,amount INTEGER NOT NULL,created INTEGER NOT NULL,
           applied INTEGER NOT NULL DEFAULT 0,refunded INTEGER NOT NULL DEFAULT 0);
         ''')
+        c.execute('CREATE TABLE IF NOT EXISTS manual_payments(reference TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),created INTEGER NOT NULL,amount INTEGER NOT NULL)')
+        if 'published_at' not in [r['name'] for r in c.execute('PRAGMA table_info(posts)')]:
+            c.execute('ALTER TABLE posts ADD COLUMN published_at INTEGER')
         if 'locked_price' not in [r['name'] for r in c.execute('PRAGMA table_info(sites)')]:
             c.execute('ALTER TABLE sites ADD COLUMN locked_price INTEGER')
 
@@ -136,8 +139,10 @@ def clean_post(row):
     result.pop('user_id',None)
     return result
 
-def public_meta(p, post_id):
-    return {k:p.get(k,'') for k in ('title','description','cover','kind','mediaUrl')} | {'id':post_id,'chapters':[{'title':ch['title']} for ch in p['chapters']]}
+def public_meta(p, post_id, published_at=None):
+    result={k:p.get(k,'') for k in ('title','description','cover','kind','mediaUrl')} | {'id':post_id,'chapters':[{'title':ch['title']} for ch in p['chapters']],'publishedAt':published_at}
+    if p.get('kind')!='book':result['text']='\n\n'.join(ch['text'] for ch in p['chapters'])
+    return result
 
 def check_owned_asset(c, uid, value):
     if not value:return
@@ -168,13 +173,17 @@ def post_payload(c, uid, data):
         if not path.startswith('/media/') or (urlparse(cover).netloc and urlparse(cover).netloc != urlparse(ORIGIN).netloc):
             raise Problem('Загрузите обложку через кнопку выбора файла.')
         a=c.execute('SELECT mime FROM assets WHERE filename=? AND user_id=?',(path.split('/')[-1],uid)).fetchone()
-        if not a or not a['mime'].startswith('image/'):raise Problem('Обложка должна быть изображением.')
+        if not a or not (a['mime'].startswith('image/') or a['mime']=='video/mp4'):raise Problem('Обложка должна быть изображением или видео MP4.')
     return {'title':plain(data.get('title'),160,'название',True),'description':plain(data.get('description',''),1000,'описание'),
             'kind':kind,'chapters':result,'cover':cover,'mediaUrl':media}
 
 def payment_ready():
+    # NPD receipts are issued in My Tax or by an explicitly connected authorized partner.
+    mode=os.environ.get('TAX_MODE','')
+    keys=PAYMENT_SETTINGS[:2] if mode=='npd' else PAYMENT_SETTINGS
+    receipts=(os.environ.get('NPD_RECEIPTS_CONFIRMED')=='1') if mode=='npd' else mode=='kkt'
     return (os.environ.get('PAYMENTS_ENABLED')=='1' and os.environ.get('LEGAL_READY')=='1' and SECURE
-            and all(os.environ.get(k) for k in PAYMENT_SETTINGS))
+            and receipts and all(os.environ.get(k) for k in keys))
 
 def provider_request(path, payload=None, key=None):
     if not re.fullmatch(r'(?:payments(?:/[a-zA-Z0-9-]+)?|refunds/[a-zA-Z0-9-]+)',path):raise Problem('Некорректный платёж.',400)
@@ -186,9 +195,12 @@ def provider_request(path, payload=None, key=None):
         with urlopen(req,timeout=20) as response:return json.load(response)
     except (URLError,HTTPError,ValueError):raise Problem('Платёжный сервис временно недоступен. Попробуйте позже.',502)
 
-def add_month(stamp):
-    d=datetime.fromtimestamp(stamp,timezone.utc);year=d.year+(1 if d.month==12 else 0);month=1 if d.month==12 else d.month+1
+def add_months(stamp, count):
+    d=datetime.fromtimestamp(stamp,timezone.utc)
+    absolute=d.year*12+d.month-1+count;year,month=divmod(absolute,12);month+=1
     return int(d.replace(year=year,month=month,day=min(d.day,calendar.monthrange(year,month)[1])).timestamp())
+
+def add_month(stamp):return add_months(stamp,1)
 
 def price_for(site):
     return site['locked_price'] if (site['locked_until'] or 0)>now() and site['locked_price'] else PRICE
@@ -309,6 +321,9 @@ class App:
                     ip=str(ipaddress.ip_address(self.env.get('HTTP_X_SYOLANA_CLIENT_IP',ip)))
             except ValueError:pass
         if path=='status' and method=='GET':return {'service':'syolana','registrationOpen':REGISTRATION_OPEN,'termsVersion':TERMS_VERSION,'paymentsEnabled':payment_ready()}
+        if path=='feed' and method=='GET':
+            rows=c.execute("SELECT p.* FROM posts p JOIN users u ON u.id=p.user_id JOIN sites s ON s.user_id=u.id WHERE u.role='admin' AND p.published IS NOT NULL AND s.published IS NOT NULL AND s.suspended=0 ORDER BY p.published_at DESC LIMIT 50")
+            return {'posts':[public_meta(unpack(row['published']),row['id'],row['published_at']) for row in rows if unpack(row['published']).get('kind')!='book']}
         if path=='session' and method=='GET':return {'user':self.user_view(),'csrf':self.csrf}
         if path in ('auth/register','auth/login') and method=='POST':
             limit(c,'auth-ip:'+ip,30,900);data=self.body();email=email_value(data.get('email'))
@@ -316,7 +331,7 @@ class App:
             if path=='auth/register':
                 if not REGISTRATION_OPEN:raise Problem('Регистрация пока закрыта.',403)
                 if len(password)<10:raise Problem('Минимальная длина пароля — 10 символов.')
-                if data.get('agreed') is not True or data.get('termsVersion')!=TERMS_VERSION:raise Problem('Примите актуальные условия пилота.')
+                if data.get('agreed') is not True or data.get('termsVersion')!=TERMS_VERSION:raise Problem('Примите актуальные условия тест-драйва.')
                 uid=ident()
                 try:c.execute('INSERT INTO users(id,email,password,terms_version,created) VALUES(?,?,?,?,?)',(uid,email,password_hash(password),TERMS_VERSION,now()));c.commit()
                 except sqlite3.IntegrityError:raise Problem('Не удалось создать аккаунт. Попробуйте войти или свяжитесь с поддержкой.',409)
@@ -338,7 +353,7 @@ class App:
             if not re.fullmatch(r'[a-z0-9][a-z0-9-]{2,39}',slug) or slug in ('admin','api','syolana','studio','support'):raise Problem('Выберите другой адрес: 3–40 латинских букв, цифр или дефисов.')
             payload={k:plain(data.get(k,''),n,k,k=='name') for k,n in [('name',100),('category',100),('bio',3000)]};payload['link']=safe_url(data.get('link',''))
             current=c.execute('SELECT * FROM sites WHERE user_id=?',(uid,)).fetchone();version=ident()
-            if current and slug!=current['slug']:raise Problem('Изменение адреса в пилоте выполняется через поддержку.')
+            if current and slug!=current['slug']:raise Problem('Изменение адреса в тест-драйве выполняется через поддержку.')
             try:
                 c.execute('''INSERT INTO sites(user_id,slug,draft,pending,review_status,review_version,created) VALUES(?,?,?,?,'pending',?,?)
                 ON CONFLICT(user_id) DO UPDATE SET draft=excluded.draft,pending=excluded.pending,review_status='pending',review_version=excluded.review_version,review_note=NULL''',(uid,slug,js(payload),js(payload),version,now()))
@@ -355,7 +370,7 @@ class App:
                 c.execute("UPDATE posts SET draft=?,updated=?,review_status=CASE WHEN pending IS NOT NULL THEN 'pending' ELSE 'draft' END WHERE id=? AND user_id=?",(js(payload),now(),post_id,uid))
             else:
                 c.execute('BEGIN IMMEDIATE')
-                if c.execute('SELECT count(*) n FROM posts WHERE user_id=?',(uid,)).fetchone()['n']>=50:raise Problem('В пилоте доступно до 50 публикаций.')
+                if c.execute('SELECT count(*) n FROM posts WHERE user_id=?',(uid,)).fetchone()['n']>=50:raise Problem('В тест-драйве доступно до 50 публикаций.')
                 post_id=ident();c.execute('INSERT INTO posts(id,user_id,draft,updated) VALUES(?,?,?,?)',(post_id,uid,js(payload),now()))
             c.commit();return {'id':post_id}
         match=re.fullmatch(r'posts/([a-f0-9]{32})/submit',path)
@@ -405,7 +420,7 @@ class App:
                 except ValueError:raise Problem('Некорректная глава.')
                 if chapter<0 or chapter>=len(p['chapters']):raise Problem('Глава не найдена.',404)
                 return common|{'post':public_meta(p,row['id']),'chapter':p['chapters'][chapter]}
-            return common|{'posts':[public_meta(unpack(p['published']),p['id']) for p in c.execute('SELECT * FROM posts WHERE user_id=? AND published IS NOT NULL ORDER BY updated DESC',(site['user_id'],))]}
+            return common|{'posts':[public_meta(unpack(p['published']),p['id'],p['published_at']) for p in c.execute('SELECT * FROM posts WHERE user_id=? AND published IS NOT NULL ORDER BY updated DESC',(site['user_id'],))]}
         if path=='reports' and method=='POST':
             if not REGISTRATION_OPEN and not LOCAL:raise Problem('Напишите на sy@syolana.com.',503)
             limit(c,'reports:'+ip,5,3600);data=self.body();url=safe_url(data.get('url'));email=email_value(data.get('email'));reason=plain(data.get('reason'),5000,'описание',True)
@@ -426,23 +441,45 @@ class App:
             note=plain(data.get('note',''),1000,'комментарий')
             if decision=='approve':
                 c.execute(f"UPDATE {table} SET published=pending,pending=NULL,review_status='approved',review_note=? WHERE {column}=?",(note,data['id']))
+                if kind=='post':c.execute('UPDATE posts SET published_at=COALESCE(published_at,?) WHERE id=?',(now(),data['id']))
                 if kind=='site' and not row['trial_ends']:c.execute('UPDATE sites SET trial_ends=? WHERE user_id=?',(now()+7*86400,data['id']))
             else:c.execute(f"UPDATE {table} SET pending=NULL,review_status='rejected',review_note=? WHERE {column}=?",(note,data['id']))
             event(c,admin,'review_'+decision,data['id'],note);c.commit();return {'ok':True}
         match=re.fullmatch(r'admin/reports/([a-f0-9]{32})',path)
         if match and method=='POST':
             uid=self.require(True);c.execute('UPDATE reports SET closed=1 WHERE id=?',(match[1],));event(c,uid,'report_closed',match[1]);c.commit();return {'ok':True}
+        if path=='admin/partners' and method=='GET':
+            self.require(True)
+            return {'partners':[{'slug':row['slug'],'email':row['email'],'name':unpack(row['draft'])['name'],'priceRub':price_for(row)/100,**access(row)} for row in c.execute('SELECT s.*,u.email FROM sites s JOIN users u ON u.id=s.user_id ORDER BY s.created DESC')]}
         if path=='admin/access' and method=='POST':
-            uid=self.require(True);data=self.body();reason=plain(data.get('reason'),500,'основание',True);site=c.execute('SELECT * FROM sites WHERE slug=?',(data.get('slug'),)).fetchone()
-            if not site:raise Problem('Автор не найден.',404)
+            uid=self.require(True);data=self.body();reason=plain(data.get('reason'),500,'основание',True)
+            c.execute('BEGIN IMMEDIATE')
+            site=c.execute('SELECT * FROM sites WHERE slug=?',(data.get('slug'),)).fetchone()
+            if not site:raise Problem('Партнёр не найден.',404)
             action=data.get('action')
-            if action=='grant':
-                days=data.get('days')
-                if not isinstance(days,int) or not 1<=days<=366:raise Problem('Укажите от 1 до 366 дней.')
-                c.execute('UPDATE sites SET paid_until=?,locked_until=COALESCE(locked_until,?) WHERE user_id=?',(max(now(),site['paid_until'] or 0,site['trial_ends'] or 0)+days*86400,now()+365*86400,site['user_id']))
-            elif action in ('suspend','restore'):c.execute('UPDATE sites SET suspended=? WHERE user_id=?',(int(action=='suspend'),site['user_id']))
+            if action in ('grant','grant_month'):
+                if action=='grant_month':
+                    reference=plain(data.get('reference'),100,'номер оплаты или чека',True)
+                    previous=c.execute('SELECT * FROM manual_payments WHERE reference=?',(reference,)).fetchone()
+                    if previous:
+                        if previous['user_id']!=site['user_id']:raise Problem('Этот номер оплаты уже использован для другого партнёра.',409)
+                        return {'ok':True,'alreadyApplied':True,**access(site)}
+                    until=add_month(max(now(),site['paid_until'] or 0,site['trial_ends'] or 0))
+                    c.execute('INSERT INTO manual_payments VALUES(?,?,?,?)',(reference,site['user_id'],now(),price_for(site)))
+                else:
+                    days=data.get('days')
+                    if not isinstance(days,int) or not 1<=days<=366:raise Problem('Укажите от 1 до 366 дней.')
+                    until=max(now(),site['paid_until'] or 0,site['trial_ends'] or 0)+days*86400
+                lock=site['locked_until'] or now()
+                if not site['locked_until']:lock=add_months(now(),12)
+                c.execute('UPDATE sites SET paid_until=?,locked_until=COALESCE(locked_until,?),locked_price=COALESCE(locked_price,?) WHERE user_id=?',(until,lock,price_for(site),site['user_id']))
+            elif action=='expire':
+                c.execute('UPDATE sites SET trial_ends=MIN(COALESCE(trial_ends,0),?),paid_until=? WHERE user_id=?',(now()-1,now()-1,site['user_id']))
+            elif action in ('suspend','restore'):
+                c.execute('UPDATE sites SET suspended=? WHERE user_id=?',(int(action=='suspend'),site['user_id']))
             else:raise Problem('Неизвестное действие.')
-            event(c,uid,'access_'+action,site['user_id'],reason);c.commit();return {'ok':True}
+            event(c,uid,'access_'+action,site['user_id'],reason);c.commit()
+            return {'ok':True,**access(c.execute('SELECT * FROM sites WHERE user_id=?',(site['user_id'],)).fetchone())}
         if path=='checkout' and method=='POST':
             uid=self.require();limit(c,'checkout:'+uid,15,3600)
             if not payment_ready():raise Problem('Онлайн-оплата пока не подключена.',503)
@@ -457,10 +494,11 @@ class App:
             if row and row['url']:return {'url':row['url']}
             amount=row['amount'] if row else price_for(site)
             payload={'amount':{'value':f'{amount/100:.2f}','currency':'RUB'},'capture':True,'confirmation':{'type':'redirect','return_url':ORIGIN+'/#/studio'},
-                'description':'Syolana: доступ на один месяц','metadata':{'local_id':local_id,'user_id':uid},
-                'receipt':{'customer':{'email':self.user['email']},'tax_system_code':int(os.environ['RECEIPT_TAX_SYSTEM_CODE']),
+                'description':'Syolana: доступ на один месяц','metadata':{'local_id':local_id,'user_id':uid}}
+            if os.environ.get('TAX_MODE')=='kkt':
+                payload['receipt']={'customer':{'email':self.user['email']},'tax_system_code':int(os.environ['RECEIPT_TAX_SYSTEM_CODE']),
                   'items':[{'description':'Доступ к Syolana на один месяц','quantity':'1.00','amount':{'value':f'{amount/100:.2f}','currency':'RUB'},
-                    'vat_code':int(os.environ['RECEIPT_VAT_CODE']),'payment_subject':'service','payment_mode':os.environ['RECEIPT_PAYMENT_MODE']}]}}
+                    'vat_code':int(os.environ['RECEIPT_VAT_CODE']),'payment_subject':'service','payment_mode':os.environ['RECEIPT_PAYMENT_MODE']}]}
             p=provider_request('payments',payload,local_id);url=p.get('confirmation',{}).get('confirmation_url','');u=urlparse(url)
             if u.scheme!='https' or not any((u.hostname or '')==d or (u.hostname or '').endswith('.'+d) for d in ('yoomoney.ru','yookassa.ru')):raise Problem('Провайдер не вернул безопасную ссылку оплаты.',502)
             c.execute('UPDATE payments SET provider_id=?,state=?,url=? WHERE id=?',(p['id'],p['status'],url,local_id));c.commit();return {'url':url}

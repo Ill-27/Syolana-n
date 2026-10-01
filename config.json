@@ -2,9 +2,9 @@
   "brand": "Syolana",
   "contactEmail": "sy@syolana.com",
   "banner": {
-    "eyebrow": "SYOLANA · ТВОРЧЕСКОЕ ПРОСТРАНСТВО",
-    "title": "У каждой истории — свой мир",
-    "description": "Книги, музыка и языки. Откройте историю или создайте пространство для своего творчества.",
+    "eyebrow": "SYOLANA · ВСЕЛЕННАЯ ТВОРЧЕСТВА",
+    "title": "Ваше творчество. Целая вселенная.",
+    "description": "Единый иммерсивный дизайн сайтов для тех, кто создаёт, вдохновляет и делится своим делом.",
     "media": {
       "type": "image",
       "src": "",
@@ -13,14 +13,21 @@
     },
     "links": [
       {
-        "label": "Открыть книги",
-        "href": "#/library"
+        "label": "Хочу такой же сайт",
+        "href": "#/join"
       },
       {
-        "label": "Стать автором",
-        "href": "#/join"
+        "label": "Открыть вселенную",
+        "href": "#explore"
       }
-    ]
+    ],
+    "features": [
+      "Дизайн сайтов с живыми темами",
+      "Книги с погружением в историю",
+      "Языки: от первых слов к B2",
+      "Песни по вашему творчеству — в подарок партнёрам"
+    ],
+    "invitation": "Получите свой сайт и первые 7 дней бесплатно для тест-драйва."
   },
   "songs": [
     {
@@ -48,6 +55,952 @@
   "plan": {
     "priceRub": 1000,
     "trialDays": 7,
-    "name": "Первые авторы"
+    "name": "Первые партнёры"
+  },
+  "feed": {
+    "file": "feed.json",
+    "siteSlug": ""
+  },
+  "sceneAudio": {
+    "ambience/antique_clock_tick.ogg": {
+      "src": "audio-library/ambience/antique_clock_tick.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/cafe_ambience.ogg": {
+      "src": "audio-library/ambience/cafe_ambience.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/card_table_murmur.ogg": {
+      "src": "audio-library/ambience/card_table_murmur.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/church_echo.ogg": {
+      "src": "audio-library/ambience/church_echo.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/ambience/church_echo.m4a"
+    },
+    "ambience/clock_chime.ogg": {
+      "src": "audio-library/ambience/clock_chime.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/dark_staircase.ogg": {
+      "src": "audio-library/ambience/dark_staircase.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/deep_forest.ogg": {
+      "src": "audio-library/ambience/deep_forest.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/distant_rumble.ogg": {
+      "src": "audio-library/ambience/distant_rumble.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/dungeon_drip.ogg": {
+      "src": "audio-library/ambience/dungeon_drip.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/hospital_corridor.aac": {
+      "src": "audio-library/ambience/hospital_corridor.aac",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/hospital_corridor.ogg": {
+      "src": "audio-library/ambience/hospital_corridor.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/library.ogg": {
+      "src": "audio-library/ambience/library.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/night_air.ogg": {
+      "src": "audio-library/ambience/night_air.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/ambience/night_air.m4a"
+    },
+    "ambience/office_typing.ogg": {
+      "src": "audio-library/ambience/office_typing.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/paris_ballroom.ogg": {
+      "src": "audio-library/ambience/paris_ballroom.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/park_path.ogg": {
+      "src": "audio-library/ambience/park_path.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/ambience/park_path.m4a"
+    },
+    "ambience/tavern_crowd.ogg": {
+      "src": "audio-library/ambience/tavern_crowd.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/ambience/tavern_crowd.m4a"
+    },
+    "ambience/tense_room_quiet.ogg": {
+      "src": "audio-library/ambience/tense_room_quiet.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/train_cabin.ogg": {
+      "src": "audio-library/ambience/train_cabin.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/underwater_muffled.ogg": {
+      "src": "audio-library/ambience/underwater_muffled.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "ambience/wind_howl_window.ogg": {
+      "src": "audio-library/ambience/wind_howl_window.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/ambience/wind_howl_window.m4a"
+    },
+    "city/city_muffled_cold.ogg": {
+      "src": "audio-library/city/city_muffled_cold.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "city/neon_buzz.ogg": {
+      "src": "audio-library/city/neon_buzz.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "city/radio_static.ogg": {
+      "src": "audio-library/city/radio_static.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "city/siren_distant.ogg": {
+      "src": "audio-library/city/siren_distant.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "city/sleigh_bells.ogg": {
+      "src": "audio-library/city/sleigh_bells.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "city/stable_quiet.ogg": {
+      "src": "audio-library/city/stable_quiet.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "city/subway_arrival.ogg": {
+      "src": "audio-library/city/subway_arrival.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "city/traffic_highway.ogg": {
+      "src": "audio-library/city/traffic_highway.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/arrow_whoosh.ogg": {
+      "src": "audio-library/combat/arrow_whoosh.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/battlefield_distant.ogg": {
+      "src": "audio-library/combat/battlefield_distant.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/bone_snap.ogg": {
+      "src": "audio-library/combat/bone_snap.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/explosion_muffled.ogg": {
+      "src": "audio-library/combat/explosion_muffled.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/fist_punch.ogg": {
+      "src": "audio-library/combat/fist_punch.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/flesh_impact.ogg": {
+      "src": "audio-library/combat/flesh_impact.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/gun_reload.ogg": {
+      "src": "audio-library/combat/gun_reload.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/gunshot_pistol.ogg": {
+      "src": "audio-library/combat/gunshot_pistol.ogg",
+      "loop": false,
+      "volume": 0.045,
+      "fallback": "audio-library/compatible/combat/gunshot_pistol.m4a"
+    },
+    "combat/laser_shoot.ogg": {
+      "src": "audio-library/combat/laser_shoot.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/sword_clash.ogg": {
+      "src": "audio-library/combat/sword_clash.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "combat/sword_draw.ogg": {
+      "src": "audio-library/combat/sword_draw.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/combat/sword_draw.m4a"
+    },
+    "combat/whip_crack.ogg": {
+      "src": "audio-library/combat/whip_crack.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "human/cloth_rustle.ogg": {
+      "src": "audio-library/human/cloth_rustle.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/human/cloth_rustle.m4a"
+    },
+    "human/cough_sick.ogg": {
+      "src": "audio-library/human/cough_sick.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "human/crowd_panic.ogg": {
+      "src": "audio-library/human/crowd_panic.ogg",
+      "loop": false,
+      "volume": 0.045,
+      "fallback": "audio-library/compatible/human/crowd_panic.m4a"
+    },
+    "human/crying_soft.ogg": {
+      "src": "audio-library/human/crying_soft.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/human/crying_soft.m4a"
+    },
+    "human/drinking_gulp.ogg": {
+      "src": "audio-library/human/drinking_gulp.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "human/female_gasp.ogg": {
+      "src": "audio-library/human/female_gasp.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/human/female_gasp.m4a"
+    },
+    "human/hearty_laugh_female.ogg": {
+      "src": "audio-library/human/hearty_laugh_female.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "human/hearty_laugh_male.ogg": {
+      "src": "audio-library/human/hearty_laugh_male.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "human/heavy_breathing_run_female.ogg": {
+      "src": "audio-library/human/heavy_breathing_run_female.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "human/man_pain.ogg": {
+      "src": "audio-library/human/man_pain.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "human/woman_scream_far.ogg": {
+      "src": "audio-library/human/woman_scream_far.ogg",
+      "loop": false,
+      "volume": 0.045,
+      "fallback": "audio-library/compatible/human/woman_scream_far.m4a"
+    },
+    "magic/airlock_hiss.ogg": {
+      "src": "audio-library/magic/airlock_hiss.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "magic/computer_telemetry.ogg": {
+      "src": "audio-library/magic/computer_telemetry.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "magic/dark_magic_whoosh.ogg": {
+      "src": "audio-library/magic/dark_magic_whoosh.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/magic/dark_magic_whoosh.m4a"
+    },
+    "magic/forcefield_hum.ogg": {
+      "src": "audio-library/magic/forcefield_hum.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "magic/magic_chime_spell.ogg": {
+      "src": "audio-library/magic/magic_chime_spell.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/magic/magic_chime_spell.m4a"
+    },
+    "materials/gears_turning.ogg": {
+      "src": "audio-library/materials/gears_turning.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "materials/glass_shatter.ogg": {
+      "src": "audio-library/materials/glass_shatter.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "materials/glass_shatter2.ogg": {
+      "src": "audio-library/materials/glass_shatter2.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "materials/metal_scrape.ogg": {
+      "src": "audio-library/materials/metal_scrape.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "materials/paper_crumple.ogg": {
+      "src": "audio-library/materials/paper_crumple.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "materials/wood_creak_heavy.ogg": {
+      "src": "audio-library/materials/wood_creak_heavy.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "music/anxiety_drone.ogg": {
+      "src": "audio-library/music/anxiety_drone.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/anxiety_drone.m4a"
+    },
+    "music/cello_drone_low.ogg": {
+      "src": "audio-library/music/cello_drone_low.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/cello_drone_low.m4a"
+    },
+    "music/clock_ticking_tense.ogg": {
+      "src": "audio-library/music/clock_ticking_tense.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/comedy_pizzicato.ogg": {
+      "src": "audio-library/music/comedy_pizzicato.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/comedy_slide_whistle.ogg": {
+      "src": "audio-library/music/comedy_slide_whistle.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/creepy_music_box.ogg": {
+      "src": "audio-library/music/creepy_music_box.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/cyberpunk_synth.ogg": {
+      "src": "audio-library/music/cyberpunk_synth.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/dark_obsession.ogg": {
+      "src": "audio-library/music/dark_obsession.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/dark_obsession.m4a"
+    },
+    "music/epic_orchestra.ogg": {
+      "src": "audio-library/music/epic_orchestra.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/epic_orchestra.m4a"
+    },
+    "music/ghostly_apparition.ogg": {
+      "src": "audio-library/music/ghostly_apparition.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/ghostly_apparition.m4a"
+    },
+    "music/grief_cello.ogg": {
+      "src": "audio-library/music/grief_cello.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/grief_cello.m4a"
+    },
+    "music/happy_acoustic.ogg": {
+      "src": "audio-library/music/happy_acoustic.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/happy_acoustic.m4a"
+    },
+    "music/harpsichord_waltz.ogg": {
+      "src": "audio-library/music/harpsichord_waltz.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/investigation_pulse.ogg": {
+      "src": "audio-library/music/investigation_pulse.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/lofi_beats.ogg": {
+      "src": "audio-library/music/lofi_beats.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/mystic_secret.ogg": {
+      "src": "audio-library/music/mystic_secret.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/mystic_secret.m4a"
+    },
+    "music/piano_romantic_soft.ogg": {
+      "src": "audio-library/music/piano_romantic_soft.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/piano_romantic_soft.m4a"
+    },
+    "music/romantic_melancholy.ogg": {
+      "src": "audio-library/music/romantic_melancholy.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/romantic_melancholy.m4a"
+    },
+    "music/suspense_strings.ogg": {
+      "src": "audio-library/music/suspense_strings.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/suspense_strings.m4a"
+    },
+    "music/synth_mystic_pad.ogg": {
+      "src": "audio-library/music/synth_mystic_pad.ogg",
+      "loop": true,
+      "volume": 0.19
+    },
+    "music/tragic_revelation.ogg": {
+      "src": "audio-library/music/tragic_revelation.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/tragic_revelation.m4a"
+    },
+    "music/void_silence.ogg": {
+      "src": "audio-library/music/void_silence.ogg",
+      "loop": true,
+      "volume": 0.19,
+      "fallback": "audio-library/compatible/music/void_silence.m4a"
+    },
+    "nature/campfire_crackling.ogg": {
+      "src": "audio-library/nature/campfire_crackling.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "nature/cat_purr.ogg": {
+      "src": "audio-library/nature/cat_purr.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/crickets_chirp.ogg": {
+      "src": "audio-library/nature/crickets_chirp.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/nature/crickets_chirp.m4a"
+    },
+    "nature/crow_caw.ogg": {
+      "src": "audio-library/nature/crow_caw.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/crow_caw.m4a"
+    },
+    "nature/desert_wind.ogg": {
+      "src": "audio-library/nature/desert_wind.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/nature/desert_wind.m4a"
+    },
+    "nature/dog_bark_far.ogg": {
+      "src": "audio-library/nature/dog_bark_far.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/dog_growl_close.ogg": {
+      "src": "audio-library/nature/dog_growl_close.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/dog_growl_close.m4a"
+    },
+    "nature/eagle_cry.ogg": {
+      "src": "audio-library/nature/eagle_cry.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/eagle_cry.m4a"
+    },
+    "nature/earthquake_rumble.ogg": {
+      "src": "audio-library/nature/earthquake_rumble.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/fire_burning_house.ogg": {
+      "src": "audio-library/nature/fire_burning_house.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/fly_buzz.ogg": {
+      "src": "audio-library/nature/fly_buzz.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/forest_morning.ogg": {
+      "src": "audio-library/nature/forest_morning.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/nature/forest_morning.m4a"
+    },
+    "nature/heartbeat_fade_out.ogg": {
+      "src": "audio-library/nature/heartbeat_fade_out.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/heartbeat_fade_out.m4a"
+    },
+    "nature/horse_breath.ogg": {
+      "src": "audio-library/nature/horse_breath.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/horse_breath.m4a"
+    },
+    "nature/ice_cracking.ogg": {
+      "src": "audio-library/nature/ice_cracking.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/jungle_canopy.ogg": {
+      "src": "audio-library/nature/jungle_canopy.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "nature/moth_wings.ogg": {
+      "src": "audio-library/nature/moth_wings.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/ocean_waves.ogg": {
+      "src": "audio-library/nature/ocean_waves.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "nature/owl_hoot.ogg": {
+      "src": "audio-library/nature/owl_hoot.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/rat_scurry.ogg": {
+      "src": "audio-library/nature/rat_scurry.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/river_flow_fast.ogg": {
+      "src": "audio-library/nature/river_flow_fast.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/nature/river_flow_fast.m4a"
+    },
+    "nature/sandstorm_howl.ogg": {
+      "src": "audio-library/nature/sandstorm_howl.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "nature/snow_crunch.ogg": {
+      "src": "audio-library/nature/snow_crunch.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/storm_heavy_rain.ogg": {
+      "src": "audio-library/nature/storm_heavy_rain.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "nature/sudden_wind.ogg": {
+      "src": "audio-library/nature/sudden_wind.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/sudden_wind.m4a"
+    },
+    "nature/swamp_frogs.ogg": {
+      "src": "audio-library/nature/swamp_frogs.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "nature/thunder_claps.ogg": {
+      "src": "audio-library/nature/thunder_claps.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/wind_soft.ogg": {
+      "src": "audio-library/nature/wind_soft.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/nature/wind_soft.m4a"
+    },
+    "nature/winter_blizzard.ogg": {
+      "src": "audio-library/nature/winter_blizzard.ogg",
+      "loop": true,
+      "volume": 0.14
+    },
+    "nature/wolf_howl.ogg": {
+      "src": "audio-library/nature/wolf_howl.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "nature/baby_bird_squeak.ogg": {
+      "src": "audio-library/nature/baby_bird_squeak.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/baby_bird_squeak.m4a"
+    },
+    "nature/bird_wings_flutter.ogg": {
+      "src": "audio-library/nature/bird_wings_flutter.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/bird_wings_flutter.m4a"
+    },
+    "nature/dog_whine_retreat.ogg": {
+      "src": "audio-library/nature/dog_whine_retreat.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/dog_whine_retreat.m4a"
+    },
+    "nature/sparrow_chirp_desperate.ogg": {
+      "src": "audio-library/nature/sparrow_chirp_desperate.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/nature/sparrow_chirp_desperate.m4a"
+    },
+    "sfx/cards_shuffle.ogg": {
+      "src": "audio-library/sfx/cards_shuffle.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/cards_slap.ogg": {
+      "src": "audio-library/sfx/cards_slap.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/carriage_leaving.ogg": {
+      "src": "audio-library/sfx/carriage_leaving.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/censer_chains.ogg": {
+      "src": "audio-library/sfx/censer_chains.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/clock_chime.ogg": {
+      "src": "audio-library/sfx/clock_chime.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/cutlery_clink.ogg": {
+      "src": "audio-library/sfx/cutlery_clink.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/door_creak_old.ogg": {
+      "src": "audio-library/sfx/door_creak_old.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/door_lock_click.ogg": {
+      "src": "audio-library/sfx/door_lock_click.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/fireplace_poke.ogg": {
+      "src": "audio-library/sfx/fireplace_poke.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/footsteps_heels.ogg": {
+      "src": "audio-library/sfx/footsteps_heels.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/footsteps_heels_fast.ogg": {
+      "src": "audio-library/sfx/footsteps_heels_fast.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/footsteps_leaves.ogg": {
+      "src": "audio-library/sfx/footsteps_leaves.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/sfx/footsteps_leaves.m4a"
+    },
+    "sfx/footsteps_shuffling.ogg": {
+      "src": "audio-library/sfx/footsteps_shuffling.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/sfx/footsteps_shuffling.m4a"
+    },
+    "sfx/footsteps_stone.ogg": {
+      "src": "audio-library/sfx/footsteps_stone.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/sfx/footsteps_stone.m4a"
+    },
+    "sfx/footsteps_wood.ogg": {
+      "src": "audio-library/sfx/footsteps_wood.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/gold_coins.ogg": {
+      "src": "audio-library/sfx/gold_coins.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/heartbeat_slow.ogg": {
+      "src": "audio-library/sfx/heartbeat_slow.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/sfx/heartbeat_slow.m4a"
+    },
+    "sfx/heavy_door_shut.ogg": {
+      "src": "audio-library/sfx/heavy_door_shut.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/keyboard_typing.ogg": {
+      "src": "audio-library/sfx/keyboard_typing.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/knife_chopping.ogg": {
+      "src": "audio-library/sfx/knife_chopping.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/magic_sparkle.ogg": {
+      "src": "audio-library/sfx/magic_sparkle.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/sfx/magic_sparkle.m4a"
+    },
+    "sfx/match_strike.ogg": {
+      "src": "audio-library/sfx/match_strike.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/monster_growl.ogg": {
+      "src": "audio-library/sfx/monster_growl.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/page_turn.ogg": {
+      "src": "audio-library/sfx/page_turn.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/pan_sizzle.ogg": {
+      "src": "audio-library/sfx/pan_sizzle.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/phone_ring_vintage.ogg": {
+      "src": "audio-library/sfx/phone_ring_vintage.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/quill_scratch.ogg": {
+      "src": "audio-library/sfx/quill_scratch.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/slow_footsteps_stairs.ogg": {
+      "src": "audio-library/sfx/slow_footsteps_stairs.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/smartphone_vibrate.ogg": {
+      "src": "audio-library/sfx/smartphone_vibrate.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/tambourine_shake.ogg": {
+      "src": "audio-library/sfx/tambourine_shake.ogg",
+      "loop": false,
+      "volume": 0.11,
+      "fallback": "audio-library/compatible/sfx/tambourine_shake.m4a"
+    },
+    "sfx/tea_pouring.ogg": {
+      "src": "audio-library/sfx/tea_pouring.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/water_boiling.ogg": {
+      "src": "audio-library/sfx/water_boiling.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/water_splash_strong.ogg": {
+      "src": "audio-library/sfx/water_splash_strong.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "sfx/window_shatter.ogg": {
+      "src": "audio-library/sfx/window_shatter.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "songs/breaking_sunset.mp3": {
+      "src": "audio-library/songs/breaking_sunset.m4a",
+      "loop": false,
+      "volume": 0.11
+    },
+    "transport/car_engine_start.ogg": {
+      "src": "audio-library/transport/car_engine_start.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "transport/helicopter_hover.ogg": {
+      "src": "audio-library/transport/helicopter_hover.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "transport/horse_gallop_dirt.ogg": {
+      "src": "audio-library/transport/horse_gallop_dirt.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/transport/horse_gallop_dirt.m4a"
+    },
+    "transport/ship_creak_wood.ogg": {
+      "src": "audio-library/transport/ship_creak_wood.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "transport/tires_squeal.ogg": {
+      "src": "audio-library/transport/tires_squeal.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "winter/city_muffled_cold.ogg": {
+      "src": "audio-library/winter/city_muffled_cold.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "winter/footsteps_snow.ogg": {
+      "src": "audio-library/winter/footsteps_snow.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "winter/snow_crunch.ogg": {
+      "src": "audio-library/winter/snow_crunch.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "winter/winter_blizzard.ogg": {
+      "src": "audio-library/winter/winter_blizzard.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "winter/winter_city_day.ogg": {
+      "src": "audio-library/winter/winter_city_day.ogg",
+      "loop": false,
+      "volume": 0.11
+    },
+    "winter/winter_wind_outside.ogg": {
+      "src": "audio-library/winter/winter_wind_outside.ogg",
+      "loop": true,
+      "volume": 0.14,
+      "fallback": "audio-library/compatible/winter/winter_wind_outside.m4a"
+    },
+    "neutral": {
+      "tracks": [
+        "music/piano_romantic_soft.ogg",
+        "nature/wind_soft.ogg"
+      ]
+    },
+    "calm": {
+      "tracks": [
+        "music/piano_romantic_soft.ogg",
+        "ambience/park_path.ogg"
+      ]
+    },
+    "hope": {
+      "tracks": [
+        "music/happy_acoustic.ogg",
+        "nature/forest_morning.ogg"
+      ]
+    },
+    "joy": {
+      "tracks": [
+        "music/happy_acoustic.ogg",
+        "nature/forest_morning.ogg"
+      ]
+    },
+    "love": {
+      "tracks": [
+        "music/romantic_melancholy.ogg",
+        "ambience/night_air.ogg"
+      ]
+    },
+    "tension": {
+      "tracks": [
+        "music/suspense_strings.ogg",
+        "sfx/heartbeat_slow.ogg"
+      ]
+    },
+    "sorrow": {
+      "tracks": [
+        "music/grief_cello.ogg",
+        "nature/wind_soft.ogg"
+      ]
+    },
+    "mystery": {
+      "tracks": [
+        "music/mystic_secret.ogg",
+        "ambience/night_air.ogg"
+      ]
+    },
+    "wonder": {
+      "tracks": [
+        "music/mystic_secret.ogg",
+        "ambience/night_air.ogg"
+      ]
+    }
+  },
+  "languageProgram": {
+    "status": "preparing",
+    "pricesRub": {
+      "A1": 500,
+      "A2": 1000,
+      "B1": 2000,
+      "B2": 4000
+    },
+    "freeCourse": "en/A1",
+    "partnerGiftLanguages": 1
   }
 }

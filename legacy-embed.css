@@ -42,7 +42,7 @@ html.sy-embedded,
 }
 .sy-embedded .panel,
 .sy-embedded .rules-panel {
-  background: rgba(var(--sy-surface, 12, 12, 25), 0.72) !important;
+  background: rgba(var(--sy-surface, 12, 12, 25), 0.78) !important;
   border-radius: var(--sy-radius, 24px) !important;
   backdrop-filter: none !important;
 }
@@ -54,4 +54,10 @@ html.sy-embedded,
 }
 .sy-embedded .aurora * {
   animation: none !important;
+}
+
+.sy-embedded .panel,
+.sy-embedded .rules-panel,
+.sy-embedded .card {
+  color: #eee8f5 !important;
 }

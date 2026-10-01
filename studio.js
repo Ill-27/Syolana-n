@@ -57,14 +57,14 @@ export class Studio {
   async render(root, token, getToken) {
     if (!this.api.online) {
       root.append(
-        el("h1", "", "Моя студия"),
+        el("h1", "", "Редактор сайта"),
         el(
           "p",
           "notice",
           "Редактор работает с сервером Syolana. В статическом предпросмотре регистрация и сохранение на сервере недоступны.",
         ),
         link("Попробовать читалку", "#/book/turgenev_sparrow/0", "btn primary"),
-        link("Условия для авторов", "#/join"),
+        link("Условия для партнёров", "#/join"),
       );
       return;
     }
@@ -78,10 +78,10 @@ export class Studio {
     if (getToken && token !== getToken()) return;
     this.data = data;
     const toolbar = el("div", "studio-toolbar");
-    toolbar.append(el("h1", "", "Моя студия"));
+    toolbar.append(el("h1", "", "Редактор сайта"));
     const actions = el("div", "row");
     if (this.api.me.role === "admin")
-      actions.append(link("Модерация", "#/admin"));
+      actions.append(link("Публикации и доступ", "#/admin"));
     actions.append(
       button(
         "Выйти",
@@ -248,7 +248,7 @@ export class Studio {
         el(
           "span",
           "",
-          "Я прочитал(а) условия пилота и согласен(на) на обработку данных для работы кабинета.",
+          "Я прочитал(а) условия тест-драйва и согласен(на) на обработку данных для работы кабинета.",
         ),
       );
       l.append(row, link("Прочитать условия", "#/terms", "text-link"));
@@ -300,7 +300,7 @@ export class Studio {
         el(
           "p",
           "fine muted",
-          "В пилоте восстановление доступа — через владельца платформы: sy@syolana.com.",
+          "В тест-драйве восстановление доступа — через владельца платформы: sy@syolana.com.",
         ),
       );
     if (register && !this.api.settings.registrationOpen) {
@@ -309,7 +309,7 @@ export class Studio {
         el(
           "p",
           "notice",
-          "Регистрация пока закрыта. Можно посмотреть библиотеку и условия для авторов.",
+          "Регистрация пока закрыта. Можно посмотреть библиотеку и условия для партнёров.",
         ),
       );
     }
@@ -481,12 +481,12 @@ export class Studio {
       if (manual.open) segment();
     });
     const [coverLabel, cover] = field(
-      "Обложка: PNG, JPEG, WEBP",
+      "Обложка: PNG, JPEG, WEBP или MP4",
       "cover",
       "",
       "file",
     );
-    cover.accept = "image/png,image/jpeg,image/webp";
+    cover.accept = "image/png,image/jpeg,image/webp,video/mp4";
     const [mediaLabel, media] = field(
       "Видео MP4 или аудио MP3 (до 20 МБ)",
       "media",
@@ -614,7 +614,7 @@ export class Studio {
         "notice",
         "Одобрение относится именно к показанной версии. Сохранение автором нового черновика не изменяет уже опубликованный текст.",
       ),
-      link("Моя студия", "#/studio", "text-link"),
+      link("Редактор сайта", "#/studio", "text-link"),
     );
     if (!data.queue.length)
       root.append(el("p", "empty", "В очереди нет материалов."));
@@ -643,7 +643,14 @@ export class Studio {
       );
       item.append(content);
       if (q.payload.cover) {
-        const img = el("img");
+        const img = el(
+          /\.mp4(?:[?#]|$)/i.test(q.payload.cover) ? "video" : "img",
+        );
+        if (img.tagName === "VIDEO") {
+          img.controls = true;
+          img.muted = true;
+          img.playsInline = true;
+        }
         img.src = q.payload.cover;
         img.alt = "Обложка для проверки";
         item.append(img);
@@ -713,7 +720,28 @@ export class Studio {
       );
       root.append(c);
     });
-    root.append(el("h2", "", "Доступ авторов"));
+    root.append(el("h2", "", "Доступ партнёров"));
+    const partners = await this.api.request("admin/partners");
+    const list = el("div", "stack");
+    for (const partner of partners.partners) {
+      const item = el("div", "notice");
+      item.append(
+        el("strong", "", partner.name + " · " + partner.slug),
+        el("p", "", partner.email),
+        el(
+          "p",
+          "",
+          (partner.active
+            ? "Оформление включено до " + formatDate(partner.accessUntil)
+            : "Оформление выключено") +
+            " · " +
+            partner.priceRub +
+            " ₽/месяц",
+        ),
+      );
+      list.append(item);
+    }
+    root.append(list);
     const control = el("form", "form card");
     const [slugLabel, slug] = field("Адрес автора", "slug");
     const [daysLabel, days] = field(
@@ -730,9 +758,16 @@ export class Studio {
     );
     reason.required = true;
     reason.maxLength = 500;
+    const [referenceLabel, reference] = field(
+      "Уникальный номер подтверждённой оплаты / чека",
+      "reference",
+    );
+    reference.maxLength = 100;
     const btns = el("div", "row");
     for (const [action, title] of [
-      ["grant", "Предоставить доступ"],
+      ["grant_month", "Оплата получена — добавить месяц"],
+      ["grant", "Добавить указанное число дней"],
+      ["expire", "Отключить оформление, сохранить тексты"],
       ["suspend", "Приостановить сайт"],
       ["restore", "Восстановить сайт"],
     ])
@@ -748,10 +783,12 @@ export class Studio {
                   slug: slug.value,
                   action,
                   days: Number(days.value),
+                  reference: reference.value,
                   reason: reason.value,
                 },
               });
               notify("Статус доступа обновлён.");
+              this.rerender();
             } catch (err) {
               notify(err.message);
             }
@@ -762,6 +799,7 @@ export class Studio {
     control.append(
       slugLabel,
       daysLabel,
+      referenceLabel,
       reasonLabel,
       btns,
       el(

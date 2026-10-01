@@ -11,7 +11,7 @@ export class ThemeEngine {
     this.phase = 0;
     this.sequence = 0;
     this.manifest = await fetch("themes/manifest.json", {
-      cache: "no-cache",
+      cache: "default",
     }).then((r) => {
       if (!r.ok) throw Error("Темы недоступны");
       return r.json();
@@ -30,7 +30,10 @@ export class ThemeEngine {
       b.className = "theme-option";
       b.type = "button";
       b.dataset.theme = t.id;
-      const sw = document.createElement("span");
+      const sw = document.createElement("canvas");
+      sw.width = 240;
+      sw.height = 140;
+      sw.dataset.preview = t.id;
       sw.className = "theme-swatch";
       sw.style.background = t.preview;
       sw.setAttribute("aria-hidden", "true");
@@ -49,11 +52,13 @@ export class ThemeEngine {
       list.append(b);
     });
     this.updateChoices();
-    document.querySelector("#theme-toggle").onclick = () => dialog.showModal();
-    document.querySelector("#motion").onclick = () => {
-      this.paused = !this.paused;
-      this.sync();
+    document.querySelector("#theme-toggle").onclick = () => {
+      dialog.showModal();
+      this.startPreviews();
     };
+    dialog.addEventListener("close", () =>
+      cancelAnimationFrame(this.previewFrame),
+    );
     this.reduced.addEventListener("change", () => {
       this.paused = this.reduced.matches;
       this.sync();
@@ -86,8 +91,7 @@ export class ThemeEngine {
       dim: theme.dim,
       surface: theme.surface,
       radius: theme.radius,
-      heading: theme.heading,
-      body: theme.body,
+
       "button-radius": theme.buttonRadius || "30px",
     }))
       s.setProperty("--" + k, v);
@@ -139,7 +143,7 @@ export class ThemeEngine {
     const bounds = this.canvas.getBoundingClientRect();
     const w = Math.max(1, bounds.width),
       h = Math.max(1, bounds.height),
-      ratio = Math.min(devicePixelRatio || 1, 2);
+      ratio = Math.min(devicePixelRatio || 1, w <= 700 ? 1.5 : 2);
     if (!force && w === this.w && h === this.h && ratio === this.ratio) return;
     this.w = w;
     this.h = h;
@@ -167,6 +171,7 @@ export class ThemeEngine {
           drift: this.rand(4, w <= 700 ? 10 : 18),
           hue: this.rand(155, 330),
           hueSpeed: this.rand(3.5, 9.5),
+          depth: this.rand(1.2, 3.1),
         });
     this.custom?.resize?.({ width: w, height: h, ratio });
     this.draw(0);
@@ -185,63 +190,57 @@ export class ThemeEngine {
       phase: this.rand(0, Math.PI * 2),
       blink: this.rand(0.6, 3),
       opacity: this.rand(0.2, 0.8),
+      depth: this.rand(1.1, 3.3),
     };
   }
+  // One scene in both modes. The camera projects the same particles, marks and waves.
   draw(d) {
     const ctx = this.ctx;
     if (!ctx || !this.stars) return;
     ctx.clearRect(0, 0, this.w, this.h);
     this.phase += d;
+    if (this.zen) this.advanceCamera(d);
     this.custom?.draw?.({
       delta: d,
       time: this.phase,
       width: this.w,
       height: this.h,
+      camera: this.zen ? this.camera : null,
     });
-    if (this.theme.renderer === "waves") {
-      ctx.save();
-      for (let line = 0; line < 24; line++) {
-        ctx.beginPath();
-        for (let x = 0; x <= this.w + 8; x += 8) {
-          const y =
-            this.h * 0.58 +
-            Math.sin((x / this.w) * 5.2 + this.phase * 0.12 + line * 0.075) *
-              this.h *
-              0.17 +
-            Math.sin((x / this.w) * 9 - this.phase * 0.1) * this.h * 0.03 +
-            line * 9;
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = `rgba(240,200,133,${0.13 - line * 0.0035})`;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
+    if (this.theme.renderer === "waves") this.drawWaves();
     for (const m of this.marks) {
       m.y -= m.speed * d;
       m.phase += d * 0.23;
       m.hue = (m.hue + m.hueSpeed * d) % 360;
       if (m.y < -45) m.y = this.h + this.rand(30, 110);
+      const point = this.project(
+        m.x + Math.sin(m.phase) * m.drift,
+        m.y,
+        m.depth,
+      );
       const fade =
-        Math.max(0, Math.min(1, (m.y + 20) / 95)) *
-        Math.max(0, Math.min(1, (this.h + 30 - m.y) / 100));
-      const x = m.x + Math.sin(m.phase) * m.drift;
+        Math.max(0, Math.min(1, (point.y + 20) / 95)) *
+        Math.max(0, Math.min(1, (this.h + 30 - point.y) / 100));
+      if (!fade || point.x < -180 || point.x > this.w + 180) continue;
       const hue = (m.hue + Math.sin(m.phase * 0.7) * 42 + 360) % 360;
-      ctx.font = `600 ${m.size}px "Nunito",sans-serif`;
+      ctx.font = `500 ${Math.max(8, Math.min(42, m.size * point.scale))}px system-ui,sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       const tw = ctx.measureText("syolana.com").width;
-      const g = ctx.createLinearGradient(x - tw / 2, m.y, x + tw / 2, m.y);
+      const g = ctx.createLinearGradient(
+        point.x - tw / 2,
+        point.y,
+        point.x + tw / 2,
+        point.y,
+      );
       g.addColorStop(0, `hsl(${hue},76%,75%)`);
       g.addColorStop(0.48, `hsl(${(hue + 58) % 360},82%,80%)`);
       g.addColorStop(1, `hsl(${(hue + 116) % 360},76%,73%)`);
-      ctx.globalAlpha = m.opacity * fade;
+      ctx.globalAlpha = m.opacity * fade * point.alpha;
       ctx.fillStyle = g;
       ctx.shadowColor = `hsla(${hue},84%,74%,.42)`;
       ctx.shadowBlur = 9;
-      ctx.fillText("syolana.com", x, m.y);
+      ctx.fillText("syolana.com", point.x, point.y);
       ctx.shadowBlur = 0;
     }
     for (
@@ -250,43 +249,272 @@ export class ThemeEngine {
       i++
     ) {
       let s = this.stars[i];
-      const slow = this.theme.renderer === "stars" ? 1 : 0.3;
-      s.x += s.sx * d * slow;
-      s.y -= s.sy * d * slow;
+      const speed = this.theme.speed || 1;
+      s.x += s.sx * d * speed;
+      s.y -= s.sy * d * speed;
       s.phase += s.blink * d;
       if (s.y < -25) s = this.stars[i] = this.star(false);
       if (s.x < -25) s.x = this.w + 25;
       else if (s.x > this.w + 25) s.x = -25;
-      ctx.globalAlpha = Math.max(
-        0.1,
-        Math.min(1, s.opacity + Math.sin(s.phase) * 0.4),
-      );
+      const point = this.project(s.x, s.y, s.depth);
+      if (
+        point.x < -80 ||
+        point.y < -80 ||
+        point.x > this.w + 80 ||
+        point.y > this.h + 80
+      )
+        continue;
+      ctx.globalAlpha =
+        Math.max(0.1, Math.min(1, s.opacity + Math.sin(s.phase) * 0.4)) *
+        point.alpha;
       if (this.theme.renderer === "petals" && i % 4 === 0) {
         ctx.save();
-        ctx.translate(s.x, s.y);
+        ctx.translate(point.x, point.y);
         ctx.rotate(s.phase * 0.15);
         ctx.fillStyle = this.theme.colors[s.ci];
         ctx.beginPath();
-        ctx.ellipse(0, 0, s.size * 2, s.size * 0.6, 0, 0, Math.PI * 2);
+        ctx.ellipse(
+          0,
+          0,
+          s.size * 2 * point.scale,
+          s.size * 0.6 * point.scale,
+          0,
+          0,
+          Math.PI * 2,
+        );
         ctx.fill();
         ctx.restore();
       } else {
-        const sz = s.size * 10;
-        ctx.drawImage(this.sprites[s.ci], s.x - sz / 2, s.y - sz / 2, sz, sz);
+        const size = Math.min(110, s.size * 10 * point.scale);
+        ctx.drawImage(
+          this.sprites[s.ci],
+          point.x - size / 2,
+          point.y - size / 2,
+          size,
+          size,
+        );
       }
     }
     ctx.globalAlpha = 1;
     ctx.shadowBlur = 0;
+    if (this.zen) this.drawPlanets();
+  }
+  project(x, y, baseDepth = 2) {
+    const cam = this.zen ? this.camera : null;
+    if (!cam || (!cam.x && !cam.y && !cam.z))
+      return { x, y, scale: 1, alpha: 1 };
+    const wrap = (v, n) => ((v % n) + n) % n;
+    const depth = wrap(baseDepth - cam.z - 0.24, 4.2) + 0.24;
+    const scale = baseDepth / depth;
+    // Repeating world cells give unlimited panning; depth recycles beyond the camera.
+    const wx = wrap(x - cam.x * this.w + 100, this.w + 200) - 100;
+    const wy = wrap(y - cam.y * this.h + 100, this.h + 200) - 100;
+    return {
+      x: this.w / 2 + (wx - this.w / 2) * scale,
+      y: this.h / 2 + (wy - this.h / 2) * scale,
+      scale,
+      alpha: Math.max(0, Math.min(1, (depth - 0.24) * 5, (4.44 - depth) * 3)),
+    };
+  }
+  drawWaves() {
+    const ctx = this.ctx,
+      cam = this.zen ? this.camera : null;
+    const xCamera = cam?.x || 0,
+      yCamera = cam?.y || 0,
+      zCamera = cam?.z || 0;
+    const extra = Math.min(1, Math.abs(zCamera) * 2);
+    const wrap = (v, n) => ((v % n) + n) % n;
+    const layers = extra > 0.001 ? 3 : 1;
+    ctx.save();
+    for (let layer = 0; layer < layers; layer++) {
+      const depth = wrap(2.4 + layer * 1.4 - zCamera - 0.24, 4.2) + 0.24;
+      const scale = cam ? 2.4 / depth : 1;
+      const fade = Math.max(
+        0,
+        Math.min(1, (depth - 0.24) * 3, (4.44 - depth) * 2),
+      );
+      const strength = layer ? extra * 0.32 : 1;
+      const cell = Math.round(yCamera / 1.6);
+      const tiles =
+        cam && (xCamera || yCamera || zCamera)
+          ? [cell - 1, cell, cell + 1]
+          : [0];
+      for (const tile of tiles)
+        for (let line = 0; line < 24; line++) {
+          ctx.beginPath();
+          for (let px = 0; px <= this.w + 8; px += 8) {
+            const wx =
+              (px - this.w / 2) / scale + this.w / 2 + xCamera * this.w;
+            const wy =
+              this.h * 0.58 +
+              Math.sin(
+                (wx / this.w) * 5.2 +
+                  this.phase * 0.32 +
+                  line * 0.075 +
+                  layer * 0.7,
+              ) *
+                this.h *
+                0.17 +
+              Math.sin((wx / this.w) * 9 - this.phase * 0.22) * this.h * 0.03 +
+              line * 9;
+            const py =
+              this.h / 2 +
+              (wy - this.h / 2 - yCamera * this.h + tile * this.h * 1.6) *
+                scale;
+            if (!px) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.strokeStyle = `rgba(240,200,133,${(0.13 - line * 0.0035) * fade * strength})`;
+          ctx.lineWidth = Math.max(0.55, Math.min(1.5, 0.8 * Math.sqrt(scale)));
+          ctx.stroke();
+        }
+    }
+    ctx.restore();
+  }
+  setZen(active) {
+    this.zen = active;
+    // Enter the exact current theme, without replacing or restarting its animation.
+    this.camera = { x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0, vz: 0 };
+    document.querySelector(".aurora-background").style.transform = "";
+    document.getElementById("flight-layer")?.toggleAttribute("hidden", !active);
+    this.sync();
+  }
+  move(dx = 0, dy = 0, dz = 0) {
+    if (!this.zen) return;
+    const cam = this.camera;
+    cam.tx += dx;
+    cam.ty += dy;
+    cam.tz += dz;
+    cam.vz = this.reduced?.matches
+      ? 0
+      : Math.max(-12, Math.min(12, cam.vz + dz * 5));
+    if (this.reduced?.matches) this.draw(0);
+  }
+  advanceCamera(d) {
+    const cam = this.camera;
+    if (!cam) return;
+    const blend = d ? 1 - Math.exp(-d * 8) : 1;
+    cam.tz += cam.vz * d;
+    cam.vz *= Math.exp(-d * 2.8);
+    if (Math.abs(cam.vz) < 0.002) cam.vz = 0;
+    cam.x += (cam.tx - cam.x) * blend;
+    cam.y += (cam.ty - cam.y) * blend;
+    cam.z += (cam.tz - cam.z) * blend;
+    const amount = Math.min(
+      1,
+      Math.abs(cam.x) + Math.abs(cam.y) + Math.abs(cam.z),
+    );
+    const bg = document.querySelector(".aurora-background");
+    if (bg)
+      bg.style.transform = amount
+        ? `translate3d(${-Math.sin(cam.x) * 2}vw,${-Math.sin(cam.y) * 2}vh,0) scale(${1 + amount * 0.12})`
+        : "";
+  }
+  drawPlanets() {
+    const cam = this.camera,
+      wrap = (v, n) => ((v % n) + n) % n;
+    const scale = Math.min(this.w, this.h) * 0.9;
+    document.querySelectorAll(".flight-planet").forEach((node, i) => {
+      const z = wrap(i * 1.53 + 1.4 - cam.z, 8) + 0.45;
+      const x = wrap((i % 2 ? 0.58 : -0.34) - cam.x + 2, 4) - 2;
+      const y = wrap(((i % 3) - 1) * 0.7 - cam.y + 2, 4) - 2;
+      const px = this.w / 2 + (x * scale) / z,
+        py = this.h * 0.48 + (y * scale) / z;
+      const visible =
+        Math.abs(cam.z) > 0.04 &&
+        z > 0.85 &&
+        z < 2.8 &&
+        px > 95 &&
+        px < this.w - 95 &&
+        py > 140 &&
+        py < this.h - 140;
+      node.style.opacity = visible
+        ? String(Math.min(1, (z - 0.85) * 2, (2.8 - z) * 2))
+        : "0";
+      node.style.pointerEvents = visible ? "auto" : "none";
+      node.tabIndex = visible ? 0 : -1;
+      node.setAttribute("aria-hidden", String(!visible));
+      node.style.transform = `translate(-50%,-50%) translate(${px}px,${py}px) scale(${Math.min(1, 1.5 / z)})`;
+    });
+  }
+  startPreviews() {
+    cancelAnimationFrame(this.previewFrame);
+    const canvases = [...document.querySelectorAll("canvas[data-preview]")];
+    const draw = (time) => {
+      if (!document.getElementById("theme-dialog").open || document.hidden)
+        return;
+      for (const canvas of canvases) {
+        const c = canvas.getContext("2d");
+        if (!c) continue;
+        const id = canvas.dataset.preview,
+          w = canvas.width,
+          h = canvas.height,
+          t = this.reduced.matches ? 0 : time / 1000;
+        c.clearRect(0, 0, w, h);
+        const g = c.createLinearGradient(0, 0, w, h);
+        g.addColorStop(
+          0,
+          id === "golden" ? "#512912" : id === "moon" ? "#193759" : "#1d3370",
+        );
+        g.addColorStop(
+          0.5,
+          id === "golden" ? "#180d21" : id === "moon" ? "#191237" : "#3b124b",
+        );
+        g.addColorStop(1, "#04050e");
+        c.fillStyle = g;
+        c.fillRect(0, 0, w, h);
+        if (id === "golden") {
+          c.strokeStyle = "#eac59080";
+          for (let j = 0; j < 9; j++) {
+            c.beginPath();
+            for (let x = 0; x < w; x += 5) {
+              const y = 70 + Math.sin(x / 45 + t * 0.5 + j * 0.1) * 25 + j * 5;
+              x ? c.lineTo(x, y) : c.moveTo(x, y);
+            }
+            c.stroke();
+          }
+        }
+        for (let i = 0; i < 38; i++) {
+          const x =
+              (i * 61.7 + Math.sin(i) * 8 + t * ((i % 3) - 1) * 5 + w) % w,
+            y = (((i * 31.3 - t * (15 + (i % 20))) % h) + h) % h;
+          c.globalAlpha = 0.4 + (Math.sin(t + i) + 1) * 0.25;
+          c.fillStyle =
+            id === "golden"
+              ? "#f2d6a4"
+              : id === "moon"
+                ? "#d3e8ff"
+                : `hsl(${(i * 51) % 360} 90% 72%)`;
+          c.beginPath();
+          c.ellipse(
+            x,
+            y,
+            id === "moon" && i % 4 === 0 ? 3 : 1.5,
+            id === "moon" && i % 4 === 0 ? 1 : 1.5,
+            t * 0.2,
+            0,
+            Math.PI * 2,
+          );
+          c.fill();
+        }
+        c.globalAlpha = 0.4;
+        c.font = "11px system-ui";
+        c.fillStyle = "#eee";
+        c.fillText("syolana.com", 11, 125);
+        c.globalAlpha = 1;
+      }
+      if (!this.reduced.matches)
+        this.previewFrame = requestAnimationFrame(draw);
+    };
+    draw(0);
   }
   sync() {
+    if (!this.reduced) return;
     cancelAnimationFrame(this.frame);
     this.last = 0;
     const stopped =
       document.hidden || this.paused || this.reduced.matches || this.blocked;
     document.body.classList.toggle("paused", stopped);
-    document.querySelector("#motion").textContent = this.paused
-      ? "Включить анимацию"
-      : "Остановить анимацию";
     document.querySelectorAll("video[data-motion]").forEach((v) => {
       if (stopped || v.dataset.manualPause === "true") v.pause();
       else v.play().catch(() => {});
@@ -295,7 +523,13 @@ export class ThemeEngine {
       if (!document.hidden) this.draw(0);
       return;
     }
+    let painted = 0;
     const tick = (t) => {
+      if (t - painted < (this.w <= 700 ? 1000 / 30 : 1000 / 45)) {
+        this.frame = requestAnimationFrame(tick);
+        return;
+      }
+      painted = t;
       const delta = this.last ? Math.min((t - this.last) / 1000, 0.05) : 1 / 60;
       this.last = t;
       this.draw(delta);

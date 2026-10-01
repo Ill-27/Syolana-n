@@ -18,17 +18,21 @@ import { Player } from "./player.js";
 import { API } from "./api.js";
 import { lessons } from "./content.js";
 import { Studio } from "./studio.js";
+import { renderFeed, feedEditor } from "./feed.js";
+import { setupDiscovery } from "./discovery.js";
+import { SceneAudio } from "./scene-audio.js";
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
   $("page").focus();
   $("page").scrollIntoView();
 };
-const api = await new API().init();
+const api = new API();
+const apiReady = api.init();
 let config;
 try {
-  config = await fetch("config.json", { cache: "no-cache" }).then((r) =>
-    r.json(),
-  );
+  config = await fetch("config.json", {
+    signal: AbortSignal.timeout(6000),
+  }).then((r) => r.json());
 } catch {
   config = { songs: [], banner: {}, plan: { priceRub: 1000, trialDays: 7 } };
 }
@@ -38,6 +42,8 @@ theme
   .init()
   .catch(() => notify("Фон временно недоступен. Содержимое сайта доступно."));
 const studio = new Studio(api, route);
+const sceneAudio = new SceneAudio(config.sceneAudio || {}, player);
+setupDiscovery({ theme, zen, player });
 let cleanup = () => {};
 let routeToken = 0;
 let siteTimer = 0;
@@ -80,6 +86,7 @@ function zen(active) {
   );
   $("zen-toggle").title = active ? "Вернуть интерфейс" : "Скрыть интерфейс";
   $("content-shell").inert = active;
+  theme.setZen?.(active);
   document.querySelectorAll("dialog[open]").forEach((d) => d.close());
   if (active) $("zen-toggle").focus();
 }
@@ -124,74 +131,99 @@ fullscreen.onclick = async () => {
 };
 document.addEventListener("fullscreenchange", fullUpdate);
 document.addEventListener("webkitfullscreenchange", fullUpdate);
+function motionVideo(video) {
+  video.muted = true;
+  video.defaultMuted = true;
+  video.autoplay = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.setAttribute("muted", "");
+  video.setAttribute("playsinline", "");
+  video.preload = "metadata";
+  video.dataset.motion = "true";
+  if (
+    !document.hidden &&
+    !matchMedia("(prefers-reduced-motion: reduce)").matches
+  )
+    video.play().catch(() => {
+      video.controls = true;
+    });
+}
 function renderBanner() {
   const c = config.banner || {};
-  const txt = el("div");
-  txt.append(
-    el("p", "eyebrow", c.eyebrow || "SYOLANA"),
-    el("h2", "", c.title || "У каждой истории — свой мир"),
-    el("p", "", c.description || ""),
-  );
-  const row = el("div", "row");
-  (c.links || []).forEach((x) =>
-    row.append(link(x.label, x.href, "btn small")),
-  );
-  txt.append(row);
-  $("banner").replaceChildren(txt);
+  const visual = el("div", "banner-orb");
   const media = c.media || {};
   const src = safeURL(media.src, { media: true });
-  if (src) {
-    const m = el(media.type === "video" ? "video" : "img", "banner-media");
-    m.src = src;
-    if (m.tagName === "IMG") {
-      m.alt = media.alt || "Syolana";
-      m.decoding = "async";
-      $("banner").append(m);
-    } else {
-      m.muted = true;
-      m.loop = true;
-      m.playsInline = true;
-      m.preload = "metadata";
-      m.dataset.motion = "true";
-      const p = safeURL(media.poster, { media: true });
-      if (p) m.poster = p;
-      const wrap = el("div", "banner-video");
-      const toggle = button(
-        "Ⅱ",
-        () => {
-          m.dataset.manualPause = String(!m.paused);
-          if (m.paused)
-            m.play().catch(() =>
-              notify("Нажмите ещё раз, чтобы запустить видео."),
-            );
-          else m.pause();
-        },
-        "icon-btn",
-      );
-      toggle.setAttribute("aria-label", "Приостановить видео баннера");
-      m.addEventListener("play", () => {
-        toggle.textContent = "Ⅱ";
-        toggle.setAttribute("aria-label", "Приостановить видео баннера");
-      });
-      m.addEventListener("pause", () => {
-        toggle.textContent = "▶";
-        toggle.setAttribute("aria-label", "Воспроизвести видео баннера");
-      });
-      wrap.append(m, toggle);
-      $("banner").append(wrap);
-      if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
-        m.play().catch(() => {});
-    }
-    m.addEventListener("error", () => m.remove());
+  const m = el(
+    src && (media.type === "video" || /\.mp4(?:[?#]|$)/i.test(src))
+      ? "video"
+      : "img",
+    "banner-media",
+  );
+  m.src = src || "assets/logo.svg";
+  if (m.tagName === "IMG") {
+    m.alt = media.alt || "Syolana — вселенная творчества";
+    m.decoding = "async";
   } else {
-    const art = el("div", "banner-art");
-    art.setAttribute("aria-hidden", "true");
-    const img = el("img");
-    img.src = "assets/logo.svg";
-    img.alt = "";
-    art.append(img);
-    $("banner").append(art);
+    const poster = safeURL(media.poster, { media: true });
+    if (poster) m.poster = poster;
+    motionVideo(m);
   }
+  m.addEventListener(
+    "error",
+    () => {
+      const fallback = el("img");
+      fallback.src = "assets/logo.svg";
+      fallback.alt = "Syolana";
+      visual.replaceChildren(fallback);
+    },
+    { once: true },
+  );
+  visual.append(m);
+  const txt = el("div", "banner-copy");
+  txt.append(
+    el("p", "eyebrow", c.eyebrow || "SYOLANA · ВСЕЛЕННАЯ ТВОРЧЕСТВА"),
+    el("h2", "", c.title || "Ваше творчество. Целая вселенная."),
+    el(
+      "p",
+      "banner-description",
+      c.description || "Единый иммерсивный дизайн сайтов.",
+    ),
+  );
+  const features = el("div", "banner-features");
+  (c.features || ["Дизайн сайтов", "Книги", "Языки", "Песни"]).forEach(
+    (s, i) => {
+      const item = el("div");
+      item.append(
+        el("span", "feature-number", String(i + 1).padStart(2, "0")),
+        el("span", "", s),
+      );
+      features.append(item);
+    },
+  );
+  txt.append(
+    features,
+    el(
+      "p",
+      "banner-invitation",
+      c.invitation || "Получите свой сайт и 7 дней бесплатно для тест-драйва.",
+    ),
+  );
+  const row = el("div", "row");
+  (c.links || []).forEach((x, i) => {
+    if (x.href === "#explore")
+      row.append(button(x.label, () => zen(true), "btn"));
+    else row.append(link(x.label, x.href, "btn " + (!i ? "primary" : "")));
+  });
+  txt.append(
+    row,
+    el(
+      "p",
+      "banner-footnote",
+      "Сначала готовый сайт и тест-драйв. Затем — ваше решение о сотрудничестве.",
+    ),
+  );
+  $("banner").replaceChildren(visual, txt);
 }
 renderBanner();
 function heading(kicker, title, text) {
@@ -209,8 +241,7 @@ function card(book, slug) {
     if (video) {
       img.muted = true;
       img.playsInline = true;
-      img.controls = true;
-      img.preload = "metadata";
+      motionVideo(img);
       img.setAttribute("aria-label", "Буктрейлер: " + book.title);
     } else {
       img.alt = "Обложка: " + book.title;
@@ -246,58 +277,66 @@ function art(book) {
   return a;
 }
 async function home(token) {
-  const books = await loadCatalog();
+  $("page").append(
+    heading(
+      "ДИЗАЙН · КНИГИ · ЯЗЫКИ · ПЕСНИ",
+      "Лента вселенной",
+      "Новые темы, истории, песни и творческие знакомства. Всё, чем живёт Syolana.",
+    ),
+  );
+  const tabs = el("div", "feed-filters");
+  const list = el("div", "feed-list");
+  let items = [],
+    selected = "Все";
+  function draw() {
+    list.replaceChildren();
+    renderFeed(
+      list,
+      items.filter((p) => selected === "Все" || p.category === selected),
+    );
+  }
+  ["Все", "Дизайн", "Книги", "Языки", "Песни"].forEach((name) => {
+    const b = button(
+      name,
+      () => {
+        selected = name;
+        tabs
+          .querySelectorAll("button")
+          .forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        draw();
+      },
+      "btn small",
+    );
+    b.setAttribute("aria-pressed", String(name === "Все"));
+    tabs.append(b);
+  });
+  $("page").append(tabs, list);
+  try {
+    const response = await fetch(config.feed?.file || "feed.json");
+    if (!response.ok) throw Error();
+    items = await response.json();
+    if (!Array.isArray(items)) items = [];
+  } catch {
+    items = [];
+  }
   if (token !== routeToken) return;
-  const h = heading(
-    "КНИГИ · МУЗЫКА · ТВОРЧЕСТВО",
-    "Место, где истории оживают.",
-    "Читайте в своей атмосфере. Находите новые голоса. Создавайте пространство, в котором хочется остаться.",
+  draw();
+  apiReady.then(async () => {
+    if (!api.online || token !== routeToken) return;
+    try {
+      const data = await api.request("feed");
+      if (token === routeToken && data.posts.length) {
+        items = data.posts;
+        draw();
+      }
+    } catch {}
+  });
+  const explore = el("section", "strip glass");
+  explore.append(
+    el("h3", "", "Творчество с полным погружением"),
+    button("Остаться среди звёзд", () => zen(true), "btn"),
   );
-  const title = h.querySelector("h1");
-  title.replaceChildren(
-    document.createTextNode("Место, где истории "),
-    el("em", "", "оживают."),
-  );
-  const actions = el("div", "row");
-  actions.append(
-    link("Начать читать", "#/library", "btn primary"),
-    button("Побыть среди звёзд", () => zen(true)),
-  );
-  h.append(actions);
-  $("page").append(h);
-  const section = el("div", "section-heading");
-  section.append(
-    el("h2", "", "Откройте первую историю"),
-    link("Все книги", "#/library", "text-link"),
-  );
-  $("page").append(section);
-  const grid = el("div", "grid");
-  books.slice(0, 3).forEach((b) => grid.append(card(b)));
-  const c = el("article", "card");
-  c.append(
-    el("p", "eyebrow", "ТВОРЧЕСКАЯ СТУДИЯ"),
-    el("h3", "", "А здесь может быть ваш мир"),
-    el(
-      "p",
-      "",
-      "Своя страница, каталог работ и книги с атмосферой. Всё наполнение — через удобный редактор.",
-    ),
-    link("Открыть студию", "#/studio", "btn"),
-  );
-  grid.append(c);
-  $("page").append(grid);
-  const strip = el("section", "strip glass");
-  const txt = el("div");
-  txt.append(
-    el("h3", "", "Другая история. Другой язык."),
-    el(
-      "p",
-      "",
-      "Английский, испанский и французский — первые бесплатные уроки A1.",
-    ),
-  );
-  strip.append(txt, link("Выбрать язык", "#/languages"));
-  $("page").append(strip);
+  $("page").append(explore);
 }
 async function library(token) {
   $("page").append(
@@ -305,6 +344,13 @@ async function library(token) {
       "БИБЛИОТЕКА",
       "Найдите свою историю",
       "Начните с короткого текста и настройте чтение под себя.",
+    ),
+  );
+  $("page").append(
+    el(
+      "p",
+      "notice",
+      "Библиотека Syolana предназначена для собственных произведений и текстов с проверенными правами на использование, в том числе из общественного достояния. Права на переводы, иллюстрации и записи проверяются отдельно. Книги по внешним ссылкам размещают владельцы соответствующих сайтов. Если вы заметили нарушение, подайте жалобу — мы рассмотрим обращение.",
     ),
   );
   const search = el("input", "search-input");
@@ -346,233 +392,277 @@ async function library(token) {
     ),
   );
 }
-function languages(lang = "es", tab = "rules") {
-  if (!lessons[lang]) lang = "es";
+function languages(lang = "en") {
+  if (!lessons[lang]) lang = "en";
   const data = lessons[lang];
   $("page").append(
     heading(
-      "ЯЗЫКИ",
-      "Открывайте мир через слова",
-      "Правила, слова и практика. Начните с первого бесплатного урока.",
+      "ЯЗЫКИ · АВТОРСКАЯ ПРОГРАММА",
+      "Другой язык. Больше вашего мира.",
+      "От первых слов к самостоятельному общению: слушать, понимать, говорить и возвращаться к выученному.",
     ),
   );
-  const tabs = el("div", "pill-tabs");
-  for (const [k, l] of Object.entries(lessons)) {
-    const a = link(l.name, "#/languages/" + k, "btn");
-    a.setAttribute("aria-current", k === lang ? "page" : "false");
+  const intro = el("section", "card stack language-intro");
+  intro.append(
+    el("span", "badge", "НОВЫЕ КУРСЫ В РАЗРАБОТКЕ"),
+    el("h2", "", "Пусть язык звучит в вашей жизни"),
+    el(
+      "p",
+      "",
+      "Мы готовим последовательные курсы A1–B2: правила, слова и выражения в понятном контексте, тренажёры и система повторений. Цели каждого уровня сверяем с CEFR и программой конкретного языка.",
+    ),
+    el(
+      "p",
+      "",
+      "Первый полный курс английского A1 будет бесплатным для всех. Познакомьтесь с подходом Syolana и выберите, какой мир открыть следующим.",
+    ),
+  );
+  $("page").append(intro);
+  const methods = el("div", "grid two language-methods");
+  for (const [title, text] of [
+    [
+      "Слушайте и понимайте",
+      "В готовящихся уроках — озвучка языка с русским переводом и объяснениями. Планируем около 60 минут на день; без русского — около 30 минут. Текст будет следовать за озвучкой, чтобы можно было заниматься без постоянных нажатий.",
+    ],
+    [
+      "Возвращайтесь к важному",
+      "Новые слова и конструкции встречаются снова в разных ситуациях. Регулярное повторение и короткие проверки помогут увидеть, что уже освоено, а к чему ещё стоит вернуться.",
+    ],
+    [
+      "Пробуйте сами",
+      "Отвечайте вслух, читайте и записывайте фразы от руки — стилусом или в тетради. Аудио станет частью занятий, а задания на речь и письмо помогут применять язык самостоятельно.",
+    ],
+    [
+      "Замечайте свой прогресс",
+      "В конце уровня — внутренний пробный экзамен Syolana с заданиями на понимание, речь и письмо. Книги и фильмы будем подбирать по навыкам, которые вы уже подтвердили на практике.",
+    ],
+  ]) {
+    const card = el("article", "card stack");
+    card.append(el("h3", "", title), el("p", "", text));
+    methods.append(card);
+  }
+  $("page").append(methods);
+  const tabs = el("div", "pill-tabs language-tabs");
+  for (const [key, value] of Object.entries(lessons)) {
+    const a = link(value.name, "#/languages/" + key, "btn");
+    a.setAttribute("aria-current", key === lang ? "page" : "false");
     tabs.append(a);
   }
-  $("page").append(tabs);
-  const levels = el("div", "grid two");
-  const first = el("article", "card");
-  first.append(
-    el("span", "badge", "A1 · БЕСПЛАТНО"),
-    el("h2", "", data.native),
-    el(
-      "p",
-      "muted",
-      lang === "en"
-        ? "Вводный урок. " + data.title
-        : "Правила, словарь и практика из библиотеки Syolana",
+  $("page").append(
+    heading(
+      "ВЫБЕРИТЕ СВОЙ ЯЗЫК",
+      data.native,
+      "Стоимость отдельного курса каждого уровня после его выхода.",
     ),
+    tabs,
   );
-  const options = el("div", "pill-tabs");
-  for (const [k, label] of Object.entries({
-    rules: "Правила",
-    words: "Слова",
-    practice: "Практика",
+  const levels = el("div", "grid two language-levels");
+  const prices = config.languageProgram?.pricesRub || {
+    A1: 500,
+    A2: 1000,
+    B1: 2000,
+    B2: 4000,
+  };
+  for (const [level, description] of Object.entries({
+    A1: "Первое знакомство с языком",
+    A2: "Больше уверенности в повседневном общении",
+    B1: "Самостоятельность и новые темы",
+    B2: "Развёрнутая речь и сложные тексты",
   })) {
-    const a = link(label, "#/languages/" + lang + "/" + k, "btn small");
-    a.setAttribute("aria-current", tab === k ? "page" : "false");
-    options.append(a);
+    const card = el("article", "card stack language-level");
+    const free = lang === "en" && level === "A1";
+    card.dataset.level = level;
+    card.append(
+      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : "ОТДЕЛЬНЫЙ КУРС"),
+      el("h3", "course-level", level),
+      el("p", "", description),
+      el(
+        "p",
+        "course-price",
+        free ? "Бесплатно" : Number(prices[level]).toLocaleString("ru") + " ₽",
+      ),
+      el("p", "fine", "Готовится к выпуску"),
+    );
+    levels.append(card);
   }
-  first.append(options);
-  const paid = el("article", "card locked-level");
-  paid.append(
-    el("span", "badge", "A2 · B1 · B2"),
-    el("h3", "", "Следующие уровни"),
-    el(
-      "p",
-      "",
-      "Готовятся к публикации. Они появятся в подписке после завершения материалов.",
-    ),
-    link("О платформе", "#/join", "text-link"),
-  );
-  if (lang === "es") {
-    paid.querySelector("p").textContent =
-      "Правила A2, словарь A2 и правила B1–B2 доступны с активной подпиской после запуска кабинетов.";
-    for (const [key, title] of [
-      ["a2/rules", "A2 · Правила"],
-      ["a2/words", "A2 · Слова"],
-      ["b1/rules", "B1 · Правила"],
-      ["b2/rules", "B2 · Правила"],
-    ])
-      paid.append(link(title, "#/lesson/es/" + key, "btn small"));
-  }
-  levels.append(first, paid);
   $("page").append(levels);
-  if (lessonFiles[lang + "/a1/" + tab]) {
-    lessonFrame(lang + "/a1/" + tab);
-    return;
-  }
-  const lesson = el("section", "lesson glass");
-  lesson.style.borderRadius = "var(--radius)";
-  lesson.append(
-    el(
-      "h2",
-      "",
-      ({ rules: "Правила", words: "Слова", practice: "Практика" }[tab] ||
-        "Правила") +
-        " · " +
-        data.native,
-    ),
-  );
-  if (tab === "words") {
-    const table = el("table", "vocabulary");
-    const thead = el("thead");
-    const tr = el("tr");
-    tr.append(el("th", "", "Слово"), el("th", "", "Перевод"));
-    thead.append(tr);
-    const tbody = el("tbody");
-    data.words.forEach((w) => {
-      const row = el("tr");
-      const original = el("td", "", w[0]);
-      original.lang = lang;
-      row.append(original, el("td", "", w[1]));
-      tbody.append(row);
-    });
-    table.append(thead, tbody);
-    lesson.append(table);
-  } else if (tab === "practice") {
-    const form = el("form");
-    data.questions.forEach((q, i) => {
-      const field = el("fieldset", "question");
-      field.append(el("legend", "", q.q));
-      q.options.forEach((v, j) => {
-        const label = el("label");
-        const inp = el("input");
-        inp.type = "radio";
-        inp.name = "q" + i;
-        inp.value = j;
-        inp.required = true;
-        label.append(inp, document.createTextNode(v));
-        field.append(label);
-      });
-      form.append(field);
-    });
-    const submit = el("button", "btn primary", "Проверить ответы");
-    submit.type = "submit";
-    const result = el("p", "notice");
-    result.hidden = true;
-    result.setAttribute("role", "status");
-    form.append(submit, result);
-    form.onsubmit = (e) => {
-      e.preventDefault();
-      const f = new FormData(form);
-      let correct = 0;
-      const errors = [];
-      data.questions.forEach((q, i) => {
-        if (Number(f.get("q" + i)) === q.answer) correct++;
-        else errors.push(i + 1 + ". " + q.options[q.answer]);
-      });
-      result.hidden = false;
-      result.textContent =
-        "Верно: " +
-        correct +
-        " из " +
-        data.questions.length +
-        ". " +
-        (errors.length
-          ? "Правильные ответы: " + errors.join("; ")
-          : "Отлично! Вернитесь к этому уроку завтра.");
-      setPref("lesson:" + lang, correct);
-    };
-    lesson.append(form);
-  } else {
-    lesson.append(el("p", "", data.rule));
-    data.examples.forEach((p) => lesson.append(el("p", "", p)));
-  }
-  lesson.append(
+  const gift = el("section", "strip glass stack language-gift");
+  gift.append(
+    el("span", "badge", "ПОДАРОК ПАРТНЁРАМ"),
+    el("h2", "", "Ваш сайт. И ещё один язык."),
     el(
       "p",
-      "notice",
-      "Это первый урок, а не полный курс A1. Для освоения уровня нужны последующие темы, слушание, разговорная и письменная практика.",
+      "",
+      "При действующей подписке на сайт Syolana за 1 000 ₽ в месяц — один язык на выбор в подарок. Доступ к его курсам A1–B2 открывается по мере выхода уровней. Английский A1 остаётся бесплатным для всех.",
+    ),
+    link("Хочу такой же сайт", "#/join", "btn primary"),
+  );
+  $("page").append(gift);
+  const author = el("section", "card stack language-author");
+  author.append(
+    el("h3", "", "Из личного опыта — в общую практику"),
+    el(
+      "p",
+      "",
+      "Автор Syolana знакома с более чем 20 языками и развивает программу на основе собственных занятий и опыта обучения близких. В её основе — регулярное слушание, понятные объяснения, повторение и письмо от руки.",
+    ),
+    el(
+      "p",
+      "fine",
+      "Полные курсы и итоговые задания сейчас создаются. Покупки откроются после публикации программы и условий доступа к конкретному уровню.",
     ),
   );
-  $("page").append(lesson);
+  $("page").append(author);
+}
+function songsPage() {
+  $("page").append(
+    heading(
+      "ПЕСНИ · ТВОРЧЕСТВО БЕЗ ГРАНИЦ",
+      "У каждой песни есть свой мир",
+      "Слушайте. Вдохновляйтесь. Открывайте историю за мелодией.",
+    ),
+  );
+  const intro = el("section", "card stack");
+  intro.append(
+    el("h2", "", "Творчество, которое звучит"),
+    el(
+      "p",
+      "",
+      "Мы создаём с помощью ИИ песни на разных языках — по книгам и другим творческим проектам. Общий плеер Syolana соединяет музыку, живые темы и новые знакомства с авторами.",
+    ),
+    el(
+      "p",
+      "",
+      "У каждой записи есть ссылка на её источник: книгу, сайт, картину или другое творчество. Если песня отозвалась — шагните в мир, который её вдохновил.",
+    ),
+    el(
+      "p",
+      "",
+      "Каждому партнёру с подпиской на сайт — одна песня по его творчеству в подарок после первой оплаты. Тему и срок согласуем вместе; песня появится в общем плеере со ссылкой на проект.",
+    ),
+    link("Получить сайт и песню", "#/join", "btn primary"),
+  );
+  $("page").append(
+    intro,
+    heading(
+      "СЕЙЧАС В ПЛЕЕРЕ",
+      "Начните с мелодии",
+      "Коллекция пополняется: включите любую из опубликованных песен.",
+    ),
+  );
+  const list = el("div", "grid two songs-grid");
+  player.songs.forEach((song, i) => {
+    const card = el("article", "card stack");
+    card.append(
+      el("h3", "", song.title),
+      el("p", "muted", song.sourceTitle || "Творческий проект"),
+      button("Слушать песню", () => player.select(i, true), "btn primary"),
+    );
+    if (song.sourceUrl)
+      card.append(
+        link("Открыть источник вдохновения", song.sourceUrl, "text-link"),
+      );
+    list.append(card);
+  });
+  $("page").append(list);
 }
 function join() {
-  const h = heading(
-    "ДЛЯ ПИСАТЕЛЕЙ И ДРУГИХ АВТОРОВ",
-    "Ваше творчество заслуживает своего пространства.",
-    "Каталог, публикации и чтение с атмосферой — на общей платформе Syolana.",
+  $("page").append(
+    heading(
+      "ХОЧУ ТАКОЙ ЖЕ САЙТ",
+      "Ваше дело заслуживает красивого мира.",
+      "Для писателей, музыкантов, фотографов, дизайнеров, блогеров, турагентов и всех, кто создаёт своё.",
+    ),
   );
-  $("page").append(h);
   const grid = el("div", "grid two");
   const offer = el("section", "card stack");
   offer.append(
-    el("span", "badge", "ПИЛОТ · ПЕРВЫЕ АВТОРЫ"),
-    el("h2", "", "Начните с одной истории"),
+    el("span", "badge", "ТЕСТ-ДРАЙВ · ПЕРВЫЕ ПАРТНЁРЫ"),
+    el("h2", "", "Сначала попробуйте."),
   );
   const price = el(
     "p",
     "price",
     Number(config.plan.priceRub || 1000).toLocaleString("ru") + " ₽",
   );
-  price.append(el("small", "", " / месяц"));
+  price.append(el("small", "", " / месяц после тест-драйва"));
   offer.append(
     price,
     el(
       "p",
       "",
-      "7 дней знакомства после одобрения первой страницы. Банковская карта для пробного периода не нужна.",
+      "Готовим ваш сайт, открываем 7 дней бесплатного тест-драйва. Предоплата и банковская карта для знакомства не нужны. Решение о продолжении вы принимаете после тест-драйва.",
     ),
   );
   const ul = el("ul", "feature-list");
   [
-    "Личный сайт и редактор с телефона",
-    "Общие темы, баннер и плеер Syolana",
-    "Книги по главам и плавная смена цвета",
-    "Цена на 12 месяцев с первой оплаты",
-    "Доступ к опубликованным языковым материалам",
+    "Общие темы, логотип, баннер, кнопки и плеер Syolana — как на этом сайте",
+    "Ваши тексты, ссылки, каталог работ и лента публикаций",
+    "Обновления оформления для всех подключённых сайтов",
+    "1 000 ₽ в месяц на 12 месяцев с первой оплаты для первых партнёров",
+    "Одна песня по вашему творчеству в подарок после первой оплаты: тему и срок согласуем заранее",
+    "Один язык на выбор в подарок при активной подписке: курсы A1–B2 по мере выхода. Английский A1 будет бесплатным для всех",
   ].forEach((s) => ul.append(el("li", "", s)));
-  offer.append(ul, link("Создать черновик сайта", "#/studio", "btn primary"));
+  const contact = el("a", "btn primary", "Обсудить мой сайт");
+  contact.href =
+    "mailto:" +
+    config.contactEmail +
+    "?subject=" +
+    encodeURIComponent("Хочу сайт Syolana · 7 дней тест-драйва");
+  offer.append(ul, contact);
   grid.append(offer);
   const details = el("section", "card stack");
   details.append(
-    el("h3", "", "Прозрачные условия"),
+    el("h3", "", "Общий дизайн. Ваш характер."),
     el(
       "p",
       "",
-      "Пилот рассчитан на небольшие авторские сайты: до 50 публикаций и 200 МБ загруженных медиа. Видео — до 20 МБ на файл; для больших роликов можно добавить внешнюю ссылку.",
+      "Вы получаете сайт на основе единого оформления Syolana. Вместе подбираем структуру, разделы и первые материалы под ваше дело. Не нужно заново программировать каждую кнопку: общая система обновляется для всех.",
     ),
     el(
       "p",
       "",
-      "На страницах остаются логотип, водяные знаки и баннер Syolana. Публикации и изменения профиля становятся видны после одобрения.",
+      "Публикации отправляются через редактор и появляются после проверки правил платформы. Политическая и религиозная агитация, оскорбления, материалы 18+ и противоправный контент не подходят формату Syolana. Решение можно обсудить с поддержкой.",
     ),
     el(
       "p",
       "",
-      "Когда доступ заканчивается, опубликованные тексты остаются в простом оформлении. Свои материалы можно выгрузить из студии.",
+      "На старте: до 50 публикаций, 200 МБ загруженных медиа и 20 МБ на файл. Объёмные видео можно разместить на внешнем видеосервисе и добавить ссылку. Другие объёмы согласуем до подключения.",
     ),
     el(
       "p",
       "",
-      "Песня по вашей книге обсуждается отдельно: сюжет, права и срок выпуска согласуются до начала работы. Реклама не гарантирует просмотры или продажи.",
+      "После окончания доступа оформление, плеер и элементы Syolana отключаются. Опубликованное содержание сохраняется в простом виде; тексты и медиа можно выгрузить. Независимый домен и хостинг обсуждаются отдельно.",
     ),
-    link("Прочитать условия", "#/terms", "text-link"),
+    link("Вход в редактор моего сайта", "#/studio", "btn"),
+    link("Условия тест-драйва", "#/terms", "text-link"),
   );
   grid.append(details);
   $("page").append(grid);
-  if (!api.online || !api.settings.paymentsEnabled)
-    $("page").append(
-      el(
-        "p",
-        "notice",
-        "Онлайн-оплата пока не подключена. Сейчас можно познакомиться с интерфейсом; платёжные данные не запрашиваются.",
-      ),
-    );
+  const books = el("section", "card stack");
+  books.style.marginTop = "24px";
+  books.append(
+    el("h3", "", "Для книг — отдельная работа с атмосферой"),
+    el(
+      "p",
+      "",
+      "Обложку, главы, смену цвета и звуковые сцены готовим и проверяем отдельно. Перед началом согласуем права, объём, стоимость и сроки. Это не обещание безошибочной автоматической обработки всей книги.",
+    ),
+    el(
+      "p",
+      "",
+      "Индивидуальные закрытые книги обсуждаются отдельно: размещение возможно только при наличии прав и с учётом договоров автора с издательствами и книжными площадками.",
+    ),
+  );
+  $("page").append(books);
+  const security = el(
+    "p",
+    "notice",
+    "Мы не требуем переводов до создания сайта и завершения бесплатного тест-драйва. Сверяйте адрес сайта и контакт " +
+      config.contactEmail +
+      ". Оплачивайте только согласованный счёт; чек выдаётся после оплаты.",
+  );
+  $("page").append(security);
 }
 async function publicSite(slug, token) {
   const data = await api.request("public/" + encodeURIComponent(slug));
@@ -589,9 +679,16 @@ async function publicSite(slug, token) {
     head.append(link("Связаться с автором", data.site.link, "text-link"));
   $("page").append(head);
   const grid = el("div", "grid two");
-  data.posts.forEach((p) =>
-    grid.append(card({ ...p, author: data.site.name }, slug)),
+  data.posts
+    .filter((p) => p.kind === "book" || p.kind === "portfolio")
+    .forEach((p) => grid.append(card({ ...p, author: data.site.name }, slug)));
+  const feed = el("div", "feed-list");
+  renderFeed(
+    feed,
+    data.posts.filter((p) => p.kind !== "book" && p.kind !== "portfolio"),
+    { slug },
   );
+  $("page").append(feed);
   if (!data.posts.length) grid.append(el("p", "empty", "Публикаций пока нет."));
   $("page").append(grid);
   if (!data.active)
@@ -619,6 +716,7 @@ function applyEntitlement(data) {
   theme.setBlocked(!data.active);
   if (!data.active) {
     player.pause();
+    sceneAudio.stop();
     document.querySelectorAll("dialog[open]").forEach((d) => d.close());
   }
   if (data.active && data.accessUntil) {
@@ -695,6 +793,33 @@ async function reader({ id, slug, chapter = 0 }, token) {
   select.value = getPref("reader-mood", "auto");
   control.append(select);
   bar.append(control);
+  const sound = button(
+    "Звуки и музыка: выключены",
+    async () => {
+      sound.disabled = true;
+      await sceneAudio.toggle();
+      sound.disabled = false;
+      if (token === routeToken) update();
+    },
+    "subtle-btn",
+  );
+  const soundStatus = el("span", "scene-status");
+  soundStatus.setAttribute("role", "status");
+  const volumeLabel = el("label", "scene-volume", "Громкость атмосферы");
+  const volume = el("input");
+  volume.type = "range"; volume.min = "0"; volume.max = "100";
+  volume.value = String(Math.round(sceneAudio.volume * 100));
+  volume.setAttribute("aria-label", "Громкость атмосферы");
+  volume.oninput = () => sceneAudio.setVolume(Number(volume.value) / 100);
+  volumeLabel.append(volume);
+  const soundState = (event) => {
+    sound.textContent = sceneAudio.enabled ? "Звуки и музыка: включены" : "Звуки и музыка: выключены";
+    sound.setAttribute("aria-pressed", String(sceneAudio.enabled));
+    soundStatus.textContent = event?.detail?.message || "";
+  };
+  window.addEventListener("syolana:sceneaudio", soundState);
+  soundState();
+  if (Object.keys(config.sceneAudio || {}).length) bar.append(sound, volumeLabel, soundStatus);
   $("page").append(bar);
   const progress = el("div", "reading-progress");
   const fill = el("div");
@@ -715,6 +840,7 @@ async function reader({ id, slug, chapter = 0 }, token) {
     node.dataset.mood =
       ch.mood && ch.mood !== "auto" ? ch.mood : moodFor(p.text);
     if (p.color) node.dataset.color = p.color;
+    if (p.audio) node.dataset.audio = p.audio;
     text.append(node);
   });
   if (book.mediaUrl) {
@@ -780,7 +906,8 @@ async function reader({ id, slug, chapter = 0 }, token) {
       distance = Infinity;
     for (const p of nodes) {
       const r = p.getBoundingClientRect();
-      const d = Math.abs((r.top + r.bottom) / 2 - innerHeight * 0.48);
+      const anchor = innerHeight * 0.48;
+      const d = r.top > anchor ? r.top - anchor : r.bottom < anchor ? anchor - r.bottom : 0;
       if (d < distance) {
         closest = p;
         distance = d;
@@ -795,6 +922,9 @@ async function reader({ id, slug, chapter = 0 }, token) {
         ? moodColors.neutral
         : closest.dataset.color || moodColors[mood] || moodColors.neutral,
     );
+    if (!document.body.classList.contains("no-effects"))
+      sceneAudio.scene(closest.dataset.audio || mood, `${slug || "library"}:${id}:${chapter}:${active}`);
+    text.dataset.atmosphere = mood;
     fill.style.width =
       Math.round(((active + 1) / Math.max(1, nodes.length)) * 100) + "%";
     setPref(key, { chapter, paragraph: active });
@@ -825,7 +955,9 @@ async function reader({ id, slug, chapter = 0 }, token) {
     );
     header.append(b);
   }
-  cleanup = () => {
+  cleanup = ({ preserveAudio = false } = {}) => {
+    if (!preserveAudio) sceneAudio.stop();
+    window.removeEventListener("syolana:sceneaudio", soundState);
     window.removeEventListener("scroll", scroll);
     cancelAnimationFrame(raf);
   };
@@ -834,7 +966,7 @@ async function reader({ id, slug, chapter = 0 }, token) {
 function terms() {
   const box = el("article", "card stack");
   box.append(
-    el("h1", "", "Условия пилота"),
+    el("h1", "", "Условия тест-драйва"),
     el(
       "p",
       "notice",
@@ -850,7 +982,7 @@ function terms() {
     el(
       "p",
       "",
-      "Черновики доступны владельцу. После отправки на проверку материал видит администратор; публикация происходит после одобрения. Жалобы рассматриваются отдельно. Проверка не является гарантией правовой чистоты.",
+      "Черновики доступны владельцу. Публикации и изменения проходят проверку правил платформы до появления на сайте; проверку может выполнять администратор. Автоматическая ИИ-проверка пока не подключена. Не допускаются противоправные материалы, оскорбления и травля, контент 18+, политическая и религиозная агитация. Ограничения тематики — правила платформы, а не утверждение, что вся такая тематика запрещена законом. Проверка может ошибаться; свяжитесь с нами для пересмотра решения.",
     ),
     el("h3", "", "Доступ и оплата"),
     el(
@@ -874,7 +1006,7 @@ function terms() {
 function report() {
   const box = el("section", "auth card stack");
   box.append(
-    el("h1", "", "Сообщить о материале"),
+    el("h1", "", "Подать жалобу"),
     el(
       "p",
       "muted",
@@ -926,7 +1058,9 @@ function report() {
 }
 async function route() {
   const token = ++routeToken;
-  cleanup();
+  const preserveAudio = /^#\/book\//.test(location.hash) || /^#\/s\/[^/]+\/book\//.test(location.hash);
+  cleanup({ preserveAudio });
+  if (!preserveAudio) sceneAudio.stop();
   cleanup = () => {};
   clearTimeout(siteTimer);
   clearTimeout(accessTimer);
@@ -936,7 +1070,7 @@ async function route() {
   document.documentElement.style.setProperty("--prose", moodColors.neutral);
   $("page").replaceChildren();
   window.scrollTo({ top: 0, behavior: "instant" });
-  document.title = "Syolana · Творческое пространство";
+  document.title = "Syolana · Вселенная творчества";
   const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
   const [view, a, b, c, d] = parts;
   document
@@ -948,6 +1082,7 @@ async function route() {
     if (view === "home") await home(token);
     else if (view === "library") await library(token);
     else if (view === "languages") languages(a, b);
+    else if (view === "songs") songsPage();
     else if (view === "lesson") {
       const key = [a, b, c].join("/");
       if (!lessonFiles[key]) throw Error("Этот урок пока не опубликован.");
@@ -956,9 +1091,14 @@ async function route() {
       );
       await openLesson(key, d ? decodeURIComponent(d) : "", token);
     } else if (view === "join") join();
-    else if (view === "studio")
-      await studio.render($("page"), token, () => routeToken);
-    else if (view === "admin") await studio.admin($("page"));
+    else if (view === "studio") {
+      await apiReady;
+      if (token === routeToken)
+        await studio.render($("page"), token, () => routeToken);
+    } else if (view === "admin") {
+      await apiReady;
+      if (token === routeToken) await studio.admin($("page"));
+    } else if (view === "editor") feedEditor($("page"));
     else if (view === "book") await reader({ id: a, chapter: b }, token);
     else if (view === "s" && b === "book")
       await reader({ slug: a, id: c, chapter: d }, token);
@@ -972,6 +1112,7 @@ async function route() {
       );
   } catch (err) {
     if (token !== routeToken) return;
+    sceneAudio.stop();
     $("page").replaceChildren(
       el("p", "notice error", err.message),
       link("На главную", "#/"),
@@ -1085,6 +1226,8 @@ function lessonFrame(key, anchor = "") {
 
 async function openLesson(key, anchor, token) {
   if (lessonFiles[key].startsWith("api/")) {
+    await apiReady;
+    if (token !== routeToken) return;
     if (!api.online) {
       $("page").append(
         heading(

@@ -10,15 +10,20 @@
     <meta name="theme-color" content="#030309" />
     <meta
       name="description"
-      content="Syolana — книги, музыка, языки и личные пространства авторов."
+      content="Syolana — единый иммерсивный дизайн сайтов. Живые темы, книги, языки и песни. 7 дней бесплатного тест-драйва."
     />
-    <title>Syolana · Творческое пространство</title>
+    <title>Syolana · Вселенная творчества</title>
     <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
-
-
-
+    <link
+      rel="preload"
+      href="assets/fonts/syolana-script.woff"
+      as="font"
+      type="font/woff"
+      crossorigin
+    />
     <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="assets/fonts/fonts.css"></head>
+    <link rel="stylesheet" href="assets/fonts/fonts.css" />
+  </head>
   <body>
     <a class="skip-link" href="#page">К содержанию</a>
     <div class="aurora-background" aria-hidden="true">
@@ -70,25 +75,28 @@
     </header>
     <div id="content-shell" class="shell">
       <aside id="banner" class="banner glass" aria-label="О Syolana"></aside>
+      <p id="provider-notice" class="provider-notice">
+        Syolana — платформа оформления сайтов: темы, плеер и инструменты
+        погружения. Материалы партнёров размещают владельцы их сайтов; они
+        подтверждают права на публикацию. Ответственность сторон определяется
+        законом и договором. <a href="#/report">Подать жалобу</a>
+      </p>
       <nav id="main-nav" class="main-nav" aria-label="Разделы Syolana">
-        <a href="#/" data-nav="home">Пространство</a
+        <a href="#/" data-nav="home">Лента</a
         ><a href="#/library" data-nav="library">Книги</a
         ><a href="#/languages" data-nav="languages">Языки</a
-        ><a href="#/join" data-nav="join">Для авторов</a
-        ><a href="#/studio" data-nav="studio">Моя студия</a>
+        ><a href="#/join" data-nav="join">Хочу такой же сайт</a>
       </nav>
       <main id="page" tabindex="-1">
         <p class="loading">Открываем пространство…</p>
       </main>
       <footer id="footer">
-        <a href="#/">Syolana</a
-        ><span>Творчество, к которому хочется вернуться.</span>
+        <a href="#/">Syolana</a><span>© Syolana. Все права защищены.</span>
         <div>
-          <a href="#/terms">Условия пилота</a
-          ><a href="#/report">Сообщить о материале</a
-          ><a href="mailto:sy@syolana.com">Связаться</a>
+          <a href="#/terms">Условия тест-драйва</a
+          ><a href="#/report">Подать жалобу</a
+          ><a href="mailto:sy@syolana.com">Связаться с нами</a>
         </div>
-        <button id="motion" class="subtle-btn">Остановить анимацию</button>
       </footer>
     </div>
     <aside
@@ -196,6 +204,6 @@
         sy@syolana.com.
       </p></noscript
     >
-    <script type="module" src="app.js"></script>
+    <script type="module" src="boot.js"></script>
   </body>
 </html>

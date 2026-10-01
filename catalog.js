@@ -66,10 +66,18 @@ export async function loadBook(id, chapterIndex = 0) {
   const raw = list[index].id === id ? first : await loadChapter(list[index].id);
   const blocks = raw.blocks
     .filter((b) => b.type === "stanza")
-    .map((b) => ({
-      text: (b.ru || b.en || []).join(raw.type === "poetry" ? "\n" : "\n\n"),
-      color: readingColor(b.color),
-    }))
+    .flatMap((b) => {
+      const lines = b.ru || b.en || [];
+      const cues = [{ line: 0, color: b.color, audio: b.audio }, ...(Array.isArray(b.cues) ? b.cues : [])]
+        .filter(c => Number.isInteger(c.line) && c.line >= 0 && c.line < lines.length)
+        .sort((a, z) => a.line - z.line)
+        .filter((c, i, all) => !i || c.line !== all[i - 1].line);
+      return cues.map((c, i) => ({
+        text: lines.slice(c.line, cues[i + 1]?.line ?? lines.length).join(raw.type === "poetry" ? "\n" : "\n\n"),
+        color: readingColor(c.color || b.color),
+        audio: typeof (c.audio ?? b.audio) === "string" ? (c.audio ?? b.audio) : "",
+      }));
+    })
     .filter((b) => b.text);
   return {
     book: { ...book, chapters: list, poetry: raw.type === "poetry" },
@@ -81,11 +89,14 @@ export async function loadBook(id, chapterIndex = 0) {
 export function readingColor(value) {
   if (!/^#[\da-f]{6}$/i.test(value || "")) return "#ece8f5";
   const rgb = [1, 3, 5].map((i) => parseInt(value.slice(i, i + 2), 16));
+  const lo = Math.min(...rgb),
+    hi = Math.max(...rgb);
+  if (hi - lo < 8) return "#ece8f5";
   return (
     "#" +
     rgb
       .map((c) =>
-        Math.round(205 + (c / 255) * 50)
+        Math.round(150 + ((c - lo) / (hi - lo)) * 105)
           .toString(16)
           .padStart(2, "0"),
       )

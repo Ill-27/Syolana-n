@@ -996,7 +996,7 @@ async function reader({ id, slug, chapter = 0 }, token) {
           Math.max(0, signedDistance / Math.max(1, innerHeight - anchor)),
         );
         opacity = 1 - t * 0.72;
-        shift = t * 12;
+        shift = t * 16;
       } else if (readerMotion && signedDistance < 0) {
         const t = Math.min(
           1,

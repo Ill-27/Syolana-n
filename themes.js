@@ -151,9 +151,28 @@ export class ThemeEngine {
     this.canvas.width = Math.round(w * ratio);
     this.canvas.height = Math.round(h * ratio);
     this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    this.stars = Array.from({ length: w <= 700 ? 260 : 500 }, () =>
+    this.stars = Array.from({ length: w <= 700 ? 340 : 620 }, () =>
       this.star(true),
     );
+
+    // A quiet far-field layer is distributed on a jittered grid so panning
+    // and depth travel never expose a large empty patch.
+    this.dust = [];
+    const dustCell = w <= 700 ? 68 : 86;
+    const dustCols = Math.max(5, Math.ceil(w / dustCell));
+    const dustRows = Math.max(8, Math.ceil(h / dustCell));
+    for (let c = 0; c < dustCols; c++)
+      for (let r = 0; r < dustRows; r++)
+        this.dust.push({
+          x: ((c + this.rand(0.18, 0.82)) / dustCols) * w,
+          y: ((r + this.rand(0.18, 0.82)) / dustRows) * h,
+          size: this.rand(0.35, 1.05),
+          opacity: this.rand(0.10, 0.28),
+          ci: Math.floor(this.rand(0, this.theme.colors.length)),
+          phase: this.rand(0, Math.PI * 2),
+          blink: this.rand(0.35, 1.1),
+        });
+
     this.marks = [];
     const cols = Math.max(2, Math.min(10, Math.floor(w / 170))),
       rows = Math.max(6, Math.min(10, Math.ceil(h / 115)));
@@ -208,6 +227,37 @@ export class ThemeEngine {
       camera: this.zen ? this.camera : null,
     });
     if (this.theme.renderer === "waves") this.drawWaves();
+
+    if (this.theme.particles !== false && this.dust?.length) {
+      const cam = this.zen ? this.camera : null;
+      const wrap = (v, n) => ((v % n) + n) % n;
+      for (const particle of this.dust) {
+        particle.phase += particle.blink * d;
+        const px = wrap(
+          particle.x - (cam?.x || 0) * this.w * 0.22,
+          this.w,
+        );
+        const py = wrap(
+          particle.y - (cam?.y || 0) * this.h * 0.22,
+          this.h,
+        );
+        const depthPulse = cam
+          ? 1 + Math.sin((cam.z || 0) * 0.45 + particle.phase) * 0.12
+          : 1;
+        const size = Math.max(1.8, particle.size * 6 * depthPulse);
+        ctx.globalAlpha =
+          particle.opacity * (0.78 + Math.sin(particle.phase) * 0.18);
+        ctx.drawImage(
+          this.sprites[particle.ci],
+          px - size / 2,
+          py - size / 2,
+          size,
+          size,
+        );
+      }
+      ctx.globalAlpha = 1;
+    }
+
     for (const m of this.marks) {
       m.y -= m.speed * d;
       m.phase += d * 0.23;
@@ -389,6 +439,14 @@ export class ThemeEngine {
       ? 0
       : Math.max(-12, Math.min(12, cam.vz + dz * 5));
     if (this.reduced?.matches) this.draw(0);
+  }
+  settle() {
+    if (!this.camera) return;
+    const cam = this.camera;
+    cam.tx = cam.x;
+    cam.ty = cam.y;
+    cam.tz = cam.z;
+    cam.vz = 0;
   }
   advanceCamera(d) {
     const cam = this.camera;

@@ -205,18 +205,61 @@ export class ThemeEngine {
   }
   zenStar(initial, layer = null) {
     const s = this.star(initial);
+
+    // Keep depth continuous instead of visible slabs. A light layer hint is
+    // retained only to guarantee coverage, while random offsets break up any
+    // rectangular clustering caused by the repeating world cells.
     const layers = Math.max(2, this.zenLayers || 6);
     const slot =
       layer == null ? Math.floor(this.rand(0, layers)) : layer % layers;
-    s.depth =
-      0.95 +
-      (slot / (layers - 1)) * 3.05 +
-      this.rand(-0.12, 0.12);
+    const slotDepth = 0.95 + (slot / (layers - 1)) * 3.05;
+    s.depth = Math.max(0.84, Math.min(4.15, slotDepth + this.rand(-0.34, 0.34)));
     s.size *= this.rand(0.55, 0.88);
     s.opacity *= this.rand(0.46, 0.76);
     s.sy *= this.rand(0.72, 0.95);
     s.sx *= this.rand(0.70, 0.95);
+    s.wrapX = this.rand(0.90, 1.16);
+    s.wrapY = this.rand(0.90, 1.18);
+    s.worldX = this.rand(-0.42, 0.42);
+    s.worldY = this.rand(-0.42, 0.42);
     return s;
+  }
+
+  projectZenStar(s) {
+    const cam = this.camera;
+    if (!cam) return this.project(s.x, s.y, s.depth);
+
+    const wrap = (v, n) => ((v % n) + n) % n;
+    const depth = wrap(s.depth - cam.z - 0.24, 4.2) + 0.24;
+    const scale = s.depth / depth;
+    const spanX = this.w * (s.wrapX || 1) + 220;
+    const spanY = this.h * (s.wrapY || 1) + 220;
+    const wx =
+      wrap(
+        s.x +
+          (s.worldX || 0) * this.w -
+          cam.x * this.w +
+          110,
+        spanX,
+      ) - 110;
+    const wy =
+      wrap(
+        s.y +
+          (s.worldY || 0) * this.h -
+          cam.y * this.h +
+          110,
+        spanY,
+      ) - 110;
+
+    return {
+      x: this.w / 2 + (wx - this.w / 2) * scale,
+      y: this.h / 2 + (wy - this.h / 2) * scale,
+      scale,
+      alpha: Math.max(
+        0,
+        Math.min(1, (depth - 0.24) * 5, (4.44 - depth) * 3),
+      ),
+    };
   }
   // One scene in both modes. The camera projects the same particles, marks and waves.
   draw(d) {
@@ -295,7 +338,9 @@ export class ThemeEngine {
         if (s.x < -25) s.x = this.w + 25;
         else if (s.x > this.w + 25) s.x = -25;
 
-        const point = this.project(s.x, s.y, s.depth);
+        const point = isZenExtra
+          ? this.projectZenStar(s)
+          : this.project(s.x, s.y, s.depth);
         if (
           point.x < -110 ||
           point.y < -110 ||

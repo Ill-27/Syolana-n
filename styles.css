@@ -2562,10 +2562,10 @@ strong {
   background:
     linear-gradient(
       180deg,
-      rgba(9, 9, 17, 0.18),
-      rgba(9, 9, 17, 0.29)
+      rgba(9, 9, 17, 0.12),
+      rgba(9, 9, 17, 0.19)
     ),
-    rgba(var(--surface), 0.34);
+    rgba(var(--surface), 0.24);
 
   border: 1px solid #cab5ec26;
   border-radius: 20px;
@@ -2607,12 +2607,13 @@ strong {
   will-change: opacity, transform;
 }
 
-.reader-text h2 + p {
-  text-indent: 0;
+.reader-text:not(.poetry) p {
+  white-space: normal;
 }
 
 /* Для стихов отступ первой строки не нужен */
 .reader-text.poetry p {
+  white-space: pre-line;
   text-indent: 0;
   margin-bottom: 0.55em;
 }

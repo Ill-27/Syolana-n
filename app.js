@@ -915,8 +915,51 @@ async function reader({ id, slug, chapter = 0 }, token) {
   size();
   const key = "reading:" + (slug || "library") + ":" + id;
   let active = 0,
-    raf = 0;
+    raf = 0,
+    scrollReset = 0,
+    lastScrollY = window.scrollY;
   const nodes = [...text.querySelectorAll("[data-paragraph]")];
+  const readerMotion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let dragPointer = null,
+    dragStartX = 0,
+    dragStartY = 0;
+
+  const resetReaderDrift = () => {
+    text.style.setProperty("--reader-drift-x", "0px");
+    text.style.setProperty("--reader-drift-y", "0px");
+    text.classList.remove("reader-interacting");
+  };
+
+  const pointerDown = (event) => {
+    if (!readerMotion || !event.isPrimary) return;
+    dragPointer = event.pointerId;
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+    text.classList.add("reader-interacting");
+  };
+
+  const pointerMove = (event) => {
+    if (!readerMotion || event.pointerId !== dragPointer) return;
+    const dx = Math.max(-6, Math.min(6, (event.clientX - dragStartX) * 0.07));
+    const dy = Math.max(-5, Math.min(5, (event.clientY - dragStartY) * 0.05));
+    text.style.setProperty("--reader-drift-x", dx.toFixed(2) + "px");
+    text.style.setProperty("--reader-drift-y", dy.toFixed(2) + "px");
+  };
+
+  const pointerUp = (event) => {
+    if (event.pointerId !== dragPointer) return;
+    dragPointer = null;
+    resetReaderDrift();
+  };
+
+  if (readerMotion) {
+    text.addEventListener("pointerdown", pointerDown, { passive: true });
+    text.addEventListener("pointermove", pointerMove, { passive: true });
+    window.addEventListener("pointerup", pointerUp, { passive: true });
+    window.addEventListener("pointercancel", pointerUp, { passive: true });
+  }
+
   function update() {
     raf = 0;
     let closest = nodes[0];
@@ -947,18 +990,25 @@ async function reader({ id, slug, chapter = 0 }, token) {
       let opacity = 1;
       let shift = 0;
 
-      if (signedDistance > 0) {
-        const t = Math.min(1, signedDistance / (innerHeight * 0.62));
-        opacity = 1 - t * 0.64;
-        shift = t * 8;
-      } else if (signedDistance < 0) {
-        const t = Math.min(1, Math.abs(signedDistance) / (innerHeight * 0.9));
-        opacity = 1 - t * 0.16;
-        shift = -t * 2;
+      if (readerMotion && signedDistance > 0) {
+        const t = Math.min(
+          1,
+          Math.max(0, signedDistance / Math.max(1, innerHeight - anchor)),
+        );
+        opacity = 1 - t * 0.72;
+        shift = t * 12;
+      } else if (readerMotion && signedDistance < 0) {
+        const t = Math.min(
+          1,
+          Math.abs(signedDistance) / Math.max(1, innerHeight * 0.78),
+        );
+        opacity = 1 - t * 0.22;
+        shift = -t * 3;
       }
 
       p.style.opacity = opacity.toFixed(3);
-      p.style.transform = `translate3d(0, ${shift.toFixed(2)}px, 0)`;
+      p.style.transform =
+        `translate3d(var(--reader-drift-x, 0px), calc(${shift.toFixed(2)}px + var(--reader-drift-y, 0px) + var(--reader-scroll-y, 0px)), 0)`;
     }
 
     if (!closest) return;
@@ -973,7 +1023,7 @@ async function reader({ id, slug, chapter = 0 }, token) {
       "--prose",
       select.value === "neutral"
         ? "#f6f4f8"
-        : `color-mix(in srgb, #f8f7fb 85%, ${accentColor} 15%)`,
+        : `color-mix(in srgb, #f8f7fb 75%, ${accentColor} 25%)`,
     );
 
     if (!document.body.classList.contains("no-effects"))
@@ -987,6 +1037,18 @@ async function reader({ id, slug, chapter = 0 }, token) {
     setPref(key, { chapter, paragraph: active });
   }
   const scroll = () => {
+    if (readerMotion) {
+      const y = window.scrollY;
+      const delta = y - lastScrollY;
+      lastScrollY = y;
+      const drift = Math.max(-3.5, Math.min(3.5, -delta * 0.06));
+      text.style.setProperty("--reader-scroll-y", drift.toFixed(2) + "px");
+      clearTimeout(scrollReset);
+      scrollReset = setTimeout(
+        () => text.style.setProperty("--reader-scroll-y", "0px"),
+        85,
+      );
+    }
     if (!raf) raf = requestAnimationFrame(update);
   };
   window.addEventListener("scroll", scroll, { passive: true });
@@ -1016,6 +1078,11 @@ async function reader({ id, slug, chapter = 0 }, token) {
     if (!preserveAudio) sceneAudio.stop();
     window.removeEventListener("syolana:sceneaudio", soundState);
     window.removeEventListener("scroll", scroll);
+    text.removeEventListener("pointerdown", pointerDown);
+    text.removeEventListener("pointermove", pointerMove);
+    window.removeEventListener("pointerup", pointerUp);
+    window.removeEventListener("pointercancel", pointerUp);
+    clearTimeout(scrollReset);
     cancelAnimationFrame(raf);
   };
   update();

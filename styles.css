@@ -2543,3 +2543,90 @@ strong {
 .scene-volume input { width: 125px; accent-color: var(--accent); }
 .scene-status { font-size: .85rem; color: var(--dim); flex-basis: 100%; }
 .scene-status:empty { display: none; }
+
+/* ===== SYOLANA READER — FINAL TUNING ===== */
+
+/* Весь мир за читалкой:
+   движение остаётся, но не отвлекает по краям */
+.reading #reading-shade {
+  background: rgba(3, 3, 10, 0.64);
+  backdrop-filter: blur(7px) saturate(0.88);
+  -webkit-backdrop-filter: blur(7px) saturate(0.88);
+}
+
+/* Сам "лист" книги:
+   сквозь него едва видно туманное движение */
+.reader-text {
+  font-family: "Literata", Georgia, serif;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 9, 17, 0.18),
+      rgba(9, 9, 17, 0.29)
+    ),
+    rgba(var(--surface), 0.34);
+
+  border: 1px solid #cab5ec26;
+  border-radius: 20px;
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+
+  box-shadow: 0 18px 55px #00000026;
+
+  color: var(--prose);
+  transition:
+    color 2.6s ease,
+    background 1.5s ease;
+}
+
+/* Панель управления намеренно плотнее книги */
+.reader-toolbar {
+  background: rgba(var(--surface), 0.86);
+  backdrop-filter: blur(13px);
+  -webkit-backdrop-filter: blur(13px);
+}
+
+.reader-toolbar .subtle-btn,
+.reader-toolbar select {
+  background: rgba(19, 18, 31, 0.92);
+}
+
+/* Печатная книга: не огромные промежутки между абзацами,
+   а обычный абзацный отступ */
+.reader-text p {
+  margin: 0;
+  text-indent: 1.2em;
+
+  transition:
+    opacity 0.18s linear,
+    transform 0.18s linear,
+    color 1.5s ease;
+
+  will-change: opacity, transform;
+}
+
+.reader-text h2 + p {
+  text-indent: 0;
+}
+
+/* Для стихов отступ первой строки не нужен */
+.reader-text.poetry p {
+  text-indent: 0;
+  margin-bottom: 0.55em;
+}
+
+/* Только смартфон */
+@media (max-width: 600px) {
+  .reader-text {
+    font-size: clamp(
+      15px,
+      calc(var(--reader-size) * 0.68),
+      18px
+    );
+
+    line-height: 1.72;
+    padding: 24px 17px;
+  }
+  }

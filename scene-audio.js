@@ -103,6 +103,7 @@ export class SceneAudio {
   }
   async scene(key, sceneId = "") {
     if (!this.enabled || !this.context) return;
+
     const entries = this.resolve(key);
     const nextKey = entries.map((e) => e.src).join("|");
     if (nextKey === this.key && sceneId === this.sceneId) return;
@@ -110,46 +111,40 @@ export class SceneAudio {
     this.key = nextKey;
     this.sceneId = sceneId;
     const request = ++this.sequence;
-    const wanted = new Set(entries.map((e) => e.src));
-    const outgoing = [];
 
-    for (const [url, state] of this.tracks) {
-      if (!wanted.has(url)) outgoing.push([url, state]);
-    }
+    // Keep the old scene audible while the next files are loading.
+    // Only after the new scene is ready do both sides crossfade together.
+    const prepared = await Promise.all(
+      entries.map(async (entry) => {
+        const current = this.tracks.get(entry.src);
+        if (current && !current.finished)
+          return { entry, current, buffer: null };
 
-    const pending = entries.map(async (entry) => {
-      const current = this.tracks.get(entry.src);
-      if (current && !current.finished) return { entry, current, buffer: null };
-      try {
-        return { entry, current: null, buffer: await this.load(entry) };
-      } catch {
-        return { entry, current: null, buffer: null, failed: true };
-      }
-    });
+        try {
+          return { entry, current: null, buffer: await this.load(entry) };
+        } catch {
+          return { entry, current: null, buffer: null, failed: true };
+        }
+      }),
+    );
 
-    const fadeOutSeconds = outgoing.length ? 2.4 : 0;
-    for (const [url, state] of outgoing)
-      this.fade(url, state, 0, fadeOutSeconds || 0.01);
-
-    if (fadeOutSeconds)
-      await new Promise((resolve) =>
-        setTimeout(resolve, fadeOutSeconds * 1000 + 90),
-      );
-
-    const prepared = await Promise.all(pending);
     if (!this.enabled || request !== this.sequence) return;
 
+    const wanted = new Set(entries.map((e) => e.src));
+    const fadeSeconds = 3.2;
     let failed = false;
+
+    // Start all new layers first at zero gain.
     for (const item of prepared) {
       const { entry, current, buffer } = item;
+
       if (item.failed || (!current && !buffer)) {
         failed = true;
         continue;
       }
 
-      if (current) {
-        if (!current.finished)
-          this.fade(entry.src, current, entry.volume, 1.2);
+      if (current && !current.finished) {
+        this.fade(entry.src, current, entry.volume, 1.2);
         continue;
       }
 
@@ -168,8 +163,8 @@ export class SceneAudio {
         loop: entry.loop,
         finished: false,
       };
-      this.tracks.set(entry.src, state);
 
+      this.tracks.set(entry.src, state);
       source.onended = () => {
         state.finished = true;
         if (!entry.loop && this.tracks.get(entry.src) === state)
@@ -177,14 +172,18 @@ export class SceneAudio {
       };
 
       source.start();
-      this.fade(entry.src, state, entry.volume, 2.2);
+      this.fade(entry.src, state, entry.volume, fadeSeconds);
+    }
+
+    // At the same moment, gently remove layers that belong to the old scene.
+    for (const [url, state] of [...this.tracks]) {
+      if (!wanted.has(url))
+        this.fade(url, state, 0, entries.length ? fadeSeconds : 2.4);
     }
 
     if (!entries.length) this.emit("Для этой сцены звуков пока нет.");
     else if (failed)
-      this.emit(
-        "Один из звуков недоступен. Остальные продолжают звучать.",
-      );
+      this.emit("Один из звуков недоступен. Остальные продолжают звучать.");
     else this.emit();
   }
   fade(url, state, target, seconds = 2.8) {

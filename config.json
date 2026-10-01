@@ -436,7 +436,7 @@
     },
     "music/epic_orchestra.ogg": {
       "src": "audio-library/music/epic_orchestra.ogg",
-      "loop": true,
+      "loop": false,
       "volume": 0.19,
       "fallback": "audio-library/compatible/music/epic_orchestra.m4a"
     },
@@ -784,8 +784,8 @@
     },
     "sfx/heartbeat_slow.ogg": {
       "src": "audio-library/sfx/heartbeat_slow.ogg",
-      "loop": true,
-      "volume": 0.14,
+      "loop": false,
+      "volume": 0.08,
       "fallback": "audio-library/compatible/sfx/heartbeat_slow.m4a"
     },
     "sfx/heavy_door_shut.ogg": {

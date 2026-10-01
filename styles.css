@@ -2605,6 +2605,7 @@ strong {
     color 1.5s ease;
 
   will-change: opacity, transform;
+  transform-origin: center center;
 }
 
 .reader-text:not(.poetry) p {
@@ -2623,7 +2624,7 @@ strong {
   .reader-text {
     font-size: clamp(
       15px,
-      calc(var(--reader-size) * 0.68),
+      calc(var(--reader-size) * 0.72),
       18px
     );
 

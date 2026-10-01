@@ -276,6 +276,73 @@ function art(book) {
   a.append(el("strong", "", book.title), el("small", "", "SYOLANA"));
   return a;
 }
+function platformPromo(kind = "themes") {
+  const article = el("article", "feed-post glass platform-promo");
+
+  if (kind === "themes") {
+    article.append(
+      el("p", "promo-kicker", "НОВЫЕ ТЕМЫ · СОЗДАЁМ ПОСТОЯННО"),
+      el("h2", "", "Следующий мир может начаться с вашей идеи"),
+    );
+
+    const body = el("div", "feed-body");
+    body.append(
+      el(
+        "p",
+        "",
+        "Темы Syolana мы выпускаем постепенно и каждую доводим как отдельный живой мир — с движением, светом, глубиной и настроением.",
+      ),
+      el(
+        "p",
+        "",
+        "Если у вас есть образ, атмосфера или движение, которое вы давно хотели увидеть на сайте, расскажите нам. Возможно, одна из следующих тем родится именно из вашей идеи.",
+      ),
+    );
+    article.append(body);
+
+    const actions = el("div", "promo-actions");
+    const idea = el("a", "btn small", "Предложить идею темы");
+    idea.href =
+      "mailto:" +
+      (config.contactEmail || "sy@syolana.com") +
+      "?subject=" +
+      encodeURIComponent("Идея новой темы Syolana");
+    actions.append(
+      idea,
+      link("Хочу такой же живой сайт", "#/join", "text-link"),
+    );
+    article.append(actions);
+    return article;
+  }
+
+  article.append(
+    el("p", "promo-kicker", "SYOLANA · БОЛЬШЕ, ЧЕМ ОФОРМЛЕНИЕ"),
+    el("h2", "", "Один сайт — несколько способов погрузиться"),
+  );
+  const body = el("div", "feed-body");
+  body.append(
+    el(
+      "p",
+      "",
+      "Живые темы и режим созерцания, иммерсивное чтение со звуком, общий музыкальный плеер, языковые курсы и пространство для вашего творчества работают как одна система.",
+    ),
+    el(
+      "p",
+      "",
+      "Партнёрам мы сначала показываем готовый результат и даём 7 дней тест-драйва — без предоплаты за знакомство.",
+    ),
+  );
+  article.append(body);
+
+  const actions = el("div", "promo-actions");
+  actions.append(
+    link("Посмотреть возможности", "#/join", "btn small"),
+    link("Открыть книги", "#/library", "text-link"),
+  );
+  article.append(actions);
+  return article;
+}
+
 async function home(token) {
   $("page").append(
     heading(
@@ -294,6 +361,17 @@ async function home(token) {
       list,
       items.filter((p) => selected === "Все" || p.category === selected),
     );
+
+    if (selected === "Все") {
+      const posts = [...list.querySelectorAll(".feed-post")];
+      const themePromo = platformPromo("themes");
+
+      if (posts[0]?.nextSibling)
+        list.insertBefore(themePromo, posts[0].nextSibling);
+      else list.append(themePromo);
+
+      list.append(platformPromo("features"));
+    }
   }
   ["Все", "Дизайн", "Книги", "Языки", "Песни"].forEach((name) => {
     const b = button(

@@ -37,7 +37,10 @@ export function setupDiscovery({ theme, zen, player }) {
     return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
   }
   layer.addEventListener("pointerdown", (e) => {
-    if (e.target.closest("a,button")) return;
+    if (e.target.closest("a,button")) {
+      theme.settle?.();
+      return;
+    }
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     layer.setPointerCapture(e.pointerId);
     pinch = distance();

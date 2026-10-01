@@ -2536,6 +2536,38 @@ strong {
 .language-author .fine {
   margin-bottom: 0;
 }
+
+/* Keep actions from visually colliding with neighbouring copy or buttons. */
+.card.stack > .btn,
+.card.stack > .text-link,
+.strip.stack > .btn,
+.strip.stack > .text-link {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.card.stack > .btn + .text-link,
+.card.stack > .text-link + .btn,
+.strip.stack > .btn + .text-link,
+.strip.stack > .text-link + .btn {
+  margin-top: 22px;
+}
+
+.card.stack > .text-link {
+  line-height: 1.55;
+}
+
+@media (max-width: 600px) {
+  .card.stack > .btn {
+    width: 100%;
+  }
+
+  .card.stack > .text-link {
+    width: fit-content;
+    max-width: 100%;
+  }
+}
 @media (max-width: 600px) {
   .card h3,
   .strip h3 {
@@ -2669,6 +2701,71 @@ strong {
 @media (prefers-reduced-motion: reduce) {
   .scene-toggle {
     animation: none !important;
+  }
+}
+
+.reader-sound-fab {
+  position: fixed;
+  right: -10px;
+  top: 58vh;
+  z-index: 118;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  padding: 0 9px 0 0;
+  border: 1px solid #d9c9ff42;
+  border-radius: 18px 0 0 18px;
+  background: rgba(17, 14, 30, 0.88);
+  color: #f4edff;
+  font-size: 1.12rem;
+  box-shadow:
+    -8px 10px 28px #0005,
+    inset 0 1px 0 #ffffff0d;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0.64;
+  transform: translateX(14%);
+  transition:
+    right 0.28s var(--ease),
+    opacity 0.28s,
+    transform 0.28s,
+    border-color 0.28s;
+}
+
+.reader-sound-fab:hover,
+.reader-sound-fab:focus-visible {
+  right: 8px;
+  opacity: 1;
+  transform: translateX(0);
+  border-radius: 18px;
+  outline: none;
+  border-color: #dbc8ff78;
+}
+
+.reader-sound-fab[data-enabled="true"] {
+  color: #fff;
+  border-color: #dac8ff70;
+  box-shadow:
+    -8px 10px 28px #0005,
+    0 0 24px #b79afd22,
+    inset 0 1px 0 #ffffff10;
+}
+
+@media (max-width: 600px) {
+  .reader-sound-fab {
+    right: -13px;
+    top: 60vh;
+    width: 46px;
+    height: 46px;
+    padding-right: 10px;
+    opacity: 0.58;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-sound-fab {
+    transition: none;
   }
 }
 

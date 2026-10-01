@@ -181,6 +181,7 @@ export class ThemeEngine {
               h,
             size: this.rand(0.42, 2.35),
             opacity: this.rand(0.22, 0.72),
+            depthOffset: this.rand(-0.045, 0.045),
             ci: Math.floor(this.rand(0, this.theme.colors.length)),
             phase: this.rand(0, Math.PI * 2),
             twinkle: this.rand(0.35, 1.4),
@@ -353,7 +354,10 @@ export class ThemeEngine {
 
       // Depth repeats forever. A layer fades out before wrapping from the
       // camera to the far distance, while another layer is always replacing it.
-      const z = wrap(p.layer / layers - cam.z * 0.075, 1);
+      const z = wrap(
+        p.layer / layers + p.depthOffset - cam.z * 0.075,
+        1,
+      );
       const near = 1 - z;
       const edgeFade = Math.max(
         0,

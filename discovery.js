@@ -12,7 +12,7 @@ export function setupDiscovery({ theme, zen, player }) {
     ["Иммерсивные книги", "Внутрь новой истории", "#/library"],
     ["Английский A1", "Первый курс будет бесплатным", "#/languages/en"],
     ["Песня в подарок", "Ваше творчество в общем плеере", "#/songs"],
-    ["Один язык в подарок", "На выбор партнёрам Syolana", "#/languages"],
+    ["A1 языка в подарок", "Любой язык, кроме английского", "#/languages"],
   ];
   for (const [title, subtitle, url] of offers) {
     const a = link("", url, "flight-planet");
@@ -154,7 +154,6 @@ export function setupDiscovery({ theme, zen, player }) {
   function eligibleForTip() {
     return (
       !snoozed &&
-      Date.now() - getPref("tips-dismissed", 0) >= 7 * 864e5 &&
       !document.hidden &&
       !document.body.matches(".reading,.zen,.no-effects") &&
       !document.querySelector("dialog[open]")
@@ -170,13 +169,11 @@ export function setupDiscovery({ theme, zen, player }) {
     const close = button(
       "×",
       () => {
-        snoozed = true;
         hideTip();
-        setPref("tips-dismissed", Date.now());
       },
       "icon-btn",
     );
-    close.setAttribute("aria-label", "Скрыть подсказки на неделю");
+    close.setAttribute("aria-label", "Закрыть эту подсказку");
 
     const action = spec.action
       ? button(

@@ -827,16 +827,33 @@ async function reader({ id, slug, chapter = 0 }, token) {
   $("page").append(progress);
   const text = el("article", "reader-text");
   text.append(el("h2", "", ch.title));
-  const paragraphs =
+  const rawParagraphs =
     ch.blocks ||
     ch.text
       .split(/\n\s*\n/)
       .filter(Boolean)
       .map((text) => ({ text }));
+
+  const paragraphs = book.poetry
+    ? rawParagraphs
+    : rawParagraphs.flatMap((p, sceneGroup) =>
+        String(p.text || "")
+          .split(/\n\s*\n/)
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .map((text) => ({
+            ...p,
+            text,
+            sceneGroup,
+          })),
+      );
+
   if (book.poetry) text.classList.add("poetry");
+
   paragraphs.forEach((p, i) => {
     const node = el("p", "", p.text);
     node.dataset.paragraph = i;
+    node.dataset.scene = p.sceneGroup ?? i;
     node.dataset.mood =
       ch.mood && ch.mood !== "auto" ? ch.mood : moodFor(p.text);
     if (p.color) node.dataset.color = p.color;
@@ -902,28 +919,68 @@ async function reader({ id, slug, chapter = 0 }, token) {
   const nodes = [...text.querySelectorAll("[data-paragraph]")];
   function update() {
     raf = 0;
-    let closest = nodes[0],
-      distance = Infinity;
+    let closest = nodes[0];
+    let distance = Infinity;
+    const anchor = innerHeight * 0.46;
+
     for (const p of nodes) {
       const r = p.getBoundingClientRect();
-      const anchor = innerHeight * 0.48;
-      const d = r.top > anchor ? r.top - anchor : r.bottom < anchor ? anchor - r.bottom : 0;
+      const d =
+        r.top > anchor
+          ? r.top - anchor
+          : r.bottom < anchor
+            ? anchor - r.bottom
+            : 0;
+
       if (d < distance) {
         closest = p;
         distance = d;
       }
+
+      const signedDistance =
+        r.top > anchor
+          ? r.top - anchor
+          : r.bottom < anchor
+            ? r.bottom - anchor
+            : 0;
+
+      let opacity = 1;
+      let shift = 0;
+
+      if (signedDistance > 0) {
+        const t = Math.min(1, signedDistance / (innerHeight * 0.62));
+        opacity = 1 - t * 0.64;
+        shift = t * 8;
+      } else if (signedDistance < 0) {
+        const t = Math.min(1, Math.abs(signedDistance) / (innerHeight * 0.9));
+        opacity = 1 - t * 0.16;
+        shift = -t * 2;
+      }
+
+      p.style.opacity = opacity.toFixed(3);
+      p.style.transform = `translate3d(0, ${shift.toFixed(2)}px, 0)`;
     }
+
     if (!closest) return;
     active = Number(closest.dataset.paragraph);
     const mood = select.value === "neutral" ? "neutral" : closest.dataset.mood;
+    const accentColor =
+      closest.dataset.color ||
+      moodColors[mood] ||
+      moodColors.neutral;
+
     document.documentElement.style.setProperty(
       "--prose",
       select.value === "neutral"
-        ? moodColors.neutral
-        : closest.dataset.color || moodColors[mood] || moodColors.neutral,
+        ? "#f6f4f8"
+        : `color-mix(in srgb, #f8f7fb 85%, ${accentColor} 15%)`,
     );
+
     if (!document.body.classList.contains("no-effects"))
-      sceneAudio.scene(closest.dataset.audio || mood, `${slug || "library"}:${id}:${chapter}:${active}`);
+      sceneAudio.scene(
+        closest.dataset.audio || mood,
+        `${slug || "library"}:${id}:${chapter}:${closest.dataset.scene ?? active}`,
+      );
     text.dataset.atmosphere = mood;
     fill.style.width =
       Math.round(((active + 1) / Math.max(1, nodes.length)) * 100) + "%";

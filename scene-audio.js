@@ -147,8 +147,9 @@ export class SceneAudio {
         continue;
       }
 
-      if (current && !current.finished) {
-        this.fade(entry.src, current, entry.volume, 1.2);
+      if (current) {
+        if (!current.finished)
+          this.fade(entry.src, current, entry.volume, 1.2);
         continue;
       }
 

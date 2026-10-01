@@ -11,6 +11,9 @@ export class SceneAudio {
     this.sequence = 0;
     this.tracks = new Map();
     this.cache = new Map();
+    // The slider remains 0–100%, but the actual scene mix is deliberately
+    // capped so ambience stays behind the text even at maximum device volume.
+    this.maxOutput = 0.42;
     this.volume = Math.max(0, Math.min(1, Number(getPref("scene-volume", 0.65)) || 0));
     document.getElementById("audio")?.addEventListener("play", () => this.stop());
     window.addEventListener("pagehide", () => this.stop());
@@ -25,7 +28,7 @@ export class SceneAudio {
     if (!this.context) {
       this.context = new Constructor();
       this.master = this.context.createGain();
-      this.master.gain.value = this.volume;
+      this.master.gain.value = this.volume * this.maxOutput;
       const compressor = this.context.createDynamicsCompressor();
       compressor.threshold.value = -12; compressor.knee.value = 18;
       compressor.ratio.value = 6; compressor.attack.value = 0.01; compressor.release.value = 0.25;
@@ -48,7 +51,7 @@ export class SceneAudio {
   setVolume(value) {
     this.volume = Math.max(0, Math.min(1, Number(value) || 0));
     setPref("scene-volume", this.volume);
-    if (this.master) this.master.gain.setTargetAtTime(this.volume, this.context.currentTime, 0.08);
+    if (this.master) this.master.gain.setTargetAtTime(this.volume * this.maxOutput, this.context.currentTime, 0.08);
   }
   resolve(key) {
     const result = [];

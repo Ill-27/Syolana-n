@@ -374,8 +374,8 @@ button svg {
     backdrop-filter 2s;
 }
 .reading #reading-shade {
-  background: rgba(3, 3, 10, 0.78);
-  backdrop-filter: blur(6px);
+  background: transparent;
+  backdrop-filter: none;
 }
 .zen #reading-shade {
   background: transparent;
@@ -2143,11 +2143,17 @@ strong {
   background: #070711;
 }
 .reader-text {
-  font-family: var(--body);
   font-size: var(--reader-size);
   line-height: 1.9;
-  background: #090911ef;
-  border: 1px solid #cab5ec20;
+
+  background:
+    linear-gradient(125deg, #ffffff06, transparent 60%),
+    rgba(var(--surface), 0.76);
+
+  border: 1px solid #e0d3ff36;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+
   border-radius: 20px;
   padding: 32px clamp(19px, 4vw, 45px);
   color: var(--prose);
@@ -2162,7 +2168,12 @@ strong {
   color: #f5efff;
 }
 .reader-toolbar {
-  background: #13121fef;
+  background:
+    linear-gradient(125deg, #ffffff06, transparent 60%),
+    rgba(var(--surface), 0.76);
+
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 .reader-text.poetry {
   max-width: 760px;
@@ -2192,7 +2203,7 @@ strong {
   color: #161616;
 }
 .no-effects .reader-text {
-  font-family: Georgia, serif;
+  font-family: "Literata", Georgia, serif;
 }
 @media (max-width: 600px) {
   .shell {

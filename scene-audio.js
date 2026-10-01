@@ -13,7 +13,7 @@ export class SceneAudio {
     this.cache = new Map();
     // The slider remains 0–100%, but the actual scene mix is deliberately
     // capped so ambience stays behind the text even at maximum device volume.
-    this.maxOutput = 0.42;
+    this.maxOutput = 0.21;
     this.volume = Math.max(0, Math.min(1, Number(getPref("scene-volume", 0.65)) || 0));
     document.getElementById("audio")?.addEventListener("play", () => this.stop());
     window.addEventListener("pagehide", () => this.stop());

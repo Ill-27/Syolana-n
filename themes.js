@@ -151,27 +151,42 @@ export class ThemeEngine {
     this.canvas.width = Math.round(w * ratio);
     this.canvas.height = Math.round(h * ratio);
     this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    this.stars = Array.from({ length: w <= 700 ? 340 : 620 }, () =>
+    // Keep the ordinary site exactly as before.
+    this.stars = Array.from({ length: w <= 700 ? 260 : 500 }, () =>
       this.star(true),
     );
 
-    // A quiet far-field layer is distributed on a jittered grid so panning
-    // and depth travel never expose a large empty patch.
-    this.dust = [];
-    const dustCell = w <= 700 ? 68 : 86;
-    const dustCols = Math.max(5, Math.ceil(w / dustCell));
-    const dustRows = Math.max(8, Math.ceil(h / dustCell));
-    for (let c = 0; c < dustCols; c++)
-      for (let r = 0; r < dustRows; r++)
-        this.dust.push({
-          x: ((c + this.rand(0.18, 0.82)) / dustCols) * w,
-          y: ((r + this.rand(0.18, 0.82)) / dustRows) * h,
-          size: this.rand(0.35, 1.05),
-          opacity: this.rand(0.10, 0.28),
-          ci: Math.floor(this.rand(0, this.theme.colors.length)),
-          phase: this.rand(0, Math.PI * 2),
-          blink: this.rand(0.35, 1.1),
-        });
+    // Zen mode has a separate stratified 3D field. Every depth layer covers
+    // the whole viewport, so flying sideways or endlessly forward cannot
+    // reveal the rectangular gaps produced by a single projected sheet.
+    this.zenLayers = w <= 700 ? 7 : 8;
+    this.zenField = [];
+    const zCols = w <= 700 ? 6 : 9;
+    const zRows = w <= 700 ? 11 : 8;
+    const spanX = 1.36;
+    const spanY = 1.30;
+
+    for (let layer = 0; layer < this.zenLayers; layer++)
+      for (let c = 0; c < zCols; c++)
+        for (let r = 0; r < zRows; r++)
+          this.zenField.push({
+            layer,
+            x:
+              (-0.18 +
+                ((c + this.rand(0.12, 0.88)) / zCols) * spanX) *
+              w,
+            y:
+              (-0.15 +
+                ((r + this.rand(0.12, 0.88)) / zRows) * spanY) *
+              h,
+            size: this.rand(0.42, 2.35),
+            opacity: this.rand(0.22, 0.72),
+            ci: Math.floor(this.rand(0, this.theme.colors.length)),
+            phase: this.rand(0, Math.PI * 2),
+            twinkle: this.rand(0.35, 1.4),
+            driftX: this.rand(-7, 7),
+            driftY: this.rand(-5, 5),
+          });
 
     this.marks = [];
     const cols = Math.max(2, Math.min(10, Math.floor(w / 170))),
@@ -228,35 +243,7 @@ export class ThemeEngine {
     });
     if (this.theme.renderer === "waves") this.drawWaves();
 
-    if (this.theme.particles !== false && this.dust?.length) {
-      const cam = this.zen ? this.camera : null;
-      const wrap = (v, n) => ((v % n) + n) % n;
-      for (const particle of this.dust) {
-        particle.phase += particle.blink * d;
-        const px = wrap(
-          particle.x - (cam?.x || 0) * this.w * 0.22,
-          this.w,
-        );
-        const py = wrap(
-          particle.y - (cam?.y || 0) * this.h * 0.22,
-          this.h,
-        );
-        const depthPulse = cam
-          ? 1 + Math.sin((cam.z || 0) * 0.45 + particle.phase) * 0.12
-          : 1;
-        const size = Math.max(1.8, particle.size * 6 * depthPulse);
-        ctx.globalAlpha =
-          particle.opacity * (0.78 + Math.sin(particle.phase) * 0.18);
-        ctx.drawImage(
-          this.sprites[particle.ci],
-          px - size / 2,
-          py - size / 2,
-          size,
-          size,
-        );
-      }
-      ctx.globalAlpha = 1;
-    }
+    if (this.zen && this.theme.particles !== false) this.drawZenField(d);
 
     for (const m of this.marks) {
       m.y -= m.speed * d;
@@ -295,7 +282,8 @@ export class ThemeEngine {
     }
     for (
       let i = 0;
-      i < (this.theme.particles === false ? 0 : this.stars.length);
+      i <
+      (this.theme.particles === false || this.zen ? 0 : this.stars.length);
       i++
     ) {
       let s = this.stars[i];
@@ -349,6 +337,111 @@ export class ThemeEngine {
     ctx.shadowBlur = 0;
     if (this.zen) this.drawPlanets();
   }
+  drawZenField(d) {
+    const ctx = this.ctx;
+    const cam = this.camera;
+    if (!ctx || !cam || !this.zenField?.length) return;
+
+    const wrap = (v, n) => ((v % n) + n) % n;
+    const layers = Math.max(1, this.zenLayers || 7);
+    const spanX = this.w * 1.36;
+    const spanY = this.h * 1.30;
+
+    for (let i = 0; i < this.zenField.length; i++) {
+      const p = this.zenField[i];
+      p.phase += p.twinkle * d;
+
+      // Depth repeats forever. A layer fades out before wrapping from the
+      // camera to the far distance, while another layer is always replacing it.
+      const z = wrap(p.layer / layers - cam.z * 0.075, 1);
+      const near = 1 - z;
+      const edgeFade = Math.max(
+        0,
+        Math.min(1, z / 0.055, (1 - z) / 0.055),
+      );
+
+      // Position perspective stays modest so every layer continues to cover
+      // the viewport; apparent size changes much more strongly, which creates
+      // depth without opening holes around the edges.
+      const positionScale = 0.88 + near * 0.48;
+      const parallax = 0.14 + near * 0.56;
+
+      const baseX =
+        wrap(
+          p.x -
+            cam.x * this.w * parallax +
+            p.driftX * Math.sin(p.phase * 0.37) +
+            this.w * 0.18,
+          spanX,
+        ) -
+        this.w * 0.18;
+
+      const baseY =
+        wrap(
+          p.y -
+            cam.y * this.h * parallax +
+            p.driftY * Math.cos(p.phase * 0.31) +
+            this.h * 0.15,
+          spanY,
+        ) -
+        this.h * 0.15;
+
+      const x =
+        this.w / 2 + (baseX - this.w / 2) * positionScale;
+      const y =
+        this.h / 2 + (baseY - this.h / 2) * positionScale;
+
+      if (
+        x < -180 ||
+        y < -180 ||
+        x > this.w + 180 ||
+        y > this.h + 180
+      )
+        continue;
+
+      const sizeScale = 0.62 + near * near * 5.25;
+      const alpha =
+        p.opacity *
+        edgeFade *
+        (0.34 + near * 0.86) *
+        (0.88 + Math.sin(p.phase) * 0.12);
+
+      if (alpha <= 0.01) continue;
+      ctx.globalAlpha = Math.min(1, alpha);
+
+      if (this.theme.renderer === "petals" && i % 3 === 0) {
+        const length = Math.min(52, p.size * 5.5 * sizeScale);
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(p.phase * 0.16 + cam.z * 0.035);
+        ctx.fillStyle = this.theme.colors[p.ci];
+        ctx.beginPath();
+        ctx.ellipse(
+          0,
+          0,
+          Math.max(1.2, length),
+          Math.max(0.6, length * 0.28),
+          0,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
+        ctx.restore();
+      } else {
+        const size = Math.min(150, p.size * 10 * sizeScale);
+        ctx.drawImage(
+          this.sprites[p.ci],
+          x - size / 2,
+          y - size / 2,
+          size,
+          size,
+        );
+      }
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
   project(x, y, baseDepth = 2) {
     const cam = this.zen ? this.camera : null;
     if (!cam || (!cam.x && !cam.y && !cam.z))
@@ -374,7 +467,7 @@ export class ThemeEngine {
       zCamera = cam?.z || 0;
     const extra = Math.min(1, Math.abs(zCamera) * 2);
     const wrap = (v, n) => ((v % n) + n) % n;
-    const layers = extra > 0.001 ? 3 : 1;
+    const layers = cam ? 5 : 1;
     ctx.save();
     for (let layer = 0; layer < layers; layer++) {
       const depth = wrap(2.4 + layer * 1.4 - zCamera - 0.24, 4.2) + 0.24;
@@ -386,8 +479,8 @@ export class ThemeEngine {
       const strength = layer ? extra * 0.32 : 1;
       const cell = Math.round(yCamera / 1.6);
       const tiles =
-        cam && (xCamera || yCamera || zCamera)
-          ? [cell - 1, cell, cell + 1]
+        cam
+          ? [cell - 2, cell - 1, cell, cell + 1, cell + 2]
           : [0];
       for (const tile of tiles)
         for (let line = 0; line < 24; line++) {

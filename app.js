@@ -794,27 +794,45 @@ async function reader({ id, slug, chapter = 0 }, token) {
   control.append(select);
   bar.append(control);
   const sound = button(
-    "Звуки и музыка: выключены",
+    "",
     async () => {
       sound.disabled = true;
       await sceneAudio.toggle();
       sound.disabled = false;
       if (token === routeToken) update();
     },
-    "subtle-btn",
+    "subtle-btn scene-toggle",
   );
+  const soundIcon = el("span", "scene-toggle-icon", "🎧");
+  soundIcon.setAttribute("aria-hidden", "true");
+  const soundCopy = el("span", "scene-toggle-copy");
+  const soundLabel = el("strong", "", "Звуковая атмосфера");
+  const soundHint = el("small", "", "Включить");
+  soundCopy.append(soundLabel, soundHint);
+  sound.replaceChildren(soundIcon, soundCopy);
+
   const soundStatus = el("span", "scene-status");
   soundStatus.setAttribute("role", "status");
   const volumeLabel = el("label", "scene-volume", "Громкость атмосферы");
   const volume = el("input");
   volume.type = "range"; volume.min = "0"; volume.max = "100";
   volume.value = String(Math.round(sceneAudio.volume * 100));
-  volume.setAttribute("aria-label", "Громкость атмосферы");
+  volume.setAttribute(
+    "aria-label",
+    "Громкость звуковой атмосферы. Максимум ограничен комфортным уровнем.",
+  );
   volume.oninput = () => sceneAudio.setVolume(Number(volume.value) / 100);
   volumeLabel.append(volume);
   const soundState = (event) => {
-    sound.textContent = sceneAudio.enabled ? "Звуки и музыка: включены" : "Звуки и музыка: выключены";
+    sound.dataset.enabled = String(sceneAudio.enabled);
+    soundHint.textContent = sceneAudio.enabled ? "Включена · нажмите, чтобы выключить" : "Нажмите, чтобы включить";
     sound.setAttribute("aria-pressed", String(sceneAudio.enabled));
+    sound.setAttribute(
+      "aria-label",
+      sceneAudio.enabled
+        ? "Звуковая атмосфера включена. Нажмите, чтобы выключить."
+        : "Включить звуковую атмосферу чтения.",
+    );
     soundStatus.textContent = event?.detail?.message || "";
   };
   window.addEventListener("syolana:sceneaudio", soundState);

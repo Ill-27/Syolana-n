@@ -489,11 +489,11 @@ function languages(lang = "en") {
   const gift = el("section", "strip glass stack language-gift");
   gift.append(
     el("span", "badge", "ПОДАРОК ПАРТНЁРАМ"),
-    el("h2", "", "Ваш сайт. И ещё один язык."),
+    el("h2", "", "Ваш сайт. И A1 нового языка в подарок."),
     el(
       "p",
       "",
-      "При действующей подписке на сайт Syolana за 1 000 ₽ в месяц — один язык на выбор в подарок. Доступ к его курсам A1–B2 открывается по мере выхода уровней. Английский A1 остаётся бесплатным для всех.",
+      "При действующей подписке на сайт Syolana за 1 000 ₽ в месяц — уровень A1 одного языка на выбор в подарок, кроме английского. Остальные уровни и курсы приобретаются отдельно. Английский A1 остаётся бесплатным для всех.",
     ),
     link("Хочу такой же сайт", "#/join", "btn primary"),
   );
@@ -601,7 +601,7 @@ function join() {
     "Обновления оформления для всех подключённых сайтов",
     "1 000 ₽ в месяц на 12 месяцев с первой оплаты для первых партнёров",
     "Одна песня по вашему творчеству в подарок после первой оплаты: тему и срок согласуем заранее",
-    "Один язык на выбор в подарок при активной подписке: курсы A1–B2 по мере выхода. Английский A1 будет бесплатным для всех",
+    "Уровень A1 одного языка на выбор в подарок при активной подписке, кроме английского. Остальные уровни и курсы — отдельно платно. Английский A1 будет бесплатным для всех",
   ].forEach((s) => ul.append(el("li", "", s)));
   const contact = el("a", "btn primary", "Обсудить мой сайт");
   contact.href =
@@ -793,14 +793,16 @@ async function reader({ id, slug, chapter = 0 }, token) {
   select.value = getPref("reader-mood", "auto");
   control.append(select);
   bar.append(control);
+  const toggleSceneSound = async (...buttons) => {
+    buttons.forEach((b) => (b.disabled = true));
+    await sceneAudio.toggle();
+    buttons.forEach((b) => (b.disabled = false));
+    if (token === routeToken) update();
+  };
+
   const sound = button(
     "",
-    async () => {
-      sound.disabled = true;
-      await sceneAudio.toggle();
-      sound.disabled = false;
-      if (token === routeToken) update();
-    },
+    () => toggleSceneSound(sound, soundFab),
     "subtle-btn scene-toggle",
   );
   const soundIcon = el("span", "scene-toggle-icon", "🎧");
@@ -823,6 +825,15 @@ async function reader({ id, slug, chapter = 0 }, token) {
   );
   volume.oninput = () => sceneAudio.setVolume(Number(volume.value) / 100);
   volumeLabel.append(volume);
+
+  const soundFab = button(
+    "🎧",
+    () => toggleSceneSound(sound, soundFab),
+    "reader-sound-fab",
+  );
+  soundFab.setAttribute("aria-label", "Включить звуковую атмосферу чтения");
+  soundFab.setAttribute("title", "Звуковая атмосфера");
+
   const soundState = (event) => {
     sound.dataset.enabled = String(sceneAudio.enabled);
     soundHint.textContent = sceneAudio.enabled ? "Включена · нажмите, чтобы выключить" : "Нажмите, чтобы включить";
@@ -833,12 +844,24 @@ async function reader({ id, slug, chapter = 0 }, token) {
         ? "Звуковая атмосфера включена. Нажмите, чтобы выключить."
         : "Включить звуковую атмосферу чтения.",
     );
+    soundFab.dataset.enabled = String(sceneAudio.enabled);
+    soundFab.setAttribute("aria-pressed", String(sceneAudio.enabled));
+    soundFab.setAttribute(
+      "aria-label",
+      sceneAudio.enabled
+        ? "Выключить звуковую атмосферу чтения"
+        : "Включить звуковую атмосферу чтения",
+    );
     soundStatus.textContent = event?.detail?.message || "";
   };
   window.addEventListener("syolana:sceneaudio", soundState);
   soundState();
-  if (Object.keys(config.sceneAudio || {}).length) bar.append(sound, volumeLabel, soundStatus);
-  $("page").append(bar);
+  if (Object.keys(config.sceneAudio || {}).length) {
+    bar.append(sound, volumeLabel, soundStatus);
+    $("page").append(bar, soundFab);
+  } else {
+    $("page").append(bar);
+  }
   const progress = el("div", "reading-progress");
   const fill = el("div");
   progress.append(fill);

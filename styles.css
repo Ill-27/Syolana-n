@@ -2485,7 +2485,7 @@ strong {
   font-weight: 400;
 }
 .reader-text {
-  font-family: var(--body);
+  font-family: "Literata", Georgia, serif;
 }
 .price,
 .course-price,

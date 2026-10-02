@@ -16,13 +16,18 @@ export class ThemeEngine {
       if (!r.ok) throw Error("Темы недоступны");
       return r.json();
     });
+    const requested = new URLSearchParams(location.search).get("theme");
     const old = getPref("theme", "");
-    const choices = this.manifest.filter((t) => t.id !== old);
-    await this.select(
-      (choices.length ? choices : this.manifest)[
-        Math.floor(Math.random() * (choices.length || this.manifest.length))
-      ].id,
-    );
+    if (requested && this.manifest.some((t) => t.id === requested)) {
+      await this.select(requested);
+    } else {
+      const choices = this.manifest.filter((t) => t.id !== old);
+      await this.select(
+        (choices.length ? choices : this.manifest)[
+          Math.floor(Math.random() * (choices.length || this.manifest.length))
+        ].id,
+      );
+    }
     const dialog = document.querySelector("#theme-dialog");
     const list = document.querySelector("#theme-list");
     this.manifest.forEach((t) => {
@@ -633,6 +638,30 @@ export class ThemeEngine {
         g.addColorStop(1, "#04050e");
         c.fillStyle = g;
         c.fillRect(0, 0, w, h);
+        if (id === "white-ocean-city") {
+          const horizon = Math.round(h * 0.57);
+          const sea = c.createLinearGradient(0, horizon, 0, h);
+          sea.addColorStop(0, "#829da3");
+          sea.addColorStop(1, "#173541");
+          c.fillStyle = sea;
+          c.fillRect(0, horizon, w, h - horizon);
+          c.fillStyle = "rgba(245,246,241,.9)";
+          for (let i = 0; i < 15; i++) {
+            const side = i % 2 ? -1 : 1;
+            const z = (i + 2) / 18;
+            const bw = 4 + z * 13;
+            const bh = 14 + ((i * 11) % 31) * z;
+            const x = w / 2 + side * (18 + z * w * 0.43);
+            c.fillRect(x - bw / 2, horizon - bh, bw, bh);
+          }
+          c.globalAlpha = .22;
+          c.fillStyle = "#f7eee3";
+          c.beginPath();
+          c.arc(w * .76, h * .39, 22, 0, Math.PI * 2);
+          c.fill();
+          c.globalAlpha = 1;
+          continue;
+        }
         if (id === "golden") {
           c.strokeStyle = "#eac59080";
           for (let j = 0; j < 9; j++) {

@@ -1,430 +1,409 @@
 import { ThemeEngine } from "./themes.js";
 
-const ROOT = new URL("./", import.meta.url);
-const byId = (id) => document.getElementById(id);
+const CORE_BASE = new URL("./", import.meta.url);
+const DEFAULT_JOIN = "https://ill-27.github.io/Syolana-n/#/join";
+let mounted = null;
 
-function node(tag, cls = "", text = "") {
-  const el = document.createElement(tag);
-  if (cls) el.className = cls;
-  if (text) el.textContent = text;
-  return el;
+function el(tag, cls = "", text = "") {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text) node.textContent = text;
+  return node;
 }
 
-function addStyles() {
-  for (const [id, href] of [
-    ["syolana-partner-fonts", new URL("assets/fonts/fonts.css", ROOT).href],
-    ["syolana-partner-core-style", new URL("partner-core.css", ROOT).href],
-  ]) {
-    if (byId(id)) continue;
-    const link = node("link");
-    link.id = id;
-    link.rel = "stylesheet";
-    link.href = href;
-    document.head.append(link);
+function iconButton(label, html) {
+  const b = el("button", "syolana-icon-btn");
+  b.type = "button";
+  b.setAttribute("aria-label", label);
+  b.title = label;
+  b.innerHTML = html;
+  return b;
+}
+
+async function fetchConfig() {
+  return fetch(new URL("config.json", CORE_BASE), { cache: "no-store" }).then((r) => {
+    if (!r.ok) throw new Error("Syolana config unavailable");
+    return r.json();
+  });
+}
+
+function resolveMedia(raw) {
+  if (!raw || typeof raw !== "string") return "";
+  try {
+    return new URL(raw, CORE_BASE).href;
+  } catch {
+    return "";
   }
 }
 
-function iconButton(id, label, html) {
-  const button = node("button", "sy-core-icon");
-  button.id = id;
-  button.type = "button";
-  button.setAttribute("aria-label", label);
-  button.title = label;
-  button.innerHTML = html;
-  return button;
-}
+function makeBackground(root) {
+  const bg = el("div", "aurora-background syolana-core-background");
+  bg.setAttribute("aria-hidden", "true");
+  for (const cls of ["one", "two", "three"]) bg.append(el("div", "aurora-layer " + cls));
 
-function buildChrome() {
-  const aurora = node("div", "sy-core-aurora aurora-background");
-  aurora.setAttribute("aria-hidden", "true");
-  for (const cls of ["one", "two", "three"]) aurora.append(node("span", "aurora-layer " + cls));
-
-  const canvas = node("canvas");
+  const canvas = el("canvas", "syolana-core-canvas");
   canvas.id = "starCanvas";
   canvas.setAttribute("aria-hidden", "true");
 
-  const top = node("header", "sy-core-top-bar");
-  top.id = "syolana-core-chrome";
-
-  const brand = node("a", "sy-core-brand");
-  brand.href = new URL("./", ROOT).href;
-  brand.target = "_blank";
-  brand.rel = "noopener";
-  brand.setAttribute("aria-label", "Открыть Syolana");
-
-  const logo = node("img");
-  logo.src = new URL("assets/logo.svg", ROOT).href;
-  logo.alt = "";
-  logo.width = 47;
-  logo.height = 47;
-
-  const brandText = node("span");
-  brandText.append(
-    node("strong", "", "Syolana"),
-    node("small", "", "ИММЕРСИВНАЯ ПЛАТФОРМА"),
-  );
-  brand.append(logo, brandText);
-
-  const actions = node("div", "sy-core-actions top-actions");
-  const theme = iconButton("theme-toggle", "Выбрать тему", "✧");
-  const zen = iconButton(
-    "zen-toggle",
-    "Режим созерцания",
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
-  );
-  const full = iconButton(
-    "fullscreen",
-    "На весь экран",
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg>',
-  );
-
-  actions.append(theme, zen, full);
-  top.append(brand, actions);
-
-  const flight = node("div", "sy-core-flight-layer");
-  flight.id = "flight-layer";
-  flight.hidden = true;
-  flight.append(
-    node(
-      "div",
-      "flight-hint",
-      "Перетаскивайте мир · колесо или два пальца — в глубину",
-    ),
-  );
-
-  document.body.prepend(aurora, canvas, top, flight);
-  return { aurora, canvas, top, flight, zen, full };
+  root.append(bg, canvas);
 }
 
-function buildThemeDialog() {
-  const dialog = node("dialog", "sy-core-dialog");
+function makeThemeDialog(root) {
+  const dialog = el("dialog", "syolana-theme-dialog");
   dialog.id = "theme-dialog";
-
-  const head = node("div", "sy-core-dialog-head");
-  const titleWrap = node("div");
-  titleWrap.append(
-    node("div", "eyebrow", "АТМОСФЕРА"),
-    node("h2", "", "Выберите свой мир"),
-  );
-
-  const close = iconButton("", "Закрыть", "×");
+  const head = el("div", "syolana-dialog-head");
+  const copy = el("div");
+  copy.append(el("p", "eyebrow", "АТМОСФЕРА"), el("h2", "", "Выберите свой мир"));
+  const close = iconButton("Закрыть", "×");
   close.onclick = () => dialog.close();
-  head.append(titleWrap, close);
-
-  const list = node("div");
+  head.append(copy, close);
+  const list = el("div");
   list.id = "theme-list";
-
-  const current = node("span");
-  current.id = "theme-name";
-  current.hidden = true;
-
-  dialog.append(head, list, current);
-  document.body.append(dialog);
-
-  dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) dialog.close();
-  });
+  dialog.append(head, list);
+  root.append(dialog);
   return dialog;
 }
 
-function buildBanner(partnerName = "", config = {}) {
-  const slot = byId("platform-banner-slot") || byId("syolana-banner-slot");
-  if (!slot) return null;
+function makeControls(host, root) {
+  const controls = el("div", "syolana-controls");
+  controls.dataset.syolanaUi = "controls";
 
-  const bannerConfig = config.banner || {};
-  slot.hidden = false;
+  const themeToggle = iconButton("Выбрать тему", "✧");
+  themeToggle.id = "theme-toggle";
 
-  const banner = node("aside", "sy-core-banner");
-  banner.setAttribute("aria-label", "О Syolana");
-
-  const mark = node("div", "sy-core-banner-mark");
-  const logo = node("img");
-  logo.src = new URL("assets/logo.svg", ROOT).href;
-  logo.alt = "";
-  mark.append(logo, node("span", "", "SYOLANA"));
-
-  banner.append(
-    mark,
-    node(
-      "div",
-      "eyebrow",
-      bannerConfig.eyebrow || "ИММЕРСИВНАЯ ПЛАТФОРМА ДЛЯ ТВОРЧЕСТВА",
-    ),
-    node("h2", "", bannerConfig.title || "Ваш сайт — живой мир."),
-    node(
-      "p",
-      "",
-      bannerConfig.description ||
-        (partnerName
-          ? `${partnerName} использует живые темы и иммерсивные функции Syolana.`
-          : "Живые темы, музыка, иммерсивное чтение и публикации — в одной системе."),
-    ),
+  const zenToggle = iconButton(
+    "Режим созерцания",
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
   );
+  zenToggle.id = "zen-toggle";
+  zenToggle.setAttribute("aria-pressed", "false");
 
-  const features = node("div", "sy-core-features");
-  const labels =
-    Array.isArray(bannerConfig.features) && bannerConfig.features.length
-      ? bannerConfig.features
-      : ["Живые темы", "Музыка", "Иммерсивное чтение", "Обновления"];
-
-  for (const label of labels.slice(0, 4)) {
-    features.append(node("span", "sy-core-feature", label));
-  }
-
-  const actions = node("div", "sy-core-banner-actions");
-  const cta = node(
-    "a",
-    "sy-core-cta",
-    bannerConfig.links?.[0]?.label || "Открыть Syolana",
+  const fullscreen = iconButton(
+    "На весь экран",
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg>',
   );
-  const href = bannerConfig.links?.[0]?.href || "#/join";
-  cta.href = new URL(href, ROOT).href;
-  cta.target = "_blank";
-  cta.rel = "noopener";
-  actions.append(cta);
+  fullscreen.id = "fullscreen";
+  fullscreen.setAttribute("aria-pressed", "false");
 
-  banner.append(
-    features,
-    actions,
-    node(
-      "p",
-      "sy-core-note",
-      bannerConfig.invitation ||
-        "Иммерсивный слой активен, пока действует сотрудничество.",
-    ),
+  controls.append(themeToggle, zenToggle, fullscreen);
+  host.append(controls);
+
+  const flight = el("div", "syolana-flight-layer");
+  flight.id = "flight-layer";
+  flight.hidden = true;
+  const hint = el(
+    "div",
+    "flight-hint syolana-flight-hint",
+    "Перемещайтесь в пространстве, используя мышь или жесты",
   );
+  flight.append(hint);
+  root.append(flight);
 
-  slot.replaceChildren(banner);
-  return banner;
+  return { controls, themeToggle, zenToggle, fullscreen, flight };
 }
 
-async function buildPlayer(config = {}) {
-  const songs = (config.songs || []).filter((song) => song?.src);
-  if (!songs.length) return null;
+function makeBanner(config, mountPoint) {
+  const c = config.banner || {};
+  const banner = el("aside", "syolana-banner");
+  banner.dataset.syolanaUi = "banner";
 
-  const audio = new Audio();
-  audio.preload = "none";
-  audio.volume = 0.28;
+  const brand = el("div", "syolana-banner-brand");
+  const logo = el("img");
+  logo.src = new URL("assets/logo.svg", CORE_BASE).href;
+  logo.alt = "";
+  brand.append(logo, el("span", "", "SYOLANA"));
 
-  const dock = node("aside", "sy-core-player");
-  dock.setAttribute("aria-label", "Музыкальный плеер Syolana");
+  banner.append(
+    brand,
+    el("p", "eyebrow", c.eyebrow || "ИММЕРСИВНАЯ ПЛАТФОРМА"),
+    el("h2", "", c.title || "Ваш сайт — живой мир."),
+    el(
+      "p",
+      "",
+      c.description ||
+        "Живые темы, музыка, иммерсивные книги, языки и публикации — в одной системе.",
+    ),
+  );
 
-  const track = node("div", "sy-core-track");
-  track.append(node("span", "sy-core-track-icon", "♫"));
-  const copy = node("div");
-  const title = node("strong", "", "Музыка Syolana");
-  const subtitle = node("small", "", "Откройте музыкальную библиотеку");
-  copy.append(title, subtitle);
-  track.append(copy);
+  const features = el("div", "syolana-banner-features");
+  for (const item of c.features || []) {
+    const chip = el("span", "syolana-banner-feature");
+    chip.append(el("i", "", "✦"), document.createTextNode(item));
+    features.append(chip);
+  }
+  banner.append(features);
 
-  const controls = node("div", "sy-core-player-controls");
-  const prev = node("button", "", "‹");
-  const play = node("button", "play", "▶");
-  const next = node("button", "", "›");
+  const actions = el("div", "syolana-banner-actions");
+  const primary = el("a", "primary", "Подключить Syolana");
+  primary.href = DEFAULT_JOIN;
+  const explore = el("button", "", "Попробовать вживую");
+  explore.type = "button";
+  actions.append(primary, explore);
+  banner.append(actions, el("p", "syolana-banner-note", c.invitation || "7 дней тест-драйва · без предоплаты"));
+
+  mountPoint.prepend(banner);
+  return { banner, explore };
+}
+
+function makeMusicDock(config, root) {
+  const songs = (config.songs || [])
+    .map((song) => ({ ...song, src: resolveMedia(song.src) }))
+    .filter((song) => song.src);
+
+  if (!songs.length) return { destroy() {} };
+
+  const dock = el("aside", "syolana-music-dock");
+  dock.dataset.syolanaUi = "music";
+  const track = el("div", "syolana-track");
+  const title = el("strong", "", "Музыка Syolana");
+  const subtitle = el("small", "", "Музыкальная библиотека");
+  track.append(title, subtitle);
+
+  const transport = el("div", "syolana-transport");
+  const prev = el("button", "", "‹");
+  const play = el("button", "", "▶");
+  const next = el("button", "", "›");
   prev.type = play.type = next.type = "button";
   prev.setAttribute("aria-label", "Предыдущая песня");
   play.setAttribute("aria-label", "Слушать");
   next.setAttribute("aria-label", "Следующая песня");
-  controls.append(prev, play, next);
-  dock.append(track, controls);
-  document.body.append(dock);
+  transport.append(prev, play, next);
 
+  const themeName = el("span", "syolana-theme-name", "Тема");
+  themeName.id = "theme-name";
+  dock.append(track, transport, themeName);
+
+  const audio = new Audio();
+  audio.preload = "none";
+  audio.volume = 0.42;
   let index = 0;
 
-  function select(i, autoplay = false) {
-    index = (i + songs.length) % songs.length;
+  function select(nextIndex, autoplay = false) {
+    index = (nextIndex + songs.length) % songs.length;
     const song = songs[index];
+    audio.src = song.src;
     title.textContent = song.title || "Музыка Syolana";
-    subtitle.textContent = song.sourceTitle || song.artist || "Syolana";
-    audio.src = new URL(song.src, ROOT).href;
-    audio.load();
+    subtitle.textContent = song.artist || song.sourceTitle || "Syolana";
     play.textContent = "▶";
     if (autoplay) audio.play().catch(() => {});
   }
 
-  prev.onclick = () => select(index - 1, true);
-  next.onclick = () => select(index + 1, true);
   play.onclick = () => {
     if (audio.paused) audio.play().catch(() => {});
     else audio.pause();
   };
-  audio.addEventListener("playing", () => (play.textContent = "❚❚"));
-  audio.addEventListener("pause", () => (play.textContent = "▶"));
-  audio.addEventListener("ended", () => select(index + 1, true));
+  prev.onclick = () => select(index - 1, true);
+  next.onclick = () => select(index + 1, true);
+  audio.onplay = () => (play.textContent = "Ⅱ");
+  audio.onpause = () => (play.textContent = "▶");
+  audio.onended = () => select(index + 1, true);
 
   select(0, false);
-  return { dock, audio };
+  root.append(dock);
+
+  return {
+    dock,
+    audio,
+    destroy() {
+      audio.pause();
+      audio.src = "";
+      dock.remove();
+    },
+  };
 }
 
-function setupFullscreen(button) {
+function wireFullscreen(button) {
   const sync = () => {
-    const active = Boolean(
-      document.fullscreenElement || document.webkitFullscreenElement,
-    );
+    const active = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
     button.setAttribute("aria-pressed", String(active));
-    button.setAttribute(
-      "aria-label",
-      active ? "Выйти из полноэкранного режима" : "На весь экран",
-    );
+    button.setAttribute("aria-label", active ? "Выйти из полноэкранного режима" : "На весь экран");
   };
-
   button.onclick = async () => {
     try {
       if (document.fullscreenElement || document.webkitFullscreenElement) {
-        await (document.exitFullscreen || document.webkitExitFullscreen).call(
-          document,
-        );
+        await (document.exitFullscreen || document.webkitExitFullscreen).call(document);
       } else {
-        const fn =
-          document.documentElement.requestFullscreen ||
-          document.documentElement.webkitRequestFullscreen;
+        const fn = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
         if (fn) await fn.call(document.documentElement);
       }
     } catch {}
     sync();
   };
-
   document.addEventListener("fullscreenchange", sync);
   document.addEventListener("webkitfullscreenchange", sync);
+  return () => {
+    document.removeEventListener("fullscreenchange", sync);
+    document.removeEventListener("webkitfullscreenchange", sync);
+  };
 }
 
-function setupZen(theme, button, flight) {
-  let active = false;
+function wireFlight(theme, flight) {
   const pointers = new Map();
-  let lastSingle = null;
-  let lastDistance = 0;
-
-  const sync = () => {
-    document.body.classList.toggle("syolana-zen", active);
-    button.setAttribute("aria-pressed", String(active));
-    button.setAttribute(
-      "aria-label",
-      active ? "Вернуть интерфейс" : "Режим созерцания",
-    );
-    flight.hidden = !active;
-    theme.setZen(active);
+  let pinch = 0;
+  const distance = () => {
+    const pts = [...pointers.values()];
+    if (pts.length < 2) return 0;
+    return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
   };
 
-  button.onclick = () => {
-    active = !active;
-    sync();
+  const down = (e) => {
+    if (e.pointerType === "touch") return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    flight.setPointerCapture?.(e.pointerId);
+    pinch = distance();
   };
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && active) {
-      active = false;
-      sync();
+  const move = (e) => {
+    if (e.pointerType === "touch") return;
+    const prev = pointers.get(e.pointerId);
+    if (!prev) return;
+    const dx = e.clientX - prev.x;
+    const dy = e.clientY - prev.y;
+    prev.x = e.clientX;
+    prev.y = e.clientY;
+    pointers.set(e.pointerId, prev);
+    if (pointers.size > 1) {
+      const next = distance();
+      if (pinch && next) theme.move(0, 0, Math.log(next / pinch) * 6);
+      pinch = next;
+    } else {
+      theme.move(-dx / 180, -dy / 180, 0);
     }
-  });
-
-  window.addEventListener(
-    "wheel",
-    (e) => {
-      if (!active) return;
-      e.preventDefault();
-      theme.move(
-        0,
-        0,
-        Math.max(-0.34, Math.min(0.34, e.deltaY * 0.0014)),
-      );
-    },
-    { passive: false },
-  );
-
-  window.addEventListener("pointerdown", (e) => {
-    if (
-      !active ||
-      e.target.closest(".sy-core-top-bar,.sy-core-player,.sy-core-dialog")
-    )
-      return;
-
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    if (pointers.size === 1)
-      lastSingle = { x: e.clientX, y: e.clientY };
-
-    if (pointers.size === 2) {
-      const [a, b] = [...pointers.values()];
-      lastDistance = Math.hypot(a.x - b.x, a.y - b.y);
-    }
-  });
-
-  window.addEventListener("pointermove", (e) => {
-    if (!active || !pointers.has(e.pointerId)) return;
-
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    if (pointers.size === 1 && lastSingle) {
-      const dx = (e.clientX - lastSingle.x) / Math.max(320, innerWidth);
-      const dy = (e.clientY - lastSingle.y) / Math.max(480, innerHeight);
-      theme.move(-dx * 0.9, -dy * 0.9, 0);
-      lastSingle = { x: e.clientX, y: e.clientY };
-    } else if (pointers.size >= 2) {
-      const [a, b] = [...pointers.values()];
-      const distance = Math.hypot(a.x - b.x, a.y - b.y);
-      if (lastDistance)
-        theme.move(0, 0, (distance - lastDistance) * 0.004);
-      lastDistance = distance;
-    }
-  });
-
-  const release = (e) => {
+  };
+  const up = (e) => {
     pointers.delete(e.pointerId);
-    if (!pointers.size) {
-      lastSingle = null;
-      lastDistance = 0;
+    pinch = distance();
+    theme.settle?.();
+  };
+
+  let touchLast = null;
+  let touchPinch = 0;
+  const touchDistance = (list) =>
+    list.length >= 2
+      ? Math.hypot(list[0].clientX - list[1].clientX, list[0].clientY - list[1].clientY)
+      : 0;
+
+  const touchStart = (e) => {
+    if (e.touches.length === 1) {
+      touchLast = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      touchPinch = 0;
+    } else if (e.touches.length >= 2) {
+      touchLast = null;
+      touchPinch = touchDistance(e.touches);
+    }
+  };
+  const touchMove = (e) => {
+    e.preventDefault();
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      if (touchLast) theme.move(-(t.clientX - touchLast.x) / 165, -(t.clientY - touchLast.y) / 165, 0);
+      touchLast = { x: t.clientX, y: t.clientY };
+      touchPinch = 0;
+    } else if (e.touches.length >= 2) {
+      const next = touchDistance(e.touches);
+      if (touchPinch && next) theme.move(0, 0, Math.log(next / touchPinch) * 4.2);
+      touchPinch = next;
+      touchLast = null;
+    }
+  };
+  const touchEnd = (e) => {
+    if (e.touches.length === 1) touchLast = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    else {
+      touchLast = null;
+      touchPinch = 0;
       theme.settle?.();
     }
   };
+  const wheel = (e) => {
+    e.preventDefault();
+    theme.move(0, 0, Math.max(-160, Math.min(160, e.deltaY)) * 0.009);
+  };
 
-  window.addEventListener("pointerup", release);
-  window.addEventListener("pointercancel", release);
+  flight.addEventListener("pointerdown", down);
+  flight.addEventListener("pointermove", move);
+  flight.addEventListener("pointerup", up);
+  flight.addEventListener("pointercancel", up);
+  flight.addEventListener("touchstart", touchStart, { passive: true });
+  flight.addEventListener("touchmove", touchMove, { passive: false });
+  flight.addEventListener("touchend", touchEnd, { passive: true });
+  flight.addEventListener("touchcancel", touchEnd, { passive: true });
+  flight.addEventListener("wheel", wheel, { passive: false });
+
+  return () => {
+    flight.removeEventListener("pointerdown", down);
+    flight.removeEventListener("pointermove", move);
+    flight.removeEventListener("pointerup", up);
+    flight.removeEventListener("pointercancel", up);
+    flight.removeEventListener("touchstart", touchStart);
+    flight.removeEventListener("touchmove", touchMove);
+    flight.removeEventListener("touchend", touchEnd);
+    flight.removeEventListener("touchcancel", touchEnd);
+    flight.removeEventListener("wheel", wheel);
+  };
 }
 
-export async function mountPartnerCore({ partnerName = "" } = {}) {
-  if (window.__syolanaPartnerMounted)
-    return window.__syolanaPartnerMounted;
+export async function mountPartnerCore(options = {}) {
+  if (mounted) return mounted;
 
-  addStyles();
-  document.documentElement.classList.add("syolana-partner-active");
+  const root = document.body;
+  const header = document.querySelector(options.headerSelector || ".site-header");
+  const main = document.querySelector(options.mainSelector || "main");
+  if (!header || !main) throw new Error("Partner shell unavailable");
 
-  let config = {};
-  try {
-    config = await fetch(new URL("config.json", ROOT), {
-      cache: "no-store",
-    }).then((r) => (r.ok ? r.json() : {}));
-  } catch {}
+  const style = document.createElement("link");
+  style.rel = "stylesheet";
+  style.href = new URL("partner-core.css", CORE_BASE).href;
+  style.dataset.syolanaCore = "style";
+  document.head.append(style);
 
-  const chrome = buildChrome();
-  const dialog = buildThemeDialog();
-  const banner = buildBanner(partnerName, config);
-  const player = await buildPlayer(config);
+  document.documentElement.classList.add("syolana-active");
+  makeBackground(root);
+  const dialog = makeThemeDialog(root);
+  const controls = makeControls(header, root);
+  const config = await fetchConfig();
+  const banner = makeBanner(config, main);
+  const music = makeMusicDock(config, root);
 
   const theme = new ThemeEngine();
   await theme.init();
 
-  setupFullscreen(chrome.full);
-  setupZen(theme, chrome.zen, chrome.flight);
+  let zen = false;
+  const setZen = (active) => {
+    zen = Boolean(active);
+    document.body.classList.toggle("syolana-zen", zen);
+    controls.flight.hidden = !zen;
+    controls.zenToggle.setAttribute("aria-pressed", String(zen));
+    controls.zenToggle.setAttribute("aria-label", zen ? "Вернуть интерфейс" : "Режим созерцания");
+    theme.setZen?.(zen);
+  };
+  controls.zenToggle.onclick = () => setZen(!zen);
+  banner.explore.onclick = () => setZen(true);
 
-  const api = {
+  const unwireFlight = wireFlight(theme, controls.flight);
+  const unwireFullscreen = wireFullscreen(controls.fullscreen);
+  const esc = (e) => {
+    if (e.key === "Escape" && zen) setZen(false);
+  };
+  document.addEventListener("keydown", esc);
+
+  mounted = {
     theme,
+    setZen,
     destroy() {
-      document.documentElement.classList.remove("syolana-partner-active");
-      document.body.classList.remove("syolana-zen");
-      player?.audio?.pause();
-      player?.dock?.remove();
+      setZen(false);
+      unwireFlight();
+      unwireFullscreen();
+      document.removeEventListener("keydown", esc);
+      theme.custom?.dispose?.();
+      music.destroy();
       dialog.remove();
-      banner?.remove();
-      chrome.aurora.remove();
-      chrome.canvas.remove();
-      chrome.top.remove();
-      chrome.flight.remove();
-      byId("syolana-partner-fonts")?.remove();
-      byId("syolana-partner-core-style")?.remove();
-      window.__syolanaPartnerMounted = null;
+      controls.controls.remove();
+      controls.flight.remove();
+      banner.banner.remove();
+      document.querySelectorAll(".syolana-core-background,.syolana-core-canvas,[data-syolana-core='style']").forEach((n) => n.remove());
+      document.documentElement.classList.remove("syolana-active");
+      mounted = null;
     },
   };
 
-  window.__syolanaPartnerMounted = api;
-  return api;
+  return mounted;
 }

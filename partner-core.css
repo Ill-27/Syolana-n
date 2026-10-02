@@ -258,3 +258,23 @@
 @media(prefers-reduced-motion:reduce){
   .sy-core-aurora>span{animation:none}
 }
+
+
+/* Keep partner content below the same floating chrome used on Syolana. */
+:root.syolana-partner-active .partner-site-shell{
+  position:relative;
+  z-index:10;
+  padding-top:112px;
+}
+:root.syolana-partner-active .partner-content{
+  width:min(1140px,100%);
+  margin:0 auto;
+  padding-inline:40px;
+}
+@media(max-width:800px){
+  :root.syolana-partner-active .partner-site-shell{padding-top:99px}
+  :root.syolana-partner-active .partner-content{padding-inline:22px}
+}
+@media(max-width:600px){
+  :root.syolana-partner-active .partner-content{padding-inline:17px}
+}

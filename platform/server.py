@@ -74,6 +74,10 @@ def initialize():
           applied INTEGER NOT NULL DEFAULT 0,refunded INTEGER NOT NULL DEFAULT 0);
         ''')
         c.execute('CREATE TABLE IF NOT EXISTS manual_payments(reference TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),created INTEGER NOT NULL,amount INTEGER NOT NULL)')
+        c.execute('''CREATE TABLE IF NOT EXISTS learning_progress(
+          user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          course TEXT NOT NULL,data TEXT NOT NULL,updated INTEGER NOT NULL,
+          PRIMARY KEY(user_id,course))''')
         if 'published_at' not in [r['name'] for r in c.execute('PRAGMA table_info(posts)')]:
             c.execute('ALTER TABLE posts ADD COLUMN published_at INTEGER')
         if 'locked_price' not in [r['name'] for r in c.execute('PRAGMA table_info(sites)')]:
@@ -345,6 +349,22 @@ class App:
         if path=='auth/logout' and method=='POST':
             c.execute('DELETE FROM sessions WHERE token=?',(self.session_token,));c.commit()
             self.headers.append(('Set-Cookie','sy_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0'+('; Secure' if SECURE else '')));return {'ok':True}
+        match=re.fullmatch(r'learning/([a-z0-9-]{2,40})',path)
+        if match and method=='GET':
+            uid=self.require()
+            row=c.execute('SELECT data,updated FROM learning_progress WHERE user_id=? AND course=?',(uid,match[1])).fetchone()
+            return {'course':match[1],'progress':unpack(row['data']) if row else {},'updated':row['updated'] if row else 0}
+        if match and method=='POST':
+            uid=self.require();data=self.body();progress=data.get('progress')
+            if not isinstance(progress,dict):raise Problem('Некорректный прогресс курса.')
+            raw=js(progress)
+            if len(raw.encode())>200_000:raise Problem('Прогресс курса слишком большой.',413)
+            stamp=now()
+            c.execute('''INSERT INTO learning_progress(user_id,course,data,updated) VALUES(?,?,?,?)
+              ON CONFLICT(user_id,course) DO UPDATE SET data=excluded.data,updated=excluded.updated''',
+              (uid,match[1],raw,stamp))
+            c.commit()
+            return {'ok':True,'updated':stamp}
         if path=='studio' and method=='GET':
             uid=self.require();site=c.execute('SELECT * FROM sites WHERE user_id=?',(uid,)).fetchone()
             return {'priceRub':(price_for(site) if site else PRICE)/100,'site':clean_site(site),'posts':[clean_post(p) for p in c.execute('SELECT * FROM posts WHERE user_id=? ORDER BY updated DESC',(uid,))],**(access(site) if site else {'active':False,'accessUntil':0})}
@@ -602,7 +622,7 @@ def application(env,start_response):
         if app:app.c.close()
     security=[('Content-Type',content_type),('Content-Length',str(len(body))),('Cache-Control','no-store'),
       ('X-Content-Type-Options','nosniff'),('Referrer-Policy','strict-origin-when-cross-origin'),('X-Frame-Options','SAMEORIGIN' if app and app.path.startswith('/api/lessons/') or app and app.path.endswith('.html') else 'DENY'),
-      ('Cross-Origin-Opener-Policy','same-origin'),('Permissions-Policy','camera=(), microphone=(), geolocation=()'),
+      ('Cross-Origin-Opener-Policy','same-origin'),('Permissions-Policy','camera=(), microphone=(self), geolocation=()'),
       ('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; media-src 'self' https:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; frame-src 'self'; form-action 'self'")]
     if SECURE:security.append(('Strict-Transport-Security','max-age=31536000'))
     reasons={200:'OK',206:'Partial Content',400:'Bad Request',401:'Unauthorized',403:'Forbidden',404:'Not Found',405:'Method Not Allowed',409:'Conflict',413:'Payload Too Large',415:'Unsupported Media Type',416:'Range Not Satisfiable',429:'Too Many Requests',451:'Unavailable For Legal Reasons',500:'Internal Server Error',502:'Bad Gateway',503:'Service Unavailable'}

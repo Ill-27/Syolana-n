@@ -303,9 +303,7 @@ function platformPromo(kind = "themes") {
     const actions = el("div", "promo-actions");
     const idea = el("a", "btn small", "Предложить идею темы");
     idea.href =
-      "mailto:" +
-      (config.contactEmail || "sy@syolana.com") +
-      "?subject=" +
+      "mailto:ideas@syolana.com?subject=" +
       encodeURIComponent("Идея новой темы Syolana");
     actions.append(
       idea,
@@ -683,9 +681,7 @@ function join() {
   ].forEach((s) => ul.append(el("li", "", s)));
   const contact = el("a", "btn primary", "Обсудить мой сайт");
   contact.href =
-    "mailto:" +
-    config.contactEmail +
-    "?subject=" +
+    "mailto:partners@syolana.com?subject=" +
     encodeURIComponent("Хочу сайт Syolana · 7 дней тест-драйва");
   offer.append(ul, contact);
   grid.append(offer);
@@ -1206,6 +1202,72 @@ async function reader({ id, slug, chapter = 0 }, token) {
   };
   update();
 }
+function contactPage() {
+  $("page").append(
+    heading(
+      "СВЯЗАТЬСЯ С SYOLANA",
+      "Напишите туда, куда относится ваш вопрос",
+      "Все адреса ведут в одну команду Syolana, но помогают нам быстрее понять тему сообщения.",
+    ),
+  );
+
+  const grid = el("div", "grid two contact-grid");
+  const contacts = [
+    {
+      title: "Общие вопросы",
+      text: "О Syolana, возможностях платформы и всём, что не относится к отдельному разделу.",
+      email: "hello@syolana.com",
+      label: "Написать Syolana",
+      subject: "Вопрос о Syolana",
+    },
+    {
+      title: "Партнёрство и сайты",
+      text: "Новый сайт, тест-драйв, подключение Syolana и сотрудничество.",
+      email: "partners@syolana.com",
+      label: "Обсудить партнёрство",
+      subject: "Партнёрство с Syolana",
+    },
+    {
+      title: "Предложить идею",
+      text: "Новая тема, атмосфера, функция или творческая идея, которую хочется увидеть в Syolana.",
+      email: "ideas@syolana.com",
+      label: "Предложить идею",
+      subject: "Идея для Syolana",
+    },
+    {
+      title: "Поддержка",
+      text: "Если что-то не работает на сайте, в читалке, плеере или у подключённого партнёра.",
+      email: "support@syolana.com",
+      label: "Написать в поддержку",
+      subject: "Поддержка Syolana",
+    },
+  ];
+
+  for (const item of contacts) {
+    const card = el("section", "card stack contact-card");
+    card.append(
+      el("h2", "", item.title),
+      el("p", "", item.text),
+      link(item.email, "mailto:" + item.email, "text-link"),
+      link(
+        item.label,
+        "mailto:" + item.email + "?subject=" + encodeURIComponent(item.subject),
+        "btn primary",
+      ),
+    );
+    grid.append(card);
+  }
+
+  $("page").append(
+    grid,
+    el(
+      "p",
+      "notice",
+      "Для юридических и авторско-правовых обращений: legal@syolana.com. Пока почтовая маршрутизация на домене не включена, эти адреса нужно сначала активировать у провайдера почты.",
+    ),
+  );
+}
+
 function terms() {
   const box = el("article", "card stack");
   box.append(
@@ -1240,10 +1302,9 @@ function terms() {
       "Сервер сохраняет учётную запись, профиль, черновики, материалы и историю рассмотрения заявок. Пароль хранится в виде вычисленного хеша. Локально в браузере сохраняются настройки темы, плеера и место чтения. В студии можно скачать свои тексты.",
     ),
     el("h3", "", "Контакт"),
-    link("sy@syolana.com", "mailto:sy@syolana.com", "text-link"),
+    link("hello@syolana.com", "mailto:hello@syolana.com", "text-link"),
   );
-  const contact = box.lastChild;
-  contact.href = "mailto:sy@syolana.com";
+
   $("page").append(box);
 }
 function report() {
@@ -1279,7 +1340,7 @@ function report() {
     submit.disabled = true;
     try {
       if (!api.online)
-        throw Error("Форма пока не подключена. Напишите на sy@syolana.com.");
+        throw Error("Форма пока не подключена. Напишите на legal@syolana.com.");
       await api.request("reports", {
         method: "POST",
         body: Object.fromEntries(new FormData(form)),
@@ -1334,6 +1395,7 @@ async function route() {
       );
       await openLesson(key, d ? decodeURIComponent(d) : "", token);
     } else if (view === "join") join();
+    else if (view === "contact") contactPage();
     else if (view === "studio") {
       await apiReady;
       if (token === routeToken)

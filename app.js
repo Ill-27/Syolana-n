@@ -749,6 +749,7 @@ function join() {
   $("page").append(security);
 }
 async function publicSite(slug, token) {
+  document.body.classList.add("partner-site");
   const data = await api.request("public/" + encodeURIComponent(slug));
   if (token !== routeToken) return;
   applyEntitlement(data);
@@ -1394,7 +1395,7 @@ async function route() {
   clearTimeout(siteTimer);
   clearTimeout(accessTimer);
   zen(false);
-  document.body.classList.remove("reading", "no-effects");
+  document.body.classList.remove("reading", "no-effects", "partner-site");
   theme.setBlocked(false);
   document.documentElement.style.setProperty("--prose", moodColors.neutral);
   $("page").replaceChildren();

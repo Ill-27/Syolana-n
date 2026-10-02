@@ -35,9 +35,9 @@ function iconButton(id, label, html) {
 }
 
 function buildChrome() {
-  const aurora = node("div", "sy-core-aurora");
+  const aurora = node("div", "sy-core-aurora aurora-background");
   aurora.setAttribute("aria-hidden", "true");
-  for (const cls of ["one", "two", "three"]) aurora.append(node("span", cls));
+  for (const cls of ["one", "two", "three"]) aurora.append(node("span", "aurora-layer " + cls));
 
   const canvas = node("canvas");
   canvas.id = "starCanvas";
@@ -127,11 +127,13 @@ function buildThemeDialog() {
   return dialog;
 }
 
-function buildBanner(partnerName = "") {
-  const slot = byId("syolana-banner-slot");
+function buildBanner(partnerName = "", config = {}) {
+  const slot = byId("platform-banner-slot") || byId("syolana-banner-slot");
   if (!slot) return null;
 
+  const bannerConfig = config.banner || {};
   slot.hidden = false;
+
   const banner = node("aside", "sy-core-banner");
   banner.setAttribute("aria-label", "О Syolana");
 
@@ -143,30 +145,40 @@ function buildBanner(partnerName = "") {
 
   banner.append(
     mark,
-    node("div", "eyebrow", "ИММЕРСИВНАЯ ПЛАТФОРМА ДЛЯ ТВОРЧЕСТВА"),
-    node("h2", "", "Ваш сайт — живой мир."),
+    node(
+      "div",
+      "eyebrow",
+      bannerConfig.eyebrow || "ИММЕРСИВНАЯ ПЛАТФОРМА ДЛЯ ТВОРЧЕСТВА",
+    ),
+    node("h2", "", bannerConfig.title || "Ваш сайт — живой мир."),
     node(
       "p",
       "",
-      partnerName
-        ? `${partnerName} использует живые темы и иммерсивные функции Syolana.`
-        : "Живые темы, музыка, иммерсивное чтение и публикации — в одной системе.",
+      bannerConfig.description ||
+        (partnerName
+          ? `${partnerName} использует живые темы и иммерсивные функции Syolana.`
+          : "Живые темы, музыка, иммерсивное чтение и публикации — в одной системе."),
     ),
   );
 
   const features = node("div", "sy-core-features");
-  for (const label of [
-    "Живые темы",
-    "Музыка",
-    "Иммерсивное чтение",
-    "Обновления",
-  ]) {
+  const labels =
+    Array.isArray(bannerConfig.features) && bannerConfig.features.length
+      ? bannerConfig.features
+      : ["Живые темы", "Музыка", "Иммерсивное чтение", "Обновления"];
+
+  for (const label of labels.slice(0, 4)) {
     features.append(node("span", "sy-core-feature", label));
   }
 
   const actions = node("div", "sy-core-banner-actions");
-  const cta = node("a", "sy-core-cta", "Открыть Syolana");
-  cta.href = new URL("#/join", ROOT).href;
+  const cta = node(
+    "a",
+    "sy-core-cta",
+    bannerConfig.links?.[0]?.label || "Открыть Syolana",
+  );
+  const href = bannerConfig.links?.[0]?.href || "#/join";
+  cta.href = new URL(href, ROOT).href;
   cta.target = "_blank";
   cta.rel = "noopener";
   actions.append(cta);
@@ -177,7 +189,8 @@ function buildBanner(partnerName = "") {
     node(
       "p",
       "sy-core-note",
-      "Иммерсивный слой активен, пока действует сотрудничество.",
+      bannerConfig.invitation ||
+        "Иммерсивный слой активен, пока действует сотрудничество.",
     ),
   );
 
@@ -185,16 +198,7 @@ function buildBanner(partnerName = "") {
   return banner;
 }
 
-async function buildPlayer() {
-  let config;
-  try {
-    config = await fetch(new URL("config.json", ROOT), {
-      cache: "no-store",
-    }).then((r) => r.json());
-  } catch {
-    return null;
-  }
-
+async function buildPlayer(config = {}) {
   const songs = (config.songs || []).filter((song) => song?.src);
   if (!songs.length) return null;
 
@@ -384,10 +388,17 @@ export async function mountPartnerCore({ partnerName = "" } = {}) {
   addStyles();
   document.documentElement.classList.add("syolana-partner-active");
 
+  let config = {};
+  try {
+    config = await fetch(new URL("config.json", ROOT), {
+      cache: "no-store",
+    }).then((r) => (r.ok ? r.json() : {}));
+  } catch {}
+
   const chrome = buildChrome();
   const dialog = buildThemeDialog();
-  const banner = buildBanner(partnerName);
-  const player = await buildPlayer();
+  const banner = buildBanner(partnerName, config);
+  const player = await buildPlayer(config);
 
   const theme = new ThemeEngine();
   await theme.init();

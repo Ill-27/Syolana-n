@@ -10,7 +10,9 @@ export class ThemeEngine {
     this.last = 0;
     this.phase = 0;
     this.sequence = 0;
-    this.manifest = await fetch("themes/manifest.json", {
+    const themeBase = new URL("./themes/", import.meta.url);
+    this.themeBase = themeBase;
+    this.manifest = await fetch(new URL("manifest.json", themeBase), {
       cache: "default",
     }).then((r) => {
       if (!r.ok) throw Error("Темы недоступны");
@@ -81,7 +83,7 @@ export class ThemeEngine {
     const seq = ++this.sequence;
     const item = this.manifest.find((t) => t.id === id);
     if (!item) return;
-    const url = new URL(item.module, new URL("themes/", document.baseURI));
+    const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== location.origin) throw Error("Invalid theme");
     const { default: theme } = await import(url.href);
     if (seq !== this.sequence) return;

@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>English A1 · Syolana</title>
+<style>
+:root{color-scheme:dark;--bg:#0a0911;--card:#151221d9;--line:#ffffff1a;--text:#f5f0fb;--muted:#b8afc9;--accent:#c9a7ff;--ok:#a9e8bc;--bad:#ffb7c0;--r:22px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:transparent;color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+main{width:min(1100px,100%);margin:auto;padding:18px 12px 80px}.hero,.panel,.day,.exam{background:linear-gradient(135deg,#ffffff09,transparent 55%),var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(18px,4vw,30px);margin:14px 0;box-shadow:0 18px 65px #0003}
+.eyebrow,.badge{font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:800}.hero h1{font-size:clamp(2rem,8vw,4.8rem);line-height:.95;margin:.35em 0}.hero p{max-width:780px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}.btn{appearance:none;border:1px solid var(--line);background:#ffffff0c;color:var(--text);padding:10px 14px;border-radius:999px;font:inherit;font-weight:700;cursor:pointer}.btn.primary{background:var(--accent);color:#160d20;border-color:transparent}.btn[aria-pressed="true"]{outline:2px solid var(--accent)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.progress{height:8px;background:#ffffff0d;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}.stat{padding:12px;border:1px solid var(--line);border-radius:16px;background:#0002}.stat b{display:block;font-size:1.35rem}.stat small{color:var(--muted)}
+.days{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}.daypick{border:1px solid var(--line);border-radius:18px;padding:14px;background:#ffffff07;cursor:pointer;text-align:left;color:inherit}.daypick strong{display:block}.daypick small{color:var(--muted)}.daypick.done{border-color:#a9e8bc66}.daypick.current{outline:2px solid var(--accent)}
+.day h2,.exam h2{font-size:clamp(1.6rem,5vw,2.6rem);margin:.2em 0}.section{margin:20px 0}.section h3{font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.item{position:relative;border:1px solid var(--line);border-radius:18px;padding:14px;margin:8px 0;background:#0002;transition:.2s}.item.active{border-color:var(--accent);box-shadow:0 0 0 2px #c9a7ff22}.en{font-size:1.12rem;font-weight:750}.ipa{font:italic 1rem/1.45 Georgia,serif;color:#d8c9ed;margin-top:3px}.ru{color:var(--muted);margin-top:5px}.us{margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}.us b{color:#e8d4ff}
+.quiz{border:1px solid var(--line);border-radius:18px;padding:15px;margin:10px 0}.quiz legend{font-weight:800;padding:0 6px}.option{display:block;padding:9px 10px;border-radius:12px;margin:5px 0;background:#ffffff06;cursor:pointer}.option input{margin-right:8px}.feedback{min-height:1.5em;font-weight:700}.good{color:var(--ok)}.bad{color:var(--bad)}
+.sessionbar{position:sticky;bottom:8px;z-index:10;border:1px solid #ffffff24;background:#0c0915ed;backdrop-filter:blur(15px);border-radius:18px;padding:10px 12px;margin:18px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sessionbar .clock{font-variant-numeric:tabular-nums;font-weight:800;margin-left:auto}
+.canvaswrap{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fbf9ff}.canvaswrap canvas{display:block;width:100%;height:260px;touch-action:none;cursor:crosshair}.hand-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.weak{display:grid;gap:8px}.weakrow{border:1px solid var(--line);border-radius:14px;padding:10px}.weakrow b{color:var(--bad)}
+.exam-nav{display:flex;gap:8px;flex-wrap:wrap}.exam-part{display:none}.exam-part.active{display:block}.prompt{padding:14px;border-left:3px solid var(--accent);background:#ffffff07;border-radius:0 14px 14px 0}.answerbox{width:100%;min-height:130px;background:#090810;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;font:inherit}
+details{border:1px solid var(--line);border-radius:16px;padding:12px;margin:9px 0}summary{cursor:pointer;font-weight:800}
+.note{color:var(--muted);font-size:.9rem}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}.hero,.panel,.day,.exam{border-radius:18px}.sessionbar .clock{width:100%;margin-left:0}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+<div class="eyebrow">SYOLANA · ENGLISH A1</div>
+<h1>С нуля до уверенного A1</h1>
+<p>28 дней без воды: британский английский как основа, американские варианты для узнавания, произношение, грамматика, лексика, понимание речи, чтение, письмо, говорение и постоянное возвращение к слабым местам.</p>
+<div class="item"><div class="en">British English</div><div class="ipa">/ˌbrɪtɪʃ ˈɪŋɡlɪʃ/</div><div class="ru">Основная норма курса.</div><div class="us"><b>American English</b><div class="ipa">/əˌmerɪkən ˈɪŋɡlɪʃ/</div><div class="ru">Отдельно отмечаем частотные отличия, чтобы ученик понимал обе нормы и не смешивал их бессознательно.</div></div></div>
+<div class="stats">
+<div class="stat"><b id="statDays">0/28</b><small>дней закрыто</small></div>
+<div class="stat"><b id="statMastery">0%</b><small>мастерство</small></div>
+<div class="stat"><b id="statErrors">0</b><small>ошибок к повтору</small></div>
+<div class="stat"><b id="statStreak">0</b><small>серия ответов</small></div>
+</div>
+<div class="progress" aria-label="Прогресс курса"><i id="courseProgress"></i></div>
+</section>
+
+<section class="panel">
+<div class="eyebrow">КАК РАБОТАЕТ ДЕНЬ</div>
+<h2>Один маршрут — два режима</h2>
+<p>Полный режим рассчитан на 60 минут: английская речь, русские объяснения и паузы на активное воспроизведение. Режим «только английский» — 30 минут. Браузерная озвучка может немного отличаться по скорости между устройствами, поэтому таймер сессии держит заданную длительность, а материал циклически возвращается в новых порядках.</p>
+<div class="controls">
+<button class="btn primary" id="startFull">▶ 60 минут</button>
+<button class="btn" id="startEn">▶ 30 минут · только English</button>
+<button class="btn" id="pauseSession" disabled>Пауза</button>
+<button class="btn" id="stopSession" disabled>Стоп</button>
+</div>
+<p class="note">Во время озвучки текущая карточка подсвечивается и автоматически прокручивается в удобную область экрана. Музыка сайта должна быть поставлена на паузу хостом.</p>
+</section>
+
+<section class="panel">
+<div class="eyebrow">МАРШРУТ A1</div>
+<div class="days" id="dayGrid"></div>
+</section>
+
+<section class="day" id="lesson"></section>
+
+<div class="sessionbar" id="sessionBar" hidden>
+<span class="badge" id="sessionMode">FULL</span>
+<span id="sessionNow">Готовим озвучку…</span>
+<button class="btn" id="sessionPauseMini">Пауза</button>
+<button class="btn" id="sessionStopMini">Стоп</button>
+<span class="clock" id="sessionClock">00:00 / 60:00</span>
+</div>
+
+<section class="panel">
+<div class="eyebrow">РУКОПИСНОЕ ЗАКРЕПЛЕНИЕ</div>
+<h2>Пишите прямо на сайте</h2>
+<p>Перепишите сегодняшние фразы по памяти. Поле поддерживает палец, стилус и мышь. Штрихи сохраняются на этом устройстве как векторы — без тяжёлых фотографий.</p>
+<div class="canvaswrap"><canvas id="ink" width="1000" height="520" aria-label="Поле для письма от руки"></canvas></div>
+<div class="hand-tools"><button class="btn" id="undoInk">↶ Отменить</button><button class="btn" id="clearInk">Очистить</button></div>
+</section>
+
+<section class="panel">
+<div class="eyebrow">АДАПТИВНОЕ ПОВТОРЕНИЕ</div>
+<h2>Слабые места</h2>
+<p>Ошибка не исчезает после показа правильного ответа. Она возвращается через интервалы 1 → 3 → 7 → 14 → 30 дней, пока ответы не станут устойчивыми.</p>
+<div class="weak" id="weakList"></div>
+<button class="btn" id="reviewWeak">Повторить слабое сейчас</button>
+</section>
+
+<section class="exam" id="exam">
+<div class="eyebrow">ИТОГОВЫЙ ЭКЗАМЕН SYOLANA · CEFR A1</div>
+<h2>A1 Mastery Exam</h2>
+<div class="item"><div class="en">I can understand and use familiar everyday expressions.</div><div class="ipa">/aɪ kən ˌʌndəˈstænd ən juːz fəˈmɪliə ˈevrideɪ ɪkˈspreʃənz/</div><div class="ru">Я могу понимать и использовать знакомые повседневные выражения.</div></div>
+<p>Экзамен проверяет Listening, Reading, Writing и Speaking. Он является внутренним экзаменом Syolana по уровню CEFR A1, а не сертификатом сторонней экзаменационной организации.</p>
+<div class="exam-nav"><button class="btn primary" data-exam="listen">Listening</button><button class="btn" data-exam="read">Reading</button><button class="btn" data-exam="write">Writing</button><button class="btn" data-exam="speak">Speaking</button><button class="btn" data-exam="result">Результат</button></div>
+<div id="examParts"></div>
+</section>
+
+<section class="panel">
+<div class="eyebrow">КАРТА ПОКРЫТИЯ</div>
+<h2>Что именно закрывает A1</h2>
+<div id="coverage"></div>
+</section>
+</main>
+
+<script>
+const SKEY="syolana.en.a1.v2";
+const today=()=>new Date().toISOString().slice(0,10);
+const E=(en,ipa,ru,us=null)=>({en,ipa,ru,us});
+const Q=(id,prompt,options,answer,tag)=>({id,prompt,options,answer,tag});
+const days=[
+{n:1,title:"Звуки, алфавит и знакомство",goal:"Читать буквы, представляться, использовать be.",tags:["pronunciation","be","introductions"],items:[
+E("A, B, C, D, E","/eɪ, biː, siː, diː, iː/","Первые пять названий букв."),
+E("Hello. My name is Anna.","/həˈləʊ. maɪ neɪm ɪz ˈænə/","Здравствуйте. Меня зовут Анна.",{en:"Hello. My name is Anna.",ipa:"/həˈloʊ. maɪ neɪm ɪz ˈænə/",ru:"В американском варианте заметно /oʊ/ вместо британского /əʊ/."}),
+E("I am a student.","/aɪ æm ə ˈstjuːdənt/","Я студент."),
+E("You are my friend.","/juː ɑː maɪ frend/","Ты мой друг."),
+E("She is from London.","/ʃiː ɪz frəm ˈlʌndən/","Она из Лондона."),
+E("Are you ready?","/ɑː juː ˈredi/","Ты готов(а)?")],
+quiz:[
+Q("d1q1","Выберите «Я студент».",[E("I am a student.","/aɪ æm ə ˈstjuːdənt/",""),E("I is a student.","/aɪ ɪz ə ˈstjuːdənt/",""),E("I are a student.","/aɪ ɑː ə ˈstjuːdənt/","")],0,"be"),
+Q("d1q2","Выберите вопрос «Ты готов(а)?».",[E("You are ready?","/juː ɑː ˈredi/",""),E("Are you ready?","/ɑː juː ˈredi/",""),E("Is you ready?","/ɪz juː ˈredi/","")],1,"be")]},
+{n:2,title:"Артикли, множественное число, this/that",goal:"Называть предметы и указывать на них.",tags:["articles","nouns","demonstratives"],items:[
+E("a book","/ə bʊk/","книга"),E("an apple","/ən ˈæpl/","яблоко"),E("the door","/ðə dɔː/","конкретная дверь"),E("books","/bʊks/","книги"),E("This is a key.","/ðɪs ɪz ə kiː/","Это ключ."),E("Those are my bags.","/ðəʊz ɑː maɪ bæɡz/","Вон те — мои сумки.",{en:"Those are my bags.",ipa:"/ðoʊz ɑr maɪ bæɡz/","ru":"Американская реализация those /ðoʊz/ и r в are."})],
+quiz:[Q("d2q1","Перед словом apple нужен:",[E("a apple","/ə ˈæpl/",""),E("an apple","/ən ˈæpl/",""),E("the an apple","/ðiː ən ˈæpl/","")],1,"articles"),Q("d2q2","Выберите «Вон те — мои сумки».",[E("Those are my bags.","/ðəʊz ɑː maɪ bæɡz/",""),E("That are my bags.","/ðæt ɑː maɪ bæɡz/",""),E("Those is my bags.","/ðəʊz ɪz maɪ bæɡz/","")],0,"demonstratives")]},
+{n:3,title:"Семья, have got и притяжательность",goal:"Говорить о семье и принадлежности.",tags:["have","possessives","family"],items:[
+E("mother","/ˈmʌðə/","мама"),E("father","/ˈfɑːðə/","папа"),E("sister","/ˈsɪstə/","сестра"),E("brother","/ˈbrʌðə/","брат"),E("I have got a sister.","/aɪ həv ɡɒt ə ˈsɪstə/","У меня есть сестра.",{en:"I have a sister.",ipa:"/aɪ hæv ə ˈsɪstər/","ru":"В американском разговорном английском часто проще have без got."}),E("This is Tom's book.","/ðɪs ɪz tɒmz bʊk/","Это книга Тома.")],
+quiz:[Q("d3q1","Выберите «У меня есть сестра».",[E("I have got a sister.","/aɪ həv ɡɒt ə ˈsɪstə/",""),E("I has got a sister.","/aɪ hæz ɡɒt ə ˈsɪstə/",""),E("I am got a sister.","/aɪ æm ɡɒt ə ˈsɪstə/","")],0,"have"),Q("d3q2","«Книга Тома»:",[E("Tom book","/tɒm bʊk/",""),E("Tom's book","/tɒmz bʊk/",""),E("Toms' book","/tɒmz bʊk/","")],1,"possessives")]},
+{n:4,title:"Числа, даты и время",goal:"Понимать цены, номера, часы и даты.",tags:["numbers","time","dates"],items:[
+E("one, two, three","/wʌn, tuː, θriː/","один, два, три"),E("ten, twenty, thirty","/ten, ˈtwenti, ˈθɜːti/","десять, двадцать, тридцать"),E("one hundred","/wʌn ˈhʌndrəd/","сто"),E("What time is it?","/wɒt taɪm ɪz ɪt/","Который час?"),E("It is half past seven.","/ɪt ɪz hɑːf pɑːst ˈsevn/","Половина восьмого."),E("My birthday is on the fifth of May.","/maɪ ˈbɜːθdeɪ ɪz ɒn ðə fɪfθ əv meɪ/","Мой день рождения пятого мая.",{en:"My birthday is on May fifth.",ipa:"/maɪ ˈbɝːθdeɪ ɪz ɑːn meɪ fɪfθ/","ru":"Типичный американский порядок даты."})],
+quiz:[Q("d4q1","Выберите «Который час?».",[E("What time is it?","/wɒt taɪm ɪz ɪt/",""),E("How time is it?","/haʊ taɪm ɪz ɪt/",""),E("What hour it is?","/wɒt ˈaʊə ɪt ɪz/","")],0,"time"),Q("d4q2","20:",[E("twelve","/twelv/",""),E("twenty","/ˈtwenti/",""),E("two","/tuː/","")],1,"numbers")]},
+{n:5,title:"Present Simple: утверждение",goal:"Рассказывать о фактах и привычках.",tags:["present-simple","routine"],items:[
+E("I work at home.","/aɪ wɜːk ət həʊm/","Я работаю дома."),E("She works at home.","/ʃiː wɜːks ət həʊm/","Она работает дома."),E("We live in a small town.","/wiː lɪv ɪn ə smɔːl taʊn/","Мы живём в маленьком городе."),E("He likes coffee.","/hiː laɪks ˈkɒfi/","Он любит кофе.",{en:"He likes coffee.",ipa:"/hi laɪks ˈkɔːfi/","ru":"Частотное различие гласной в coffee."}),E("every day","/ˈevri deɪ/","каждый день"),E("usually","/ˈjuːʒuəli/","обычно")],
+quiz:[Q("d5q1","После he в Present Simple:",[E("he work","/hiː wɜːk/",""),E("he works","/hiː wɜːks/",""),E("he working","/hiː ˈwɜːkɪŋ/","")],1,"present-simple"),Q("d5q2","Выберите «Мы живём в маленьком городе».",[E("We lives in a small town.","/wiː lɪvz ɪn ə smɔːl taʊn/",""),E("We live in a small town.","/wiː lɪv ɪn ə smɔːl taʊn/",""),E("We living in a small town.","/wiː ˈlɪvɪŋ ɪn ə smɔːl taʊn/","")],1,"present-simple")]},
+{n:6,title:"Present Simple: вопросы и отрицания",goal:"Спрашивать и отрицать в настоящем.",tags:["do-does","questions","negatives"],items:[
+E("I do not know.","/aɪ duː nɒt nəʊ/","Я не знаю.",{en:"I don't know.",ipa:"/aɪ doʊnt noʊ/","ru":"В обеих нормах сокращение очень частотно; здесь дана американская фонетика."}),E("She does not drive.","/ʃiː dʌz nɒt draɪv/","Она не водит."),E("Do you speak English?","/duː juː spiːk ˈɪŋɡlɪʃ/","Вы говорите по-английски?"),E("Does he live here?","/dʌz hiː lɪv hɪə/","Он живёт здесь?"),E("Where do you work?","/weə duː juː wɜːk/","Где вы работаете?"),E("Why does she study English?","/waɪ dʌz ʃiː ˈstʌdi ˈɪŋɡlɪʃ/","Почему она учит английский?")],
+quiz:[Q("d6q1","Правильный вопрос:",[E("Do you speak English?","/duː juː spiːk ˈɪŋɡlɪʃ/",""),E("Speak you English?","/spiːk juː ˈɪŋɡlɪʃ/",""),E("Does you speak English?","/dʌz juː spiːk ˈɪŋɡlɪʃ/","")],0,"do-does"),Q("d6q2","С he используем:",[E("do","/duː/",""),E("does","/dʌz/",""),E("am","/æm/","")],1,"do-does")]},
+{n:7,title:"Распорядок и наречия частоты",goal:"Описывать обычный день.",tags:["frequency","routine","review"],items:[
+E("always","/ˈɔːlweɪz/","всегда"),E("often","/ˈɒfn/","часто"),E("sometimes","/ˈsʌmtaɪmz/","иногда"),E("never","/ˈnevə/","никогда"),E("I usually get up at seven.","/aɪ ˈjuːʒuəli ɡet ʌp ət ˈsevn/","Я обычно встаю в семь."),E("She is always busy.","/ʃiː ɪz ˈɔːlweɪz ˈbɪzi/","Она всегда занята.")],
+quiz:[Q("d7q1","Наречие частоты обычно стоит:",[E("before the main verb","/bɪˈfɔː ðə meɪn vɜːb/","перед смысловым глаголом"),E("after every noun","/ˈɑːftə ˈevri naʊn/","после каждого существительного"),E("before every article","/bɪˈfɔː ˈevri ˈɑːtɪkl/","перед каждым артиклем")],0,"frequency"),Q("d7q2","Выберите «Я никогда не опаздываю».",[E("I never am late.","/aɪ ˈnevə æm leɪt/",""),E("I am never late.","/aɪ æm ˈnevə leɪt/",""),E("I am late never.","/aɪ æm leɪt ˈnevə/","")],1,"frequency")]},
+{n:8,title:"Дом: there is/are и предлоги места",goal:"Описывать комнату и местоположение.",tags:["there-is","prepositions","home"],items:[
+E("There is a table in the kitchen.","/ðeər ɪz ə ˈteɪbl ɪn ðə ˈkɪtʃɪn/","На кухне есть стол."),E("There are two chairs.","/ðeər ɑː tuː tʃeəz/","Есть два стула."),E("on the table","/ɒn ðə ˈteɪbl/","на столе"),E("under the bed","/ˈʌndə ðə bed/","под кроватью"),E("next to the door","/nekst tə ðə dɔː/","рядом с дверью"),E("flat","/flæt/","квартира",{en:"apartment",ipa:"/əˈpɑːrtmənt/","ru":"Основной американский вариант."})],
+quiz:[Q("d8q1","С одним предметом:",[E("There is","/ðeər ɪz/",""),E("There are","/ðeər ɑː/",""),E("There be","/ðeə biː/","")],0,"there-is"),Q("d8q2","«Под кроватью»:",[E("under the bed","/ˈʌndə ðə bed/",""),E("on the bed","/ɒn ðə bed/",""),E("next the bed","/nekst ðə bed/","")],0,"prepositions")]},
+{n:9,title:"Can, умения и просьбы",goal:"Говорить об умениях, разрешении и простых просьбах.",tags:["can","requests","abilities"],items:[
+E("I can swim.","/aɪ kən swɪm/","Я умею плавать."),E("I cannot drive.","/aɪ ˈkænɒt draɪv/","Я не умею водить."),E("Can you help me?","/kən juː help miː/","Вы можете мне помочь?"),E("Can I come in?","/kən aɪ kʌm ɪn/","Можно войти?"),E("Please sit down.","/pliːz sɪt daʊn/","Пожалуйста, садитесь."),E("Could you repeat that, please?","/kʊd juː rɪˈpiːt ðæt pliːz/","Не могли бы вы повторить?")],
+quiz:[Q("d9q1","После can глагол:",[E("without to","/wɪˈðaʊt tuː/","без to"),E("with to","/wɪð tuː/","с to"),E("with -ing","/wɪð ɪŋ/","с -ing")],0,"can"),Q("d9q2","Вежливая просьба:",[E("Can you help me?","/kən juː help miː/",""),E("You helps me.","/juː helps miː/",""),E("Help can you me.","/help kən juː miː/","")],0,"requests")]},
+{n:10,title:"Еда: countable/uncountable, some/any",goal:"Покупать и заказывать еду.",tags:["some-any","countability","food"],items:[
+E("some water","/sʌm ˈwɔːtə/","немного воды"),E("an egg","/ən eɡ/","яйцо"),E("some bread","/sʌm bred/","немного хлеба"),E("Do we have any milk?","/duː wiː hæv ˈeni mɪlk/","У нас есть молоко?"),E("There is some cheese.","/ðeər ɪz sʌm tʃiːz/","Есть немного сыра."),E("I'd like a coffee, please.","/aɪd laɪk ə ˈkɒfi pliːz/","Я бы хотел(а) кофе, пожалуйста.")],
+quiz:[Q("d10q1","В обычном вопросе часто:",[E("any","/ˈeni/",""),E("some","/sʌm/",""),E("a waters","/ə ˈwɔːtəz/","")],0,"some-any"),Q("d10q2","Вежливый заказ:",[E("I'd like a coffee, please.","/aɪd laɪk ə ˈkɒfi pliːz/",""),E("I like one coffee now.","/aɪ laɪk wʌn ˈkɒfi naʊ/",""),E("Give coffee.","/ɡɪv ˈkɒfi/","")],0,"food")]},
+{n:11,title:"Магазин, цены и количество",goal:"Спрашивать цену, размер и количество.",tags:["shopping","quantity","prices"],items:[
+E("How much is this?","/haʊ mʌtʃ ɪz ðɪs/","Сколько это стоит?"),E("How many apples do you need?","/haʊ ˈmeni ˈæplz duː juː niːd/","Сколько яблок вам нужно?"),E("It is ten pounds.","/ɪt ɪz ten paʊndz/","Это стоит десять фунтов."),E("small, medium, large","/smɔːl, ˈmiːdiəm, lɑːdʒ/","маленький, средний, большой"),E("shop","/ʃɒp/","магазин",{en:"store",ipa:"/stɔːr/","ru":"Очень частый американский вариант."}),E("trousers","/ˈtraʊzəz/","брюки",{en:"pants",ipa:"/pænts/","ru":"Американский вариант; в британском pants обычно означает нижнее бельё."})],
+quiz:[Q("d11q1","С неисчисляемым количеством:",[E("How much?","/haʊ mʌtʃ/",""),E("How many?","/haʊ ˈmeni/",""),E("How number?","/haʊ ˈnʌmbə/","")],0,"quantity"),Q("d11q2","Британское «магазин»:",[E("shop","/ʃɒp/",""),E("store","/stɔː/",""),E("market only","/ˈmɑːkɪt ˈəʊnli/","")],0,"shopping")]},
+{n:12,title:"Present Continuous",goal:"Описывать то, что происходит сейчас.",tags:["present-continuous","actions"],items:[
+E("I am reading now.","/aɪ æm ˈriːdɪŋ naʊ/","Я сейчас читаю."),E("She is talking on the phone.","/ʃiː ɪz ˈtɔːkɪŋ ɒn ðə fəʊn/","Она разговаривает по телефону."),E("They are waiting outside.","/ðeɪ ɑː ˈweɪtɪŋ ˌaʊtˈsaɪd/","Они ждут снаружи."),E("What are you doing?","/wɒt ɑː juː ˈduːɪŋ/","Что вы делаете?"),E("now","/naʊ/","сейчас"),E("at the moment","/ət ðə ˈməʊmənt/","в данный момент")],
+quiz:[Q("d12q1","Формула:",[E("be + verb-ing","/biː plʌs vɜːb ɪŋ/",""),E("do + verb-ing","/duː plʌs vɜːb ɪŋ/",""),E("have + verb-ing","/hæv plʌs vɜːb ɪŋ/","")],0,"present-continuous"),Q("d12q2","«Она сейчас работает».",[E("She works now.","/ʃiː wɜːks naʊ/",""),E("She is working now.","/ʃiː ɪz ˈwɜːkɪŋ naʊ/",""),E("She working now.","/ʃiː ˈwɜːkɪŋ naʊ/","")],1,"present-continuous")]},
+{n:13,title:"Present Simple vs Continuous",goal:"Отличать привычку от действия сейчас.",tags:["present-contrast","stative"],items:[
+E("I read every evening.","/aɪ riːd ˈevri ˈiːvnɪŋ/","Я читаю каждый вечер."),E("I am reading now.","/aɪ æm ˈriːdɪŋ naʊ/","Я сейчас читаю."),E("She works in a bank.","/ʃiː wɜːks ɪn ə bæŋk/","Она работает в банке."),E("She is working from home today.","/ʃiː ɪz ˈwɜːkɪŋ frəm həʊm təˈdeɪ/","Сегодня она работает из дома."),E("I know the answer.","/aɪ nəʊ ði ˈɑːnsə/","Я знаю ответ."),E("I like this song.","/aɪ laɪk ðɪs sɒŋ/","Мне нравится эта песня.")],
+quiz:[Q("d13q1","Для привычки:",[E("Present Simple","/ˈpreznt ˈsɪmpl/",""),E("Present Continuous","/ˈpreznt kənˈtɪnjuəs/",""),E("Past Simple","/pɑːst ˈsɪmpl/","")],0,"present-contrast"),Q("d13q2","Для действия прямо сейчас:",[E("I am reading now.","/aɪ æm ˈriːdɪŋ naʊ/",""),E("I read every day.","/aɪ riːd ˈevri deɪ/",""),E("I read yesterday.","/aɪ red ˈjestədeɪ/","")],0,"present-contrast")]},
+{n:14,title:"Город, направления и повелительное наклонение",goal:"Спросить дорогу и понять инструкцию.",tags:["directions","imperative","city"],items:[
+E("Where is the station?","/weər ɪz ðə ˈsteɪʃn/","Где станция?"),E("Go straight on.","/ɡəʊ streɪt ɒn/","Идите прямо."),E("Turn left.","/tɜːn left/","Поверните налево."),E("Turn right.","/tɜːn raɪt/","Поверните направо."),E("opposite the bank","/ˈɒpəzɪt ðə bæŋk/","напротив банка"),E("underground","/ˈʌndəɡraʊnd/","метро",{en:"subway",ipa:"/ˈsʌbweɪ/","ru":"Американский вариант."})],
+quiz:[Q("d14q1","«Поверните налево».",[E("Turn left.","/tɜːn left/",""),E("Go lefting.","/ɡəʊ ˈleftɪŋ/",""),E("You turn to left now.","/juː tɜːn tə left naʊ/","")],0,"directions"),Q("d14q2","Британское слово для городского метро:",[E("underground","/ˈʌndəɡraʊnd/",""),E("subway","/ˈsʌbweɪ/",""),E("rail only","/reɪl ˈəʊnli/","")],0,"city")]},
+{n:15,title:"Past Simple: was/were",goal:"Говорить, где и каким кто-то был.",tags:["past-be","past"],items:[
+E("I was at home yesterday.","/aɪ wəz ət həʊm ˈjestədeɪ/","Вчера я был(а) дома."),E("They were tired.","/ðeɪ wə ˈtaɪəd/","Они устали."),E("Was she at work?","/wəz ʃiː ət wɜːk/","Она была на работе?"),E("We were not late.","/wiː wə nɒt leɪt/","Мы не опоздали."),E("yesterday","/ˈjestədeɪ/","вчера"),E("last week","/lɑːst wiːk/","на прошлой неделе")],
+quiz:[Q("d15q1","С I в прошлом be:",[E("was","/wəz/",""),E("were","/wə/",""),E("did be","/dɪd biː/","")],0,"past-be"),Q("d15q2","С they:",[E("was","/wəz/",""),E("were","/wə/",""),E("is","/ɪz/","")],1,"past-be")]},
+{n:16,title:"Past Simple: правильные глаголы",goal:"Рассказывать о завершённых событиях.",tags:["past-simple","ed"],items:[
+E("I worked yesterday.","/aɪ wɜːkt ˈjestədeɪ/","Я работал(а) вчера."),E("She played tennis.","/ʃiː pleɪd ˈtenɪs/","Она играла в теннис."),E("We visited our friends.","/wiː ˈvɪzɪtɪd aʊə frendz/","Мы навестили друзей."),E("Did you call him?","/dɪd juː kɔːl hɪm/","Ты ему звонил(а)?"),E("I did not watch TV.","/aɪ dɪd nɒt wɒtʃ ˌtiːˈviː/","Я не смотрел(а) телевизор."),E("-ed endings","/d, t, ɪd/","три основных варианта произношения окончания -ed")],
+quiz:[Q("d16q1","После did используем:",[E("base verb","/beɪs vɜːb/","начальную форму"),E("past verb","/pɑːst vɜːb/","форму прошедшего"),E("verb-ing","/vɜːb ɪŋ/","форму -ing")],0,"past-simple"),Q("d16q2","Правильно:",[E("Did you call?","/dɪd juː kɔːl/",""),E("Did you called?","/dɪd juː kɔːld/",""),E("Do you called?","/duː juː kɔːld/","")],0,"past-simple")]},
+{n:17,title:"Past Simple: ключевые неправильные глаголы",goal:"Использовать самые частотные irregular verbs.",tags:["irregular","past-simple"],items:[
+E("go — went","/ɡəʊ — went/","идти — пошёл/пошла"),E("have — had","/hæv — hæd/","иметь — имел(а)"),E("do — did","/duː — dɪd/","делать — сделал(а)"),E("see — saw","/siː — sɔː/","видеть — видел(а)"),E("get — got","/ɡet — ɡɒt/","получать/добираться — получил(а)/добрался"),E("I went to the cinema.","/aɪ went tə ðə ˈsɪnəmə/","Я ходил(а) в кино.",{en:"I went to the movie theater.",ipa:"/aɪ went tə ðə ˈmuːvi ˌθiːətər/","ru":"Частотный американский вариант названия места."})],
+quiz:[Q("d17q1","Прошедшая форма go:",[E("went","/went/",""),E("goed","/ɡəʊd/",""),E("gone","/ɡɒn/","")],0,"irregular"),Q("d17q2","Прошедшая форма see:",[E("seed","/siːd/",""),E("saw","/sɔː/",""),E("seen","/siːn/","")],1,"irregular")]},
+{n:18,title:"Планы: be going to",goal:"Говорить о намерениях и ближайших планах.",tags:["future","going-to"],items:[
+E("I am going to study tonight.","/aɪ æm ˈɡəʊɪŋ tə ˈstʌdi təˈnaɪt/","Я собираюсь заниматься сегодня вечером."),E("She is going to travel next week.","/ʃiː ɪz ˈɡəʊɪŋ tə ˈtrævl nekst wiːk/","Она собирается путешествовать на следующей неделе."),E("Are you going to cook?","/ɑː juː ˈɡəʊɪŋ tə kʊk/","Ты собираешься готовить?"),E("tomorrow","/təˈmɒrəʊ/","завтра"),E("next month","/nekst mʌnθ/","в следующем месяце"),E("tonight","/təˈnaɪt/","сегодня вечером/ночью")],
+quiz:[Q("d18q1","Намерение:",[E("I am going to study.","/aɪ æm ˈɡəʊɪŋ tə ˈstʌdi/",""),E("I going study.","/aɪ ˈɡəʊɪŋ ˈstʌdi/",""),E("I am go to study.","/aɪ æm ɡəʊ tə ˈstʌdi/","")],0,"going-to"),Q("d18q2","Вопрос:",[E("Are you going to cook?","/ɑː juː ˈɡəʊɪŋ tə kʊk/",""),E("Do you going to cook?","/duː juː ˈɡəʊɪŋ tə kʊk/",""),E("You are going cook?","/juː ɑː ˈɡəʊɪŋ kʊk/","")],0,"going-to")]},
+{n:19,title:"Сравнение: bigger, better, the best",goal:"Делать простые сравнения.",tags:["comparatives","superlatives"],items:[
+E("big — bigger","/bɪɡ — ˈbɪɡə/","большой — больше"),E("small — smaller","/smɔːl — ˈsmɔːlə/","маленький — меньше"),E("good — better","/ɡʊd — ˈbetə/","хороший — лучше"),E("bad — worse","/bæd — wɜːs/","плохой — хуже"),E("This room is bigger than that room.","/ðɪs ruːm ɪz ˈbɪɡə ðən ðæt ruːm/","Эта комната больше той."),E("It is the best café here.","/ɪt ɪz ðə best ˈkæfeɪ hɪə/","Это лучшее кафе здесь.")],
+quiz:[Q("d19q1","Сравнительная форма good:",[E("gooder","/ˈɡʊdə/",""),E("better","/ˈbetə/",""),E("best","/best/","")],1,"comparatives"),Q("d19q2","После comparative часто:",[E("than","/ðən/",""),E("then","/ðen/",""),E("that","/ðæt/","")],0,"comparatives")]},
+{n:20,title:"Хобби, like + -ing и would like",goal:"Говорить о предпочтениях и желаниях.",tags:["likes","would-like","hobbies"],items:[
+E("I like reading.","/aɪ laɪk ˈriːdɪŋ/","Мне нравится читать."),E("She loves cooking.","/ʃiː lʌvz ˈkʊkɪŋ/","Она любит готовить."),E("We do not like waiting.","/wiː duː nɒt laɪk ˈweɪtɪŋ/","Мы не любим ждать."),E("I would like some tea.","/aɪ wʊd laɪk sʌm tiː/","Я хотел(а) бы чаю."),E("music","/ˈmjuːzɪk/","музыка"),E("drawing","/ˈdrɔːɪŋ/","рисование")],
+quiz:[Q("d20q1","После like для занятия можно:",[E("verb-ing","/vɜːb ɪŋ/",""),E("did + verb","/dɪd plʌs vɜːb/",""),E("was + noun","/wəz plʌs naʊn/","")],0,"likes"),Q("d20q2","Вежливое желание:",[E("I would like some tea.","/aɪ wʊd laɪk sʌm tiː/",""),E("I like tea now give.","/aɪ laɪk tiː naʊ ɡɪv/",""),E("I am tea.","/aɪ æm tiː/","")],0,"would-like")]},
+{n:21,title:"Связная речь: and, but, because, so",goal:"Соединять простые мысли.",tags:["conjunctions","cohesion"],items:[
+E("and","/ænd/","и"),E("but","/bʌt/","но"),E("because","/bɪˈkɒz/","потому что"),E("so","/səʊ/","поэтому"),E("I am tired, but I am happy.","/aɪ æm ˈtaɪəd bət aɪ æm ˈhæpi/","Я устал(а), но счастлив(а)."),E("I study English because I love books.","/aɪ ˈstʌdi ˈɪŋɡlɪʃ bɪˈkɒz aɪ lʌv bʊks/","Я учу английский, потому что люблю книги.")],
+quiz:[Q("d21q1","«потому что»:",[E("because","/bɪˈkɒz/",""),E("but","/bʌt/",""),E("so","/səʊ/","")],0,"conjunctions"),Q("d21q2","Противопоставление:",[E("and","/ænd/",""),E("but","/bʌt/",""),E("because","/bɪˈkɒz/","")],1,"conjunctions")]},
+{n:22,title:"Тело, самочувствие и простые обращения",goal:"Сообщать о базовом самочувствии и понимать простые рекомендации.",tags:["health","body","communication"],items:[
+E("head","/hed/","голова"),E("hand","/hænd/","кисть/рука"),E("eye","/aɪ/","глаз"),E("I have a headache.","/aɪ hæv ə ˈhedeɪk/","У меня болит голова."),E("I feel tired.","/aɪ fiːl ˈtaɪəd/","Я чувствую усталость."),E("Please call a doctor.","/pliːz kɔːl ə ˈdɒktə/","Пожалуйста, вызовите врача.",{en:"Please call a doctor.",ipa:"/pliːz kɔːl ə ˈdɑːktər/","ru":"Типичное американское произношение doctor."})],
+quiz:[Q("d22q1","«У меня болит голова».",[E("I have a headache.","/aɪ hæv ə ˈhedeɪk/",""),E("My head have pain.","/maɪ hed hæv peɪn/",""),E("I am headache.","/aɪ æm ˈhedeɪk/","")],0,"health"),Q("d22q2","«Я устал(а)».",[E("I feel tired.","/aɪ fiːl ˈtaɪəd/",""),E("I feel tire.","/aɪ fiːl ˈtaɪə/",""),E("I am tiring always.","/aɪ æm ˈtaɪərɪŋ ˈɔːlweɪz/","")],0,"health")]},
+{n:23,title:"Поездки и транспорт",goal:"Купить билет и понять базовую информацию в дороге.",tags:["travel","transport","tickets"],items:[
+E("train","/treɪn/","поезд"),E("bus","/bʌs/","автобус"),E("ticket","/ˈtɪkɪt/","билет"),E("return ticket","/rɪˈtɜːn ˈtɪkɪt/","билет туда и обратно",{en:"round-trip ticket",ipa:"/ˌraʊnd ˈtrɪp ˈtɪkɪt/","ru":"Американский вариант."}),E("What time does the train leave?","/wɒt taɪm dʌz ðə treɪn liːv/","Во сколько отправляется поезд?"),E("Which platform is it?","/wɪtʃ ˈplætfɔːm ɪz ɪt/","Какая платформа?")],
+quiz:[Q("d23q1","Британский «билет туда и обратно»:",[E("return ticket","/rɪˈtɜːn ˈtɪkɪt/",""),E("round-trip ticket","/ˌraʊnd ˈtrɪp ˈtɪkɪt/",""),E("back ticket","/bæk ˈtɪkɪt/","")],0,"tickets"),Q("d23q2","«Во сколько отправляется поезд?»",[E("What time does the train leave?","/wɒt taɪm dʌz ðə treɪn liːv/",""),E("When train leave?","/wen treɪn liːv/",""),E("What time the train leaving always?","/wɒt taɪm ðə treɪn ˈliːvɪŋ ˈɔːlweɪz/","")],0,"travel")]},
+{n:24,title:"Погода и одежда",goal:"Понимать прогноз и выбирать одежду.",tags:["weather","clothes"],items:[
+E("It is sunny.","/ɪt ɪz ˈsʌni/","Солнечно."),E("It is raining.","/ɪt ɪz ˈreɪnɪŋ/","Идёт дождь."),E("It is cold today.","/ɪt ɪz kəʊld təˈdeɪ/","Сегодня холодно."),E("coat","/kəʊt/","пальто"),E("jumper","/ˈdʒʌmpə/","джемпер",{en:"sweater",ipa:"/ˈswetər/","ru":"Частый американский вариант."}),E("trainers","/ˈtreɪnəz/","кроссовки",{en:"sneakers",ipa:"/ˈsniːkərz/","ru":"Американский вариант."})],
+quiz:[Q("d24q1","«Идёт дождь».",[E("It is raining.","/ɪt ɪz ˈreɪnɪŋ/",""),E("It rains nowing.","/ɪt reɪnz ˈnaʊɪŋ/",""),E("There rain.","/ðeə reɪn/","")],0,"weather"),Q("d24q2","Американское sneakers соответствует британскому:",[E("trainers","/ˈtreɪnəz/",""),E("trousers","/ˈtraʊzəz/",""),E("jumper","/ˈdʒʌmpə/","")],0,"clothes")]},
+{n:25,title:"Учёба, работа и простые сообщения",goal:"Написать короткое сообщение и рассказать о работе/учёбе.",tags:["writing","work","study"],items:[
+E("I study English every day.","/aɪ ˈstʌdi ˈɪŋɡlɪʃ ˈevri deɪ/","Я учу английский каждый день."),E("I work from home.","/aɪ wɜːk frəm həʊm/","Я работаю из дома."),E("Please send me the address.","/pliːz send miː ði əˈdres/","Пожалуйста, пришлите мне адрес."),E("Thank you for your message.","/ˈθæŋk juː fə jɔː ˈmesɪdʒ/","Спасибо за ваше сообщение."),E("See you tomorrow.","/siː juː təˈmɒrəʊ/","До завтра."),E("Best wishes","/best ˈwɪʃɪz/","С наилучшими пожеланиями; простое завершение сообщения.")],
+quiz:[Q("d25q1","Вежливая просьба в сообщении:",[E("Please send me the address.","/pliːz send miː ði əˈdres/",""),E("You send address.","/juː send əˈdres/",""),E("Address now.","/əˈdres naʊ/","")],0,"writing"),Q("d25q2","Естественное короткое прощание:",[E("See you tomorrow.","/siː juː təˈmɒrəʊ/",""),E("See tomorrow you.","/siː təˈmɒrəʊ juː/",""),E("Tomorrow see.","/təˈmɒrəʊ siː/","")],0,"writing")]},
+{n:26,title:"British ↔ American: различаем уверенно",goal:"Понимать главные A1-различия двух норм.",tags:["british-american","pronunciation","vocabulary"],items:[
+E("colour","/ˈkʌlə/","брит. написание «цвет»",{en:"color",ipa:"/ˈkʌlər/","ru":"американское написание и произношение с r"}),E("centre","/ˈsentə/","брит. «центр»",{en:"center",ipa:"/ˈsentər/","ru":"американское написание"}),E("lift","/lɪft/","брит. «лифт»",{en:"elevator",ipa:"/ˈeləveɪtər/","ru":"американский вариант"}),E("holiday","/ˈhɒlədeɪ/","брит. «отпуск/каникулы»",{en:"vacation",ipa:"/veɪˈkeɪʃn/","ru":"частотный американский вариант"}),E("petrol","/ˈpetrəl/","брит. «бензин»",{en:"gas",ipa:"/ɡæs/","ru":"американский разговорный вариант"}),E("autumn","/ˈɔːtəm/","брит. «осень»",{en:"fall",ipa:"/fɔːl/","ru":"американский частотный вариант"})],
+quiz:[Q("d26q1","Американский вариант lift:",[E("elevator","/ˈeləveɪtər/",""),E("underground","/ˈʌndəɡraʊnd/",""),E("jumper","/ˈdʒʌmpə/","")],0,"british-american"),Q("d26q2","Британское написание:",[E("colour","/ˈkʌlə/",""),E("color","/ˈkʌlər/",""),E("coler","/ˈkəʊlə/","")],0,"british-american")]},
+{n:27,title:"Большое спиральное повторение",goal:"Смешать все темы и убрать последние пробелы.",tags:["review","mastery"],items:[
+E("Could you help me, please?","/kʊd juː help miː pliːz/","Не могли бы вы мне помочь?"),E("I usually work at home, but today I am working in a café.","/aɪ ˈjuːʒuəli wɜːk ət həʊm bət təˈdeɪ aɪ æm ˈwɜːkɪŋ ɪn ə ˈkæfeɪ/","Обычно я работаю дома, но сегодня работаю в кафе."),E("Yesterday we went to the station by bus.","/ˈjestədeɪ wiː went tə ðə ˈsteɪʃn baɪ bʌs/","Вчера мы поехали на станцию автобусом."),E("Tomorrow I am going to visit my family.","/təˈmɒrəʊ aɪ æm ˈɡəʊɪŋ tə ˈvɪzɪt maɪ ˈfæməli/","Завтра я собираюсь навестить семью."),E("How much is this ticket?","/haʊ mʌtʃ ɪz ðɪs ˈtɪkɪt/","Сколько стоит этот билет?"),E("There are two books on the table.","/ðeər ɑː tuː bʊks ɒn ðə ˈteɪbl/","На столе две книги.")],
+quiz:[Q("d27q1","Выберите действие сейчас:",[E("I work every day.","/aɪ wɜːk ˈevri deɪ/",""),E("I am working now.","/aɪ æm ˈwɜːkɪŋ naʊ/",""),E("I worked yesterday.","/aɪ wɜːkt ˈjestədeɪ/","")],1,"mastery"),Q("d27q2","Выберите прошлое завершённое действие:",[E("I went yesterday.","/aɪ went ˈjestədeɪ/",""),E("I go every day.","/aɪ ɡəʊ ˈevri deɪ/",""),E("I am going now.","/aɪ æm ˈɡəʊɪŋ naʊ/","")],0,"mastery")]},
+{n:28,title:"Экзамен и закрепление",goal:"Пройти четыре навыка и сформировать план повторения.",tags:["exam"],items:[
+E("Listen carefully.","/ˈlɪsn ˈkeəfəli/","Слушайте внимательно."),E("Read the text.","/riːd ðə tekst/","Прочитайте текст."),E("Write a short message.","/raɪt ə ʃɔːt ˈmesɪdʒ/","Напишите короткое сообщение."),E("Speak about yourself.","/spiːk əˈbaʊt jɔːˈself/","Расскажите о себе."),E("Check your answers.","/tʃek jɔːr ˈɑːnsəz/","Проверьте ответы."),E("Keep practising.","/kiːp ˈpræktɪsɪŋ/","Продолжайте практиковаться.")],
+quiz:[Q("d28q1","Перед экзаменом лучше:",[E("review weak points","/rɪˈvjuː wiːk pɔɪnts/","повторить слабые места"),E("guess every answer","/ɡes ˈevri ˈɑːnsə/","угадывать всё"),E("skip listening","/skɪp ˈlɪsnɪŋ/","пропустить аудирование")],0,"exam"),Q("d28q2","После экзамена:",[E("keep practising","/kiːp ˈpræktɪsɪŋ/",""),E("forget everything","/fəˈɡet ˈevriθɪŋ/",""),E("never listen again","/ˈnevə ˈlɪsn əˈɡen/","")],0,"exam")]}
+];
+
+const coverageGroups=[
+["Грамматика",["be: am/is/are","личные и объектные местоимения","притяжательные формы и 's","a/an/the и нулевой артикль в базовых случаях","единственное и множественное число","this/that/these/those","have/have got","Present Simple","do/does: вопросы и отрицания","наречия частоты","there is/are","предлоги места и направления","can/cannot","повелительное наклонение","countable/uncountable","some/any","how much/how many","Present Continuous","Present Simple vs Continuous","was/were","Past Simple regular","Past Simple irregular core","did: вопросы и отрицания","be going to","базовые comparatives/superlatives","like/love + -ing","would like","and/but/because/so"]],
+["Функции общения",["представиться и спросить имя","сообщить страну/город/профессию","описать семью","назвать время, дату, цену и номер","описать распорядок","описать дом","попросить помощь/разрешение","заказать еду","купить товар","спросить дорогу","рассказать о прошлом","сказать о планах","выразить предпочтение","описать погоду","купить билет","написать короткое сообщение"]],
+["Произношение",["названия букв","долгие/краткие гласные на базовых парах","/θ/ и /ð/","/w/ и /v/","окончания множественного числа /s z ɪz/","окончание 3-го лица /s z ɪz/","-ed /t d ɪd/","слабые формы a/the/to/of/can","британское non-rhotic r","британское /əʊ/ и американское /oʊ/","частотные BrE/AmE различия"]],
+["Темы",["личные данные","семья","дом","ежедневная жизнь","еда","покупки","город","транспорт","погода","одежда","хобби","работа и учёба","здоровье на бытовом уровне","путешествия","цифры, даты, время и деньги"]],
+["Навыки",["понять очень медленную и ясную бытовую речь","понять короткие объявления и инструкции","прочитать вывески, расписания и короткие сообщения","заполнить базовые личные данные","написать короткую записку/сообщение","ответить на простые личные вопросы","поддержать короткий предсказуемый обмен репликами"]]
+];
+
+const examData={
+listen:{
+title:"Listening",
+intro:"Прослушайте каждую реплику не более двух раз и выберите ответ.",
+items:[
+{audio:E("The train leaves at half past eight.","/ðə treɪn liːvz ət hɑːf pɑːst eɪt/","Поезд отправляется в половине девятого."),q:"Когда отправляется поезд?",opts:["7:30","8:30","9:30"],a:1},
+{audio:E("I usually work at home, but today I am in the office.","/aɪ ˈjuːʒuəli wɜːk ət həʊm bət təˈdeɪ aɪ æm ɪn ði ˈɒfɪs/","Обычно я работаю дома, но сегодня я в офисе."),q:"Где человек сегодня?",opts:["Дома","В офисе","В кафе"],a:1},
+{audio:E("I'd like two tickets to Bristol, please.","/aɪd laɪk tuː ˈtɪkɪts tə ˈbrɪstl pliːz/","Мне, пожалуйста, два билета до Бристоля."),q:"Сколько билетов нужно?",opts:["Один","Два","Три"],a:1}
+]},
+read:{
+title:"Reading",
+intro:"Прочитайте короткий текст и ответьте на вопросы.",
+text:E("Hi! My name is Leo. I live in a small flat near the city centre. I work in a bookshop from Monday to Friday. On Saturdays I usually meet my sister, and on Sundays I stay at home and cook.","/haɪ. maɪ neɪm ɪz ˈliːəʊ. aɪ lɪv ɪn ə smɔːl flæt nɪə ðə ˈsɪti ˈsentə. aɪ wɜːk ɪn ə ˈbʊkʃɒp frəm ˈmʌndeɪ tə ˈfraɪdeɪ. ɒn ˈsætədeɪz aɪ ˈjuːʒuəli miːt maɪ ˈsɪstə, ənd ɒn ˈsʌndeɪz aɪ steɪ ət həʊm ənd kʊk/","Привет! Меня зовут Лео. Я живу в маленькой квартире недалеко от центра города. Я работаю в книжном магазине с понедельника по пятницу. По субботам обычно встречаюсь с сестрой, а по воскресеньям остаюсь дома и готовлю."),
+items:[
+{q:"Где работает Лео?",opts:["В книжном магазине","В школе","В кафе"],a:0},
+{q:"Когда он встречается с сестрой?",opts:["По пятницам","По субботам","По воскресеньям"],a:1},
+{q:"Что он делает по воскресеньям?",opts:["Путешествует","Работает","Остаётся дома и готовит"],a:2}
+]},
+write:{
+title:"Writing",
+intro:"Напишите 35–50 слов. Автоматическая проверка отмечает базовые признаки, но свободное письмо нельзя надёжно оценить без человека или языковой модели.",
+prompt:"Напишите короткое сообщение новому знакомому: представьтесь, скажите, где живёте, чем занимаетесь, что любите делать и предложите встретиться.",
+model:E("Hello! My name is Anna. I live in London and I work from home. I like reading and music. I usually go to a café on Saturday. Would you like to meet there this weekend? Best wishes, Anna","/həˈləʊ. maɪ neɪm ɪz ˈænə. aɪ lɪv ɪn ˈlʌndən ənd aɪ wɜːk frəm həʊm. aɪ laɪk ˈriːdɪŋ ənd ˈmjuːzɪk. aɪ ˈjuːʒuəli ɡəʊ tə ə ˈkæfeɪ ɒn ˈsætədeɪ. wʊd juː laɪk tə miːt ðeə ðɪs ˌwiːkˈend. best ˈwɪʃɪz, ˈænə/","Образец структуры.")
+},
+speak:{
+title:"Speaking",
+intro:"Ответьте вслух. Можно записать себя встроенным диктофоном, если браузер разрешит микрофон.",
+prompts:[
+E("What is your name and where are you from?","/wɒt ɪz jɔː neɪm ənd weər ɑː juː frəm/","Как вас зовут и откуда вы?"),
+E("What do you usually do in the morning?","/wɒt duː juː ˈjuːʒuəli duː ɪn ðə ˈmɔːnɪŋ/","Что вы обычно делаете утром?"),
+E("What did you do yesterday?","/wɒt dɪd juː duː ˈjestədeɪ/","Что вы делали вчера?"),
+E("What are you going to do tomorrow?","/wɒt ɑː juː ˈɡəʊɪŋ tə duː təˈmɒrəʊ/","Что вы собираетесь делать завтра?")
+]}
+};
+
+let state;
+try{state=JSON.parse(localStorage.getItem(SKEY))||{}}catch{state={}}
+state.current=state.current||1;state.days=state.days||{};state.items=state.items||{};state.exam=state.exam||{};state.ink=state.ink||{};state.streak=state.streak||0;
+function save(){localStorage.setItem(SKEY,JSON.stringify(state));renderStats();renderWeak();window.parent?.postMessage({syolanaLesson:true,learningProgress:{course:"en-a1",days:state.days,items:state.items,exam:state.exam}},"*")}
+function itemRec(id){return state.items[id]||(state.items[id]={correct:0,wrong:0,level:0,due:today()})}
+function mark(id,ok,tag){
+ const r=itemRec(id); if(ok){r.correct++;r.level=Math.min(5,(r.level||0)+1);state.streak++;}else{r.wrong++;r.level=Math.max(0,(r.level||0)-1);state.streak=0;}
+ const gaps=[0,1,3,7,14,30];const d=new Date();d.setDate(d.getDate()+gaps[r.level]);r.due=d.toISOString().slice(0,10);r.tag=tag;save();
+}
+function mastery(){
+ const rs=Object.values(state.items);if(!rs.length)return 0;
+ return Math.round(rs.reduce((s,r)=>s+Math.min(1,(r.level||0)/4),0)/rs.length*100)
+}
+function renderStats(){
+ const done=Object.values(state.days).filter(Boolean).length;
+ document.getElementById("statDays").textContent=done+"/28";
+ document.getElementById("statMastery").textContent=mastery()+"%";
+ document.getElementById("statErrors").textContent=Object.values(state.items).filter(r=>(r.wrong||0)>(r.correct||0)||r.due<=today()&&r.wrong).length;
+ document.getElementById("statStreak").textContent=state.streak||0;
+ document.getElementById("courseProgress").style.width=(done/28*100)+"%";
+}
+function card(x,extra=""){
+ const d=document.createElement("div");d.className="item "+extra;
+ d.innerHTML='<div class="en"></div><div class="ipa"></div><div class="ru"></div>';
+ d.children[0].textContent=x.en;d.children[1].textContent=x.ipa;d.children[2].textContent=x.ru||"";
+ if(x.us){const u=document.createElement("div");u.className="us";u.innerHTML="<b>American English</b><div class=\"en\"></div><div class=\"ipa\"></div><div class=\"ru\"></div>";u.querySelector(".en").textContent=x.us.en;u.querySelector(".ipa").textContent=x.us.ipa;u.querySelector(".ru").textContent=x.us.ru||"";d.append(u)}
+ return d;
+}
+function renderDayGrid(){
+ const g=document.getElementById("dayGrid");g.replaceChildren();
+ for(const d of days){const b=document.createElement("button");b.className="daypick"+(state.days[d.n]?" done":"")+(state.current===d.n?" current":"");b.innerHTML="<strong>День "+d.n+"</strong><small></small>";b.querySelector("small").textContent=d.title;b.onclick=()=>{state.current=d.n;save();renderDay();renderDayGrid();document.getElementById("lesson").scrollIntoView({behavior:"smooth",block:"start"})};g.append(b)}
+}
+function renderQuiz(d,wrap){
+ d.quiz.forEach((q,qi)=>{
+  const fs=document.createElement("fieldset");fs.className="quiz";const lg=document.createElement("legend");lg.textContent=(qi+1)+". "+q.prompt;fs.append(lg);
+  q.options.forEach((o,oi)=>{const lab=document.createElement("label");lab.className="option";const inp=document.createElement("input");inp.type="radio";inp.name=q.id;inp.value=oi;lab.append(inp,document.createTextNode(" "+o.en+" "));const ip=document.createElement("span");ip.className="ipa";ip.textContent=o.ipa;lab.append(ip);fs.append(lab)});
+  const fb=document.createElement("div");fb.className="feedback";fs.append(fb);
+  fs.addEventListener("change",e=>{const v=Number(e.target.value),ok=v===q.answer;mark(q.id,ok,q.tag);fb.className="feedback "+(ok?"good":"bad");fb.textContent=ok?"Верно. Закрепляем.":"Пока нет. Этот пункт вернётся в повторение.";});
+  wrap.append(fs);
+ })
+}
+function renderDay(){
+ const d=days[state.current-1],root=document.getElementById("lesson");root.replaceChildren();
+ const ey=document.createElement("div");ey.className="eyebrow";ey.textContent="ДЕНЬ "+d.n+" · "+d.tags.join(" · ");
+ const h=document.createElement("h2");h.textContent=d.title;const p=document.createElement("p");p.textContent=d.goal;root.append(ey,h,p);
+ const s=document.createElement("div");s.className="section";s.innerHTML="<h3>Материал дня</h3>";d.items.forEach(x=>s.append(card(x)));root.append(s);
+ const q=document.createElement("div");q.className="section";q.innerHTML="<h3>Проверка без подсказки</h3>";renderQuiz(d,q);root.append(q);
+ const btn=document.createElement("button");btn.className="btn primary";btn.textContent=state.days[d.n]?"✓ День отмечен пройденным":"Отметить день пройденным";btn.onclick=()=>{state.days[d.n]=!state.days[d.n];save();renderDay();renderDayGrid()};root.append(btn);
+ requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,height:document.documentElement.scrollHeight},"*"));
+}
+
+function dueWeak(){
+ return Object.entries(state.items).filter(([id,r])=>r.wrong&&((r.wrong>r.correct)||r.due<=today())).sort((a,b)=>(b[1].wrong-b[1].correct)-(a[1].wrong-a[1].correct));
+}
+function renderWeak(){
+ const root=document.getElementById("weakList");root.replaceChildren();const all=dueWeak();
+ if(!all.length){root.textContent="Слабых пунктов пока нет — либо вы ещё не отвечали, либо всё уже закреплено.";return}
+ all.slice(0,12).forEach(([id,r])=>{const d=document.createElement("div");d.className="weakrow";d.innerHTML="<b></b><div></div>";d.children[0].textContent=r.tag||id;d.children[1].textContent="ошибок: "+r.wrong+" · верных: "+r.correct+" · повтор: "+r.due;root.append(d)})
+}
+document.getElementById("reviewWeak").onclick=()=>{
+ const all=dueWeak();if(!all.length)return;
+ const ids=new Set(all.map(x=>x[0]));for(const d of days){if(d.quiz.some(q=>ids.has(q.id))){state.current=d.n;save();renderDay();renderDayGrid();document.getElementById("lesson").scrollIntoView({behavior:"smooth"});break}}
+};
+
+let session={on:false,paused:false,mode:"full",start:0,target:3600,index:0,timer:null,utter:null};
+function queueForDay(){
+ const d=days[state.current-1],base=[...d.items];
+ const prior=days.slice(Math.max(0,state.current-4),state.current-1).flatMap(x=>x.items.slice(0,3));
+ return [...base,...prior,...base.slice().reverse()];
+}
+function speak(text,lang,voiceHint,onend){
+ const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=lang==="en-GB"?.88:.98;
+ const voices=speechSynthesis.getVoices();u.voice=voices.find(v=>v.lang===lang&&(!voiceHint||v.name.toLowerCase().includes(voiceHint)))||voices.find(v=>v.lang===lang)||null;u.onend=onend;u.onerror=onend;session.utter=u;speechSynthesis.speak(u);
+}
+function sessionElapsed(){return Math.min(session.target,Math.floor((Date.now()-session.start)/1000))}
+function tick(){
+ if(!session.on)return;const e=sessionElapsed(),left=session.target-e;document.getElementById("sessionClock").textContent=fmt(e)+" / "+fmt(session.target);
+ if(left<=0){stopSession(true);return}session.timer=setTimeout(tick,250)
+}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function startSession(mode){
+ if(!("speechSynthesis"in window)){alert("В этом браузере недоступна системная озвучка.");return}
+ speechSynthesis.cancel();session={on:true,paused:false,mode,start:Date.now(),target:mode==="en"?1800:3600,index:0,timer:null,utter:null};
+ document.getElementById("sessionBar").hidden=false;document.getElementById("sessionMode").textContent=mode==="en"?"ENGLISH ONLY":"FULL · RU + EN";document.getElementById("startFull").disabled=true;document.getElementById("startEn").disabled=true;document.getElementById("pauseSession").disabled=false;document.getElementById("stopSession").disabled=false;
+ window.parent?.postMessage({syolanaLesson:true,audio:true},"*");tick();nextSpeech();
+}
+function nextSpeech(){
+ if(!session.on||session.paused)return;const q=queueForDay();const x=q[session.index++%q.length];
+ document.querySelectorAll(".item.active").forEach(n=>n.classList.remove("active"));
+ const candidates=[...document.querySelectorAll("#lesson .item")],node=candidates.find(n=>n.querySelector(".en")?.textContent===x.en);if(node){node.classList.add("active");node.scrollIntoView({behavior:"smooth",block:"center"})}
+ document.getElementById("sessionNow").textContent=x.en;
+ speak(x.en,"en-GB",null,()=>{
+  if(!session.on||session.paused)return;
+  if(session.mode==="en")setTimeout(nextSpeech,1400);
+  else speak(x.ru||"","ru-RU",null,()=>setTimeout(nextSpeech,1600));
+ })
+}
+function togglePause(){
+ if(!session.on)return;session.paused=!session.paused;
+ if(session.paused){speechSynthesis.pause();document.getElementById("pauseSession").textContent="Продолжить";document.getElementById("sessionPauseMini").textContent="Продолжить"}
+ else{speechSynthesis.resume();document.getElementById("pauseSession").textContent="Пауза";document.getElementById("sessionPauseMini").textContent="Пауза";if(!speechSynthesis.speaking)nextSpeech()}
+}
+function stopSession(done=false){
+ if(!session.on)return;session.on=false;clearTimeout(session.timer);speechSynthesis.cancel();document.getElementById("sessionBar").hidden=true;document.getElementById("startFull").disabled=false;document.getElementById("startEn").disabled=false;document.getElementById("pauseSession").disabled=true;document.getElementById("stopSession").disabled=true;document.querySelectorAll(".item.active").forEach(n=>n.classList.remove("active"));if(done){state.days[state.current]=true;save();renderDayGrid()}
+}
+document.getElementById("startFull").onclick=()=>startSession("full");document.getElementById("startEn").onclick=()=>startSession("en");document.getElementById("pauseSession").onclick=togglePause;document.getElementById("stopSession").onclick=()=>stopSession(false);document.getElementById("sessionPauseMini").onclick=togglePause;document.getElementById("sessionStopMini").onclick=()=>stopSession(false);
+
+const canvas=document.getElementById("ink"),ctx=canvas.getContext("2d");let drawing=false,stroke=null;
+function strokes(){return state.ink[state.current]||(state.ink[state.current]=[])}
+function redraw(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.lineCap="round";ctx.lineJoin="round";ctx.lineWidth=4;ctx.strokeStyle="#171222";for(const st of strokes()){if(st.length<2)continue;ctx.beginPath();ctx.moveTo(st[0][0]*canvas.width,st[0][1]*canvas.height);for(const p of st.slice(1))ctx.lineTo(p[0]*canvas.width,p[1]*canvas.height);ctx.stroke()}}
+function point(e){const r=canvas.getBoundingClientRect();return[(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height]}
+canvas.addEventListener("pointerdown",e=>{drawing=true;stroke=[point(e)];strokes().push(stroke);canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener("pointermove",e=>{if(!drawing)return;stroke.push(point(e));redraw()});
+canvas.addEventListener("pointerup",()=>{drawing=false;save()});canvas.addEventListener("pointercancel",()=>drawing=false);
+document.getElementById("undoInk").onclick=()=>{strokes().pop();save();redraw()};document.getElementById("clearInk").onclick=()=>{state.ink[state.current]=[];save();redraw()};
+
+function renderCoverage(){
+ const root=document.getElementById("coverage");root.replaceChildren();
+ coverageGroups.forEach(([name,arr])=>{const d=document.createElement("details");const s=document.createElement("summary");s.textContent=name+" · "+arr.length+" пунктов";d.append(s);const ul=document.createElement("ul");arr.forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.append(li)});d.append(ul);root.append(d)})
+}
+function renderExam(){
+ const parts=document.getElementById("examParts");parts.replaceChildren();
+ const listen=document.createElement("div");listen.className="exam-part active";listen.dataset.part="listen";listen.innerHTML="<h3>Listening</h3><p></p>";listen.querySelector("p").textContent=examData.listen.intro;
+ examData.listen.items.forEach((x,i)=>{const box=document.createElement("div");box.className="quiz";const play=document.createElement("button");play.className="btn";play.textContent="▶ Прослушать "+(i+1);play.onclick=()=>speak(x.audio.en,"en-GB",null,()=>{});box.append(play);const p=document.createElement("p");p.textContent=x.q;box.append(p);x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="exl"+i;inp.onchange=()=>{state.exam["l"+i]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});listen.append(box)});
+ parts.append(listen);
+ const read=document.createElement("div");read.className="exam-part";read.dataset.part="read";read.innerHTML="<h3>Reading</h3><p></p>";read.querySelector("p").textContent=examData.read.intro;read.append(card(examData.read.text));examData.read.items.forEach((x,i)=>{const box=document.createElement("div");box.className="quiz";const p=document.createElement("p");p.textContent=x.q;box.append(p);x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="exr"+i;inp.onchange=()=>{state.exam["r"+i]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});read.append(box)});parts.append(read);
+ const write=document.createElement("div");write.className="exam-part";write.dataset.part="write";write.innerHTML="<h3>Writing</h3><p></p><div class=\"prompt\"></div><textarea class=\"answerbox\" placeholder=\"Пишите здесь…\"></textarea><details><summary>Показать образец после выполнения</summary></details>";write.querySelector("p").textContent=examData.write.intro;write.querySelector(".prompt").textContent=examData.write.prompt;write.querySelector("details").append(card(examData.write.model));const ta=write.querySelector("textarea");ta.value=state.exam.writing||"";ta.oninput=()=>{state.exam.writing=ta.value;save()};parts.append(write);
+ const speakPart=document.createElement("div");speakPart.className="exam-part";speakPart.dataset.part="speak";speakPart.innerHTML="<h3>Speaking</h3><p></p>";speakPart.querySelector("p").textContent=examData.speak.intro;examData.speak.prompts.forEach(x=>speakPart.append(card(x)));const rec=document.createElement("button");rec.className="btn";rec.textContent="● Записать ответ";let mr,chunks=[];rec.onclick=async()=>{if(mr?.state==="recording"){mr.stop();rec.textContent="● Записать ответ";return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];mr=new MediaRecorder(stream);mr.ondataavailable=e=>chunks.push(e.data);mr.onstop=()=>{const blob=new Blob(chunks,{type:mr.mimeType});const url=URL.createObjectURL(blob);let a=speakPart.querySelector("audio");if(!a){a=document.createElement("audio");a.controls=true;speakPart.append(a)}a.src=url;stream.getTracks().forEach(t=>t.stop())};mr.start();rec.textContent="■ Остановить запись"}catch{alert("Браузер не дал доступ к микрофону. Можно ответить вслух без записи.")}};speakPart.append(rec);parts.append(speakPart);
+ const result=document.createElement("div");result.className="exam-part";result.dataset.part="result";result.innerHTML="<h3>Результат</h3><p id=\"examScore\"></p><p class=\"note\">Listening и Reading считаются автоматически. Writing и Speaking требуют содержательной проверки человеком или языковой моделью; сайт не должен выдавать их за объективно проверенные только по длине текста или наличию записи.</p>";parts.append(result);
+ document.querySelectorAll("[data-exam]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-exam]").forEach(x=>x.classList.remove("primary"));b.classList.add("primary");document.querySelectorAll(".exam-part").forEach(x=>x.classList.toggle("active",x.dataset.part===b.dataset.exam));if(b.dataset.exam==="result"){let ok=0,total=0;examData.listen.items.forEach((x,i)=>{total++;if(state.exam["l"+i]===x.a)ok++});examData.read.items.forEach((x,i)=>{total++;if(state.exam["r"+i]===x.a)ok++});document.getElementById("examScore").textContent="Автоматически проверяемая часть: "+ok+" из "+total+" ("+Math.round(ok/total*100)+"%)."}})
+}
+window.addEventListener("message",e=>{if(!e.data?.syolanaHost)return;if(e.data.pauseAudio)stopSession(false);if(e.data.anchor){const target=document.getElementById(e.data.anchor);target?.scrollIntoView()}});
+window.addEventListener("resize",()=>{redraw();requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,height:document.documentElement.scrollHeight},"*"))});
+renderDayGrid();renderDay();renderStats();renderWeak();renderCoverage();renderExam();redraw();
+requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,ready:true,height:document.documentElement.scrollHeight},"*"));
+</script>
+</body>
+</html>

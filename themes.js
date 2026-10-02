@@ -653,7 +653,7 @@ export class ThemeEngine {
           sky.addColorStop(0,"#4b6d7c");sky.addColorStop(.66,"#a8babd");sky.addColorStop(1,"#e6dfd2");
           c.fillStyle=sky;c.fillRect(0,0,w,horizon);
           c.globalAlpha=.22;c.fillStyle="#eef2ef";
-          for(let i=0;i<7;i++){const cx=(i*53+t*2.2)%(w+90)-45,cy=24+(i%3)*13;c.beginPath();c.ellipse(cx,cy,42+(i%2)*18,9+(i%3)*3,0,0,TAU);c.fill();}
+          for(let i=0;i<7;i++){const cx=(i*53+t*2.2)%(w+90)-45,cy=24+(i%3)*13;c.beginPath();c.ellipse(cx,cy,42+(i%2)*18,9+(i%3)*3,0,0,Math.PI*2);c.fill();}
           c.globalAlpha=1;
           const sea=c.createLinearGradient(0,horizon,0,h);sea.addColorStop(0,"#698d94");sea.addColorStop(.44,"#315b65");sea.addColorStop(1,"#17343e");
           c.fillStyle=sea;c.fillRect(0,horizon,w,h-horizon);c.strokeStyle="rgba(220,236,233,.24)";c.lineWidth=1;
@@ -661,7 +661,7 @@ export class ThemeEngine {
           const tower=(x,b,tw,th,tiers=2)=>{c.fillStyle="rgba(246,244,236,.95)";c.fillRect(x-tw/2,b-th,tw,th);for(let k=1;k<tiers;k++)c.fillRect(x-tw*.34,b-th-k*8,tw*.68,8);};
           tower(28,horizon,19,53,3);tower(55,horizon,13,35,2);tower(w-31,horizon,18,59,3);tower(w-61,horizon,12,34,2);
           c.fillStyle="rgba(244,242,235,.92)";c.fillRect(w*.5-35,horizon-33,7,33);c.fillRect(w*.5+28,horizon-33,7,33);c.fillRect(w*.5-35,horizon-33,70,6);
-          c.globalAlpha=.25;c.fillStyle="#f3c99e";c.beginPath();c.arc(w*.73,h*.42,24,0,TAU);c.fill();c.globalAlpha=1;
+          c.globalAlpha=.25;c.fillStyle="#f3c99e";c.beginPath();c.arc(w*.73,h*.42,24,0,Math.PI*2);c.fill();c.globalAlpha=1;
           c.strokeStyle="rgba(248,250,247,.8)";
           for(let i=0;i<3;i++){const bx=w*(.38+i*.08),by=h*(.25+i*.03),s=4;c.beginPath();c.moveTo(bx-s,by);c.quadraticCurveTo(bx,by-s,bx+s,by);c.stroke();}
           continue;

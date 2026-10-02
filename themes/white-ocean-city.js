@@ -103,7 +103,7 @@ void main(){
   gl_Position = vec4(aPosition, 0.0, 1.0);
 }`;
 
-const SKY_FS = \`#version 300 es
+const SKY_FS = `#version 300 es
 precision highp float;
 in vec2 vUv;
 out vec4 outColor;
@@ -134,9 +134,9 @@ void main(){
   col*=1.0-.14*pow(length((uv-.5)*vec2(.84,1.0)),1.75);
   col*=mix(.90,1.0,uZen);
   outColor=vec4(col,1.0);
-}\`;
+}`;
 
-const CITY_VS = \`#version 300 es
+const CITY_VS = `#version 300 es
 layout(location=0) in vec3 aPosition;
 layout(location=1) in vec3 aNormal;
 layout(location=2) in vec3 iOffset;
@@ -163,9 +163,9 @@ void main(){
   vec3 world=vec3(iOffset.x,iOffset.y,z)+local*iScale;
   vWorld=world;vNormal=aNormal;vTone=iTone;vShape=iShape;vDistance=distance(world,uCamera);vLocal=local;
   gl_Position=uViewProj*vec4(world,1.0);
-}\`;
+}`;
 
-const CITY_FS = \`#version 300 es
+const CITY_FS = `#version 300 es
 precision highp float;
 in vec3 vNormal;
 in vec3 vWorld;
@@ -190,9 +190,9 @@ void main(){
   base=mix(base,vec3(.72,.80,.81),fog*.94);
   base*=mix(.89,1.0,uZen);
   outColor=vec4(base,1.0);
-}\`;
+}`;
 
-const OCEAN_VS = \`#version 300 es
+const OCEAN_VS = `#version 300 es
 layout(location=0) in vec2 aPosition;
 uniform mat4 uViewProj;
 uniform float uTime;
@@ -203,9 +203,9 @@ void main(){
   float w1=sin(x*.073+z*.029+uTime*.42),w2=sin(x*.031-z*.061-uTime*.27),w3=sin((x+z)*.145+uTime*.19),w4=sin(x*.19-z*.113+uTime*.31);
   float y=-.46+w1*.18+w2*.12+w3*.055+w4*.028;
   vWave=y;vWorld=vec3(x,y,z);gl_Position=uViewProj*vec4(vWorld,1.0);
-}\`;
+}`;
 
-const OCEAN_FS = \`#version 300 es
+const OCEAN_FS = `#version 300 es
 precision highp float;
 in vec3 vWorld;
 in float vWave;
@@ -225,7 +225,7 @@ void main(){
   float fog=smoothstep(105.0,380.0,distance(vWorld,uCamera));
   col=mix(col,vec3(.73,.81,.81),fog*.95);col*=mix(.88,1.0,uZen);
   outColor=vec4(col,1.0);
-}\`;
+}`;
 
 function cubeGeometry() {
   const p = [
@@ -333,7 +333,7 @@ function createFlock(){
         const sp=Math.hypot(b.vx,b.vy),mx=.0048+(zen?.0014:0);if(sp>mx){b.vx=b.vx/sp*mx;b.vy=b.vy/sp*mx;}
         b.vx*=.986;b.vy*=.986;b.x+=b.vx;b.y+=b.vy;if(b.x<-.08)b.x=1.08;if(b.x>1.08)b.x=-.08;b.y=Math.max(.075,Math.min(.405,b.y));
         const x=b.x*width,y=b.y*height,s=(4.2+b.size*4.8)*(zen?1.05:.88)/b.depth,flap=Math.sin(time*b.wing+b.phase),alpha=Math.min(.84,.38+.30/b.depth);
-        ctx.strokeStyle=\`rgba(248,250,247,\${alpha})\`;ctx.shadowColor="rgba(210,232,232,.25)";ctx.shadowBlur=5;ctx.lineWidth=Math.max(.9,1.35/b.depth);
+        ctx.strokeStyle=`rgba(248,250,247,\${alpha})`;ctx.shadowColor="rgba(210,232,232,.25)";ctx.shadowBlur=5;ctx.lineWidth=Math.max(.9,1.35/b.depth);
         ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x-s*.52,y-s*(.40+.23*flap),x-s,y-s*.04);ctx.moveTo(x,y);ctx.quadraticCurveTo(x+s*.52,y-s*(.40-.23*flap),x+s,y-s*.04);ctx.stroke();
       }ctx.restore();
     }

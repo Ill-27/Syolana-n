@@ -71,10 +71,11 @@ export function setupDiscovery({ theme, zen, player }) {
       if (pinch && next) theme.move(0, 0, Math.log(next / pinch) * 6);
       pinch = next;
     } else {
-      const panScale=Math.min(innerWidth,innerHeight)<=700?260:Math.max(420,Math.min(innerWidth,innerHeight));
-      theme.move(-dx/panScale,-dy/panScale,0);
+      e.preventDefault();
+      const panScale=Math.min(innerWidth,innerHeight)<=700?175:Math.max(360,Math.min(innerWidth,innerHeight));
+      theme.move(dx/panScale,-dy/panScale,0);
     }
-  });
+  }, { passive:false });
   const end = (e) => {
     if(e.pointerType==="touch") return;
     const meta = pointers.get(e.pointerId);

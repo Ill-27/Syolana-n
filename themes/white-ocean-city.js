@@ -111,33 +111,19 @@ uniform float uTime;
 uniform float uAspect;
 uniform float uZen;
 
-float hash21(vec2 p){
-  p=fract(p*vec2(123.34,345.45));
-  p+=dot(p,p+34.345);
-  return fract(p.x*p.y);
+float cloudWave(vec2 p){
+  float v=0.0;
+  v+=sin(p.x*1.05+sin(p.y*.83)*1.35);
+  v+=sin(p.y*1.27-cos(p.x*.71)*1.12)*.72;
+  v+=sin((p.x+p.y)*1.91)*.34;
+  v+=sin((p.x*.63-p.y*1.48)+sin(p.x*.41)*.9)*.22;
+  return .5+.5*(v/2.28);
 }
-vec2 grad2(vec2 p){
-  float a=hash21(p)*6.28318530718;
-  return vec2(cos(a),sin(a));
-}
-float gnoise(vec2 p){
-  vec2 i=floor(p),f=fract(p);
-  vec2 u=f*f*f*(f*(f*6.0-15.0)+10.0);
-  float a=dot(grad2(i+vec2(0,0)),f-vec2(0,0));
-  float b=dot(grad2(i+vec2(1,0)),f-vec2(1,0));
-  float c=dot(grad2(i+vec2(0,1)),f-vec2(0,1));
-  float d=dot(grad2(i+vec2(1,1)),f-vec2(1,1));
-  return .5+.5*mix(mix(a,b,u.x),mix(c,d,u.x),u.y)*1.55;
-}
-float fbm(vec2 p){
-  float v=0.0,a=.53;
-  mat2 r=mat2(.80,-.60,.60,.80);
-  for(int i=0;i<5;i++){
-    v+=a*gnoise(p);
-    p=r*p*2.02+vec2(13.7,7.9);
-    a*=.50;
-  }
-  return v;
+float cloudField(vec2 p){
+  float a=cloudWave(p*1.00);
+  float b=cloudWave(vec2(p.x*.82-p.y*.57,p.x*.57+p.y*.82)*1.83+vec2(1.7,4.2));
+  float c=cloudWave(vec2(p.x*.93+p.y*.36,-p.x*.36+p.y*.93)*3.10+vec2(5.1,-2.8));
+  return a*.58+b*.29+c*.13;
 }
 void main(){
   vec2 uv=vUv;
@@ -146,37 +132,39 @@ void main(){
   vec3 upper=vec3(.39,.57,.66);
   vec3 haze=vec3(.83,.88,.86);
   vec3 dawn=vec3(.98,.82,.64);
+
   float vertical=smoothstep(horizon,1.0,uv.y);
   vec3 col=mix(haze,mix(upper,zenith,smoothstep(.60,1.0,uv.y)),vertical);
 
   float sun=exp(-pow((uv.x-.73)*4.5,2.0)-pow((uv.y-.468)*18.5,2.0));
   col+=dawn*sun*.38;
 
-  vec2 p=vec2((uv.x-.5)*uAspect,uv.y);
-  vec2 drift=vec2(uTime*.0055,-uTime*.0017);
-  float lowMask=smoothstep(.385,.455,uv.y)*(1.0-smoothstep(.66,.765,uv.y));
-  float midMask=smoothstep(.50,.57,uv.y)*(1.0-smoothstep(.79,.91,uv.y));
-  float highMask=smoothstep(.66,.72,uv.y)*(1.0-smoothstep(.94,1.0,uv.y));
+  vec2 p=vec2((uv.x-.5)*uAspect*3.5,uv.y*3.5);
+  p+=vec2(uTime*.010,-uTime*.0028);
 
-  float low=fbm(p*3.0+drift)+.27*fbm(p*6.9-drift*1.7);
-  float mid=fbm(p*2.05-drift*.70);
-  float high=fbm(p*4.25+drift*.42);
+  float lowMask=smoothstep(.39,.46,uv.y)*(1.0-smoothstep(.67,.77,uv.y));
+  float midMask=smoothstep(.50,.57,uv.y)*(1.0-smoothstep(.80,.91,uv.y));
+  float highMask=smoothstep(.65,.72,uv.y)*(1.0-smoothstep(.95,1.0,uv.y));
 
-  float lowDensity=smoothstep(.61,.93,low)*lowMask;
-  float core=smoothstep(.72,1.03,low)*lowMask;
-  float midDensity=smoothstep(.56,.82,mid)*midMask;
-  float highDensity=smoothstep(.61,.84,high)*highMask;
+  float low=cloudField(p);
+  float mid=cloudField(p*.61+vec2(2.7,-1.4));
+  float high=cloudField(p*1.23+vec2(-4.1,3.6));
+
+  float lowDensity=smoothstep(.47,.67,low)*lowMask;
+  float lowCore=smoothstep(.57,.73,low)*lowMask;
+  float midDensity=smoothstep(.49,.67,mid)*midMask;
+  float highDensity=smoothstep(.52,.69,high)*highMask;
 
   vec3 shadow=vec3(.31,.43,.49);
-  vec3 body=vec3(.72,.79,.80);
+  vec3 body=vec3(.73,.80,.81);
   vec3 light=vec3(.95,.94,.90);
-  vec3 cloud=mix(shadow,body,smoothstep(.58,.86,low));
-  cloud=mix(cloud,light,core*.74+sun*.18);
-  col=mix(col,cloud,lowDensity*.91);
+  vec3 cloud=mix(shadow,body,smoothstep(.47,.66,low));
+  cloud=mix(cloud,light,lowCore*.76+sun*.18);
+  col=mix(col,cloud,lowDensity*.90);
 
-  vec3 midCol=mix(vec3(.49,.60,.64),vec3(.87,.89,.87),smoothstep(.56,.80,mid));
-  col=mix(col,midCol,midDensity*.46);
-  col=mix(col,vec3(.80,.85,.85),highDensity*.18);
+  vec3 midCol=mix(vec3(.50,.61,.65),vec3(.88,.90,.88),smoothstep(.48,.67,mid));
+  col=mix(col,midCol,midDensity*.42);
+  col=mix(col,vec3(.81,.86,.86),highDensity*.15);
 
   float distant=exp(-pow((uv.y-horizon)*29.0,2.0));
   col=mix(col,vec3(.87,.90,.87),distant*(.49+.07*uZen));
@@ -206,13 +194,10 @@ void main(){
   float z=mod(iOffset.z+uTravel,uSpan)-uSpan;
   vec3 local=aPosition;
   float y01=clamp(local.y+.5,0.0,1.0);
-  if(iShape>0.5&&iShape<1.5){
-    // A real pyramid/spire: footprint narrows almost to a point.
-    float taper=mix(1.0,.035,smoothstep(.12,1.0,y01));
+  if(iShape>0.5){
+    // One uninterrupted pyramid-like peak. Shape 0 stays a clean architectural cut.
+    float taper=mix(1.0,.018,smoothstep(.34,1.0,y01));
     local.xz*=taper;
-  }else if(iShape>2.5){
-    float terrace=1.0-.10*floor(y01*3.0);
-    local.xz*=terrace;
   }
   vec3 world=vec3(iOffset.x,iOffset.y,z)+local*iScale;
   vWorld=world;vNormal=aNormal;vTone=iTone;vShape=iShape;vDistance=distance(world,uCamera);vLocal=local;
@@ -238,8 +223,6 @@ void main(){
   base*=.48+.54*diff+.13*up;
   base+=vec3(.13,.075,.035)*max(0.0,dot(n,warm))*.52+vec3(.055,.075,.078)*rim*.34;
   base*=1.0-.045*(.5+.5*stoneNoise(vWorld*.16))*(1.0-vTone);
-  float terrace=step(2.5,vShape)*smoothstep(.46,.50,abs(fract((vLocal.y+.5)*4.0)-.5));
-  base*=1.0-.035*terrace;
   float fog=smoothstep(92.0,315.0,vDistance);
   base=mix(base,vec3(.72,.80,.81),fog*.94);
   base*=mix(.89,1.0,uZen);
@@ -350,40 +333,72 @@ function cubeGeometry() {
 }
 
 function buildCity() {
-  const rnd=seeded(90317),span=520,data=[];
+  const rnd=seeded(90317),span=540,data=[];
   const add=(x,y,z,sx,sy,sz,tone=.6,shape=0)=>data.push(x,y,z,sx,sy,sz,tone,shape);
-  const tower=(x,z,w,h,d,tone,shape=1)=>{
-    // No decorative roof pieces: every tower ends either in a clean cut or a single sharp peak.
-    add(x,h*.5+.08,z,w,h,d,tone,shape===1?1:0);
+  const tower=(x,z,w,h,d,tone,pointed=false)=>{
+    add(x,h*.5+.08,z,w,h,d,tone,pointed?1:0);
   };
-  const arch=(cx,z,width,height,depth,tone)=>{
-    const p=Math.max(1.3,width*.12);
-    add(cx-width*.5+p*.5,height*.5,z,p,height,depth,tone,0);
-    add(cx+width*.5-p*.5,height*.5,z,p,height,depth,tone,0);
-    add(cx,height-p*.45,z,width,p*.9,depth,tone+.08,2);
+  const columns=(x,z,side,tone)=>{
+    for(let j=0;j<3;j++)add(x+side*j*2.35,3.5,z,1.0,7.0,1.0,tone,0);
   };
-  for(let z=14,block=0;z<span;z+=13.2,block++){
-    const avenue=10.5+Math.sin(block*.61)*2.4;
+
+  for(let z=12,block=0;z<span;z+=13.8,block++){
     for(const side of [-1,1]){
-      const lane=avenue+5+rnd()*15,x=side*(lane+rnd()*6.5),w=4.8+rnd()*8.8,d=5.5+rnd()*10,h=10+rnd()*33,tone=.38+rnd()*.58;
-      tower(x,z+rnd()*5,w,h,d,tone,rnd()>.46?1:0);
-      if(rnd()>.24)add(x,h*.18,z+d*.35,w*(1.12+rnd()*.72),2.1+rnd()*2.3,d*(1.0+rnd()*.55),tone+.06,0);
-      if(rnd()>.56)tower(x+side*(w*.72+1.7+rnd()*2.8),z+2+rnd()*5,1.2+rnd()*2.1,7+rnd()*16,1.2+rnd()*2.6,.68+rnd()*.24,1);
-      if(rnd()>.72){const cz=z-3+rnd()*7;for(let j=0;j<3;j++)add(x+side*(w*.56+2+j*2.25),3.4,cz,1.05,6.8,1.05,.78,1);}
+      const x=side*(25+rnd()*23);
+      const w=4.8+rnd()*8.6;
+      const d=5.8+rnd()*10.6;
+      const h=11+rnd()*39;
+      const tone=.40+rnd()*.56;
+
+      tower(x,z+rnd()*5,w,h,d,tone,rnd()>.50);
+
+      // Waterfront bases sit at water level; they are not roof pieces.
+      if(rnd()>.48)
+        add(
+          x,h*.08,z+d*.24,
+          w*(1.04+rnd()*.34),
+          1.25+rnd()*1.25,
+          d*(1.0+rnd()*.28),
+          Math.min(1,tone+.05),
+          0
+        );
+
+      if(rnd()>.63)
+        tower(
+          x+side*(w*.75+2.2+rnd()*3.0),
+          z+1+rnd()*5,
+          1.3+rnd()*2.4,
+          9+rnd()*22,
+          1.4+rnd()*2.9,
+          .68+rnd()*.25,
+          true
+        );
+
+      if(rnd()>.79)
+        columns(x+side*(w*.63+2.1),z-2+rnd()*5,side,.77);
     }
-    // The flight corridor stays open: monumental arches live high above the camera,
-    // so forward motion never appears to collide with a solid wall.
-    if(block%5===2)arch(0,z+3,22+rnd()*7,27+rnd()*8,2.3+rnd()*1.8,.79+rnd()*.14);
-    if(block%8===5){const y=25+rnd()*8;add(0,y,z-1,33+rnd()*11,1.1,2.4,.84,2);add(-16,y*.48,z-1,1.45,y,2.4,.74,1);add(16,y*.48,z-1,1.45,y,2.4,.74,1);}
+
     for(const side of [-1,1]){
-      if(rnd()>.18){const fx=side*(46+rnd()*48),fh=17+rnd()*54;tower(fx,z+rnd()*10,6+rnd()*14,fh,7+rnd()*15,.26+rnd()*.42,rnd()>.52?1:0);}
-      if(rnd()>.58)arch(side*(36+rnd()*12),z+rnd()*7,12+rnd()*8,9+rnd()*8,2.2,.52+rnd()*.25);
+      if(rnd()>.16){
+        const fx=side*(57+rnd()*54);
+        tower(
+          fx,z+rnd()*10,
+          6+rnd()*14,
+          19+rnd()*60,
+          7+rnd()*15,
+          .28+rnd()*.44,
+          rnd()>.46
+        );
+      }
     }
   }
-  for(let z=96;z<span;z+=128){
-    const side=(Math.floor(z/128)%2)?-1:1;
-    tower(side*27,z,11,58,11,.91,1);tower(side*27,z,6.5,72,6.5,.96,1);add(side*27,73.2,z,2.1,7.5,2.1,.98,1);
-    for(let i=-2;i<=2;i++)add(side*27+i*3.1,2.8,z+10,1.15,5.6,1.15,.82,1);
+
+  for(let z=90;z<span;z+=138){
+    const side=(Math.floor(z/138)%2)?-1:1;
+    tower(side*38,z,11,64,11,.91,true);
+    tower(side*38,z,6.2,82,6.2,.97,true);
+    for(let i=-2;i<=2;i++)
+      add(side*38+i*3.0,2.8,z+10,1.05,5.6,1.05,.82,0);
   }
   return {span,data:new Float32Array(data),count:data.length/8};
 }
@@ -766,21 +781,22 @@ function createRenderer(ctx){
 
   function renderWorld(time,camera){
     const zen=Boolean(camera);
-    const cx=Math.max(-1.15,Math.min(1.15,camera?.x||0));
-    const cy=Math.max(-.75,Math.min(.75,camera?.y||0));
+    const cx=Math.max(-1.45,Math.min(1.45,camera?.x||0));
+    const cy=Math.max(-1.0,Math.min(1.0,camera?.y||0));
     const cz=camera?.z||0;
-    const travel=time*(zen?2.58:.42)+cz*23;
-    const autoX=Math.sin(time*.043)*3.5+Math.sin(time*.017+1.4)*1.6;
-    // Real movement inside the wide central water corridor, plus a softer look offset.
-    const eyeX=autoX+cx*7.4;
-    const eyeY=9.2-cy*4.6+Math.sin(time*.041)*.58;
+    const travel=time*(zen?2.45:.40)+cz*24;
+    const autoX=Math.sin(time*.043)*2.8+Math.sin(time*.017+1.4)*1.3;
+
+    // Real camera translation in all directions, inside a deliberately wide empty corridor.
+    const eyeX=autoX+cx*10.2;
+    const eyeY=9.4+cy*7.2+Math.sin(time*.041)*.52;
     const eye=[eyeX,eyeY,14.5];
     const target=[
-      eyeX+cx*19+Math.sin(time*.028)*2.0,
-      4.8-cy*11+Math.sin(time*.023)*.44,
-      -54
+      eyeX+cx*1.35+Math.sin(time*.028)*1.7,
+      eyeY-4.35+cy*.58+Math.sin(time*.023)*.40,
+      -55
     ];
-    perspective(projection,zen?0.92:1.00,cssWidth/cssHeight,.12,560);
+    perspective(projection,zen?0.91:1.00,cssWidth/cssHeight,.12,590);
     lookAt(view,eye,target,[0,1,0]);
     multiply(vp,projection,view);
 
@@ -879,7 +895,7 @@ export default {
   flightCards:true,
   autoFlightCards:true,
   continuousDepth:true,
-  flightBounds:{x:1.15,y:.75},
+  flightBounds:{x:1.45,y:1.0},
   accent:"#dce9e8",
   dim:"#c7d3d3",
   surface:"17,28,33",

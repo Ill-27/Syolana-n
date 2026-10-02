@@ -38,8 +38,8 @@ export class ThemeEngine {
       b.type = "button";
       b.dataset.theme = t.id;
       const sw = document.createElement("canvas");
-      sw.width = 240;
-      sw.height = 140;
+      sw.width = 640;
+      sw.height = 360;
       sw.dataset.preview = t.id;
       sw.className = "theme-swatch";
       sw.style.background = t.preview;
@@ -671,79 +671,107 @@ export class ThemeEngine {
         c.fillStyle = g;
         c.fillRect(0, 0, w, h);
         if (id === "white-ocean-city") {
-          const horizon=Math.round(h*.58);
+          const horizon=Math.round(h*.57);
           const sky=c.createLinearGradient(0,0,0,horizon);
-          sky.addColorStop(0,"#385b6c");
-          sky.addColorStop(.48,"#7e9da6");
-          sky.addColorStop(.84,"#cdd8d5");
+          sky.addColorStop(0,"#395d6d");
+          sky.addColorStop(.45,"#7f9da6");
+          sky.addColorStop(.82,"#ced8d4");
           sky.addColorStop(1,"#eee2d4");
           c.fillStyle=sky;c.fillRect(0,0,w,horizon);
 
-          // Soft low clouds: blurred ellipses, never blocky rectangles.
+          // Atmospheric cloud banks built only from soft ellipses.
           c.save();
-          c.filter="blur(7px)";
-          for(let i=0;i<8;i++){
-            const cx=(i*49+t*2.0)%(w+100)-50;
-            const cy=18+(i%4)*13;
-            const rw=34+(i%3)*18,rh=7+(i%2)*4;
-            c.globalAlpha=.11+(i%3)*.035;
-            c.fillStyle=i%2?"#f2f3ee":"#aebfc1";
-            c.beginPath();c.ellipse(cx,cy,rw,rh,0,0,Math.PI*2);c.fill();
+          c.filter="blur(16px)";
+          for(let i=0;i<10;i++){
+            const cx=(i*118+t*4.5)%(w+220)-110;
+            const cy=45+(i%4)*31;
+            c.globalAlpha=.10+(i%3)*.035;
+            c.fillStyle=i%2?"#f3f4ef":"#aebfc2";
+            c.beginPath();
+            c.ellipse(cx,cy,95+(i%3)*35,20+(i%2)*10,0,0,Math.PI*2);
+            c.fill();
           }
-          c.restore();c.globalAlpha=1;c.filter="none";
+          c.restore();
+          c.globalAlpha=1;c.filter="none";
 
           const sea=c.createLinearGradient(0,horizon,0,h);
-          sea.addColorStop(0,"#78979a");
-          sea.addColorStop(.32,"#4d747a");
-          sea.addColorStop(1,"#173945");
+          sea.addColorStop(0,"#7f9b9d");
+          sea.addColorStop(.30,"#4e747a");
+          sea.addColorStop(1,"#153946");
           c.fillStyle=sea;c.fillRect(0,horizon,w,h-horizon);
 
-          // Morning reflection.
-          const glow=c.createLinearGradient(w*.68,horizon,w*.70,h);
-          glow.addColorStop(0,"rgba(250,222,182,.38)");
-          glow.addColorStop(1,"rgba(250,222,182,0)");
-          c.fillStyle=glow;c.fillRect(w*.55,horizon,w*.3,h-horizon);
+          const reflection=c.createRadialGradient(w*.72,horizon+12,4,w*.72,horizon+22,w*.22);
+          reflection.addColorStop(0,"rgba(249,218,177,.36)");
+          reflection.addColorStop(1,"rgba(249,218,177,0)");
+          c.fillStyle=reflection;c.fillRect(w*.48,horizon,w*.48,h-horizon);
 
-          c.strokeStyle="rgba(233,244,241,.24)";c.lineWidth=1;
-          for(let j=0;j<8;j++){
+          // Fine water lines create scale without making the preview busy.
+          for(let j=0;j<12;j++){
+            c.strokeStyle=`rgba(234,245,241,${.18-j*.008})`;
+            c.lineWidth=1.2+j*.05;
             c.beginPath();
-            for(let x=0;x<=w;x+=6){
-              const y=horizon+6+j*6+Math.sin(x*.075+t*.55+j*.9)*1.2;
+            for(let x=0;x<=w;x+=10){
+              const y=horizon+12+j*12+Math.sin(x*.030+t*.38+j*.7)*(2+j*.08);
               x?c.lineTo(x,y):c.moveTo(x,y);
             }
             c.stroke();
           }
 
-          const cut=(x,b,tw,th)=>{
-            const g=c.createLinearGradient(x-tw/2,0,x+tw/2,0);
-            g.addColorStop(0,"#c9d1cf");g.addColorStop(.42,"#f6f3e9");g.addColorStop(1,"#9db1b3");
-            c.fillStyle=g;c.fillRect(x-tw/2,b-th,tw,th);
+          const cut=(x,b,bw,bh)=>{
+            const g=c.createLinearGradient(x-bw/2,0,x+bw/2,0);
+            g.addColorStop(0,"#b5c6c6");
+            g.addColorStop(.42,"#f5f3ea");
+            g.addColorStop(1,"#8fa8ac");
+            c.fillStyle=g;c.fillRect(x-bw/2,b-bh,bw,bh);
           };
-          const peak=(x,b,tw,th)=>{
-            const g=c.createLinearGradient(x-tw/2,0,x+tw/2,0);
-            g.addColorStop(0,"#b9c6c5");g.addColorStop(.48,"#f7f4ea");g.addColorStop(1,"#91a9ad");
-            c.fillStyle=g;c.beginPath();c.moveTo(x,b-th);c.lineTo(x+tw/2,b);c.lineTo(x-tw/2,b);c.closePath();c.fill();
+          const peak=(x,b,bw,bh)=>{
+            const bodyH=bh*.63;
+            const g=c.createLinearGradient(x-bw/2,0,x+bw/2,0);
+            g.addColorStop(0,"#afc0c0");
+            g.addColorStop(.48,"#f7f4ea");
+            g.addColorStop(1,"#89a3a8");
+            c.fillStyle=g;
+            c.beginPath();
+            c.moveTo(x-bw/2,b);
+            c.lineTo(x-bw/2,b-bodyH);
+            c.lineTo(x,b-bh);
+            c.lineTo(x+bw/2,b-bodyH);
+            c.lineTo(x+bw/2,b);
+            c.closePath();c.fill();
           };
 
-          cut(22,horizon+2,18,46);peak(47,horizon+2,20,59);
-          cut(69,horizon+2,12,31);
-          peak(w-24,horizon+2,24,66);cut(w-55,horizon+2,15,38);
-          peak(w-78,horizon+2,12,31);
+          // Deep framing, open corridor in the middle.
+          cut(48,horizon+8,48,112);
+          peak(112,horizon+7,54,155);
+          cut(170,horizon+6,34,82);
+          peak(w-55,horizon+8,62,172);
+          cut(w-126,horizon+7,43,108);
+          peak(w-183,horizon+6,34,86);
 
-          // Foam at the waterline.
-          c.strokeStyle="rgba(250,252,247,.58)";c.lineWidth=1.25;
-          for(const x of [22,47,69,w-24,w-55,w-78]){
-            c.beginPath();c.ellipse(x,horizon+3,10,2.4,0,0,Math.PI*2);c.stroke();
+          // Distant silhouettes add depth.
+          c.globalAlpha=.48;
+          cut(220,horizon+3,20,50);peak(w-228,horizon+3,22,59);
+          c.globalAlpha=1;
+
+          c.strokeStyle="rgba(249,252,247,.60)";
+          c.lineWidth=3;
+          for(const x of [48,112,170,w-55,w-126,w-183]){
+            c.beginPath();c.ellipse(x,horizon+9,22,5,0,0,Math.PI*2);c.stroke();
           }
 
-          c.globalAlpha=.24;c.fillStyle="#f7cfa8";
-          c.beginPath();c.arc(w*.71,h*.43,23,0,Math.PI*2);c.fill();c.globalAlpha=1;
+          c.globalAlpha=.20;c.fillStyle="#f5cda5";
+          c.beginPath();c.arc(w*.72,h*.42,56,0,Math.PI*2);c.fill();
+          c.globalAlpha=1;
 
-          // One small white bird rising into the distance.
-          const bx=w*.45,by=h*.30,bs=5;
-          c.strokeStyle="rgba(255,255,252,.90)";c.lineWidth=1.3;
-          c.beginPath();c.moveTo(bx-bs,by+2);c.quadraticCurveTo(bx-bs*.45,by-bs*.65,bx,by);
-          c.quadraticCurveTo(bx+bs*.45,by-bs*.65,bx+bs,by+2);c.stroke();
+          // One receding white bird.
+          const bx=w*.48,by=h*.31,bs=13;
+          c.strokeStyle="rgba(255,255,252,.94)";
+          c.lineWidth=3;
+          c.beginPath();
+          c.moveTo(bx-bs,by+3);
+          c.quadraticCurveTo(bx-bs*.48,by-bs*.62,bx,by);
+          c.quadraticCurveTo(bx+bs*.48,by-bs*.62,bx+bs,by+3);
+          c.stroke();
           continue;
         }
         if (id === "golden") {

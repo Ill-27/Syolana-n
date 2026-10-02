@@ -2,9 +2,9 @@
   {
     "id": "white-ocean-city",
     "name": "Белый город над океаном",
-    "description": "Ранний рассвет · бесконечный океан, низкие облака и медленный полёт",
+    "description": "Живой океан · низкие облака, белая архитектура, птицы и кинематографический полёт",
     "module": "./white-ocean-city.js",
-    "preview": "linear-gradient(135deg,#718996,#d8dfdd 48%,#284652)"
+    "preview": "linear-gradient(135deg,#3f6574,#cbd8d5 44%,#e6d9c9 58%,#17404c)"
   },
   {
     "id": "aurora",

@@ -103,68 +103,46 @@ void main(){
   gl_Position = vec4(aPosition, 0.0, 1.0);
 }`;
 
-const SKY_FS = `#version 300 es
+const SKY_FS = \`#version 300 es
 precision highp float;
 in vec2 vUv;
 out vec4 outColor;
 uniform float uTime;
 uniform float uAspect;
 uniform float uZen;
-
-float hash(vec2 p){
-  p = fract(p * vec2(123.34,456.21));
-  p += dot(p, p + 45.32);
-  return fract(p.x * p.y);
-}
-float noise(vec2 p){
-  vec2 i=floor(p), f=fract(p);
-  f=f*f*(3.0-2.0*f);
-  return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
-}
-float fbm(vec2 p){
-  float v=0.0, a=.5;
-  for(int i=0;i<5;i++){
-    v += a * noise(p);
-    p = p * 2.03 + vec2(11.7,7.4);
-    a *= .5;
-  }
-  return v;
-}
+float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float v=0.0,a=.52;for(int i=0;i<6;i++){v+=a*noise(p);p=p*2.03+vec2(17.7,9.4);a*=.51;}return v;}
 void main(){
   vec2 uv=vUv;
-  vec3 top=vec3(.43,.55,.64);
-  vec3 mid=vec3(.70,.77,.80);
-  vec3 horizon=vec3(.91,.88,.83);
-  float h=smoothstep(.10,.88,uv.y);
-  vec3 col=mix(horizon,top,h);
-  col=mix(col,mid,.18);
-
-  float dawn=exp(-pow((uv.x-.76)*3.2,2.0)-pow((uv.y-.47)*6.8,2.0));
-  col += vec3(.20,.12,.055)*dawn*.9;
-
+  float horizon=.455;
+  vec3 zenith=vec3(.19,.34,.43),upper=vec3(.42,.59,.67),haze=vec3(.81,.86,.84),dawn=vec3(.96,.82,.67);
+  vec3 col=mix(haze,mix(upper,zenith,smoothstep(.58,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
+  float sun=exp(-pow((uv.x-.73)*4.8,2.0)-pow((uv.y-.47)*18.0,2.0));
+  col+=dawn*sun*.34;
   vec2 p=vec2((uv.x-.5)*uAspect,uv.y);
-  float cloudBand=smoothstep(.34,.52,uv.y)*(1.0-smoothstep(.78,.97,uv.y));
-  float n=fbm(p*3.0+vec2(uTime*.006,-uTime*.003));
-  n += .45*fbm(p*6.6+vec2(-uTime*.009,uTime*.002));
-  float cloud=smoothstep(.62,1.05,n)*cloudBand;
-  vec3 cloudColor=mix(vec3(.48,.56,.60),vec3(.86,.88,.87),smoothstep(.42,.78,uv.y));
-  col=mix(col,cloudColor,cloud*.80);
-
-  float mist=exp(-pow((uv.y-.38)*8.2,2.0));
-  col=mix(col,vec3(.79,.84,.84),mist*(.28+.10*uZen));
-
-  float vignette=1.0-.18*pow(length((uv-.5)*vec2(.82,1.0)),1.7);
-  col*=vignette;
-  col*=mix(.86,1.0,uZen);
+  float lowMask=smoothstep(.40,.47,uv.y)*(1.0-smoothstep(.63,.73,uv.y));
+  float highMask=smoothstep(.52,.62,uv.y)*(1.0-smoothstep(.83,.96,uv.y));
+  float low=fbm(p*3.25+vec2(uTime*.007,-uTime*.002))+.34*fbm(p*8.1+vec2(-uTime*.012,uTime*.003));
+  float high=fbm(p*2.35+vec2(-uTime*.004,uTime*.001));
+  float cloudLow=smoothstep(.49,.78,low)*lowMask,cloudHigh=smoothstep(.57,.82,high)*highMask;
+  col=mix(col,mix(vec3(.34,.46,.51),vec3(.88,.90,.87),smoothstep(.48,.78,low)),cloudLow*.88);
+  col=mix(col,vec3(.75,.81,.81),cloudHigh*.34);
+  float distant=exp(-pow((uv.y-horizon)*27.0,2.0));
+  col=mix(col,vec3(.85,.88,.85),distant*(.44+.08*uZen));
+  col+=(hash(gl_FragCoord.xy+floor(uTime*12.0))-.5)*.012;
+  col*=1.0-.14*pow(length((uv-.5)*vec2(.84,1.0)),1.75);
+  col*=mix(.90,1.0,uZen);
   outColor=vec4(col,1.0);
-}`;
+}\`;
 
-const CITY_VS = `#version 300 es
+const CITY_VS = \`#version 300 es
 layout(location=0) in vec3 aPosition;
 layout(location=1) in vec3 aNormal;
 layout(location=2) in vec3 iOffset;
 layout(location=3) in vec3 iScale;
 layout(location=4) in float iTone;
+layout(location=5) in float iShape;
 uniform mat4 uViewProj;
 uniform vec3 uCamera;
 uniform float uTravel;
@@ -172,66 +150,62 @@ uniform float uSpan;
 out vec3 vNormal;
 out vec3 vWorld;
 out float vTone;
+out float vShape;
 out float vDistance;
+out vec3 vLocal;
 void main(){
-  float z = mod(iOffset.z + uTravel, uSpan) - uSpan;
-  vec3 world = vec3(iOffset.x, iOffset.y, z) + aPosition * iScale;
-  vWorld = world;
-  vNormal = aNormal;
-  vTone = iTone;
-  vDistance = distance(world, uCamera);
-  gl_Position = uViewProj * vec4(world,1.0);
-}`;
+  float z=mod(iOffset.z+uTravel,uSpan)-uSpan;
+  vec3 local=aPosition;
+  float y01=clamp(local.y+.5,0.0,1.0);
+  if(iShape>0.5&&iShape<1.5){float taper=mix(1.0,.46,smoothstep(.28,1.0,y01));local.xz*=taper;}
+  else if(iShape>1.5&&iShape<2.5){float neck=mix(1.0,.72,smoothstep(.45,.82,y01));local.xz*=neck;}
+  else if(iShape>2.5){float terrace=1.0-.12*floor(y01*4.0);local.xz*=terrace;}
+  vec3 world=vec3(iOffset.x,iOffset.y,z)+local*iScale;
+  vWorld=world;vNormal=aNormal;vTone=iTone;vShape=iShape;vDistance=distance(world,uCamera);vLocal=local;
+  gl_Position=uViewProj*vec4(world,1.0);
+}\`;
 
-const CITY_FS = `#version 300 es
+const CITY_FS = \`#version 300 es
 precision highp float;
 in vec3 vNormal;
 in vec3 vWorld;
 in float vTone;
+in float vShape;
 in float vDistance;
+in vec3 vLocal;
 out vec4 outColor;
 uniform float uTime;
 uniform float uZen;
+float stoneNoise(vec3 p){return sin(p.x*.73+p.z*.31)*sin(p.y*.91-p.z*.17);}
 void main(){
-  vec3 n=normalize(vNormal);
-  vec3 lightDir=normalize(vec3(-.44,.78,.35));
-  float diff=max(dot(n,lightDir),0.0);
-  float up=max(n.y,0.0);
-  float edge=pow(1.0-max(abs(n.z),abs(n.x)),2.0);
-  vec3 cool=vec3(.76,.81,.82);
-  vec3 white=vec3(.97,.96,.92);
-  vec3 base=mix(cool,white,.62+.28*vTone);
-  base*=.52+.50*diff+.12*up;
-  base += vec3(.11,.07,.035)*max(0.0,dot(n,normalize(vec3(.72,.32,.18))));
-  base += vec3(.06,.09,.10)*edge;
-  float stains=(sin(vWorld.y*.41+vWorld.x*.17)+sin(vWorld.z*.08))*0.5+0.5;
-  base*=1.0-.035*stains*(1.0-vTone);
-  float fog=smoothstep(82.0,260.0,vDistance);
-  vec3 fogColor=vec3(.74,.80,.81);
-  base=mix(base,fogColor,fog*.92);
-  base*=mix(.88,1.0,uZen);
+  vec3 n=normalize(vNormal),key=normalize(vec3(-.48,.80,.32)),warm=normalize(vec3(.70,.24,.18));
+  float diff=max(dot(n,key),0.0),rim=pow(1.0-max(dot(n,normalize(vec3(.1,.45,.89))),0.0),2.2),up=max(n.y,0.0);
+  vec3 base=mix(vec3(.68,.76,.77),vec3(.965,.955,.915),.57+.33*vTone);
+  base*=.48+.54*diff+.13*up;
+  base+=vec3(.13,.075,.035)*max(0.0,dot(n,warm))*.52+vec3(.055,.075,.078)*rim*.34;
+  base*=1.0-.045*(.5+.5*stoneNoise(vWorld*.16))*(1.0-vTone);
+  float terrace=step(2.5,vShape)*smoothstep(.46,.50,abs(fract((vLocal.y+.5)*4.0)-.5));
+  base*=1.0-.035*terrace;
+  float fog=smoothstep(92.0,315.0,vDistance);
+  base=mix(base,vec3(.72,.80,.81),fog*.94);
+  base*=mix(.89,1.0,uZen);
   outColor=vec4(base,1.0);
-}`;
+}\`;
 
-const OCEAN_VS = `#version 300 es
+const OCEAN_VS = \`#version 300 es
 layout(location=0) in vec2 aPosition;
 uniform mat4 uViewProj;
 uniform float uTime;
 out vec3 vWorld;
 out float vWave;
 void main(){
-  float x=aPosition.x;
-  float z=aPosition.y;
-  float w1=sin(x*.105+uTime*.34+z*.025);
-  float w2=sin(x*.043-uTime*.22-z*.075);
-  float w3=sin((x+z)*.16+uTime*.14);
-  float y=-.42 + w1*.16+w2*.10+w3*.045;
-  vWave=y;
-  vWorld=vec3(x,y,z);
-  gl_Position=uViewProj*vec4(vWorld,1.0);
-}`;
+  float x=aPosition.x,z=aPosition.y;
+  float w1=sin(x*.073+z*.029+uTime*.42),w2=sin(x*.031-z*.061-uTime*.27),w3=sin((x+z)*.145+uTime*.19),w4=sin(x*.19-z*.113+uTime*.31);
+  float y=-.46+w1*.18+w2*.12+w3*.055+w4*.028;
+  vWave=y;vWorld=vec3(x,y,z);gl_Position=uViewProj*vec4(vWorld,1.0);
+}\`;
 
-const OCEAN_FS = `#version 300 es
+const OCEAN_FS = \`#version 300 es
 precision highp float;
 in vec3 vWorld;
 in float vWave;
@@ -240,22 +214,18 @@ uniform vec3 uCamera;
 uniform float uTime;
 uniform float uZen;
 void main(){
-  vec3 dx=dFdx(vWorld), dy=dFdy(vWorld);
-  vec3 n=normalize(cross(dx,dy));
-  if(n.y<0.0)n=-n;
-  vec3 viewDir=normalize(uCamera-vWorld);
-  float fres=pow(1.0-max(dot(n,viewDir),0.0),3.0);
-  float glint=pow(max(dot(reflect(-normalize(vec3(-.44,.78,.35)),n),viewDir),0.0),70.0);
-  vec3 deep=vec3(.14,.25,.30);
-  vec3 pale=vec3(.54,.67,.70);
-  vec3 col=mix(deep,pale,.25+.48*fres);
-  col+=vec3(.42,.34,.21)*glint*.55;
-  float dist=distance(vWorld,uCamera);
-  float fog=smoothstep(90.0,320.0,dist);
-  col=mix(col,vec3(.73,.80,.81),fog*.94);
-  col*=mix(.82,1.0,uZen);
+  vec3 dx=dFdx(vWorld),dy=dFdy(vWorld),n=normalize(cross(dx,dy));if(n.y<0.0)n=-n;
+  vec3 viewDir=normalize(uCamera-vWorld),sunDir=normalize(vec3(-.52,.82,.27));
+  float fres=pow(1.0-max(dot(n,viewDir),0.0),3.4),diffuse=max(dot(n,sunDir),0.0);
+  float spec=max(dot(reflect(-sunDir,n),viewDir),0.0),glint=pow(spec,92.0),ribbon=pow(spec,16.0);
+  vec3 col=mix(vec3(.075,.22,.28),vec3(.22,.43,.47),.28+.24*diffuse);
+  col=mix(col,vec3(.63,.75,.77),.28+.52*fres);
+  col+=vec3(.92,.73,.48)*glint*.72+vec3(.34,.31,.24)*ribbon*.11;
+  col+=vec3(.05,.09,.10)*(.5+.5*sin(vWorld.x*.62+sin(vWorld.z*.27+uTime*.8)))*.08;
+  float fog=smoothstep(105.0,380.0,distance(vWorld,uCamera));
+  col=mix(col,vec3(.73,.81,.81),fog*.95);col*=mix(.88,1.0,uZen);
   outColor=vec4(col,1.0);
-}`;
+}\`;
 
 function cubeGeometry() {
   const p = [
@@ -280,56 +250,46 @@ function cubeGeometry() {
 }
 
 function buildCity() {
-  const rnd=seeded(90317);
-  const span=360;
-  const data=[];
-  const add=(x,y,z,sx,sy,sz,tone=.6)=>data.push(x,y,z,sx,sy,sz,tone);
-  for(let z=6, block=0; z<span; z+=10.5, block++){
+  const rnd=seeded(90317),span=520,data=[];
+  const add=(x,y,z,sx,sy,sz,tone=.6,shape=0)=>data.push(x,y,z,sx,sy,sz,tone,shape);
+  const tower=(x,z,w,h,d,tone,shape=1)=>{
+    add(x,h*.5+.08,z,w,h,d,tone,shape);
+    if(h>19){const ch=2.2+rnd()*4.8;add(x,h+ch*.5,z,w*(.56+rnd()*.16),ch,d*(.56+rnd()*.16),Math.min(1,tone+.12),2);}
+  };
+  const arch=(cx,z,width,height,depth,tone)=>{
+    const p=Math.max(1.3,width*.12);
+    add(cx-width*.5+p*.5,height*.5,z,p,height,depth,tone,0);
+    add(cx+width*.5-p*.5,height*.5,z,p,height,depth,tone,0);
+    add(cx,height-p*.45,z,width,p*.9,depth,tone+.08,2);
+  };
+  for(let z=14,block=0;z<span;z+=13.2,block++){
+    const avenue=10.5+Math.sin(block*.61)*2.4;
     for(const side of [-1,1]){
-      const lane=12+rnd()*24;
-      const x=side*(lane+rnd()*7);
-      const w=5+rnd()*8;
-      const d=5+rnd()*8;
-      const h=8+rnd()*28;
-      const tone=.25+rnd()*.72;
-      add(x,h*.5+.05,z+rnd()*4,w,h,d,tone);
-      if(rnd()>.28){
-        const th=5+rnd()*17;
-        add(x+side*(rnd()-.5)*2.5,h+th*.5,z+rnd()*4,w*(.45+rnd()*.25),th,d*(.45+rnd()*.3),Math.min(1,tone+.12));
-      }
-      if(rnd()>.72){
-        const crown=2+rnd()*5;
-        add(x,h+crown*.5+.2,z+rnd()*3,w*.7,crown,d*.7,.92);
-      }
-      if(rnd()>.62){
-        const px=x+side*(w*.65+1.1);
-        const ph=4+rnd()*9;
-        add(px,ph*.5,z+1.5+rnd()*3,1.2+rnd()*1.2,ph,1.2+rnd()*1.5,.7);
-      }
+      const lane=avenue+5+rnd()*15,x=side*(lane+rnd()*6.5),w=4.8+rnd()*8.8,d=5.5+rnd()*10,h=10+rnd()*33,tone=.38+rnd()*.58;
+      tower(x,z+rnd()*5,w,h,d,tone,rnd()>.48?1:3);
+      if(rnd()>.24)add(x,h*.18,z+d*.35,w*(1.12+rnd()*.72),2.1+rnd()*2.3,d*(1.0+rnd()*.55),tone+.06,3);
+      if(rnd()>.56)tower(x+side*(w*.72+1.7+rnd()*2.8),z+2+rnd()*5,1.2+rnd()*2.1,7+rnd()*16,1.2+rnd()*2.6,.68+rnd()*.24,1);
+      if(rnd()>.72){const cz=z-3+rnd()*7;for(let j=0;j<3;j++)add(x+side*(w*.56+2+j*2.25),3.4,cz,1.05,6.8,1.05,.78,1);}
     }
-    // Monumental gateways: rare enough to remain surprising in the flight.
-    if(block%7===4){
-      const archY=12+rnd()*5;
-      add(-9.8,archY*.5,z+3,2.0,archY,2.6,.86);
-      add(9.8,archY*.5,z+3,2.0,archY,2.6,.86);
-      add(0,archY-.55,z+3,19.6,1.1,2.8,.94);
-    }
-    // Distant skyline keeps the ocean-city feeling endless beyond the corridor.
+    if(block%5===2)arch(0,z+3,20+rnd()*7,13+rnd()*7,2.3+rnd()*1.8,.79+rnd()*.14);
+    if(block%8===5){const y=10+rnd()*8;add(0,y,z-1,31+rnd()*11,1.15,2.4,.84,2);add(-15,y*.48,z-1,1.5,y,2.4,.74,1);add(15,y*.48,z-1,1.5,y,2.4,.74,1);}
     for(const side of [-1,1]){
-      if(rnd()>.36){
-        const x=side*(47+rnd()*38);
-        const h=18+rnd()*43;
-        add(x,h*.5,z+rnd()*8,7+rnd()*13,h,7+rnd()*12,.25+rnd()*.45);
-      }
+      if(rnd()>.18){const fx=side*(46+rnd()*48),fh=17+rnd()*54;tower(fx,z+rnd()*10,6+rnd()*14,fh,7+rnd()*15,.26+rnd()*.42,rnd()>.5?1:3);}
+      if(rnd()>.58)arch(side*(36+rnd()*12),z+rnd()*7,12+rnd()*8,9+rnd()*8,2.2,.52+rnd()*.25);
     }
   }
-  return { span, data:new Float32Array(data), count:data.length/7 };
+  for(let z=96;z<span;z+=128){
+    const side=(Math.floor(z/128)%2)?-1:1;
+    tower(side*27,z,11,58,11,.91,1);tower(side*27,z,6.5,72,6.5,.96,1);add(side*27,73.2,z,2.1,7.5,2.1,.98,1);
+    for(let i=-2;i<=2;i++)add(side*27+i*3.1,2.8,z+10,1.15,5.6,1.15,.82,1);
+  }
+  return {span,data:new Float32Array(data),count:data.length/8};
 }
 
 function buildOcean(cols=86, rows=96) {
   const vertices=[];
   const indices=[];
-  const x0=-135, x1=135, z0=25, z1=-390;
+  const x0=-190, x1=190, z0=34, z1=-560;
   for(let r=0;r<=rows;r++){
     const v=r/rows;
     const z=z0+(z1-z0)*v;
@@ -349,33 +309,35 @@ function buildOcean(cols=86, rows=96) {
 
 function drawBirds(ctx,time,width,height,isZen){
   if(!ctx||!width||!height)return;
-  ctx.save();
-  ctx.lineCap="round";
-  ctx.lineJoin="round";
-  const count=isZen?11:6;
-  for(let i=0;i<count;i++){
-    const cycle=19+(i%4)*6.7;
-    const phase=(time+i*7.91)%cycle/cycle;
-    const visibleWindow=.19+(i%3)*.018;
-    if(phase>visibleWindow)continue;
-    const u=phase/visibleWindow;
-    const dir=i%2?1:-1;
-    const x=dir>0?(-.14+1.28*u)*width:(1.14-1.28*u)*width;
-    const y=height*(.18+(i%5)*.055+Math.sin(time*.22+i)*.018);
-    const depth=.55+(i%4)*.32;
-    const size=Math.max(3,Math.min(13,(isZen?9:6.5)/depth));
-    const flap=Math.sin(time*7.4+i*1.7)*.45;
-    const alpha=(.28+.58*(1-Math.abs(u-.5)*1.55))/depth;
-    ctx.strokeStyle=`rgba(247,249,247,${Math.min(.78,alpha)})`;
-    ctx.lineWidth=Math.max(1,1.25/depth);
-    ctx.beginPath();
-    ctx.moveTo(x,y);
-    ctx.quadraticCurveTo(x-dir*size*.52,y-size*(.54+flap*.3),x-dir*size,y-size*.12);
-    ctx.moveTo(x,y);
-    ctx.quadraticCurveTo(x+dir*size*.52,y-size*(.54-flap*.3),x+dir*size,y-size*.12);
-    ctx.stroke();
-  }
-  ctx.restore();
+  ctx.save();ctx.lineCap="round";ctx.strokeStyle="rgba(248,250,247,.72)";
+  for(let i=0;i<(isZen?7:4);i++){
+    const x=((time*.014+i*.173)%1.35-.15)*width,y=height*(.18+(i%4)*.055),s=4+(i%3)*1.7;
+    ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(x-s,y);ctx.quadraticCurveTo(x-s*.45,y-s*.62,x,y);ctx.quadraticCurveTo(x+s*.45,y-s*.62,x+s,y);ctx.stroke();
+  }ctx.restore();
+}
+function createFlock(){
+  const rnd=seeded(19077);
+  return {
+    birds:Array.from({length:18},(_,i)=>({x:.18+rnd()*.64,y:.12+rnd()*.22,vx:(rnd()-.5)*.018,vy:(rnd()-.5)*.008,size:.7+rnd()*.9,phase:rnd()*TAU,wing:5.2+rnd()*2.8,depth:.65+rnd()*.7,delay:i*.13})),
+    target:{x:.5,y:.22,active:false,last:0},
+    guide({x,y,active}){this.target.active=Boolean(active);if(Number.isFinite(x))this.target.x=Math.max(.08,Math.min(.92,x));if(Number.isFinite(y))this.target.y=Math.max(.08,Math.min(.43,y));this.target.last=performance.now();},
+    draw(ctx,time,width,height,zen){
+      if(!ctx||!width||!height)return;
+      const target=this.target;if(target.active&&performance.now()-target.last>900)target.active=false;
+      ctx.save();ctx.lineCap="round";ctx.lineJoin="round";
+      for(let i=0;i<this.birds.length;i++){
+        const b=this.birds[i],leader=this.birds[(i+this.birds.length-1)%this.birds.length];
+        const tx=target.active?target.x:.50+Math.sin(time*.115+i*.71)*.22,ty=target.active?target.y:.20+Math.cos(time*.083+i*.53)*.055,follow=i===0?1:.52;
+        b.vx+=(tx-b.x)*(.00072*follow)+(leader.x-b.x)*.00024;b.vy+=(ty-b.y)*(.00062*follow)+(leader.y-b.y)*.00018;
+        b.vx+=Math.sin(time*.61+i*1.9)*.000025;b.vy+=Math.cos(time*.47+i*1.3)*.000018;
+        const sp=Math.hypot(b.vx,b.vy),mx=.0048+(zen?.0014:0);if(sp>mx){b.vx=b.vx/sp*mx;b.vy=b.vy/sp*mx;}
+        b.vx*=.986;b.vy*=.986;b.x+=b.vx;b.y+=b.vy;if(b.x<-.08)b.x=1.08;if(b.x>1.08)b.x=-.08;b.y=Math.max(.075,Math.min(.405,b.y));
+        const x=b.x*width,y=b.y*height,s=(4.2+b.size*4.8)*(zen?1.05:.88)/b.depth,flap=Math.sin(time*b.wing+b.phase),alpha=Math.min(.84,.38+.30/b.depth);
+        ctx.strokeStyle=\`rgba(248,250,247,\${alpha})\`;ctx.shadowColor="rgba(210,232,232,.25)";ctx.shadowBlur=5;ctx.lineWidth=Math.max(.9,1.35/b.depth);
+        ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x-s*.52,y-s*(.40+.23*flap),x-s,y-s*.04);ctx.moveTo(x,y);ctx.quadraticCurveTo(x+s*.52,y-s*(.40-.23*flap),x+s,y-s*.04);ctx.stroke();
+      }ctx.restore();
+    }
+  };
 }
 
 function fallbackRenderer(ctx){
@@ -458,7 +420,7 @@ function createRenderer(ctx){
   Object.assign(canvas.style,{position:"fixed",inset:"0",width:"100%",height:"100%",zIndex:"-2",pointerEvents:"none",display:"block"});
   sourceCanvas.parentNode?.insertBefore(canvas,sourceCanvas);
   const style=document.createElement("style");
-  style.textContent='html[data-theme="white-ocean-city"] .flight-planet{display:none!important}html[data-theme="white-ocean-city"] .flight-hint{opacity:.56}html[data-theme="white-ocean-city"] .theme-sound-toggle svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}html[data-theme="white-ocean-city"] .theme-sound-toggle svg path:first-child{fill:currentColor;stroke:none}html[data-theme="white-ocean-city"] .theme-sound-toggle[data-enabled="true"]{color:#f1fbfa;box-shadow:0 0 0 1px #d9eeee55,0 0 28px #bde5e533}';
+  style.textContent='html[data-theme="white-ocean-city"] .flight-hint{opacity:.72;color:#e4efed}html[data-theme="white-ocean-city"] .theme-sound-toggle svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}html[data-theme="white-ocean-city"] .theme-sound-toggle svg path:first-child{fill:currentColor;stroke:none}html[data-theme="white-ocean-city"] .theme-sound-toggle[data-enabled="true"]{color:#f1fbfa;box-shadow:0 0 0 1px #d9eeee55,0 0 28px #bde5e533}html[data-theme="white-ocean-city"] .flight-planet{color:#f5fbfa}html[data-theme="white-ocean-city"] .planet-orb{background:radial-gradient(circle at 32% 26%,rgba(245,252,250,.56),rgba(106,145,150,.26) 44%,rgba(20,38,45,.52) 82%);border-color:rgba(222,242,239,.48)}';
   document.head.append(style);
   const sound=createThemeSound();
   const originalFillText=ctx.fillText;
@@ -520,10 +482,11 @@ function createRenderer(ctx){
   const instance=keep(gl.createBuffer());
   gl.bindBuffer(gl.ARRAY_BUFFER,instance);
   gl.bufferData(gl.ARRAY_BUFFER,city.data,gl.STATIC_DRAW);
-  const stride=7*4;
+  const stride=8*4;
   gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2,3,gl.FLOAT,false,stride,0); gl.vertexAttribDivisor(2,1);
   gl.enableVertexAttribArray(3); gl.vertexAttribPointer(3,3,gl.FLOAT,false,stride,3*4); gl.vertexAttribDivisor(3,1);
   gl.enableVertexAttribArray(4); gl.vertexAttribPointer(4,1,gl.FLOAT,false,stride,6*4); gl.vertexAttribDivisor(4,1);
+  gl.enableVertexAttribArray(5); gl.vertexAttribPointer(5,1,gl.FLOAT,false,stride,7*4); gl.vertexAttribDivisor(5,1);
 
   const ocean=buildOcean();
   const oceanVao=keep(gl.createVertexArray());
@@ -543,6 +506,9 @@ function createRenderer(ctx){
   const vp=new Float32Array(16);
   let cssWidth=1,cssHeight=1,quality=1;
   let disposed=false;
+  const flock=createFlock();
+  const hint=document.querySelector(".flight-hint"),oldHint=hint?.textContent||"";
+  if(hint)hint.textContent="Перетаскивайте мир · два пальца — глубина · ведите стаю пальцем";
 
   const uniforms={
     sky:{
@@ -580,14 +546,11 @@ function createRenderer(ctx){
   }
 
   function renderWorld(time,camera){
-    const zen=Boolean(camera);
-    const travel=time*(zen?3.05:.58)+(camera?.z||0)*26;
-    const autoX=Math.sin(time*.055)*4.8+Math.sin(time*.019+1.4)*2.6;
-    const eyeX=autoX+(camera?.x||0)*18;
-    const eyeY=7.4+Math.sin(time*.047)*1.05+(camera?.y||0)*8.5;
-    const eye=[eyeX,eyeY,12.5];
-    const target=[eyeX+Math.sin(time*.033)*2.8,4.0+Math.sin(time*.025)*.9,-42];
-    perspective(projection,zen?0.98:1.02,cssWidth/cssHeight,.12,430);
+    const zen=Boolean(camera),cx=Math.max(-.62,Math.min(.62,camera?.x||0)),cy=Math.max(-.30,Math.min(.30,camera?.y||0)),cz=Math.max(-8,Math.min(8,camera?.z||0));
+    const travel=time*(zen?2.72:.44)+cz*27;
+    const autoX=Math.sin(time*.043)*4.2+Math.sin(time*.017+1.4)*2.1,eyeX=autoX+cx*17,eyeY=8.9+Math.sin(time*.041)*.72+cy*8.1;
+    const eye=[eyeX,eyeY,14.5],target=[eyeX+Math.sin(time*.028)*2.4,4.6+Math.sin(time*.023)*.55,-48];
+    perspective(projection,zen?0.94:1.00,cssWidth/cssHeight,.12,520);
     lookAt(view,eye,target,[0,1,0]);
     multiply(vp,projection,view);
 
@@ -632,11 +595,12 @@ function createRenderer(ctx){
 
   return {
     resize,
+    guideBirds(point){flock.guide(point||{});},
     draw({time,width,height,camera}){
       if(disposed)return;
       if(width!==cssWidth||height!==cssHeight)resize({width,height,ratio:window.devicePixelRatio||1});
       renderWorld(time,camera);
-      drawBirds(ctx,time,width,height,Boolean(camera));
+      flock.draw(ctx,time,width,height,Boolean(camera));
       if(!camera){
         const veil=ctx.createLinearGradient(0,0,0,height);
         veil.addColorStop(0,"rgba(6,14,19,.11)");
@@ -648,7 +612,7 @@ function createRenderer(ctx){
     },
     dispose(){
       disposed=true;
-      canvas.remove(); style.remove(); sound.dispose(); ctx.fillText=originalFillText;
+      canvas.remove(); style.remove(); sound.dispose(); ctx.fillText=originalFillText; if(hint)hint.textContent=oldHint;
       try{
         gl.deleteProgram(skyProgram);
         gl.deleteProgram(cityProgram);
@@ -667,10 +631,13 @@ export default {
   renderer:"webgl-city",
   particles:false,
   marks:false,
-  flightCards:false,
+  flightCards:true,
+  autoFlightCards:true,
+  flightBounds:{x:.62,y:.30,z:8},
   accent:"#dce9e8",
   dim:"#c7d3d3",
   surface:"17,28,33",
+  panel:{bg:"rgba(22,41,48,.52)",border:"rgba(211,236,233,.27)",glow:"rgba(160,211,211,.17)",text:"#f4fbfa",muted:"#c7d7d5"},
   radius:"26px",
   buttonRadius:"26px",
   heading:'"Cormorant Garamond", Georgia, serif',

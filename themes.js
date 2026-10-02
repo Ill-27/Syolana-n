@@ -96,7 +96,11 @@ export class ThemeEngine {
       dim: theme.dim,
       surface: theme.surface,
       radius: theme.radius,
-
+      "panel-bg": theme.panel?.bg || `rgba(${theme.surface},.68)`,
+      "panel-border": theme.panel?.border || "rgba(224,211,255,.20)",
+      "panel-glow": theme.panel?.glow || "rgba(190,160,245,.14)",
+      "panel-text": theme.panel?.text || "#f8f6ff",
+      "panel-muted": theme.panel?.muted || theme.dim,
       "button-radius": theme.buttonRadius || "30px",
     }))
       s.setProperty("--" + k, v);
@@ -552,11 +556,14 @@ export class ThemeEngine {
     cam.tx += dx;
     cam.ty += dy;
     cam.tz += dz;
+    const bounds=this.theme?.flightBounds;
+    if(bounds){cam.tx=Math.max(-bounds.x,Math.min(bounds.x,cam.tx));cam.ty=Math.max(-bounds.y,Math.min(bounds.y,cam.ty));cam.tz=Math.max(-bounds.z,Math.min(bounds.z,cam.tz));}
     cam.vz = this.reduced?.matches
       ? 0
       : Math.max(-12, Math.min(12, cam.vz + dz * 5));
     if (this.reduced?.matches) this.draw(0);
   }
+  guideBirds(x,y,active=false){this.custom?.guideBirds?.({x,y,active});}
   settle() {
     if (!this.camera) return;
     const cam = this.camera;
@@ -575,6 +582,8 @@ export class ThemeEngine {
     cam.x += (cam.tx - cam.x) * blend;
     cam.y += (cam.ty - cam.y) * blend;
     cam.z += (cam.tz - cam.z) * blend;
+    const bounds=this.theme?.flightBounds;
+    if(bounds){cam.x=Math.max(-bounds.x,Math.min(bounds.x,cam.x));cam.y=Math.max(-bounds.y,Math.min(bounds.y,cam.y));cam.z=Math.max(-bounds.z,Math.min(bounds.z,cam.z));}
     const amount = Math.min(
       1,
       Math.abs(cam.x) + Math.abs(cam.y) + Math.abs(cam.z),
@@ -588,15 +597,16 @@ export class ThemeEngine {
   drawPlanets() {
     const cam = this.camera,
       wrap = (v, n) => ((v % n) + n) % n;
+    const drift=this.theme?.autoFlightCards?this.phase*.10:0,virtualZ=cam.z+drift;
     const scale = Math.min(this.w, this.h) * 0.9;
     document.querySelectorAll(".flight-planet").forEach((node, i) => {
-      const z = wrap(i * 1.53 + 1.4 - cam.z, 8) + 0.45;
+      const z = wrap(i * 1.53 + 1.4 - virtualZ, 8) + 0.45;
       const x = wrap((i % 2 ? 0.58 : -0.34) - cam.x + 2, 4) - 2;
       const y = wrap(((i % 3) - 1) * 0.7 - cam.y + 2, 4) - 2;
       const px = this.w / 2 + (x * scale) / z,
         py = this.h * 0.48 + (y * scale) / z;
       const visible =
-        Math.abs(cam.z) > 0.04 &&
+        (Math.abs(virtualZ) > 0.04 || this.theme?.autoFlightCards) &&
         z > 0.85 &&
         z < 2.8 &&
         px > 95 &&
@@ -639,27 +649,21 @@ export class ThemeEngine {
         c.fillStyle = g;
         c.fillRect(0, 0, w, h);
         if (id === "white-ocean-city") {
-          const horizon = Math.round(h * 0.57);
-          const sea = c.createLinearGradient(0, horizon, 0, h);
-          sea.addColorStop(0, "#829da3");
-          sea.addColorStop(1, "#173541");
-          c.fillStyle = sea;
-          c.fillRect(0, horizon, w, h - horizon);
-          c.fillStyle = "rgba(245,246,241,.9)";
-          for (let i = 0; i < 15; i++) {
-            const side = i % 2 ? -1 : 1;
-            const z = (i + 2) / 18;
-            const bw = 4 + z * 13;
-            const bh = 14 + ((i * 11) % 31) * z;
-            const x = w / 2 + side * (18 + z * w * 0.43);
-            c.fillRect(x - bw / 2, horizon - bh, bw, bh);
-          }
-          c.globalAlpha = .22;
-          c.fillStyle = "#f7eee3";
-          c.beginPath();
-          c.arc(w * .76, h * .39, 22, 0, Math.PI * 2);
-          c.fill();
-          c.globalAlpha = 1;
+          const horizon=Math.round(h*.56),sky=c.createLinearGradient(0,0,0,horizon);
+          sky.addColorStop(0,"#4b6d7c");sky.addColorStop(.66,"#a8babd");sky.addColorStop(1,"#e6dfd2");
+          c.fillStyle=sky;c.fillRect(0,0,w,horizon);
+          c.globalAlpha=.22;c.fillStyle="#eef2ef";
+          for(let i=0;i<7;i++){const cx=(i*53+t*2.2)%(w+90)-45,cy=24+(i%3)*13;c.beginPath();c.ellipse(cx,cy,42+(i%2)*18,9+(i%3)*3,0,0,TAU);c.fill();}
+          c.globalAlpha=1;
+          const sea=c.createLinearGradient(0,horizon,0,h);sea.addColorStop(0,"#698d94");sea.addColorStop(.44,"#315b65");sea.addColorStop(1,"#17343e");
+          c.fillStyle=sea;c.fillRect(0,horizon,w,h-horizon);c.strokeStyle="rgba(220,236,233,.24)";c.lineWidth=1;
+          for(let j=0;j<7;j++){c.beginPath();for(let x=0;x<=w;x+=8){const y=horizon+9+j*7+Math.sin(x*.055+t*.6+j)*1.5;x?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();}
+          const tower=(x,b,tw,th,tiers=2)=>{c.fillStyle="rgba(246,244,236,.95)";c.fillRect(x-tw/2,b-th,tw,th);for(let k=1;k<tiers;k++)c.fillRect(x-tw*.34,b-th-k*8,tw*.68,8);};
+          tower(28,horizon,19,53,3);tower(55,horizon,13,35,2);tower(w-31,horizon,18,59,3);tower(w-61,horizon,12,34,2);
+          c.fillStyle="rgba(244,242,235,.92)";c.fillRect(w*.5-35,horizon-33,7,33);c.fillRect(w*.5+28,horizon-33,7,33);c.fillRect(w*.5-35,horizon-33,70,6);
+          c.globalAlpha=.25;c.fillStyle="#f3c99e";c.beginPath();c.arc(w*.73,h*.42,24,0,TAU);c.fill();c.globalAlpha=1;
+          c.strokeStyle="rgba(248,250,247,.8)";
+          for(let i=0;i<3;i++){const bx=w*(.38+i*.08),by=h*(.25+i*.03),s=4;c.beginPath();c.moveTo(bx-s,by);c.quadraticCurveTo(bx,by-s,bx+s,by);c.stroke();}
           continue;
         }
         if (id === "golden") {

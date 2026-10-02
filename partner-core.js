@@ -65,7 +65,7 @@ function makeThemeDialog(root) {
 }
 
 function makeControls(host, root) {
-  const controls = el("div", "syolana-controls");
+  const controls = el("div", "top-actions syolana-controls");
   controls.dataset.syolanaUi = "controls";
 
   const themeToggle = iconButton("Выбрать тему", "✧");
@@ -150,7 +150,17 @@ function makeMusicDock(config, root) {
     .map((song) => ({ ...song, src: resolveMedia(song.src) }))
     .filter((song) => song.src);
 
-  if (!songs.length) return { destroy() {} };
+  if (!songs.length) {
+    const themeName = el("span", "syolana-theme-name");
+    themeName.id = "theme-name";
+    themeName.hidden = true;
+    root.append(themeName);
+    return {
+      destroy() {
+        themeName.remove();
+      },
+    };
+  }
 
   const dock = el("aside", "syolana-music-dock");
   dock.dataset.syolanaUi = "music";

@@ -1077,6 +1077,21 @@ async function reader({ id, slug, chapter = 0 }, token) {
     lastScrollY = window.scrollY;
   const nodes = [...text.querySelectorAll("[data-paragraph]")];
   const readerMotion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const liveNodes = new Set();
+  const visibilityObserver =
+    "IntersectionObserver" in window
+      ? new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) liveNodes.add(entry.target);
+              else liveNodes.delete(entry.target);
+            }
+            if (!raf) raf = requestAnimationFrame(update);
+          },
+          { rootMargin: "80% 0px 80% 0px", threshold: 0 },
+        )
+      : null;
+  visibilityObserver?.observe && nodes.forEach((node) => visibilityObserver.observe(node));
 
   let dragPointer = null,
     dragStartX = 0,
@@ -1119,11 +1134,12 @@ async function reader({ id, slug, chapter = 0 }, token) {
 
   function update() {
     raf = 0;
-    let closest = nodes[0];
+    const candidates = liveNodes.size ? [...liveNodes] : nodes;
+    let closest = candidates[0] || nodes[0];
     let distance = Infinity;
     const anchor = innerHeight * 0.46;
 
-    for (const p of nodes) {
+    for (const p of candidates) {
       const r = p.getBoundingClientRect();
       const d =
         r.top > anchor
@@ -1239,6 +1255,8 @@ async function reader({ id, slug, chapter = 0 }, token) {
     text.removeEventListener("pointermove", pointerMove);
     window.removeEventListener("pointerup", pointerUp);
     window.removeEventListener("pointercancel", pointerUp);
+    visibilityObserver?.disconnect();
+    liveNodes.clear();
     clearTimeout(scrollReset);
     cancelAnimationFrame(raf);
   };

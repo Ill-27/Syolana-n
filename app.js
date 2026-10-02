@@ -1416,7 +1416,7 @@ async function route() {
   document.documentElement.style.setProperty("--prose", moodColors.neutral);
   $("page").replaceChildren();
   window.scrollTo({ top: 0, behavior: "instant" });
-  document.title = "Syolana · Вселенная творчества";
+  document.title = "Syolana · Иммерсивная платформа для творчества";
   const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
   const [view, a, b, c, d] = parts;
   document

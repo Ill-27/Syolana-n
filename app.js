@@ -535,7 +535,7 @@ function languages(lang = "en") {
     heading(
       "ВЫБЕРИТЕ СВОЙ ЯЗЫК",
       data.native,
-      "На этапе запуска действует стартовая цена. Обычная цена каждого уровня указана рядом.",
+      "На этапе запуска действует стартовая цена. Плановая цена после запуска указана рядом.",
     ),
     tabs,
   );
@@ -573,7 +573,7 @@ function languages(lang = "en") {
           el(
             "span",
             "course-price-regular",
-            "Обычная " + regular.toLocaleString("ru") + " ₽",
+            "После запуска " + regular.toLocaleString("ru") + " ₽",
           ),
           el(
             "strong",

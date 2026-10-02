@@ -27,8 +27,22 @@ export function el(tag, cls, text) {
 }
 export function safeURL(value, { media = false } = {}) {
   if (!value || typeof value !== "string") return "";
+  const input = value.trim();
+
+  // Contact links need to work, but never accept control characters or
+  // executable schemes.
+  if (!media && /^(?:mailto:|tel:)/i.test(input)) {
+    if (/[\u0000-\u001F\u007F]/.test(input)) return "";
+    try {
+      const u = new URL(input);
+      return ["mailto:", "tel:"].includes(u.protocol) ? u.href : "";
+    } catch {
+      return "";
+    }
+  }
+
   try {
-    const u = new URL(value, document.baseURI);
+    const u = new URL(input, document.baseURI);
     if (!["http:", "https:"].includes(u.protocol)) return "";
     if (location.protocol === "https:" && u.protocol !== "https:") return "";
     if (media && u.origin !== location.origin && u.protocol !== "https:")
@@ -43,7 +57,11 @@ export function link(text, href, cls = "btn") {
   const url = safeURL(href);
   if (url) {
     a.href = url;
-    if (new URL(url).origin !== location.origin) {
+    const protocol = new URL(url, document.baseURI).protocol;
+    if (
+      ["http:", "https:"].includes(protocol) &&
+      new URL(url, document.baseURI).origin !== location.origin
+    ) {
       a.target = "_blank";
       a.rel = "noopener noreferrer";
     }

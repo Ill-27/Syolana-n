@@ -34,7 +34,7 @@ try {
     signal: AbortSignal.timeout(6000),
   }).then((r) => r.json());
 } catch {
-  config = { songs: [], banner: {}, plan: { priceRub: 1000, trialDays: 7 } };
+  config = { songs: [], banner: {}, plan: { pricing: "custom", priceRub: null, trialDays: 7 } };
 }
 const player = new Player(config.songs || []);
 const theme = new ThemeEngine();

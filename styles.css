@@ -2861,7 +2861,6 @@ strong {
     transform 0.18s linear,
     color 1.5s ease;
 
-  will-change: opacity, transform;
   transform-origin: center center;
 }
 

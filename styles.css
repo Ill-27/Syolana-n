@@ -3174,7 +3174,10 @@ strong {
 }
 
 .discovery-tip .tip-action::after {
-  content: "  →";
+  content: "→";
+  display: inline-block;
+  margin-left: 10px;
+  flex: 0 0 auto;
   color: var(--accent);
 }
 
@@ -3375,4 +3378,41 @@ strong {
 .partner-scale .btn {
   width: fit-content;
   max-width: 100%;
+}
+
+
+/* ===== SYOLANA — CONTACT, CTA & INTRO POLISH ===== */
+
+/* Editorial intro copy: calmer and more distinctive than generic UI text. */
+.hero > p.muted {
+  font-family: "Literata", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1.72;
+  color: color-mix(in srgb, var(--dim) 92%, white 8%);
+}
+
+/* Give paired hero actions enough breathing room on touch screens. */
+@media (max-width: 600px) {
+  .banner .row.banner-actions,
+  .reading .banner .row.banner-actions {
+    gap: 14px;
+  }
+}
+
+/* Arrow is a separate visual element, never glued to the CTA label. */
+.discovery-tip .tip-action::after {
+  content: "→";
+  display: inline-block;
+  margin-left: 10px;
+  flex: 0 0 auto;
+}
+
+/* Contact actions should never visually collide in stacked cards. */
+.contact-card {
+  gap: 0;
+}
+.contact-card > .text-link + .btn,
+.contact-card > .btn + .text-link {
+  margin-top: 18px;
 }

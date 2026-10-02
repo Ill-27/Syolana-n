@@ -2906,8 +2906,8 @@ strong {
   position: relative;
   isolation: isolate;
   display: grid;
-  min-height: 310px;
-  padding: clamp(32px, 5vw, 56px);
+  min-height: 280px;
+  padding: clamp(30px, 4.5vw, 50px);
   overflow: hidden;
   text-align: left;
   border-radius: 26px;
@@ -3232,6 +3232,11 @@ strong {
 
   .banner-copy {
     width: 100%;
+  }
+
+  .banner .eyebrow,
+  .banner-features {
+    display: none;
   }
 
   .banner h2,

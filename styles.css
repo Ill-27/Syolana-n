@@ -3548,3 +3548,72 @@ dialog,#theme-dialog,.toast,.discovery-tip,.reader-toolbar,.icon-btn.glass,.bran
 html[data-theme="white-ocean-city"] .aurora-background:after{background:linear-gradient(to bottom,rgba(5,14,18,.03),rgba(5,14,18,.10) 52%,rgba(4,12,16,.22) 100%),radial-gradient(ellipse at 50% 20%,transparent 38%,rgba(4,13,17,.14) 100%);}
 html[data-theme="white-ocean-city"] #starCanvas{z-index:-1;}
 html[data-theme="white-ocean-city"] .white-ocean-world{z-index:-2!important;}
+
+
+/* ===== WHITE OCEAN ZEN PROMO CARDS ===== */
+html[data-theme="white-ocean-city"] .flight-planet{
+  width:min(260px,42vw);
+  min-width:178px;
+  padding:15px 16px 14px;
+  gap:5px;
+  border:1px solid var(--panel-border);
+  border-radius:22px;
+  color:var(--panel-text);
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.018) 58%),
+    var(--panel-bg);
+  -webkit-backdrop-filter:blur(17px) saturate(118%);
+  backdrop-filter:blur(17px) saturate(118%);
+  box-shadow:
+    0 18px 50px rgba(3,15,20,.22),
+    0 0 32px var(--panel-glow),
+    inset 0 1px 0 rgba(255,255,255,.12);
+}
+html[data-theme="white-ocean-city"] .flight-planet .planet-orb{
+  width:42px;
+  height:42px;
+  margin-bottom:3px;
+  font-size:23px;
+  background:radial-gradient(circle at 30% 25%,rgba(250,255,253,.62),rgba(117,159,164,.25) 45%,rgba(18,39,47,.28) 82%);
+  border-color:rgba(221,241,238,.38);
+  box-shadow:0 0 24px rgba(181,224,221,.18);
+}
+html[data-theme="white-ocean-city"] .flight-planet strong{
+  font-size:.88rem;
+  line-height:1.25;
+  color:var(--panel-text);
+  text-shadow:0 2px 12px rgba(0,0,0,.28);
+}
+html[data-theme="white-ocean-city"] .flight-planet small{
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--panel-muted);
+  line-height:1.35;
+  font-size:.68rem;
+}
+@media(max-width:600px){
+  html[data-theme="white-ocean-city"] .flight-planet{
+    width:min(220px,52vw);
+    min-width:160px;
+    padding:13px 14px 12px;
+    border-radius:19px;
+  }
+}
+
+/* Remaining floating/service panels inherit the active atmosphere as well. */
+#music-dock,
+.provider-notice,
+.notice,
+.platform-promo{
+  border-color:var(--panel-border);
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.01) 58%),
+    var(--panel-bg);
+  -webkit-backdrop-filter:blur(15px) saturate(116%);
+  backdrop-filter:blur(15px) saturate(116%);
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.24),
+    0 0 28px var(--panel-glow),
+    inset 0 1px 0 rgba(255,255,255,.09);
+}

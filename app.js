@@ -354,7 +354,7 @@ function platformPromo(kind = "themes") {
 async function home(token) {
   $("page").append(
     heading(
-      "ДИЗАЙН · КНИГИ · ЯЗЫКИ · ПЕСНИ",
+      "САЙТЫ · КНИГИ · ЯЗЫКИ · МУЗЫКА",
       "Лента вселенной",
       "Новые темы, истории, песни и творческие знакомства. Всё, чем живёт Syolana.",
     ),
@@ -420,7 +420,7 @@ async function home(token) {
   const explore = el("section", "strip glass");
   explore.append(
     el("h3", "", "Творчество с полным погружением"),
-    button("Остаться среди звёзд", () => zen(true), "btn"),
+    button("Остаться в этом мире", () => zen(true), "btn"),
   );
   $("page").append(explore);
 }

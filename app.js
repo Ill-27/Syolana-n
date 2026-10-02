@@ -556,7 +556,7 @@ function languages(lang = "en") {
     const free = lang === "en" && level === "A1";
     card.dataset.level = level;
     card.append(
-      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : "ОТДЕЛЬНЫЙ КУРС"),
+      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : "СТАРТОВАЯ ЦЕНА"),
       el("h3", "course-level", level),
       el("p", "", description),
       (() => {

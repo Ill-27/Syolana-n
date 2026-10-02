@@ -2893,6 +2893,13 @@ strong {
 
 /* ===== SYOLANA — FINAL PUBLIC POLISH ===== */
 
+/* Reader mode keeps the book immersive; global sales chrome stays out of the way. */
+.reading #banner,
+.reading #provider-notice,
+.reading .main-nav {
+  display: none !important;
+}
+
 /* Compact, video-ready hero banner. */
 .banner,
 .reading .banner {

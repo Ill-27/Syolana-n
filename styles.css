@@ -3768,3 +3768,103 @@ input[type="range"],
 .course-price-current {
   color: var(--accent) !important;
 }
+
+
+/* ===== SYOLANA — THEME HARMONY COMPLETION ===== */
+/* Selected tabs, search fields, lesson chrome and remaining utility controls all follow the active theme. */
+.pill-tabs .btn[aria-current="page"],
+.main-nav a[aria-current="page"] {
+  border-color: color-mix(in srgb,var(--accent) 62%,var(--panel-border)) !important;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--accent) 30%,var(--panel-bg)),
+      color-mix(in srgb,var(--accent) 10%,var(--panel-bg))
+    ) !important;
+  color: var(--panel-text) !important;
+  box-shadow: 0 0 24px color-mix(in srgb,var(--accent) 15%,transparent) !important;
+}
+
+.language-level,
+.language-intro,
+.language-author,
+.language-gift,
+.language-methods > .card,
+.auth .card,
+.editor details,
+.lesson,
+.question,
+.exam-source,
+.toc-item {
+  border-color: var(--panel-border) !important;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.008) 58%),
+    var(--panel-bg) !important;
+  color: var(--panel-text);
+}
+
+.language-level .badge,
+.language-intro .badge,
+.language-gift .badge {
+  border-color: color-mix(in srgb,var(--accent) 38%,var(--panel-border)) !important;
+  background: color-mix(in srgb,var(--accent) 10%,var(--panel-bg)) !important;
+  color: color-mix(in srgb,var(--accent) 82%,white 18%) !important;
+}
+
+.search-input,
+.field input,
+.field textarea,
+.field select,
+textarea,
+select:not(.reader-toolbar select),
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="url"],
+input[type="number"] {
+  border-color: var(--panel-border) !important;
+  background: color-mix(in srgb,var(--panel-bg) 88%,black 8%) !important;
+  color: var(--panel-text) !important;
+}
+::placeholder {
+  color: color-mix(in srgb,var(--panel-muted) 76%,transparent) !important;
+}
+
+.track-art,
+.playlist li > button[aria-current="true"],
+.dock-toggle,
+.player-modes [aria-pressed="true"] {
+  border-color: var(--panel-border) !important;
+  background: color-mix(in srgb,var(--accent) 12%,var(--panel-bg)) !important;
+  color: var(--panel-text) !important;
+}
+
+/* White Ocean owns the entire background; hidden legacy aurora layers must not animate underneath it. */
+html[data-theme="white-ocean-city"] .aurora-layer {
+  animation: none !important;
+  opacity: 0 !important;
+}
+
+/* Mobile scrolling: animated backgrounds + large backdrop blurs force full-frame recomposition.
+   Keep the translucent theme color, but remove the expensive blur from scrolling content only.
+   Compact fixed controls keep their blur. */
+@media (max-width:800px) {
+  :where(
+    .card,.feed-post,.strip,.notice,.provider-notice,.platform-promo,.legal-note,
+    .language-level,.language-intro,.language-author,.language-gift,
+    .language-methods > .card,.hero > p.muted,.reader-audio-guidance,
+    .lesson,.admin-item
+  ) {
+    -webkit-backdrop-filter:none !important;
+    backdrop-filter:none !important;
+    background:
+      linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.006) 60%),
+      color-mix(in srgb,var(--panel-bg) 94%,transparent) !important;
+  }
+
+  html[data-theme="white-ocean-city"] .white-ocean-world,
+  #starCanvas {
+    transform:translate3d(0,0,0);
+    backface-visibility:hidden;
+    contain:strict;
+  }
+}

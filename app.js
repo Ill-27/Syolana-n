@@ -1531,7 +1531,7 @@ function lessonFrame(key, anchor = "") {
     const style = getComputedStyle(document.documentElement);
     send({
       theme: Object.fromEntries(
-        ["heading", "body", "accent", "dim", "surface", "radius"].map((k) => [
+        ["heading","body","accent","dim","surface","radius","panel-bg","panel-border","panel-text","panel-muted","button-radius"].map((k) => [
           k,
           style.getPropertyValue("--" + k),
         ]),

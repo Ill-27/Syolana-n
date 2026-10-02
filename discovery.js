@@ -56,7 +56,8 @@ export function setupDiscovery({ theme, zen, player }) {
       if (pinch && next) theme.move(0, 0, Math.log(next / pinch) * 6);
       pinch = next;
     } else {
-      theme.move(-dx/Math.max(300,innerWidth),-dy/Math.max(300,innerHeight),0);
+      const panScale=Math.min(innerWidth,innerHeight)<=700?260:Math.max(420,Math.min(innerWidth,innerHeight));
+      theme.move(-dx/panScale,-dy/panScale,0);
     }
   });
   const end = (e) => {

@@ -77,7 +77,8 @@ export class ThemeEngine {
       this.resizeTimer = setTimeout(() => this.resize(), delay);
     };
     window.addEventListener("resize", () => scheduleResize(innerWidth <= 800 ? 150 : 0), { passive: true });
-    window.visualViewport?.addEventListener("resize", () => scheduleResize(220), { passive: true });
+    if (innerWidth > 800)
+      window.visualViewport?.addEventListener("resize", () => scheduleResize(120), { passive: true });
     window.addEventListener("pageshow", () => this.sync());
     window.addEventListener("pagehide", () => cancelAnimationFrame(this.frame));
     document.fonts?.ready.then(() => this.draw(0));
@@ -569,10 +570,16 @@ export class ThemeEngine {
     cam.ty += dy;
     cam.tz += dz;
     const bounds=this.theme?.flightBounds;
-    if(bounds){cam.tx=Math.max(-bounds.x,Math.min(bounds.x,cam.tx));cam.ty=Math.max(-bounds.y,Math.min(bounds.y,cam.ty));cam.tz=Math.max(-bounds.z,Math.min(bounds.z,cam.tz));}
+    if(bounds){
+      if(Number.isFinite(bounds.x))cam.tx=Math.max(-bounds.x,Math.min(bounds.x,cam.tx));
+      if(Number.isFinite(bounds.y))cam.ty=Math.max(-bounds.y,Math.min(bounds.y,cam.ty));
+      if(Number.isFinite(bounds.z))cam.tz=Math.max(-bounds.z,Math.min(bounds.z,cam.tz));
+    }
+    const depthGain=this.theme?.continuousDepth?1.7:5;
+    const depthCap=this.theme?.continuousDepth?3.8:12;
     cam.vz = this.reduced?.matches
       ? 0
-      : Math.max(-12, Math.min(12, cam.vz + dz * 5));
+      : Math.max(-depthCap, Math.min(depthCap, cam.vz + dz * depthGain));
     if (this.reduced?.matches) this.draw(0);
   }
   settle() {
@@ -594,7 +601,11 @@ export class ThemeEngine {
     cam.y += (cam.ty - cam.y) * blend;
     cam.z += (cam.tz - cam.z) * blend;
     const bounds=this.theme?.flightBounds;
-    if(bounds){cam.x=Math.max(-bounds.x,Math.min(bounds.x,cam.x));cam.y=Math.max(-bounds.y,Math.min(bounds.y,cam.y));cam.z=Math.max(-bounds.z,Math.min(bounds.z,cam.z));}
+    if(bounds){
+      if(Number.isFinite(bounds.x))cam.x=Math.max(-bounds.x,Math.min(bounds.x,cam.x));
+      if(Number.isFinite(bounds.y))cam.y=Math.max(-bounds.y,Math.min(bounds.y,cam.y));
+      if(Number.isFinite(bounds.z))cam.z=Math.max(-bounds.z,Math.min(bounds.z,cam.z));
+    }
     const amount = Math.min(
       1,
       Math.abs(cam.x) + Math.abs(cam.y) + Math.abs(cam.z),

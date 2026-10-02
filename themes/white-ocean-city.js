@@ -340,8 +340,10 @@ function buildCity() {
       if(rnd()>.56)tower(x+side*(w*.72+1.7+rnd()*2.8),z+2+rnd()*5,1.2+rnd()*2.1,7+rnd()*16,1.2+rnd()*2.6,.68+rnd()*.24,1);
       if(rnd()>.72){const cz=z-3+rnd()*7;for(let j=0;j<3;j++)add(x+side*(w*.56+2+j*2.25),3.4,cz,1.05,6.8,1.05,.78,1);}
     }
-    if(block%5===2)arch(0,z+3,20+rnd()*7,13+rnd()*7,2.3+rnd()*1.8,.79+rnd()*.14);
-    if(block%8===5){const y=10+rnd()*8;add(0,y,z-1,31+rnd()*11,1.15,2.4,.84,2);add(-15,y*.48,z-1,1.5,y,2.4,.74,1);add(15,y*.48,z-1,1.5,y,2.4,.74,1);}
+    // The flight corridor stays open: monumental arches live high above the camera,
+    // so forward motion never appears to collide with a solid wall.
+    if(block%5===2)arch(0,z+3,22+rnd()*7,27+rnd()*8,2.3+rnd()*1.8,.79+rnd()*.14);
+    if(block%8===5){const y=25+rnd()*8;add(0,y,z-1,33+rnd()*11,1.1,2.4,.84,2);add(-16,y*.48,z-1,1.45,y,2.4,.74,1);add(16,y*.48,z-1,1.45,y,2.4,.74,1);}
     for(const side of [-1,1]){
       if(rnd()>.18){const fx=side*(46+rnd()*48),fh=17+rnd()*54;tower(fx,z+rnd()*10,6+rnd()*14,fh,7+rnd()*15,.26+rnd()*.42,rnd()>.5?1:3);}
       if(rnd()>.58)arch(side*(36+rnd()*12),z+rnd()*7,12+rnd()*8,9+rnd()*8,2.2,.52+rnd()*.25);
@@ -403,7 +405,7 @@ function buildBirdSprites(){
     c.width=128;c.height=72;
     const x=c.getContext("2d");
     const flap=Math.sin(frame/14*TAU);
-    const cx=64,cy=36,lift=10+flap*9;
+    const cx=64,cy=36,lift=8+flap*6.5;
     x.translate(cx,cy);
     x.shadowColor="rgba(195,220,222,.38)";
     x.shadowBlur=7;
@@ -412,8 +414,8 @@ function buildBirdSprites(){
     wing.addColorStop(.5,"#edf4f2");
     wing.addColorStop(1,"#b9cbcc");
     x.fillStyle=wing;
-    x.strokeStyle="rgba(142,166,169,.52)";
-    x.lineWidth=1.25;
+    x.strokeStyle="rgba(154,176,178,.34)";
+    x.lineWidth=.9;
 
     x.beginPath();
     x.moveTo(-2,-1);
@@ -433,9 +435,9 @@ function buildBirdSprites(){
     body.addColorStop(.6,"#eef4f2");
     body.addColorStop(1,"#afc2c4");
     x.fillStyle=body;
-    x.beginPath();x.ellipse(0,2,8,15,0,0,TAU);x.fill();
-    x.fillStyle="#f7fbfa";
-    x.beginPath();x.ellipse(0,-9,5.5,6.5,0,0,TAU);x.fill();
+    x.beginPath();x.ellipse(0,3,6.7,15.5,0,0,TAU);x.fill();
+    x.fillStyle="#fbfdfc";
+    x.beginPath();x.ellipse(0,-9.5,4.7,6.0,0,0,TAU);x.fill();
 
     x.fillStyle="#d6e3e2";
     x.beginPath();x.moveTo(-5,13);x.lineTo(-11,22);x.lineTo(-1,17);x.closePath();x.fill();
@@ -450,54 +452,51 @@ function buildBirdSprites(){
 
 function createBirdTraffic(){
   const rnd=seeded(41027),sprites=buildBirdSprites(),flights=[];
-  let nextAt=.35;
-  const pickCount=()=>{
-    const r=rnd();
-    if(r<.46)return 1;
-    if(r<.76)return 2;
-    if(r<.92)return 3;
-    return 4;
-  };
+  let nextAt=.55;
   const spawn=(time,zen)=>{
-    const count=pickCount();
-    const sx=.17+rnd()*.66,sy=.10+rnd()*.18;
-    const ex=.47+(rnd()-.5)*.12,ey=.405+(rnd()-.5)*.035;
-    const baseDuration=(zen?2.25:2.65)+rnd()*1.35;
-    for(let i=0;i<count;i++){
-      const side=i-(count-1)/2;
-      flights.push({
-        born:time+i*.075,
-        duration:baseDuration*(.92+rnd()*.16),
-        sx:sx+side*(.024+rnd()*.008),
-        sy:sy+Math.abs(side)*.010+(rnd()-.5)*.012,
-        ex:ex+side*.009,
-        ey:ey+(rnd()-.5)*.010,
-        size:15+rnd()*8,
-        tilt:(rnd()-.5)*.20,
-        phase:rnd()*TAU
-      });
-    }
-    nextAt=time+(zen?1.05:1.55)+rnd()*(zen?2.0:2.8);
+    const side=rnd()<.5?-1:1;
+    const sx=side<0?.12+rnd()*.26:.62+rnd()*.26;
+    const sy=.56+rnd()*.16;
+    const ex=.47+(rnd()-.5)*.055;
+    const ey=.27+rnd()*.075;
+    flights.push({
+      born:time,
+      duration:(zen?2.85:3.25)+rnd()*1.05,
+      sx,sy,ex,ey,
+      size:18+rnd()*7,
+      bank:(rnd()-.5)*.055,
+      phase:rnd()*TAU,
+      curve:(rnd()-.5)*.035
+    });
+    nextAt=time+(zen?2.1:2.8)+rnd()*(zen?2.1:2.8);
   };
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
-      if(time>=nextAt)spawn(time,zen);
+      if(time>=nextAt&&flights.length<2)spawn(time,zen);
       for(let i=flights.length-1;i>=0;i--){
         const b=flights[i],p=(time-b.born)/b.duration;
         if(p<0)continue;
         if(p>=1){flights.splice(i,1);continue;}
-        const e=1-Math.pow(1-p,2.15);
-        const depth=Math.max(.10,1-e);
-        const x=(b.sx+(b.ex-b.sx)*e+Math.sin(p*Math.PI)*.015*Math.sin(b.phase))*width;
-        const y=(b.sy+(b.ey-b.sy)*e+Math.sin(p*Math.PI)*.008*Math.cos(b.phase))*height;
-        const scale=(.17+depth*.93)*(zen?1.05:1.0);
-        const size=b.size*scale;
-        const frame=(Math.floor((time*9.5+b.phase)*sprites.length)%sprites.length+sprites.length)%sprites.length;
-        const alpha=Math.min(1,Math.min(p/.08,(1-p)/.12))*(.62+.34*depth);
+
+        // Screen-space perspective: every bird rises toward the vanishing point
+        // while shrinking smoothly, so it always reads as flying away from us.
+        const e=1-Math.pow(1-p,1.62);
+        const arc=Math.sin(p*Math.PI);
+        const x=(b.sx+(b.ex-b.sx)*e+arc*b.curve)*width;
+        const y=(b.sy+(b.ey-b.sy)*e-arc*.018)*height;
+        const depth=Math.max(.07,1-e);
+        const scale=.20+depth*1.02;
+        const size=b.size*scale*(zen?1.03:1);
+
+        // About 1.2–1.5 full wing cycles per second: no hummingbird-like flicker.
+        const frame=((Math.floor(time*19+b.phase*2.1)%sprites.length)+sprites.length)%sprites.length;
+        const fadeIn=Math.min(1,p/.08),fadeOut=Math.min(1,(1-p)/.16);
+        const alpha=Math.min(fadeIn,fadeOut)*(.72+.24*depth);
+
         ctx.save();
         ctx.translate(x,y);
-        ctx.rotate(b.tilt+(b.ex-b.sx)*.12);
+        ctx.rotate(b.bank+(b.ex-b.sx)*.035);
         ctx.globalAlpha=alpha;
         ctx.drawImage(sprites[frame],-size*1.25,-size*.70,size*2.5,size*1.4);
         ctx.restore();
@@ -506,7 +505,7 @@ function createBirdTraffic(){
   };
 }
 
-function fallbackRenderer(ctx){
+function fallbackRenderer(function fallbackRenderer(ctx){
   return {
     resize(){},
     draw({time,width,height,camera}){
@@ -587,7 +586,7 @@ function createRenderer(ctx){
   Object.assign(canvas.style,{position:"fixed",inset:"0",width:"100%",height:"100%",zIndex:"-2",pointerEvents:"none",display:"block",transform:"translateZ(0)",backfaceVisibility:"hidden",willChange:"transform"});
   sourceCanvas.parentNode?.insertBefore(canvas,sourceCanvas);
   const style=document.createElement("style");
-  style.textContent='html[data-theme="white-ocean-city"] .flight-hint{opacity:.72;color:#e4efed}html[data-theme="white-ocean-city"] .theme-sound-toggle svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}html[data-theme="white-ocean-city"] .theme-sound-toggle svg path:first-child{fill:currentColor;stroke:none}html[data-theme="white-ocean-city"] .theme-sound-toggle[data-enabled="true"]{color:#f1fbfa;box-shadow:0 0 0 1px #d9eeee55,0 0 28px #bde5e533}html[data-theme="white-ocean-city"] .flight-planet{color:#f5fbfa}html[data-theme="white-ocean-city"] .planet-orb{background:radial-gradient(circle at 32% 26%,rgba(245,252,250,.56),rgba(106,145,150,.26) 44%,rgba(20,38,45,.52) 82%);border-color:rgba(222,242,239,.48)}';
+  style.textContent='html[data-theme="white-ocean-city"] .aurora-layer{animation:none!important;opacity:0!important}html[data-theme="white-ocean-city"] .flight-hint{opacity:.72;color:#e4efed}html[data-theme="white-ocean-city"] .theme-sound-toggle svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}html[data-theme="white-ocean-city"] .theme-sound-toggle svg path:first-child{fill:currentColor;stroke:none}html[data-theme="white-ocean-city"] .theme-sound-toggle[data-enabled="true"]{color:#f1fbfa;box-shadow:0 0 0 1px #d9eeee55,0 0 28px #bde5e533}html[data-theme="white-ocean-city"] .flight-planet{color:#f5fbfa}html[data-theme="white-ocean-city"] .planet-orb{background:radial-gradient(circle at 32% 26%,rgba(245,252,250,.56),rgba(106,145,150,.26) 44%,rgba(20,38,45,.52) 82%);border-color:rgba(222,242,239,.48)}';
   document.head.append(style);
   const sound=createThemeSound();
   const originalFillText=ctx.fillText;
@@ -735,11 +734,21 @@ function createRenderer(ctx){
   }
 
   function renderWorld(time,camera){
-    const zen=Boolean(camera),cx=Math.max(-.62,Math.min(.62,camera?.x||0)),cy=Math.max(-.30,Math.min(.30,camera?.y||0)),cz=Math.max(-8,Math.min(8,camera?.z||0));
-    const travel=time*(zen?2.72:.44)+cz*27;
-    const autoX=Math.sin(time*.043)*4.2+Math.sin(time*.017+1.4)*2.1,eyeX=autoX+cx*17,eyeY=8.9+Math.sin(time*.041)*.72+cy*8.1;
-    const eye=[eyeX,eyeY,14.5],target=[eyeX+Math.sin(time*.028)*2.4,4.6+Math.sin(time*.023)*.55,-48];
-    perspective(projection,zen?0.94:1.00,cssWidth/cssHeight,.12,520);
+    const zen=Boolean(camera);
+    const cx=Math.max(-1.15,Math.min(1.15,camera?.x||0));
+    const cy=Math.max(-.75,Math.min(.75,camera?.y||0));
+    const cz=camera?.z||0;
+    const travel=time*(zen?2.58:.42)+cz*23;
+    const autoX=Math.sin(time*.043)*3.8+Math.sin(time*.017+1.4)*1.8;
+    const eyeX=autoX+cx*2.2;
+    const eyeY=9.1+Math.sin(time*.041)*.62+cy*1.15;
+    const eye=[eyeX,eyeY,14.5];
+    const target=[
+      eyeX+cx*34+Math.sin(time*.028)*2.1,
+      4.9-cy*15+Math.sin(time*.023)*.48,
+      -52
+    ];
+    perspective(projection,zen?0.92:1.00,cssWidth/cssHeight,.12,560);
     lookAt(view,eye,target,[0,1,0]);
     multiply(vp,projection,view);
 
@@ -837,7 +846,8 @@ export default {
   marks:false,
   flightCards:true,
   autoFlightCards:true,
-  flightBounds:{x:.62,y:.30,z:8},
+  continuousDepth:true,
+  flightBounds:{x:1.15,y:.75},
   accent:"#dce9e8",
   dim:"#c7d3d3",
   surface:"17,28,33",

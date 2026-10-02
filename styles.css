@@ -3468,3 +3468,27 @@ strong {
     width: 100%;
   }
 }
+
+
+/* Final mobile spacing for the static partner-editor fallback. */
+.studio-fallback-actions {
+  row-gap: 26px;
+  column-gap: 22px;
+}
+@media (max-width: 600px) {
+  .studio-fallback-actions {
+    gap: 24px;
+    margin-top: 28px;
+    margin-bottom: 10px;
+  }
+  .studio-fallback-actions .btn + .btn {
+    margin-top: 0;
+  }
+}
+
+/* Syolana Display is reserved for editorial introductions; the reader remains Literata. */
+.hero > p.muted {
+  font-family: "Syolana Display", Georgia, serif;
+  font-weight: 500;
+  font-style: normal;
+}

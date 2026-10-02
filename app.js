@@ -317,7 +317,7 @@ function platformPromo(kind = "themes") {
       encodeURIComponent("Идея новой темы Syolana");
     actions.append(
       idea,
-      link("Хочу такой же живой сайт", "#/join", "text-link"),
+      link("Подключить Syolana", "#/join", "text-link"),
     );
     article.append(actions);
     return article;
@@ -652,9 +652,9 @@ function songsPage() {
 function join() {
   $("page").append(
     heading(
-      "ХОЧУ ТАКОЙ ЖЕ САЙТ",
-      "Ваше дело заслуживает красивого мира.",
-      "Для писателей, музыкантов, фотографов, дизайнеров, блогеров, турагентов и всех, кто создаёт своё.",
+      "ПАРТНЁРСТВО · 7 ДНЕЙ ТЕСТ-ДРАЙВА",
+      "Ваш контент. Живой мир вокруг него.",
+      "Для авторов, творческих проектов, студий, издательств и площадок. Ваш домен и контент остаются у вас; Syolana подключает иммерсивный слой и обновления.",
     ),
   );
   const grid = el("div", "grid two");

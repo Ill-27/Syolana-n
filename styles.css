@@ -3341,3 +3341,34 @@ strong {
     font-size: 0.82rem;
   }
 }
+
+
+.legal-note {
+  padding: 0;
+  overflow: hidden;
+}
+.legal-note summary {
+  cursor: pointer;
+  padding: 12px 15px;
+  color: #d8cfe1;
+  font: 500 0.78rem/1.5 var(--interface);
+}
+.legal-note p {
+  margin: 0;
+  padding: 0 15px 14px;
+  color: var(--dim);
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+.partner-scale {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 92% 0%, #b58eff18, transparent 38%),
+    linear-gradient(145deg, #ffffff07, #ffffff02),
+    rgba(var(--surface), 0.5);
+}
+.partner-scale .btn {
+  width: fit-content;
+  max-width: 100%;
+}

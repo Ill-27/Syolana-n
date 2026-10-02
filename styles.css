@@ -3423,7 +3423,7 @@ strong {
 .studio-fallback-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
+  gap: 22px;
   margin-top: 22px;
   align-items: center;
 }
@@ -3461,7 +3461,7 @@ strong {
   .studio-fallback-actions {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 22px;
   }
 
   .studio-fallback-actions .btn {

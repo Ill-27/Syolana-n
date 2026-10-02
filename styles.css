@@ -2586,6 +2586,34 @@ strong {
 .language-gift h2 {
   margin-bottom: 0;
 }
+
+.contact-grid {
+  margin-block: 26px;
+}
+
+.contact-card {
+  align-content: start;
+}
+
+.contact-card h2 {
+  margin-bottom: 0;
+}
+
+.contact-card .text-link {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.contact-card .btn {
+  width: fit-content;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .contact-card .btn {
+    width: 100%;
+  }
+}
 .language-author .fine {
   margin-bottom: 0;
 }

@@ -104,6 +104,7 @@ export function readingColor(value) {
   );
 }
 export const lessonFiles = {
+  "en/a1/course": "a1-english.html",
   "es/a1/rules": "a1-spanish-rules.html",
   "es/a1/words": "a1-spanish-words.html",
   "es/a1/practice": "a1-spanish-practice.html",

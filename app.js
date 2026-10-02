@@ -151,9 +151,10 @@ function motionVideo(video) {
 }
 function renderBanner() {
   const c = config.banner || {};
-  const visual = el("div", "banner-orb");
   const media = c.media || {};
   const src = safeURL(media.src, { media: true });
+
+  const visual = el("div", "banner-orb");
   const m = el(
     src && (media.type === "video" || /\.mp4(?:[?#]|$)/i.test(src))
       ? "video"
@@ -161,18 +162,20 @@ function renderBanner() {
     "banner-media",
   );
   m.src = src || "assets/logo.svg";
+
   if (m.tagName === "IMG") {
-    m.alt = media.alt || "Syolana — вселенная творчества";
+    m.alt = media.alt || "Syolana";
     m.decoding = "async";
   } else {
     const poster = safeURL(media.poster, { media: true });
     if (poster) m.poster = poster;
     motionVideo(m);
   }
+
   m.addEventListener(
     "error",
     () => {
-      const fallback = el("img");
+      const fallback = el("img", "banner-media");
       fallback.src = "assets/logo.svg";
       fallback.alt = "Syolana";
       visual.replaceChildren(fallback);
@@ -180,49 +183,56 @@ function renderBanner() {
     { once: true },
   );
   visual.append(m);
+
   const txt = el("div", "banner-copy");
+  const brand = el("div", "banner-brandmark");
+  const logo = el("img");
+  logo.src = "assets/logo.svg";
+  logo.alt = "";
+  logo.width = 34;
+  logo.height = 34;
+  brand.append(logo, el("span", "", "SYOLANA"));
+
   txt.append(
-    el("p", "eyebrow", c.eyebrow || "SYOLANA · ВСЕЛЕННАЯ ТВОРЧЕСТВА"),
-    el("h2", "", c.title || "Ваше творчество. Целая вселенная."),
+    brand,
+    el("p", "eyebrow", c.eyebrow || "SYOLANA · ИММЕРСИВНАЯ ПЛАТФОРМА"),
+    el("h2", "", c.title || "Ваш сайт может жить."),
     el(
       "p",
       "banner-description",
-      c.description || "Единый иммерсивный дизайн сайтов.",
+      c.description ||
+        "Живые темы, музыка, иммерсивные книги, языки и публикации — в одной системе.",
     ),
   );
+
   const features = el("div", "banner-features");
-  (c.features || ["Дизайн сайтов", "Книги", "Языки", "Песни"]).forEach(
-    (s, i) => {
-      const item = el("div");
-      item.append(
-        el("span", "feature-number", String(i + 1).padStart(2, "0")),
-        el("span", "", s),
-      );
+  (c.features || ["Живые темы", "Иммерсивные книги", "Музыка", "Языки"]).forEach(
+    (label) => {
+      const item = el("span", "banner-feature");
+      item.append(el("i", "", "✦"), document.createTextNode(label));
       features.append(item);
     },
   );
-  txt.append(
-    features,
-    el(
-      "p",
-      "banner-invitation",
-      c.invitation || "Получите свой сайт и 7 дней бесплатно для тест-драйва.",
-    ),
-  );
-  const row = el("div", "row");
+  txt.append(features);
+
+  const row = el("div", "row banner-actions");
   (c.links || []).forEach((x, i) => {
     if (x.href === "#explore")
-      row.append(button(x.label, () => zen(true), "btn"));
-    else row.append(link(x.label, x.href, "btn " + (!i ? "primary" : "")));
+      row.append(button(x.label, () => zen(true), "btn banner-secondary"));
+    else
+      row.append(
+        link(x.label, x.href, "btn " + (!i ? "primary" : "banner-secondary")),
+      );
   });
   txt.append(
     row,
     el(
       "p",
-      "banner-footnote",
-      "Сначала готовый сайт и тест-драйв. Затем — ваше решение о сотрудничестве.",
+      "banner-invitation",
+      c.invitation || "7 дней тест-драйва · без предоплаты",
     ),
   );
+
   $("banner").replaceChildren(visual, txt);
 }
 renderBanner();
@@ -322,7 +332,7 @@ function platformPromo(kind = "themes") {
     el(
       "p",
       "",
-      "Живые темы и режим созерцания, иммерсивное чтение со звуком, общий музыкальный плеер, языковые курсы и пространство для вашего творчества работают как одна система.",
+      "Живые темы и режим созерцания, иммерсивное чтение со звуком, музыкальный плеер, языки и публикации работают как одна система — от личного творческого сайта до партнёрского проекта.",
     ),
     el(
       "p",
@@ -673,7 +683,7 @@ function join() {
   const ul = el("ul", "feature-list");
   [
     "Общие темы, логотип, баннер, кнопки и плеер Syolana — как на этом сайте",
-    "Ваши тексты, ссылки, каталог работ и лента публикаций",
+    "Ваш домен, хостинг и контент остаются у вас; Syolana подключает оформление, темы, плеер и обновления",
     "Обновления оформления для всех подключённых сайтов",
     "1 000 ₽ в месяц на 12 месяцев с первой оплаты для первых партнёров",
     "Одна песня по вашему творчеству в подарок после первой оплаты: тему и срок согласуем заранее",
@@ -701,12 +711,12 @@ function join() {
     el(
       "p",
       "",
-      "На старте: до 50 публикаций, 200 МБ загруженных медиа и 20 МБ на файл. Объёмные видео можно разместить на внешнем видеосервисе и добавить ссылку. Другие объёмы согласуем до подключения.",
+      "Сайт партнёра размещается отдельно — на его домене и в его аккаунте хостинга. Публикации и медиа принадлежат владельцу сайта; Syolana поставляет иммерсивный слой и помогает с оформлением и публикацией.",
     ),
     el(
       "p",
       "",
-      "После окончания доступа оформление, плеер и элементы Syolana отключаются. Опубликованное содержание сохраняется в простом виде; тексты и медиа можно выгрузить. Независимый домен и хостинг обсуждаются отдельно.",
+      "После окончания подписки премиальные элементы Syolana перестают подключаться, а собственный домен, хостинг и опубликованный контент партнёра остаются у него.",
     ),
     link("Вход в редактор моего сайта", "#/studio", "btn"),
     link("Условия тест-драйва", "#/terms", "text-link"),
@@ -940,6 +950,21 @@ async function reader({ id, slug, chapter = 0 }, token) {
   const fill = el("div");
   progress.append(fill);
   $("page").append(progress);
+
+  if (Object.keys(config.sceneAudio || {}).length) {
+    const audioGuidance = el("aside", "reader-audio-guidance");
+    audioGuidance.setAttribute("role", "note");
+    audioGuidance.append(
+      el("span", "reader-audio-guidance-icon", "🎧"),
+      el(
+        "p",
+        "",
+        "Для лучшего погружения слушайте тихо: музыка и звуки должны сопровождать текст, а не перекрывать его.",
+      ),
+    );
+    $("page").append(audioGuidance);
+  }
+
   const text = el("article", "reader-text");
   text.append(el("h2", "", ch.title));
   const rawParagraphs =

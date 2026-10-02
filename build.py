@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'dist'
 PUBLIC = OUT / 'public'
 PRIVATE = OUT / 'private_lessons'
-FREE = {'a1-spanish-rules.html':'es/a1/rules','a1-spanish-words.html':'es/a1/words',
+FREE = {'a1-english.html':'en/a1/course','a1-spanish-rules.html':'es/a1/rules','a1-spanish-words.html':'es/a1/words',
         'a1-spanish-practice.html':'es/a1/practice','a1-françes-rules.html':'fr/a1/rules','a1-françes-words.html':'fr/a1/words'}
 PAID = {'a2-spanish-rules.html':'es/a2/rules','a2-spanish-words.html':'es/a2/words',
         'b1-spanish-rules.html':'es/b1/rules','b2-spanish-rules.html':'es/b2/rules'}

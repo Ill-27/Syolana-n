@@ -164,6 +164,22 @@ export class ThemeEngine {
       this.zenStar(true, i % this.zenLayers),
     );
 
+    // Very faint blue-noise-like dust exists only in zen mode. It does not
+    // change the flight physics; it simply prevents large empty rectangles
+    // from appearing between the perspective layers.
+    const dustCount = w <= 700 ? 92 : 150;
+    const fract = (n) => n - Math.floor(n);
+    this.zenDust = Array.from({ length: dustCount }, (_, i) => ({
+      u: fract((i + 1) * 0.754877666 + this.rand(-0.035, 0.035)),
+      v: fract((i + 1) * 0.569840296 + this.rand(-0.035, 0.035)),
+      depth: this.rand(0.35, 4.45),
+      size: this.rand(0.45, 1.35),
+      opacity: this.rand(0.08, 0.22),
+      ci: Math.floor(this.rand(0, this.theme.colors.length)),
+      phase: this.rand(0, Math.PI * 2),
+      drift: this.rand(0.25, 0.8),
+    }));
+
     this.marks = [];
     const cols = Math.max(2, Math.min(10, Math.floor(w / 170))),
       rows = Math.max(6, Math.min(10, Math.ceil(h / 115)));
@@ -225,6 +241,59 @@ export class ThemeEngine {
     return s;
   }
 
+  drawZenDust(d) {
+    const ctx = this.ctx;
+    const cam = this.camera;
+    if (!ctx || !cam || !this.zenDust?.length) return;
+
+    const fract = (n) => n - Math.floor(n);
+    const wrap = (v, n) => ((v % n) + n) % n;
+
+    for (const p of this.zenDust) {
+      p.phase += d * p.drift;
+
+      const depth = wrap(p.depth - cam.z * 0.62, 4.55);
+      const near = 1 - depth / 4.55;
+      const parallax = 0.035 + near * 0.19;
+
+      const x =
+        fract(
+          p.u -
+            cam.x * parallax +
+            Math.sin(p.phase * 0.63) * 0.0028,
+        ) * this.w;
+      const y =
+        fract(
+          p.v -
+            cam.y * parallax +
+            Math.cos(p.phase * 0.57) * 0.0024,
+        ) * this.h;
+
+      const edge = Math.max(
+        0,
+        Math.min(1, depth / 0.22, (4.55 - depth) / 0.22),
+      );
+      const size = Math.max(1.25, p.size * (1.4 + near * 4.2));
+      const alpha =
+        p.opacity *
+        edge *
+        (0.76 + Math.sin(p.phase) * 0.16) *
+        (0.72 + near * 0.36);
+
+      if (alpha <= 0.01) continue;
+      ctx.globalAlpha = Math.min(0.32, alpha);
+      ctx.drawImage(
+        this.sprites[p.ci],
+        x - size / 2,
+        y - size / 2,
+        size,
+        size,
+      );
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
   projectZenStar(s) {
     const cam = this.camera;
     if (!cam) return this.project(s.x, s.y, s.depth);
@@ -276,6 +345,7 @@ export class ThemeEngine {
       camera: this.zen ? this.camera : null,
     });
     if (this.theme.renderer === "waves") this.drawWaves();
+    if (this.zen && this.theme.particles !== false) this.drawZenDust(d);
 
     for (const m of this.marks) {
       m.y -= m.speed * d;

@@ -506,7 +506,7 @@ function createBirdTraffic(){
   };
 }
 
-function fallbackRenderer(function fallbackRenderer(ctx){
+function fallbackRenderer(ctx){
   return {
     resize(){},
     draw({time,width,height,camera}){

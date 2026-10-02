@@ -19,7 +19,7 @@ main{width:min(1100px,100%);margin:auto;padding:18px 12px 80px}.hero,.panel,.day
 .sessionbar{position:sticky;bottom:8px;z-index:10;border:1px solid #ffffff24;background:#0c0915ed;backdrop-filter:blur(15px);border-radius:18px;padding:10px 12px;margin:18px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sessionbar .clock{font-variant-numeric:tabular-nums;font-weight:800;margin-left:auto}
 .canvaswrap{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fbf9ff}.canvaswrap canvas{display:block;width:100%;height:260px;touch-action:none;cursor:crosshair}.hand-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .weak{display:grid;gap:8px}.weakrow{border:1px solid var(--line);border-radius:14px;padding:10px}.weakrow b{color:var(--bad)}
-.exam-nav{display:flex;gap:8px;flex-wrap:wrap}.exam-part{display:none}.exam-part.active{display:block}.prompt{padding:14px;border-left:3px solid var(--accent);background:#ffffff07;border-radius:0 14px 14px 0}.answerbox{width:100%;min-height:130px;background:#090810;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;font:inherit}
+.exam-nav{display:flex;gap:8px;flex-wrap:wrap}.exam-part{display:none}.exam-part.active{display:block}.prompt{padding:14px;border-left:3px solid var(--accent);background:#ffffff07;border-radius:0 14px 14px 0}.answerbox{width:100%;min-height:130px;background:#090810;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;font:inherit}.exam-source{border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;background:#0002}.exam-source .en{font-size:1.08rem;font-weight:750}.exam-source .ipa{display:none}.exam-source.revealed .ipa{display:block}.exam-source .after{display:none;color:var(--muted);margin-top:8px}.exam-source.revealed .after{display:block}
 details{border:1px solid var(--line);border-radius:16px;padding:12px;margin:9px 0}summary{cursor:pointer;font-weight:800}
 .note{color:var(--muted);font-size:.9rem}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 @media(max-width:640px){.stats{grid-template-columns:1fr 1fr}.hero,.panel,.day,.exam{border-radius:18px}.sessionbar .clock{width:100%;margin-left:0}}
@@ -90,7 +90,7 @@ details{border:1px solid var(--line);border-radius:16px;padding:12px;margin:9px 
 <h2>A1 Mastery Exam</h2>
 <div class="item"><div class="en">I can understand and use familiar everyday expressions.</div><div class="ipa">/aɪ kən ˌʌndəˈstænd ən juːz fəˈmɪliə ˈevrideɪ ɪkˈspreʃənz/</div><div class="ru">Я могу понимать и использовать знакомые повседневные выражения.</div></div>
 <p>Экзамен проверяет Listening, Reading, Writing и Speaking. Он является внутренним экзаменом Syolana по уровню CEFR A1, а не сертификатом сторонней экзаменационной организации.</p>
-<div class="exam-nav"><button class="btn primary" data-exam="listen">Listening</button><button class="btn" data-exam="read">Reading</button><button class="btn" data-exam="write">Writing</button><button class="btn" data-exam="speak">Speaking</button><button class="btn" data-exam="result">Результат</button></div>
+<div class="exam-nav"><button class="btn primary" data-exam="listen">Аудирование</button><button class="btn" data-exam="read">Чтение</button><button class="btn" data-exam="write">Письмо</button><button class="btn" data-exam="speak">Устная речь</button><button class="btn" data-exam="result">Результат</button></div>
 <div id="examParts"></div>
 </section>
 
@@ -281,36 +281,56 @@ const coverageGroups=[
 
 const examData={
 listen:{
-title:"Listening",
-intro:"Прослушайте каждую реплику не более двух раз и выберите ответ.",
+title:"Аудирование",
+intro:"8 оригинальных заданий. Каждую реплику можно прослушать не более двух раз. Текст, IPA и перевод во время проверки не показываются.",
 items:[
 {audio:E("The train leaves at half past eight.","/ðə treɪn liːvz ət hɑːf pɑːst eɪt/","Поезд отправляется в половине девятого."),q:"Когда отправляется поезд?",opts:["7:30","8:30","9:30"],a:1},
 {audio:E("I usually work at home, but today I am in the office.","/aɪ ˈjuːʒuəli wɜːk ət həʊm bət təˈdeɪ aɪ æm ɪn ði ˈɒfɪs/","Обычно я работаю дома, но сегодня я в офисе."),q:"Где человек сегодня?",opts:["Дома","В офисе","В кафе"],a:1},
-{audio:E("I'd like two tickets to Bristol, please.","/aɪd laɪk tuː ˈtɪkɪts tə ˈbrɪstl pliːz/","Мне, пожалуйста, два билета до Бристоля."),q:"Сколько билетов нужно?",opts:["Один","Два","Три"],a:1}
+{audio:E("I'd like two tickets to Bristol, please.","/aɪd laɪk tuː ˈtɪkɪts tə ˈbrɪstl pliːz/","Мне, пожалуйста, два билета до Бристоля."),q:"Сколько билетов нужно?",opts:["Один","Два","Три"],a:1},
+{audio:E("Turn left at the bank and the hotel is opposite the park.","/tɜːn left ət ðə bæŋk ənd ðə həʊˈtel ɪz ˈɒpəzɪt ðə pɑːk/","Поверните налево у банка; отель напротив парка."),q:"Где находится отель?",opts:["Рядом с банком","Напротив парка","За вокзалом"],a:1},
+{audio:E("It is cold and rainy today, so take your coat.","/ɪt ɪz kəʊld ənd ˈreɪni təˈdeɪ səʊ teɪk jɔː kəʊt/","Сегодня холодно и дождливо, поэтому возьмите пальто."),q:"Какая сегодня погода?",opts:["Жарко и солнечно","Холодно и дождливо","Тепло и ветрено"],a:1},
+{audio:E("My sister works in a hospital, but I work in a small bookshop.","/maɪ ˈsɪstə wɜːks ɪn ə ˈhɒspɪtl bət aɪ wɜːk ɪn ə smɔːl ˈbʊkʃɒp/","Моя сестра работает в больнице, а я — в маленьком книжном магазине."),q:"Где работает говорящий?",opts:["В больнице","В книжном магазине","В школе"],a:1},
+{audio:E("Yesterday we visited our friends and cooked dinner together.","/ˈjestədeɪ wiː ˈvɪzɪtɪd aʊə frendz ənd kʊkt ˈdɪnə təˈɡeðə/","Вчера мы навестили друзей и вместе приготовили ужин."),q:"Что произошло вчера?",opts:["Они навестили друзей","Они купили билеты","Они работали допоздна"],a:0},
+{audio:E("Tomorrow I am going to meet Anna at the café at three o'clock.","/təˈmɒrəʊ aɪ æm ˈɡəʊɪŋ tə miːt ˈænə ət ðə ˈkæfeɪ ət θriː əˈklɒk/","Завтра я собираюсь встретиться с Анной в кафе в три часа."),q:"Когда встреча?",opts:["Сегодня в 3:00","Завтра в 3:00","Завтра в 13:00"],a:1}
 ]},
 read:{
-title:"Reading",
-intro:"Прочитайте короткий текст и ответьте на вопросы.",
-text:E("Hi! My name is Leo. I live in a small flat near the city centre. I work in a bookshop from Monday to Friday. On Saturdays I usually meet my sister, and on Sundays I stay at home and cook.","/haɪ. maɪ neɪm ɪz ˈliːəʊ. aɪ lɪv ɪn ə smɔːl flæt nɪə ðə ˈsɪti ˈsentə. aɪ wɜːk ɪn ə ˈbʊkʃɒp frəm ˈmʌndeɪ tə ˈfraɪdeɪ. ɒn ˈsætədeɪz aɪ ˈjuːʒuəli miːt maɪ ˈsɪstə, ənd ɒn ˈsʌndeɪz aɪ steɪ ət həʊm ənd kʊk/","Привет! Меня зовут Лео. Я живу в маленькой квартире недалеко от центра города. Я работаю в книжном магазине с понедельника по пятницу. По субботам обычно встречаюсь с сестрой, а по воскресеньям остаюсь дома и готовлю."),
+title:"Чтение",
+intro:"2 коротких текста, 8 заданий. В экзаменационном режиме перевод скрыт; IPA можно открыть только после ответа на вопросы к тексту.",
+passages:[
+{text:E("Hi! My name is Leo. I live in a small flat near the city centre. I work in a bookshop from Monday to Friday. On Saturdays I usually meet my sister, and on Sundays I stay at home and cook.","/haɪ. maɪ neɪm ɪz ˈliːəʊ. aɪ lɪv ɪn ə smɔːl flæt nɪə ðə ˈsɪti ˈsentə. aɪ wɜːk ɪn ə ˈbʊkʃɒp frəm ˈmʌndeɪ tə ˈfraɪdeɪ. ɒn ˈsætədeɪz aɪ ˈjuːʒuəli miːt maɪ ˈsɪstə, ənd ɒn ˈsʌndeɪz aɪ steɪ ət həʊm ənd kʊk/","Привет! Меня зовут Лео. Я живу в маленькой квартире недалеко от центра города. Я работаю в книжном магазине с понедельника по пятницу. По субботам обычно встречаюсь с сестрой, а по воскресеньям остаюсь дома и готовлю."),
 items:[
 {q:"Где работает Лео?",opts:["В книжном магазине","В школе","В кафе"],a:0},
 {q:"Когда он встречается с сестрой?",opts:["По пятницам","По субботам","По воскресеньям"],a:1},
-{q:"Что он делает по воскресеньям?",opts:["Путешествует","Работает","Остаётся дома и готовит"],a:2}
+{q:"Что он делает по воскресеньям?",opts:["Путешествует","Работает","Остаётся дома и готовит"],a:2},
+{q:"Где он живёт?",opts:["В большом доме за городом","В маленькой квартире возле центра","В отеле"],a:1}
+]},
+{text:E("LIBRARY NOTICE. The library opens at nine from Monday to Saturday. It closes at six on weekdays and at four on Saturday. It is closed on Sunday. You can use the computers for one hour. Please do not eat or drink near the computers.","/ˈlaɪbrəri ˈnəʊtɪs. ðə ˈlaɪbrəri ˈəʊpənz ət naɪn frəm ˈmʌndeɪ tə ˈsætədeɪ. ɪt ˈkləʊzɪz ət sɪks ɒn ˈwiːkdeɪz ənd ət fɔːr ɒn ˈsætədeɪ. ɪt ɪz kləʊzd ɒn ˈsʌndeɪ. juː kən juːz ðə kəmˈpjuːtəz fər wʌn ˈaʊə. pliːz duː nɒt iːt ɔː drɪŋk nɪə ðə kəmˈpjuːtəz/","Объявление библиотеки. Библиотека открывается в девять с понедельника по субботу. В будни закрывается в шесть, в субботу — в четыре. В воскресенье закрыта. Компьютером можно пользоваться один час. Не ешьте и не пейте возле компьютеров."),
+items:[
+{q:"Во сколько библиотека открывается?",opts:["8:00","9:00","10:00"],a:1},
+{q:"Когда библиотека закрыта?",opts:["В субботу","В воскресенье","В понедельник"],a:1},
+{q:"Сколько времени можно пользоваться компьютером?",opts:["30 минут","1 час","2 часа"],a:1},
+{q:"Что запрещено возле компьютеров?",opts:["Читать","Есть и пить","Писать"],a:1}
+]}
 ]},
 write:{
-title:"Writing",
-intro:"Напишите 35–50 слов. Автоматическая проверка отмечает базовые признаки, но свободное письмо нельзя надёжно оценить без человека или языковой модели.",
+title:"Письмо",
+intro:"Два задания. Сначала заполните простые личные данные, затем напишите сообщение 35–50 слов. Свободное письмо нельзя честно оценить только по длине — итоговая проверка требует человека или языковой модели.",
+fields:["Имя","Город","Страна","Языки","Занятие / работа"],
 prompt:"Напишите короткое сообщение новому знакомому: представьтесь, скажите, где живёте, чем занимаетесь, что любите делать и предложите встретиться.",
 model:E("Hello! My name is Anna. I live in London and I work from home. I like reading and music. I usually go to a café on Saturday. Would you like to meet there this weekend? Best wishes, Anna","/həˈləʊ. maɪ neɪm ɪz ˈænə. aɪ lɪv ɪn ˈlʌndən ənd aɪ wɜːk frəm həʊm. aɪ laɪk ˈriːdɪŋ ənd ˈmjuːzɪk. aɪ ˈjuːʒuəli ɡəʊ tə ə ˈkæfeɪ ɒn ˈsætədeɪ. wʊd juː laɪk tə miːt ðeə ðɪs ˌwiːkˈend. best ˈwɪʃɪz, ˈænə/","Образец структуры.")
 },
 speak:{
-title:"Speaking",
-intro:"Ответьте вслух. Можно записать себя встроенным диктофоном, если браузер разрешит микрофон.",
+title:"Устная речь",
+intro:"Три части: личные вопросы, рассказ о повседневной жизни и короткая ситуационная реплика. Можно записать себя встроенным диктофоном.",
 prompts:[
 E("What is your name and where are you from?","/wɒt ɪz jɔː neɪm ənd weər ɑː juː frəm/","Как вас зовут и откуда вы?"),
+E("Where do you live and who do you live with?","/weə duː juː lɪv ənd huː duː juː lɪv wɪð/","Где и с кем вы живёте?"),
 E("What do you usually do in the morning?","/wɒt duː juː ˈjuːʒuəli duː ɪn ðə ˈmɔːnɪŋ/","Что вы обычно делаете утром?"),
+E("What do you like doing in your free time?","/wɒt duː juː laɪk ˈduːɪŋ ɪn jɔː friː taɪm/","Что вам нравится делать в свободное время?"),
 E("What did you do yesterday?","/wɒt dɪd juː duː ˈjestədeɪ/","Что вы делали вчера?"),
-E("What are you going to do tomorrow?","/wɒt ɑː juː ˈɡəʊɪŋ tə duː təˈmɒrəʊ/","Что вы собираетесь делать завтра?")
+E("What are you going to do tomorrow?","/wɒt ɑː juː ˈɡəʊɪŋ tə duː təˈmɒrəʊ/","Что вы собираетесь делать завтра?"),
+E("You are in a café. Order a drink and ask how much it is.","/juː ɑːr ɪn ə ˈkæfeɪ. ˈɔːdə ə drɪŋk ənd ɑːsk haʊ mʌtʃ ɪt ɪz/","Вы в кафе. Закажите напиток и спросите цену."),
+E("You are lost. Ask where the station is.","/juː ɑː lɒst. ɑːsk weə ðə ˈsteɪʃn ɪz/","Вы заблудились. Спросите, где станция.")
 ]}
 };
 
@@ -469,16 +489,63 @@ function renderCoverage(){
  coverageGroups.forEach(([name,arr])=>{const d=document.createElement("details");const s=document.createElement("summary");s.textContent=name+" · "+arr.length+" пунктов";d.append(s);const ul=document.createElement("ul");arr.forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.append(li)});d.append(ul);root.append(d)});
  referenceDeck.forEach(([name,arr])=>{const d=document.createElement("details");const s=document.createElement("summary");s.textContent="Справочник · "+name;d.append(s);arr.forEach(x=>d.append(card(x)));root.append(d)})
 }
+function examSource(x){
+ const d=document.createElement("div");d.className="exam-source";
+ const en=document.createElement("div");en.className="en";en.textContent=x.en;
+ const ipa=document.createElement("div");ipa.className="ipa";ipa.textContent=x.ipa;
+ const after=document.createElement("div");after.className="after";after.textContent=x.ru||"";
+ d.append(en,ipa,after);return d
+}
 function renderExam(){
  const parts=document.getElementById("examParts");parts.replaceChildren();
- const listen=document.createElement("div");listen.className="exam-part active";listen.dataset.part="listen";listen.innerHTML="<h3>Listening</h3><p></p>";listen.querySelector("p").textContent=examData.listen.intro;
- examData.listen.items.forEach((x,i)=>{const box=document.createElement("div");box.className="quiz";const play=document.createElement("button");play.className="btn";play.textContent="▶ Прослушать "+(i+1);play.onclick=()=>speak(x.audio.en,"en-GB",null,()=>{});box.append(play);const p=document.createElement("p");p.textContent=x.q;box.append(p);x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="exl"+i;inp.onchange=()=>{state.exam["l"+i]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});listen.append(box)});
+
+ const listen=document.createElement("div");listen.className="exam-part active";listen.dataset.part="listen";listen.innerHTML="<h3>Аудирование</h3><p></p>";
+ listen.querySelector("p").textContent=examData.listen.intro;
+ examData.listen.items.forEach((x,i)=>{
+  const box=document.createElement("div");box.className="quiz";
+  let plays=Number(state.exam["lp"+i])||0;
+  const play=document.createElement("button");play.className="btn";play.textContent=plays>=2?"Прослушивания использованы":"▶ Прослушать "+(i+1)+" · "+(2-plays)+" осталось";play.disabled=plays>=2;
+  play.onclick=()=>{plays++;state.exam["lp"+i]=plays;save();play.textContent=plays>=2?"Прослушивания использованы":"▶ Прослушать "+(i+1)+" · "+(2-plays)+" осталось";play.disabled=plays>=2;speak(x.audio.en,"en-GB",null,()=>{})};
+  box.append(play);const p=document.createElement("p");p.textContent=x.q;box.append(p);
+  x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="exl"+i;inp.checked=state.exam["l"+i]===j;inp.onchange=()=>{state.exam["l"+i]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});
+  listen.append(box)
+ });
  parts.append(listen);
- const read=document.createElement("div");read.className="exam-part";read.dataset.part="read";read.innerHTML="<h3>Reading</h3><p></p>";read.querySelector("p").textContent=examData.read.intro;read.append(card(examData.read.text));examData.read.items.forEach((x,i)=>{const box=document.createElement("div");box.className="quiz";const p=document.createElement("p");p.textContent=x.q;box.append(p);x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="exr"+i;inp.onchange=()=>{state.exam["r"+i]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});read.append(box)});parts.append(read);
- const write=document.createElement("div");write.className="exam-part";write.dataset.part="write";write.innerHTML="<h3>Writing</h3><p></p><div class=\"prompt\"></div><textarea class=\"answerbox\" placeholder=\"Пишите здесь…\"></textarea><details><summary>Показать образец после выполнения</summary></details>";write.querySelector("p").textContent=examData.write.intro;write.querySelector(".prompt").textContent=examData.write.prompt;write.querySelector("details").append(card(examData.write.model));const ta=write.querySelector("textarea");ta.value=state.exam.writing||"";ta.oninput=()=>{state.exam.writing=ta.value;save()};parts.append(write);
- const speakPart=document.createElement("div");speakPart.className="exam-part";speakPart.dataset.part="speak";speakPart.innerHTML="<h3>Speaking</h3><p></p>";speakPart.querySelector("p").textContent=examData.speak.intro;examData.speak.prompts.forEach(x=>speakPart.append(card(x)));const rec=document.createElement("button");rec.className="btn";rec.textContent="● Записать ответ";let mr,chunks=[];rec.onclick=async()=>{if(mr?.state==="recording"){mr.stop();rec.textContent="● Записать ответ";return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];mr=new MediaRecorder(stream);mr.ondataavailable=e=>chunks.push(e.data);mr.onstop=()=>{const blob=new Blob(chunks,{type:mr.mimeType});const url=URL.createObjectURL(blob);let a=speakPart.querySelector("audio");if(!a){a=document.createElement("audio");a.controls=true;speakPart.append(a)}a.src=url;stream.getTracks().forEach(t=>t.stop())};mr.start();rec.textContent="■ Остановить запись"}catch{alert("Браузер не дал доступ к микрофону. Можно ответить вслух без записи.")}};speakPart.append(rec);parts.append(speakPart);
- const result=document.createElement("div");result.className="exam-part";result.dataset.part="result";result.innerHTML="<h3>Результат</h3><p id=\"examScore\"></p><p class=\"note\">Listening и Reading считаются автоматически. Writing и Speaking требуют содержательной проверки человеком или языковой моделью; сайт не должен выдавать их за объективно проверенные только по длине текста или наличию записи.</p>";parts.append(result);
- document.querySelectorAll("[data-exam]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-exam]").forEach(x=>x.classList.remove("primary"));b.classList.add("primary");document.querySelectorAll(".exam-part").forEach(x=>x.classList.toggle("active",x.dataset.part===b.dataset.exam));if(b.dataset.exam==="result"){let ok=0,total=0;examData.listen.items.forEach((x,i)=>{total++;if(state.exam["l"+i]===x.a)ok++});examData.read.items.forEach((x,i)=>{total++;if(state.exam["r"+i]===x.a)ok++});document.getElementById("examScore").textContent="Автоматически проверяемая часть: "+ok+" из "+total+" ("+Math.round(ok/total*100)+"%)."}})
+
+ const read=document.createElement("div");read.className="exam-part";read.dataset.part="read";read.innerHTML="<h3>Чтение</h3><p></p>";
+ read.querySelector("p").textContent=examData.read.intro;let ridx=0;
+ examData.read.passages.forEach((passage,pi)=>{
+  const source=examSource(passage.text);read.append(source);
+  passage.items.forEach(x=>{const i=ridx++;const box=document.createElement("div");box.className="quiz";const p=document.createElement("p");p.textContent=x.q;box.append(p);x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="exr"+i;inp.checked=state.exam["r"+i]===j;inp.onchange=()=>{state.exam["r"+i]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});read.append(box)});
+  const reveal=document.createElement("button");reveal.className="btn";reveal.textContent="Показать IPA и перевод после ответов";reveal.onclick=()=>{source.classList.add("revealed");reveal.disabled=true};read.append(reveal)
+ });parts.append(read);
+
+ const write=document.createElement("div");write.className="exam-part";write.dataset.part="write";write.innerHTML="<h3>Письмо</h3><p></p><h4>Задание 1 · личные данные</h4>";
+ write.querySelector("p").textContent=examData.write.intro;
+ const form=document.createElement("div");form.className="grid two";
+ examData.write.fields.forEach((label,i)=>{const wrap=document.createElement("label");wrap.className="stack";wrap.textContent=label;const inp=document.createElement("input");inp.className="answerbox";inp.style.minHeight="0";inp.value=state.exam["wf"+i]||"";inp.oninput=()=>{state.exam["wf"+i]=inp.value;save()};wrap.append(inp);form.append(wrap)});write.append(form);
+ const wh=document.createElement("h4");wh.textContent="Задание 2 · короткое сообщение";const prompt=document.createElement("div");prompt.className="prompt";prompt.textContent=examData.write.prompt;const ta=document.createElement("textarea");ta.className="answerbox";ta.placeholder="Пишите здесь…";ta.value=state.exam.writing||"";ta.oninput=()=>{state.exam.writing=ta.value;save()};
+ const wc=document.createElement("p");wc.className="note";const updateWords=()=>{const n=ta.value.trim()?ta.value.trim().split(/\s+/).length:0;wc.textContent=n+" слов · цель 35–50"};ta.addEventListener("input",updateWords);updateWords();
+ const details=document.createElement("details");details.innerHTML="<summary>Показать образец только после выполнения</summary>";details.append(card(examData.write.model));write.append(wh,prompt,ta,wc,details);parts.append(write);
+
+ const speakPart=document.createElement("div");speakPart.className="exam-part";speakPart.dataset.part="speak";speakPart.innerHTML="<h3>Устная речь</h3><p></p>";speakPart.querySelector("p").textContent=examData.speak.intro;
+ examData.speak.prompts.forEach((x,i)=>{const d=card(x);const lab=document.createElement("span");lab.className="badge";lab.textContent=i<2?"ЧАСТЬ 1":i<6?"ЧАСТЬ 2":"ЧАСТЬ 3";d.prepend(lab);speakPart.append(d)});
+ const rec=document.createElement("button");rec.className="btn";rec.textContent="● Записать ответ";let mr,chunks=[];
+ rec.onclick=async()=>{if(mr?.state==="recording"){mr.stop();rec.textContent="● Записать ответ";return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];mr=new MediaRecorder(stream);mr.ondataavailable=e=>chunks.push(e.data);mr.onstop=()=>{const blob=new Blob(chunks,{type:mr.mimeType});const url=URL.createObjectURL(blob);let a=speakPart.querySelector("audio");if(!a){a=document.createElement("audio");a.controls=true;speakPart.append(a)}a.src=url;stream.getTracks().forEach(t=>t.stop())};mr.start();rec.textContent="■ Остановить запись"}catch{alert("Браузер не дал доступ к микрофону. Можно ответить вслух без записи.")}};speakPart.append(rec);parts.append(speakPart);
+
+ const result=document.createElement("div");result.className="exam-part";result.dataset.part="result";result.innerHTML="<h3>Результат</h3><p id=\"examScore\"></p><div id=\"masteryGate\" class=\"notice\"></div><p class=\"note\">Аудирование и чтение считаются автоматически. Письмо и речь требуют содержательной проверки человеком или языковой моделью. Syolana не выдаёт длину текста или наличие записи за подтверждённое владение навыком.</p>";parts.append(result);
+
+ document.querySelectorAll("[data-exam]").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("[data-exam]").forEach(x=>x.classList.remove("primary"));b.classList.add("primary");
+  document.querySelectorAll(".exam-part").forEach(x=>x.classList.toggle("active",x.dataset.part===b.dataset.exam));
+  if(b.dataset.exam==="result"){
+   let ok=0,total=0;examData.listen.items.forEach((x,i)=>{total++;if(state.exam["l"+i]===x.a)ok++});let ri=0;examData.read.passages.forEach(p=>p.items.forEach(x=>{const i=ri++;total++;if(state.exam["r"+i]===x.a)ok++}));
+   const pct=Math.round(ok/total*100),weak=dueWeak().length,daysDone=Object.values(state.days).filter(Boolean).length;
+   document.getElementById("examScore").textContent="Объективно проверяемая часть: "+ok+" из "+total+" ("+pct+"%).";
+   const gate=document.getElementById("masteryGate");
+   gate.textContent=pct>=90&&weak===0&&daysDone===28?"Listening + Reading подтверждены на уровне mastery. Осталось подтвердить Writing + Speaking.":"Для полного закрытия Syolana рекомендует ≥90% в Listening + Reading, пройти 28/28 дней и убрать все просроченные слабые места. Сейчас: "+daysDone+"/28 дней, "+weak+" слабых пунктов.";
+  }
+ })
 }
 window.addEventListener("message",e=>{if(!e.data?.syolanaHost)return;if(e.data.pauseAudio)stopSession(false);if(e.data.anchor){const target=document.getElementById(e.data.anchor);target?.scrollIntoView()}});
 window.addEventListener("resize",()=>{redraw();requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,height:document.documentElement.scrollHeight},"*"))});

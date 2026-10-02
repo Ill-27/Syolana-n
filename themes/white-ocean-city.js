@@ -112,27 +112,50 @@ uniform float uAspect;
 uniform float uZen;
 float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
-float fbm(vec2 p){float v=0.0,a=.52;for(int i=0;i<6;i++){v+=a*noise(p);p=p*2.03+vec2(17.7,9.4);a*=.51;}return v;}
+float fbm(vec2 p){float v=0.0,a=.52;for(int i=0;i<5;i++){v+=a*noise(p);p=p*2.04+vec2(17.7,9.4);a*=.50;}return v;}
 void main(){
   vec2 uv=vUv;
   float horizon=.455;
-  vec3 zenith=vec3(.19,.34,.43),upper=vec3(.42,.59,.67),haze=vec3(.81,.86,.84),dawn=vec3(.96,.82,.67);
-  vec3 col=mix(haze,mix(upper,zenith,smoothstep(.58,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
-  float sun=exp(-pow((uv.x-.73)*4.8,2.0)-pow((uv.y-.47)*18.0,2.0));
-  col+=dawn*sun*.34;
+  vec3 zenith=vec3(.17,.32,.41),upper=vec3(.39,.57,.66),haze=vec3(.82,.87,.85),dawn=vec3(.98,.82,.64);
+  float vertical=smoothstep(horizon,1.0,uv.y);
+  vec3 col=mix(haze,mix(upper,zenith,smoothstep(.60,1.0,uv.y)),vertical);
+  float sun=exp(-pow((uv.x-.73)*4.5,2.0)-pow((uv.y-.468)*18.5,2.0));
+  col+=dawn*sun*.38;
+
   vec2 p=vec2((uv.x-.5)*uAspect,uv.y);
-  float lowMask=smoothstep(.40,.47,uv.y)*(1.0-smoothstep(.63,.73,uv.y));
-  float highMask=smoothstep(.52,.62,uv.y)*(1.0-smoothstep(.83,.96,uv.y));
-  float low=fbm(p*3.25+vec2(uTime*.007,-uTime*.002))+.34*fbm(p*8.1+vec2(-uTime*.012,uTime*.003));
-  float high=fbm(p*2.35+vec2(-uTime*.004,uTime*.001));
-  float cloudLow=smoothstep(.49,.78,low)*lowMask,cloudHigh=smoothstep(.57,.82,high)*highMask;
-  col=mix(col,mix(vec3(.34,.46,.51),vec3(.88,.90,.87),smoothstep(.48,.78,low)),cloudLow*.88);
-  col=mix(col,vec3(.75,.81,.81),cloudHigh*.34);
-  float distant=exp(-pow((uv.y-horizon)*27.0,2.0));
-  col=mix(col,vec3(.85,.88,.85),distant*(.44+.08*uZen));
-  col+=(hash(gl_FragCoord.xy+floor(uTime*12.0))-.5)*.012;
-  col*=1.0-.14*pow(length((uv-.5)*vec2(.84,1.0)),1.75);
-  col*=mix(.90,1.0,uZen);
+  float lowMask=smoothstep(.39,.46,uv.y)*(1.0-smoothstep(.65,.76,uv.y));
+  float midMask=smoothstep(.49,.56,uv.y)*(1.0-smoothstep(.78,.91,uv.y));
+  float highMask=smoothstep(.62,.69,uv.y)*(1.0-smoothstep(.90,1.0,uv.y));
+
+  float lowA=fbm(p*3.05+vec2(uTime*.006,-uTime*.002));
+  float lowB=fbm(p*7.6+vec2(-uTime*.010,uTime*.0025));
+  float low=lowA*.78+lowB*.34;
+  float mid=fbm(p*2.15+vec2(-uTime*.0035,uTime*.0016));
+  float high=fbm(p*4.7+vec2(uTime*.0022,uTime*.0007));
+
+  float lowDensity=smoothstep(.50,.79,low)*lowMask;
+  float lowCore=smoothstep(.61,.88,low)*lowMask;
+  float midDensity=smoothstep(.56,.80,mid)*midMask;
+  float highDensity=smoothstep(.62,.82,high)*highMask;
+
+  vec3 cloudShadow=vec3(.31,.43,.49);
+  vec3 cloudBody=vec3(.73,.79,.80);
+  vec3 cloudLight=vec3(.94,.93,.88);
+  vec3 lowColor=mix(cloudShadow,cloudBody,smoothstep(.48,.70,low));
+  lowColor=mix(lowColor,cloudLight,lowCore*.72+sun*.20);
+  col=mix(col,lowColor,lowDensity*.92);
+
+  vec3 midColor=mix(vec3(.49,.60,.64),vec3(.85,.88,.86),smoothstep(.55,.78,mid));
+  col=mix(col,midColor,midDensity*.52);
+  col=mix(col,vec3(.79,.84,.84),highDensity*.22);
+
+  float silver=max(0.0,lowDensity-lowCore)*sun;
+  col+=vec3(.27,.22,.15)*silver*.75;
+  float distant=exp(-pow((uv.y-horizon)*28.0,2.0));
+  col=mix(col,vec3(.86,.89,.86),distant*(.48+.08*uZen));
+  col+=(hash(gl_FragCoord.xy+floor(uTime*9.0))-.5)*.008;
+  col*=1.0-.13*pow(length((uv-.5)*vec2(.84,1.0)),1.72);
+  col*=mix(.92,1.0,uZen);
   outColor=vec4(col,1.0);
 }`;
 
@@ -227,6 +250,52 @@ void main(){
   outColor=vec4(col,1.0);
 }`;
 
+const FOAM_VS = `#version 300 es
+layout(location=0) in vec2 aPosition;
+layout(location=1) in vec2 iCenter;
+layout(location=2) in vec2 iSize;
+layout(location=3) in float iPhase;
+uniform mat4 uViewProj;
+uniform float uTravel;
+uniform float uSpan;
+uniform float uTime;
+out vec2 vLocal;
+out float vPhase;
+out float vDistance;
+void main(){
+  float z=mod(iCenter.y+uTravel,uSpan)-uSpan;
+  float pulse=1.0+.055*sin(uTime*1.55+iPhase);
+  vec2 local=aPosition;
+  vec2 footprint=local*iSize*pulse;
+  float ripple=sin((footprint.x+footprint.y)*.58-uTime*2.3+iPhase)*.026;
+  vec3 world=vec3(iCenter.x+footprint.x,-.22+ripple,z+footprint.y);
+  vLocal=local;
+  vPhase=iPhase;
+  vDistance=length(world.xz);
+  gl_Position=uViewProj*vec4(world,1.0);
+}`;
+
+const FOAM_FS = `#version 300 es
+precision highp float;
+in vec2 vLocal;
+in float vPhase;
+in float vDistance;
+out vec4 outColor;
+uniform float uTime;
+void main(){
+  vec2 q=abs(vLocal);
+  float edge=max(q.x,q.y);
+  float inner=smoothstep(.57,.70,edge);
+  float outer=1.0-smoothstep(.84,1.0,edge);
+  float ring=inner*outer;
+  float broken=.55+.45*sin((vLocal.x*13.0+vLocal.y*17.0)+uTime*3.1+vPhase);
+  float crest=.60+.40*sin(edge*28.0-uTime*4.2+vPhase*1.7);
+  float alpha=ring*(.20+.46*broken*crest);
+  alpha*=1.0-smoothstep(250.0,440.0,vDistance);
+  vec3 col=mix(vec3(.72,.86,.87),vec3(.98,.99,.96),.55+.45*crest);
+  outColor=vec4(col,alpha);
+}`;
+
 function cubeGeometry() {
   const p = [
     // +X
@@ -286,7 +355,19 @@ function buildCity() {
   return {span,data:new Float32Array(data),count:data.length/8};
 }
 
-function buildOcean(cols=86, rows=96) {
+function buildFoam(city){
+  const src=city.data,out=[];
+  for(let i=0;i<src.length;i+=8){
+    const x=src[i],y=src[i+1],z=src[i+2],sx=src[i+3],sy=src[i+4],sz=src[i+5];
+    const base=y-sy*.5;
+    if(base>.72||sy<5.2||sx<1.15||sz<1.15)continue;
+    const phase=((i/8)*1.61803398875)%6.28318;
+    out.push(x,z,sx*.64+2.0,sz*.64+2.0,phase);
+  }
+  return {data:new Float32Array(out),count:out.length/5};
+}
+
+function buildOcean(cols=96, rows=116) {
   const vertices=[];
   const indices=[];
   const x0=-190, x1=190, z0=34, z1=-560;
@@ -315,32 +396,117 @@ function drawBirds(ctx,time,width,height,isZen){
     ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(x-s,y);ctx.quadraticCurveTo(x-s*.45,y-s*.62,x,y);ctx.quadraticCurveTo(x+s*.45,y-s*.62,x+s,y);ctx.stroke();
   }ctx.restore();
 }
-function createFlock(){
-  const rnd=seeded(19077);
+function buildBirdSprites(){
+  const sprites=[];
+  for(let frame=0;frame<14;frame++){
+    const c=document.createElement("canvas");
+    c.width=128;c.height=72;
+    const x=c.getContext("2d");
+    const flap=Math.sin(frame/14*TAU);
+    const cx=64,cy=36,lift=10+flap*9;
+    x.translate(cx,cy);
+    x.shadowColor="rgba(195,220,222,.38)";
+    x.shadowBlur=7;
+    const wing=x.createLinearGradient(0,-18,0,18);
+    wing.addColorStop(0,"#ffffff");
+    wing.addColorStop(.5,"#edf4f2");
+    wing.addColorStop(1,"#b9cbcc");
+    x.fillStyle=wing;
+    x.strokeStyle="rgba(142,166,169,.52)";
+    x.lineWidth=1.25;
+
+    x.beginPath();
+    x.moveTo(-2,-1);
+    x.bezierCurveTo(-15,-7,-27,-lift,-45,-12-lift*.24);
+    x.bezierCurveTo(-32,3,-18,11,-2,5);
+    x.closePath();x.fill();x.stroke();
+
+    x.beginPath();
+    x.moveTo(2,-1);
+    x.bezierCurveTo(15,-7,27,-lift,45,-12-lift*.24);
+    x.bezierCurveTo(32,3,18,11,2,5);
+    x.closePath();x.fill();x.stroke();
+
+    x.shadowBlur=4;
+    const body=x.createLinearGradient(0,-8,0,10);
+    body.addColorStop(0,"#ffffff");
+    body.addColorStop(.6,"#eef4f2");
+    body.addColorStop(1,"#afc2c4");
+    x.fillStyle=body;
+    x.beginPath();x.ellipse(0,2,8,15,0,0,TAU);x.fill();
+    x.fillStyle="#f7fbfa";
+    x.beginPath();x.ellipse(0,-9,5.5,6.5,0,0,TAU);x.fill();
+
+    x.fillStyle="#d6e3e2";
+    x.beginPath();x.moveTo(-5,13);x.lineTo(-11,22);x.lineTo(-1,17);x.closePath();x.fill();
+    x.beginPath();x.moveTo(5,13);x.lineTo(11,22);x.lineTo(1,17);x.closePath();x.fill();
+
+    x.globalAlpha=.72;x.fillStyle="#ffffff";
+    x.beginPath();x.ellipse(-2,-4,2.1,8,-.15,0,TAU);x.fill();
+    sprites.push(c);
+  }
+  return sprites;
+}
+
+function createBirdTraffic(){
+  const rnd=seeded(41027),sprites=buildBirdSprites(),flights=[];
+  let nextAt=.35;
+  const pickCount=()=>{
+    const r=rnd();
+    if(r<.46)return 1;
+    if(r<.76)return 2;
+    if(r<.92)return 3;
+    return 4;
+  };
+  const spawn=(time,zen)=>{
+    const count=pickCount();
+    const sx=.17+rnd()*.66,sy=.10+rnd()*.18;
+    const ex=.47+(rnd()-.5)*.12,ey=.405+(rnd()-.5)*.035;
+    const baseDuration=(zen?2.25:2.65)+rnd()*1.35;
+    for(let i=0;i<count;i++){
+      const side=i-(count-1)/2;
+      flights.push({
+        born:time+i*.075,
+        duration:baseDuration*(.92+rnd()*.16),
+        sx:sx+side*(.024+rnd()*.008),
+        sy:sy+Math.abs(side)*.010+(rnd()-.5)*.012,
+        ex:ex+side*.009,
+        ey:ey+(rnd()-.5)*.010,
+        size:15+rnd()*8,
+        tilt:(rnd()-.5)*.20,
+        phase:rnd()*TAU
+      });
+    }
+    nextAt=time+(zen?1.05:1.55)+rnd()*(zen?2.0:2.8);
+  };
   return {
-    birds:Array.from({length:18},(_,i)=>({x:.18+rnd()*.64,y:.12+rnd()*.22,vx:(rnd()-.5)*.018,vy:(rnd()-.5)*.008,size:.7+rnd()*.9,phase:rnd()*TAU,wing:5.2+rnd()*2.8,depth:.65+rnd()*.7,delay:i*.13})),
-    target:{x:.5,y:.22,active:false,last:0},
-    guide({x,y,active}){this.target.active=Boolean(active);if(Number.isFinite(x))this.target.x=Math.max(.08,Math.min(.92,x));if(Number.isFinite(y))this.target.y=Math.max(.08,Math.min(.43,y));this.target.last=performance.now();},
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
-      const target=this.target;if(target.active&&performance.now()-target.last>900)target.active=false;
-      ctx.save();ctx.lineCap="round";ctx.lineJoin="round";
-      for(let i=0;i<this.birds.length;i++){
-        const b=this.birds[i],leader=this.birds[(i+this.birds.length-1)%this.birds.length];
-        const tx=target.active?target.x:.50+Math.sin(time*.115+i*.71)*.22,ty=target.active?target.y:.20+Math.cos(time*.083+i*.53)*.055,follow=i===0?1:.52;
-        b.vx+=(tx-b.x)*(.00072*follow)+(leader.x-b.x)*.00024;b.vy+=(ty-b.y)*(.00062*follow)+(leader.y-b.y)*.00018;
-        b.vx+=Math.sin(time*.61+i*1.9)*.000025;b.vy+=Math.cos(time*.47+i*1.3)*.000018;
-        const sp=Math.hypot(b.vx,b.vy),mx=.0048+(zen?.0014:0);if(sp>mx){b.vx=b.vx/sp*mx;b.vy=b.vy/sp*mx;}
-        b.vx*=.986;b.vy*=.986;b.x+=b.vx;b.y+=b.vy;if(b.x<-.08)b.x=1.08;if(b.x>1.08)b.x=-.08;b.y=Math.max(.075,Math.min(.405,b.y));
-        const x=b.x*width,y=b.y*height,s=(4.2+b.size*4.8)*(zen?1.05:.88)/b.depth,flap=Math.sin(time*b.wing+b.phase),alpha=Math.min(.84,.38+.30/b.depth);
-        ctx.strokeStyle=`rgba(248,250,247,\${alpha})`;ctx.shadowColor="rgba(210,232,232,.25)";ctx.shadowBlur=5;ctx.lineWidth=Math.max(.9,1.35/b.depth);
-        ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x-s*.52,y-s*(.40+.23*flap),x-s,y-s*.04);ctx.moveTo(x,y);ctx.quadraticCurveTo(x+s*.52,y-s*(.40-.23*flap),x+s,y-s*.04);ctx.stroke();
-      }ctx.restore();
+      if(time>=nextAt)spawn(time,zen);
+      for(let i=flights.length-1;i>=0;i--){
+        const b=flights[i],p=(time-b.born)/b.duration;
+        if(p<0)continue;
+        if(p>=1){flights.splice(i,1);continue;}
+        const e=1-Math.pow(1-p,2.15);
+        const depth=Math.max(.10,1-e);
+        const x=(b.sx+(b.ex-b.sx)*e+Math.sin(p*Math.PI)*.015*Math.sin(b.phase))*width;
+        const y=(b.sy+(b.ey-b.sy)*e+Math.sin(p*Math.PI)*.008*Math.cos(b.phase))*height;
+        const scale=(.17+depth*.93)*(zen?1.05:1.0);
+        const size=b.size*scale;
+        const frame=(Math.floor((time*9.5+b.phase)*sprites.length)%sprites.length+sprites.length)%sprites.length;
+        const alpha=Math.min(1,Math.min(p/.08,(1-p)/.12))*(.62+.34*depth);
+        ctx.save();
+        ctx.translate(x,y);
+        ctx.rotate(b.tilt+(b.ex-b.sx)*.12);
+        ctx.globalAlpha=alpha;
+        ctx.drawImage(sprites[frame],-size*1.25,-size*.70,size*2.5,size*1.4);
+        ctx.restore();
+      }
     }
   };
 }
 
-function fallbackRenderer(ctx){
+function fallbackRenderer(function fallbackRenderer(ctx){
   return {
     resize(){},
     draw({time,width,height,camera}){
@@ -418,7 +584,7 @@ function createRenderer(ctx){
   const canvas=document.createElement("canvas");
   canvas.className="theme-world-canvas white-ocean-world";
   canvas.setAttribute("aria-hidden","true");
-  Object.assign(canvas.style,{position:"fixed",inset:"0",width:"100%",height:"100%",zIndex:"-2",pointerEvents:"none",display:"block"});
+  Object.assign(canvas.style,{position:"fixed",inset:"0",width:"100%",height:"100%",zIndex:"-2",pointerEvents:"none",display:"block",transform:"translateZ(0)",backfaceVisibility:"hidden",willChange:"transform"});
   sourceCanvas.parentNode?.insertBefore(canvas,sourceCanvas);
   const style=document.createElement("style");
   style.textContent='html[data-theme="white-ocean-city"] .flight-hint{opacity:.72;color:#e4efed}html[data-theme="white-ocean-city"] .theme-sound-toggle svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}html[data-theme="white-ocean-city"] .theme-sound-toggle svg path:first-child{fill:currentColor;stroke:none}html[data-theme="white-ocean-city"] .theme-sound-toggle[data-enabled="true"]{color:#f1fbfa;box-shadow:0 0 0 1px #d9eeee55,0 0 28px #bde5e533}html[data-theme="white-ocean-city"] .flight-planet{color:#f5fbfa}html[data-theme="white-ocean-city"] .planet-orb{background:radial-gradient(circle at 32% 26%,rgba(245,252,250,.56),rgba(106,145,150,.26) 44%,rgba(20,38,45,.52) 82%);border-color:rgba(222,242,239,.48)}';
@@ -442,11 +608,12 @@ function createRenderer(ctx){
     return fallback;
   }
 
-  let skyProgram, cityProgram, oceanProgram;
+  let skyProgram, cityProgram, oceanProgram, foamProgram;
   try{
     skyProgram=program(gl,SKY_VS,SKY_FS);
     cityProgram=program(gl,CITY_VS,CITY_FS);
     oceanProgram=program(gl,OCEAN_VS,OCEAN_FS);
+    foamProgram=program(gl,FOAM_VS,FOAM_FS);
   }catch(error){
     console.warn("White Ocean City WebGL unavailable",error);
     canvas.remove();
@@ -489,6 +656,21 @@ function createRenderer(ctx){
   gl.enableVertexAttribArray(4); gl.vertexAttribPointer(4,1,gl.FLOAT,false,stride,6*4); gl.vertexAttribDivisor(4,1);
   gl.enableVertexAttribArray(5); gl.vertexAttribPointer(5,1,gl.FLOAT,false,stride,7*4); gl.vertexAttribDivisor(5,1);
 
+  const foam=buildFoam(city);
+  const foamVao=keep(gl.createVertexArray());
+  gl.bindVertexArray(foamVao);
+  const foamQuad=keep(gl.createBuffer());
+  gl.bindBuffer(gl.ARRAY_BUFFER,foamQuad);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,1,1,-1,-1,1,1,-1,1]),gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  const foamInstances=keep(gl.createBuffer());
+  gl.bindBuffer(gl.ARRAY_BUFFER,foamInstances);
+  gl.bufferData(gl.ARRAY_BUFFER,foam.data,gl.STATIC_DRAW);
+  const foamStride=5*4;
+  gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,2,gl.FLOAT,false,foamStride,0);gl.vertexAttribDivisor(1,1);
+  gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,2,gl.FLOAT,false,foamStride,2*4);gl.vertexAttribDivisor(2,1);
+  gl.enableVertexAttribArray(3);gl.vertexAttribPointer(3,1,gl.FLOAT,false,foamStride,4*4);gl.vertexAttribDivisor(3,1);
+
   const ocean=buildOcean();
   const oceanVao=keep(gl.createVertexArray());
   gl.bindVertexArray(oceanVao);
@@ -507,9 +689,9 @@ function createRenderer(ctx){
   const vp=new Float32Array(16);
   let cssWidth=1,cssHeight=1,quality=1;
   let disposed=false;
-  const flock=createFlock();
+  const birds=createBirdTraffic();
   const hint=document.querySelector(".flight-hint"),oldHint=hint?.textContent||"";
-  if(hint)hint.textContent="Перетаскивайте мир · два пальца — глубина · ведите стаю пальцем";
+  if(hint)hint.textContent="Перетаскивайте мир · два пальца — глубина";
 
   const uniforms={
     sky:{
@@ -531,13 +713,19 @@ function createRenderer(ctx){
       time:gl.getUniformLocation(oceanProgram,"uTime"),
       zen:gl.getUniformLocation(oceanProgram,"uZen"),
     },
+    foam:{
+      vp:gl.getUniformLocation(foamProgram,"uViewProj"),
+      travel:gl.getUniformLocation(foamProgram,"uTravel"),
+      span:gl.getUniformLocation(foamProgram,"uSpan"),
+      time:gl.getUniformLocation(foamProgram,"uTime"),
+    },
   };
 
   function resize({width,height,ratio=1}){
     cssWidth=Math.max(1,width);
     cssHeight=Math.max(1,height);
     const mobile=cssWidth<=760;
-    quality=Math.min(ratio,mobile?1.35:1.6);
+    quality=Math.min(ratio,mobile?1.22:1.6);
     const w=Math.max(1,Math.round(cssWidth*quality));
     const h=Math.max(1,Math.round(cssHeight*quality));
     if(canvas.width!==w||canvas.height!==h){
@@ -578,6 +766,21 @@ function createRenderer(ctx){
     gl.uniform1f(uniforms.ocean.zen,zen?1:0);
     gl.drawElements(gl.TRIANGLES,ocean.indices.length,gl.UNSIGNED_INT,0);
 
+    if(foam.count){
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+      gl.depthMask(false);
+      gl.useProgram(foamProgram);
+      gl.bindVertexArray(foamVao);
+      gl.uniformMatrix4fv(uniforms.foam.vp,false,vp);
+      gl.uniform1f(uniforms.foam.travel,travel);
+      gl.uniform1f(uniforms.foam.span,city.span);
+      gl.uniform1f(uniforms.foam.time,time);
+      gl.drawArraysInstanced(gl.TRIANGLES,0,6,foam.count);
+      gl.depthMask(true);
+      gl.disable(gl.BLEND);
+    }
+
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
     gl.useProgram(cityProgram);
@@ -596,12 +799,11 @@ function createRenderer(ctx){
 
   return {
     resize,
-    guideBirds(point){flock.guide(point||{});},
     draw({time,width,height,camera}){
       if(disposed)return;
       if(width!==cssWidth||height!==cssHeight)resize({width,height,ratio:window.devicePixelRatio||1});
       renderWorld(time,camera);
-      flock.draw(ctx,time,width,height,Boolean(camera));
+      birds.draw(ctx,time,width,height,Boolean(camera));
       if(!camera){
         const veil=ctx.createLinearGradient(0,0,0,height);
         veil.addColorStop(0,"rgba(6,14,19,.11)");
@@ -618,6 +820,7 @@ function createRenderer(ctx){
         gl.deleteProgram(skyProgram);
         gl.deleteProgram(cityProgram);
         gl.deleteProgram(oceanProgram);
+        gl.deleteProgram(foamProgram);
         for(const r of resources){
           if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);
           else gl.deleteBuffer(r);

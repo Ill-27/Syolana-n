@@ -43,7 +43,6 @@ export function setupDiscovery({ theme, zen, player }) {
     }
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     layer.setPointerCapture(e.pointerId);
-    if(pointers.size===1)theme.guideBirds?.(e.clientX/innerWidth,e.clientY/innerHeight,true);
     pinch = distance();
   });
   layer.addEventListener("pointermove", (e) => {
@@ -57,13 +56,11 @@ export function setupDiscovery({ theme, zen, player }) {
       if (pinch && next) theme.move(0, 0, Math.log(next / pinch) * 6);
       pinch = next;
     } else {
-      theme.guideBirds?.(e.clientX/innerWidth,e.clientY/innerHeight,true);
       theme.move(-dx/Math.max(300,innerWidth),-dy/Math.max(300,innerHeight),0);
     }
   });
   const end = (e) => {
     pointers.delete(e.pointerId);
-    if(!pointers.size)theme.guideBirds?.(.5,.22,false);
     pinch = distance();
   };
   layer.addEventListener("pointerup", end);

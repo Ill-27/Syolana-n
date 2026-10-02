@@ -71,10 +71,13 @@ export class ThemeEngine {
       this.sync();
     });
     document.addEventListener("visibilitychange", () => this.sync());
-    window.addEventListener("resize", () => this.resize(), { passive: true });
-    window.visualViewport?.addEventListener("resize", () => this.resize(), {
-      passive: true,
-    });
+    this.resizeTimer = 0;
+    const scheduleResize = (delay = 0) => {
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = setTimeout(() => this.resize(), delay);
+    };
+    window.addEventListener("resize", () => scheduleResize(innerWidth <= 800 ? 150 : 0), { passive: true });
+    window.visualViewport?.addEventListener("resize", () => scheduleResize(220), { passive: true });
     window.addEventListener("pageshow", () => this.sync());
     window.addEventListener("pagehide", () => cancelAnimationFrame(this.frame));
     document.fonts?.ready.then(() => this.draw(0));
@@ -155,6 +158,13 @@ export class ThemeEngine {
     const w = Math.max(1, bounds.width),
       h = Math.max(1, bounds.height),
       ratio = Math.min(devicePixelRatio || 1, w <= 700 ? 1.5 : 2);
+    const addressBarOnly =
+      !force &&
+      this.w &&
+      w <= 800 &&
+      Math.abs(w - this.w) < 2 &&
+      Math.abs(h - this.h) < 220;
+    if (addressBarOnly) return;
     if (!force && w === this.w && h === this.h && ratio === this.ratio) return;
     this.w = w;
     this.h = h;
@@ -565,7 +575,6 @@ export class ThemeEngine {
       : Math.max(-12, Math.min(12, cam.vz + dz * 5));
     if (this.reduced?.matches) this.draw(0);
   }
-  guideBirds(x,y,active=false){this.custom?.guideBirds?.({x,y,active});}
   settle() {
     if (!this.camera) return;
     const cam = this.camera;

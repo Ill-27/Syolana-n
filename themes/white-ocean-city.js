@@ -396,7 +396,7 @@ function createThemeSound(){
   let ac=null, master=null, enabled=false, seq=0;
   const cache=new Map(), tracks=new Set(), timers=new Set();
   const assetRoot=new URL("../",import.meta.url);
-  const same=(raw)=>{try{const u=new URL(raw,assetRoot);return u.origin===location.origin?u.href:""}catch{return ""}};
+  const same=(raw)=>{try{const u=new URL(raw,assetRoot);return u.origin===assetRoot.origin?u.href:""}catch{return ""}};
   const norm=(e)=>{const src=same(e.src);return src?{...e,src,fallback:same(e.fallback),volume:Math.max(0,Math.min(.5,Number(e.volume)||.1))}:null};
   const sync=()=>{button.dataset.enabled=String(enabled);button.setAttribute("aria-pressed",String(enabled));button.setAttribute("aria-label",enabled?"Выключить звучание Белого города":"Включить звучание Белого города");};
   const load=async(raw)=>{const e=norm(raw);if(!e)throw Error("audio");const key=e.src+"|"+e.fallback;if(cache.has(key))return cache.get(key);const p=(async()=>{let last;for(const u of [e.src,e.fallback].filter(Boolean)){try{const r=await fetch(u,{cache:"force-cache",signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error("audio");return {buffer:await ac.decodeAudioData(await r.arrayBuffer()),entry:e}}catch(err){last=err}}throw last||Error("audio")})();cache.set(key,p);try{return await p}catch(err){cache.delete(key);throw err}};

@@ -110,52 +110,78 @@ out vec4 outColor;
 uniform float uTime;
 uniform float uAspect;
 uniform float uZen;
-float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
-float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
-float fbm(vec2 p){float v=0.0,a=.52;for(int i=0;i<5;i++){v+=a*noise(p);p=p*2.04+vec2(17.7,9.4);a*=.50;}return v;}
+
+float hash21(vec2 p){
+  p=fract(p*vec2(123.34,345.45));
+  p+=dot(p,p+34.345);
+  return fract(p.x*p.y);
+}
+vec2 grad2(vec2 p){
+  float a=hash21(p)*6.28318530718;
+  return vec2(cos(a),sin(a));
+}
+float gnoise(vec2 p){
+  vec2 i=floor(p),f=fract(p);
+  vec2 u=f*f*f*(f*(f*6.0-15.0)+10.0);
+  float a=dot(grad2(i+vec2(0,0)),f-vec2(0,0));
+  float b=dot(grad2(i+vec2(1,0)),f-vec2(1,0));
+  float c=dot(grad2(i+vec2(0,1)),f-vec2(0,1));
+  float d=dot(grad2(i+vec2(1,1)),f-vec2(1,1));
+  return .5+.5*mix(mix(a,b,u.x),mix(c,d,u.x),u.y)*1.55;
+}
+float fbm(vec2 p){
+  float v=0.0,a=.53;
+  mat2 r=mat2(.80,-.60,.60,.80);
+  for(int i=0;i<5;i++){
+    v+=a*gnoise(p);
+    p=r*p*2.02+vec2(13.7,7.9);
+    a*=.50;
+  }
+  return v;
+}
 void main(){
   vec2 uv=vUv;
   float horizon=.455;
-  vec3 zenith=vec3(.17,.32,.41),upper=vec3(.39,.57,.66),haze=vec3(.82,.87,.85),dawn=vec3(.98,.82,.64);
+  vec3 zenith=vec3(.17,.32,.41);
+  vec3 upper=vec3(.39,.57,.66);
+  vec3 haze=vec3(.83,.88,.86);
+  vec3 dawn=vec3(.98,.82,.64);
   float vertical=smoothstep(horizon,1.0,uv.y);
   vec3 col=mix(haze,mix(upper,zenith,smoothstep(.60,1.0,uv.y)),vertical);
+
   float sun=exp(-pow((uv.x-.73)*4.5,2.0)-pow((uv.y-.468)*18.5,2.0));
   col+=dawn*sun*.38;
 
   vec2 p=vec2((uv.x-.5)*uAspect,uv.y);
-  float lowMask=smoothstep(.39,.46,uv.y)*(1.0-smoothstep(.65,.76,uv.y));
-  float midMask=smoothstep(.49,.56,uv.y)*(1.0-smoothstep(.78,.91,uv.y));
-  float highMask=smoothstep(.62,.69,uv.y)*(1.0-smoothstep(.90,1.0,uv.y));
+  vec2 drift=vec2(uTime*.0055,-uTime*.0017);
+  float lowMask=smoothstep(.385,.455,uv.y)*(1.0-smoothstep(.66,.765,uv.y));
+  float midMask=smoothstep(.50,.57,uv.y)*(1.0-smoothstep(.79,.91,uv.y));
+  float highMask=smoothstep(.66,.72,uv.y)*(1.0-smoothstep(.94,1.0,uv.y));
 
-  float lowA=fbm(p*3.05+vec2(uTime*.006,-uTime*.002));
-  float lowB=fbm(p*7.6+vec2(-uTime*.010,uTime*.0025));
-  float low=lowA*.78+lowB*.34;
-  float mid=fbm(p*2.15+vec2(-uTime*.0035,uTime*.0016));
-  float high=fbm(p*4.7+vec2(uTime*.0022,uTime*.0007));
+  float low=fbm(p*3.0+drift)+.27*fbm(p*6.9-drift*1.7);
+  float mid=fbm(p*2.05-drift*.70);
+  float high=fbm(p*4.25+drift*.42);
 
-  float lowDensity=smoothstep(.50,.79,low)*lowMask;
-  float lowCore=smoothstep(.61,.88,low)*lowMask;
-  float midDensity=smoothstep(.56,.80,mid)*midMask;
-  float highDensity=smoothstep(.62,.82,high)*highMask;
+  float lowDensity=smoothstep(.61,.93,low)*lowMask;
+  float core=smoothstep(.72,1.03,low)*lowMask;
+  float midDensity=smoothstep(.56,.82,mid)*midMask;
+  float highDensity=smoothstep(.61,.84,high)*highMask;
 
-  vec3 cloudShadow=vec3(.31,.43,.49);
-  vec3 cloudBody=vec3(.73,.79,.80);
-  vec3 cloudLight=vec3(.94,.93,.88);
-  vec3 lowColor=mix(cloudShadow,cloudBody,smoothstep(.48,.70,low));
-  lowColor=mix(lowColor,cloudLight,lowCore*.72+sun*.20);
-  col=mix(col,lowColor,lowDensity*.92);
+  vec3 shadow=vec3(.31,.43,.49);
+  vec3 body=vec3(.72,.79,.80);
+  vec3 light=vec3(.95,.94,.90);
+  vec3 cloud=mix(shadow,body,smoothstep(.58,.86,low));
+  cloud=mix(cloud,light,core*.74+sun*.18);
+  col=mix(col,cloud,lowDensity*.91);
 
-  vec3 midColor=mix(vec3(.49,.60,.64),vec3(.85,.88,.86),smoothstep(.55,.78,mid));
-  col=mix(col,midColor,midDensity*.52);
-  col=mix(col,vec3(.79,.84,.84),highDensity*.22);
+  vec3 midCol=mix(vec3(.49,.60,.64),vec3(.87,.89,.87),smoothstep(.56,.80,mid));
+  col=mix(col,midCol,midDensity*.46);
+  col=mix(col,vec3(.80,.85,.85),highDensity*.18);
 
-  float silver=max(0.0,lowDensity-lowCore)*sun;
-  col+=vec3(.27,.22,.15)*silver*.75;
-  float distant=exp(-pow((uv.y-horizon)*28.0,2.0));
-  col=mix(col,vec3(.86,.89,.86),distant*(.48+.08*uZen));
-  col+=(hash(gl_FragCoord.xy+floor(uTime*9.0))-.5)*.008;
-  col*=1.0-.13*pow(length((uv-.5)*vec2(.84,1.0)),1.72);
-  col*=mix(.92,1.0,uZen);
+  float distant=exp(-pow((uv.y-horizon)*29.0,2.0));
+  col=mix(col,vec3(.87,.90,.87),distant*(.49+.07*uZen));
+  col*=1.0-.12*pow(length((uv-.5)*vec2(.84,1.0)),1.72);
+  col*=mix(.93,1.0,uZen);
   outColor=vec4(col,1.0);
 }`;
 
@@ -180,9 +206,14 @@ void main(){
   float z=mod(iOffset.z+uTravel,uSpan)-uSpan;
   vec3 local=aPosition;
   float y01=clamp(local.y+.5,0.0,1.0);
-  if(iShape>0.5&&iShape<1.5){float taper=mix(1.0,.46,smoothstep(.28,1.0,y01));local.xz*=taper;}
-  else if(iShape>1.5&&iShape<2.5){float neck=mix(1.0,.72,smoothstep(.45,.82,y01));local.xz*=neck;}
-  else if(iShape>2.5){float terrace=1.0-.12*floor(y01*4.0);local.xz*=terrace;}
+  if(iShape>0.5&&iShape<1.5){
+    // A real pyramid/spire: footprint narrows almost to a point.
+    float taper=mix(1.0,.035,smoothstep(.12,1.0,y01));
+    local.xz*=taper;
+  }else if(iShape>2.5){
+    float terrace=1.0-.10*floor(y01*3.0);
+    local.xz*=terrace;
+  }
   vec3 world=vec3(iOffset.x,iOffset.y,z)+local*iScale;
   vWorld=world;vNormal=aNormal;vTone=iTone;vShape=iShape;vDistance=distance(world,uCamera);vLocal=local;
   gl_Position=uViewProj*vec4(world,1.0);
@@ -322,8 +353,8 @@ function buildCity() {
   const rnd=seeded(90317),span=520,data=[];
   const add=(x,y,z,sx,sy,sz,tone=.6,shape=0)=>data.push(x,y,z,sx,sy,sz,tone,shape);
   const tower=(x,z,w,h,d,tone,shape=1)=>{
-    add(x,h*.5+.08,z,w,h,d,tone,shape);
-    if(h>19){const ch=2.2+rnd()*4.8;add(x,h+ch*.5,z,w*(.56+rnd()*.16),ch,d*(.56+rnd()*.16),Math.min(1,tone+.12),2);}
+    // No decorative roof pieces: every tower ends either in a clean cut or a single sharp peak.
+    add(x,h*.5+.08,z,w,h,d,tone,shape===1?1:0);
   };
   const arch=(cx,z,width,height,depth,tone)=>{
     const p=Math.max(1.3,width*.12);
@@ -335,8 +366,8 @@ function buildCity() {
     const avenue=10.5+Math.sin(block*.61)*2.4;
     for(const side of [-1,1]){
       const lane=avenue+5+rnd()*15,x=side*(lane+rnd()*6.5),w=4.8+rnd()*8.8,d=5.5+rnd()*10,h=10+rnd()*33,tone=.38+rnd()*.58;
-      tower(x,z+rnd()*5,w,h,d,tone,rnd()>.48?1:3);
-      if(rnd()>.24)add(x,h*.18,z+d*.35,w*(1.12+rnd()*.72),2.1+rnd()*2.3,d*(1.0+rnd()*.55),tone+.06,3);
+      tower(x,z+rnd()*5,w,h,d,tone,rnd()>.46?1:0);
+      if(rnd()>.24)add(x,h*.18,z+d*.35,w*(1.12+rnd()*.72),2.1+rnd()*2.3,d*(1.0+rnd()*.55),tone+.06,0);
       if(rnd()>.56)tower(x+side*(w*.72+1.7+rnd()*2.8),z+2+rnd()*5,1.2+rnd()*2.1,7+rnd()*16,1.2+rnd()*2.6,.68+rnd()*.24,1);
       if(rnd()>.72){const cz=z-3+rnd()*7;for(let j=0;j<3;j++)add(x+side*(w*.56+2+j*2.25),3.4,cz,1.05,6.8,1.05,.78,1);}
     }
@@ -345,7 +376,7 @@ function buildCity() {
     if(block%5===2)arch(0,z+3,22+rnd()*7,27+rnd()*8,2.3+rnd()*1.8,.79+rnd()*.14);
     if(block%8===5){const y=25+rnd()*8;add(0,y,z-1,33+rnd()*11,1.1,2.4,.84,2);add(-16,y*.48,z-1,1.45,y,2.4,.74,1);add(16,y*.48,z-1,1.45,y,2.4,.74,1);}
     for(const side of [-1,1]){
-      if(rnd()>.18){const fx=side*(46+rnd()*48),fh=17+rnd()*54;tower(fx,z+rnd()*10,6+rnd()*14,fh,7+rnd()*15,.26+rnd()*.42,rnd()>.5?1:3);}
+      if(rnd()>.18){const fx=side*(46+rnd()*48),fh=17+rnd()*54;tower(fx,z+rnd()*10,6+rnd()*14,fh,7+rnd()*15,.26+rnd()*.42,rnd()>.52?1:0);}
       if(rnd()>.58)arch(side*(36+rnd()*12),z+rnd()*7,12+rnd()*8,9+rnd()*8,2.2,.52+rnd()*.25);
     }
   }
@@ -394,7 +425,7 @@ function drawBirds(ctx,time,width,height,isZen){
   if(!ctx||!width||!height)return;
   ctx.save();ctx.lineCap="round";ctx.strokeStyle="rgba(248,250,247,.72)";
   for(let i=0;i<(isZen?7:4);i++){
-    const x=((time*.014+i*.173)%1.35-.15)*width,y=height*(.18+(i%4)*.055),s=4+(i%3)*1.7;
+    const p=(time*.17+i*.41)%1,x=width*(.18+(i%3)*.28+(p-.5)*.06),y=height*(.68-p*.43),s=5-p*2.8;
     ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(x-s,y);ctx.quadraticCurveTo(x-s*.45,y-s*.62,x,y);ctx.quadraticCurveTo(x+s*.45,y-s*.62,x+s,y);ctx.stroke();
   }ctx.restore();
 }
@@ -739,14 +770,15 @@ function createRenderer(ctx){
     const cy=Math.max(-.75,Math.min(.75,camera?.y||0));
     const cz=camera?.z||0;
     const travel=time*(zen?2.58:.42)+cz*23;
-    const autoX=Math.sin(time*.043)*3.8+Math.sin(time*.017+1.4)*1.8;
-    const eyeX=autoX+cx*2.2;
-    const eyeY=9.1+Math.sin(time*.041)*.62+cy*1.15;
+    const autoX=Math.sin(time*.043)*3.5+Math.sin(time*.017+1.4)*1.6;
+    // Real movement inside the wide central water corridor, plus a softer look offset.
+    const eyeX=autoX+cx*7.4;
+    const eyeY=9.2-cy*4.6+Math.sin(time*.041)*.58;
     const eye=[eyeX,eyeY,14.5];
     const target=[
-      eyeX+cx*34+Math.sin(time*.028)*2.1,
-      4.9-cy*15+Math.sin(time*.023)*.48,
-      -52
+      eyeX+cx*19+Math.sin(time*.028)*2.0,
+      4.8-cy*11+Math.sin(time*.023)*.44,
+      -54
     ];
     perspective(projection,zen?0.92:1.00,cssWidth/cssHeight,.12,560);
     lookAt(view,eye,target,[0,1,0]);

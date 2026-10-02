@@ -26,7 +26,7 @@ export function setupDiscovery({ theme, zen, player }) {
   const hint = el(
     "p",
     "flight-hint",
-    "Перетаскивайте фон · Колесо или два пальца — в глубину",
+    "Одним пальцем — в стороны и вверх/вниз · двумя — в глубину",
   );
   layer.append(hint);
   document.body.append(layer);
@@ -38,6 +38,7 @@ export function setupDiscovery({ theme, zen, player }) {
   }
   let suppressClickUntil = 0;
   layer.addEventListener("pointerdown", (e) => {
+    if(e.pointerType==="touch") return;
     const interactive = e.target.closest("a,button");
     pointers.set(e.pointerId, {
       x: e.clientX,
@@ -51,6 +52,7 @@ export function setupDiscovery({ theme, zen, player }) {
     pinch = distance();
   });
   layer.addEventListener("pointermove", (e) => {
+    if(e.pointerType==="touch") return;
     const prev = pointers.get(e.pointerId);
     if (!prev) return;
     const dx = e.clientX - prev.x,
@@ -74,6 +76,7 @@ export function setupDiscovery({ theme, zen, player }) {
     }
   });
   const end = (e) => {
+    if(e.pointerType==="touch") return;
     const meta = pointers.get(e.pointerId);
     if (meta?.dragged) suppressClickUntil = performance.now() + 320;
     else if (meta?.interactive) theme.settle?.();
@@ -92,6 +95,56 @@ export function setupDiscovery({ theme, zen, player }) {
     },
     true,
   );
+  // Dedicated mobile touch flight. Android browsers can suppress/coalesce
+  // pointermove over transformed links; touch events keep one-finger flight reliable.
+  let touchLast=null,touchPinch=0;
+  const touchDistance=(list)=>{
+    if(list.length<2)return 0;
+    const a=list[0],b=list[1];
+    return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+  };
+  layer.addEventListener("touchstart",(e)=>{
+    if(!document.body.classList.contains("zen"))return;
+    if(e.touches.length===1){
+      const t=e.touches[0];
+      touchLast={x:t.clientX,y:t.clientY};
+      touchPinch=0;
+    }else if(e.touches.length>=2){
+      touchLast=null;
+      touchPinch=touchDistance(e.touches);
+    }
+  },{passive:false});
+  layer.addEventListener("touchmove",(e)=>{
+    if(!document.body.classList.contains("zen"))return;
+    e.preventDefault();
+    if(e.touches.length===1){
+      const t=e.touches[0];
+      if(touchLast){
+        const dx=t.clientX-touchLast.x,dy=t.clientY-touchLast.y;
+        const scale=Math.min(innerWidth,innerHeight)<=700?150:260;
+        theme.move(-dx/scale,-dy/scale,0);
+      }
+      touchLast={x:t.clientX,y:t.clientY};
+      touchPinch=0;
+    }else if(e.touches.length>=2){
+      const next=touchDistance(e.touches);
+      if(touchPinch&&next)theme.move(0,0,Math.log(next/touchPinch)*4.2);
+      touchPinch=next;
+      touchLast=null;
+    }
+  },{passive:false});
+  const touchEnd=(e)=>{
+    if(e.touches.length===1){
+      const t=e.touches[0];
+      touchLast={x:t.clientX,y:t.clientY};
+    }else{
+      touchLast=null;
+      touchPinch=0;
+    }
+  };
+  layer.addEventListener("touchend",touchEnd,{passive:true});
+  layer.addEventListener("touchcancel",touchEnd,{passive:true});
+
   layer.addEventListener(
     "wheel",
     (e) => {

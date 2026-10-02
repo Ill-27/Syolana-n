@@ -38,7 +38,7 @@ details{border:1px solid var(--line);border-radius:16px;padding:12px;margin:9px 
 <div class="stat"><b id="statErrors">0</b><small>ошибок к повтору</small></div>
 <div class="stat"><b id="statStreak">0</b><small>серия ответов</small></div>
 </div>
-<div class="progress" aria-label="Прогресс курса"><i id="courseProgress"></i></div>
+<div class="progress" aria-label="Прогресс курса"><i id="courseProgress"></i></div><p class="note" id="syncStatus">Прогресс сохраняется на этом устройстве.</p>
 </section>
 
 <section class="panel">
@@ -316,8 +316,39 @@ E("What are you going to do tomorrow?","/wɒt ɑː juː ˈɡəʊɪŋ tə duː t�
 
 let state;
 try{state=JSON.parse(localStorage.getItem(SKEY))||{}}catch{state={}}
-state.current=state.current||1;state.days=state.days||{};state.items=state.items||{};state.exam=state.exam||{};state.ink=state.ink||{};state.streak=state.streak||0;
-function save(){localStorage.setItem(SKEY,JSON.stringify(state));renderStats();renderWeak();window.parent?.postMessage({syolanaLesson:true,learningProgress:{course:"en-a1",days:state.days,items:state.items,exam:state.exam}},"*")}
+const syncCtx={user:null,csrf:"",timer:null};
+function normaliseState(){
+ state.current=Math.min(28,Math.max(1,Number(state.current)||1));
+ state.days=state.days||{};state.items=state.items||{};state.exam=state.exam||{};state.ink=state.ink||{};state.streak=Number(state.streak)||0;state.updatedAt=Number(state.updatedAt)||0;
+}
+normaliseState();
+function compactProgress(){return {current:state.current,days:state.days,items:state.items,exam:state.exam,streak:state.streak,updatedAt:state.updatedAt}}
+function writeLocal(){
+ localStorage.setItem(SKEY,JSON.stringify(state));renderStats();renderWeak();
+ window.parent?.postMessage({syolanaLesson:true,learningProgress:{course:"en-a1",days:state.days,items:state.items,exam:state.exam}},"*");
+}
+function scheduleSync(){
+ if(!syncCtx.user||!syncCtx.csrf)return;clearTimeout(syncCtx.timer);
+ syncCtx.timer=setTimeout(async()=>{try{
+  const res=await fetch("/api/learning/en-a1",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-CSRF-Token":syncCtx.csrf},body:JSON.stringify({progress:compactProgress()})});
+  if(res.ok){const j=await res.json();state.lastServerUpdated=Number(j.updated)||0;localStorage.setItem(SKEY,JSON.stringify(state));document.getElementById("syncStatus").textContent="Прогресс синхронизирован с аккаунтом."}
+ }catch{}},700);
+}
+function save(){state.updatedAt=Date.now();writeLocal();scheduleSync()}
+async function syncInit(){
+ try{
+  const sr=await fetch("/api/session",{credentials:"same-origin",cache:"no-store"});if(!sr.ok)return;
+  const session=await sr.json();if(!session.user||!session.csrf)return;
+  syncCtx.user=session.user;syncCtx.csrf=session.csrf;document.getElementById("syncStatus").textContent="Аккаунт найден · проверяем прогресс…";
+  const pr=await fetch("/api/learning/en-a1",{credentials:"same-origin",cache:"no-store"});if(!pr.ok)return;
+  const remote=await pr.json(),serverMs=(Number(remote.updated)||0)*1000,localMs=Number(state.updatedAt)||0;
+  if(remote.progress&&Object.keys(remote.progress).length&&serverMs>localMs){
+   const localInk=state.ink||{};state={...remote.progress,ink:localInk,lastServerUpdated:Number(remote.updated)||0};normaliseState();writeLocal();
+   renderDayGrid();renderDay();renderExam();redraw();
+  }else if(localMs>serverMs){scheduleSync()}
+  document.getElementById("syncStatus").textContent="Синхронизация с аккаунтом включена.";
+ }catch{document.getElementById("syncStatus").textContent="Прогресс сохраняется на этом устройстве."}
+}
 function itemRec(id){return state.items[id]||(state.items[id]={correct:0,wrong:0,level:0,due:today()})}
 function mark(id,ok,tag){
  const r=itemRec(id); if(ok){r.correct++;r.level=Math.min(5,(r.level||0)+1);state.streak++;}else{r.wrong++;r.level=Math.max(0,(r.level||0)-1);state.streak=0;}
@@ -451,7 +482,7 @@ function renderExam(){
 }
 window.addEventListener("message",e=>{if(!e.data?.syolanaHost)return;if(e.data.pauseAudio)stopSession(false);if(e.data.anchor){const target=document.getElementById(e.data.anchor);target?.scrollIntoView()}});
 window.addEventListener("resize",()=>{redraw();requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,height:document.documentElement.scrollHeight},"*"))});
-renderDayGrid();renderDay();renderStats();renderWeak();renderCoverage();renderExam();redraw();
+renderDayGrid();renderDay();renderStats();renderWeak();renderCoverage();renderExam();redraw();syncInit();
 requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,ready:true,height:document.documentElement.scrollHeight},"*"));
 </script>
 </body>

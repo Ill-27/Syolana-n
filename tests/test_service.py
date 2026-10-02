@@ -31,7 +31,7 @@ class Client:
 class ServiceTests(unittest.TestCase):
  def setUp(self):
   with s.db() as c:
-   for table in ('events','manual_payments','payments','assets','posts','sites','sessions','reports','rate_limits','users'):c.execute('DELETE FROM '+table)
+   for table in ('events','learning_progress','manual_payments','payments','assets','posts','sites','sessions','reports','rate_limits','users'):c.execute('DELETE FROM '+table)
    c.execute("INSERT INTO users(id,email,password,role,created) VALUES('admin','admin@example.test',?,'admin',?)",(s.password_hash('local-admin-password'),s.now()))
   self.admin=Client();self.assertEqual(self.admin.call('/api/auth/login',{'email':'admin@example.test','password':'local-admin-password'})[0],200)
   self.a=Client();self.b=Client();self.register(self.a,'one');self.register(self.b,'two')
@@ -54,6 +54,15 @@ class ServiceTests(unittest.TestCase):
   self.assertEqual(self.b.call('/api/studio')[1]['posts'],[])
  def test_csrf_and_origin(self):
   self.assertEqual(self.a.call('/api/site',{},csrf=False)[0],403);self.assertEqual(self.a.call('/api/site',{},origin=False)[0],403)
+ def test_learning_progress_is_private_and_csrf_protected(self):
+  payload={'progress':{'current':2,'days':{'1':True},'items':{'d1q1':{'level':2,'wrong':1,'correct':2}}}}
+  self.assertEqual(Client().call('/api/learning/en-a1')[0],401)
+  self.assertEqual(self.a.call('/api/learning/en-a1',payload,csrf=False)[0],403)
+  self.assertEqual(self.a.call('/api/learning/en-a1',payload,origin=False)[0],403)
+  self.assertEqual(self.a.call('/api/learning/en-a1',payload)[0],200)
+  code,mine=self.a.call('/api/learning/en-a1');self.assertEqual(code,200);self.assertEqual(mine['progress']['current'],2)
+  code,other=self.b.call('/api/learning/en-a1');self.assertEqual(code,200);self.assertEqual(other['progress'],{})
+
  def test_publication_moderation_snapshot(self):
   self.site(self.a,'author-one');pid=self.post(self.a);self.a.call('/api/posts/'+pid+'/submit',{'rights':True})
   # The author edits a draft after submitting; the pending snapshot is preserved.

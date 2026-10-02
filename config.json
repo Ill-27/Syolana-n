@@ -53,7 +53,8 @@
     }
   ],
   "plan": {
-    "priceRub": 1000,
+    "pricing": "custom",
+    "priceRub": null,
     "trialDays": 7,
     "name": "Первые партнёры"
   },
@@ -999,6 +1000,12 @@
       "A2": 1000,
       "B1": 2000,
       "B2": 4000
+    },
+    "regularPricesRub": {
+      "A1": 1000,
+      "A2": 2000,
+      "B1": 4000,
+      "B2": 8000
     },
     "freeCourse": "en/A1",
     "partnerGiftLanguages": 1

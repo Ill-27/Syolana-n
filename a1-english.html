@@ -200,6 +200,77 @@ E("Listen carefully.","/ˈlɪsn ˈkeəfəli/","Слушайте внимател
 quiz:[Q("d28q1","Перед экзаменом лучше:",[E("review weak points","/rɪˈvjuː wiːk pɔɪnts/","повторить слабые места"),E("guess every answer","/ɡes ˈevri ˈɑːnsə/","угадывать всё"),E("skip listening","/skɪp ˈlɪsnɪŋ/","пропустить аудирование")],0,"exam"),Q("d28q2","После экзамена:",[E("keep practising","/kiːp ˈpræktɪsɪŋ/",""),E("forget everything","/fəˈɡet ˈevriθɪŋ/",""),E("never listen again","/ˈnevə ˈlɪsn əˈɡen/","")],0,"exam")]}
 ];
 
+
+const extraLexicon={
+1:[E("F, G, H, I, J","/ef, dʒiː, eɪtʃ, aɪ, dʒeɪ/","Буквы F–J."),E("K, L, M, N, O","/keɪ, el, em, en, əʊ/","Буквы K–O."),E("P, Q, R, S, T","/piː, kjuː, ɑː, es, tiː/","Буквы P–T."),E("U, V, W, X, Y, Z","/juː, viː, ˈdʌbljuː, eks, waɪ, zed/","Буквы U–Z.",{en:"Z",ipa:"/ziː/","ru":"В американском английском название буквы Z обычно zee."}),E("Good morning.","/ɡʊd ˈmɔːnɪŋ/","Доброе утро."),E("Goodbye.","/ˌɡʊdˈbaɪ/","До свидания.")],
+2:[E("it","/ɪt/","оно/это"),E("these","/ðiːz/","эти"),E("that","/ðæt/","то/тот/та"),E("black","/blæk/","чёрный"),E("white","/waɪt/","белый"),E("green","/ɡriːn/","зелёный")],
+3:[E("parent","/ˈpeərənt/","родитель"),E("child","/tʃaɪld/","ребёнок"),E("husband","/ˈhʌzbənd/","муж"),E("wife","/waɪf/","жена"),E("son","/sʌn/","сын"),E("daughter","/ˈdɔːtə/","дочь")],
+4:[E("zero","/ˈzɪərəʊ/","ноль"),E("four, five, six","/fɔː, faɪv, sɪks/","четыре, пять, шесть"),E("seven, eight, nine","/ˈsevn, eɪt, naɪn/","семь, восемь, девять"),E("eleven, twelve, thirteen","/ɪˈlevn, twelv, ˌθɜːˈtiːn/","одиннадцать, двенадцать, тринадцать"),E("forty, fifty, sixty","/ˈfɔːti, ˈfɪfti, ˈsɪksti/","сорок, пятьдесят, шестьдесят"),E("seventy, eighty, ninety","/ˈsevnti, ˈeɪti, ˈnaɪnti/","семьдесят, восемьдесят, девяносто")],
+5:[E("start","/stɑːt/","начинать"),E("finish","/ˈfɪnɪʃ/","заканчивать"),E("eat","/iːt/","есть"),E("drink","/drɪŋk/","пить"),E("sleep","/sliːp/","спать"),E("walk","/wɔːk/","ходить пешком")],
+6:[E("who","/huː/","кто"),E("what","/wɒt/","что/какой"),E("where","/weə/","где/куда"),E("when","/wen/","когда"),E("how","/haʊ/","как"),E("which","/wɪtʃ/","который из")],
+7:[E("wake up","/weɪk ʌp/","просыпаться"),E("breakfast","/ˈbrekfəst/","завтрак"),E("lunch","/lʌntʃ/","обед"),E("dinner","/ˈdɪnə/","ужин"),E("early","/ˈɜːli/","рано"),E("late","/leɪt/","поздно/опоздавший")],
+8:[E("bedroom","/ˈbedruːm/","спальня"),E("bathroom","/ˈbɑːθruːm/","ванная"),E("living room","/ˈlɪvɪŋ ruːm/","гостиная"),E("kitchen","/ˈkɪtʃɪn/","кухня"),E("garden","/ˈɡɑːdn/","сад"),E("between","/bɪˈtwiːn/","между")],
+9:[E("swim","/swɪm/","плавать"),E("drive","/draɪv/","водить"),E("cook","/kʊk/","готовить"),E("dance","/dɑːns/","танцевать"),E("sing","/sɪŋ/","петь"),E("understand","/ˌʌndəˈstænd/","понимать")],
+10:[E("water","/ˈwɔːtə/","вода"),E("tea","/tiː/","чай"),E("milk","/mɪlk/","молоко"),E("rice","/raɪs/","рис"),E("meat","/miːt/","мясо"),E("fish","/fɪʃ/","рыба")],
+11:[E("cash","/kæʃ/","наличные"),E("card","/kɑːd/","карта"),E("cheap","/tʃiːp/","дешёвый"),E("expensive","/ɪkˈspensɪv/","дорогой"),E("size","/saɪz/","размер"),E("receipt","/rɪˈsiːt/","чек")],
+12:[E("sit","/sɪt/","сидеть"),E("stand","/stænd/","стоять"),E("run","/rʌn/","бежать"),E("listen","/ˈlɪsn/","слушать"),E("watch","/wɒtʃ/","смотреть"),E("talk","/tɔːk/","разговаривать")],
+13:[E("know","/nəʊ/","знать"),E("want","/wɒnt/","хотеть"),E("need","/niːd/","нуждаться"),E("love","/lʌv/","любить"),E("hate","/heɪt/","ненавидеть"),E("remember","/rɪˈmembə/","помнить")],
+14:[E("street","/striːt/","улица"),E("road","/rəʊd/","дорога"),E("bridge","/brɪdʒ/","мост"),E("hospital","/ˈhɒspɪtl/","больница"),E("hotel","/həʊˈtel/","отель"),E("supermarket","/ˈsuːpəmɑːkɪt/","супермаркет")],
+15:[E("last night","/lɑːst naɪt/","прошлой ночью/вчера вечером"),E("last year","/lɑːst jɪə/","в прошлом году"),E("two days ago","/tuː deɪz əˈɡəʊ/","два дня назад"),E("happy","/ˈhæpi/","счастливый"),E("busy","/ˈbɪzi/","занятый"),E("ready","/ˈredi/","готовый")],
+16:[E("visit","/ˈvɪzɪt/","посещать"),E("play","/pleɪ/","играть"),E("clean","/kliːn/","чистить/убирать"),E("open","/ˈəʊpən/","открывать"),E("close","/kləʊz/","закрывать"),E("call","/kɔːl/","звонить")],
+17:[E("come — came","/kʌm — keɪm/","приходить — пришёл/пришла"),E("make — made","/meɪk — meɪd/","делать/создавать — сделал(а)"),E("take — took","/teɪk — tʊk/","брать — взял(а)"),E("give — gave","/ɡɪv — ɡeɪv/","давать — дал(а)"),E("buy — bought","/baɪ — bɔːt/","покупать — купил(а)"),E("eat — ate","/iːt — et/","есть — ел/ела")],
+18:[E("soon","/suːn/","скоро"),E("later","/ˈleɪtə/","позже"),E("plan","/plæn/","план/планировать"),E("travel","/ˈtrævl/","путешествовать"),E("stay","/steɪ/","оставаться"),E("meet","/miːt/","встречать(ся)")],
+19:[E("old","/əʊld/","старый"),E("young","/jʌŋ/","молодой"),E("tall","/tɔːl/","высокий"),E("short","/ʃɔːt/","короткий/невысокий"),E("fast","/fɑːst/","быстрый"),E("slow","/sləʊ/","медленный")],
+20:[E("film","/fɪlm/","фильм",{en:"movie",ipa:"/ˈmuːvi/","ru":"Частый американский вариант."}),E("game","/ɡeɪm/","игра"),E("photo","/ˈfəʊtəʊ/","фотография"),E("draw","/drɔː/","рисовать"),E("paint","/peɪnt/","рисовать красками"),E("read","/riːd/","читать")],
+21:[E("first","/fɜːst/","сначала/первый"),E("then","/ðen/","затем"),E("before","/bɪˈfɔː/","до/перед"),E("after","/ˈɑːftə/","после"),E("also","/ˈɔːlsəʊ/","также"),E("really","/ˈrɪəli/","действительно/очень")],
+22:[E("arm","/ɑːm/","рука от плеча"),E("leg","/leɡ/","нога"),E("foot","/fʊt/","ступня"),E("stomach","/ˈstʌmək/","живот/желудок"),E("back","/bæk/","спина"),E("ill","/ɪl/","больной")],
+23:[E("airport","/ˈeəpɔːt/","аэропорт"),E("plane","/pleɪn/","самолёт"),E("taxi","/ˈtæksi/","такси"),E("passport","/ˈpɑːspɔːt/","паспорт"),E("suitcase","/ˈsuːtkeɪs/","чемодан"),E("map","/mæp/","карта")],
+24:[E("warm","/wɔːm/","тёплый"),E("hot","/hɒt/","жаркий/горячий"),E("cool","/kuːl/","прохладный"),E("wind","/wɪnd/","ветер"),E("snow","/snəʊ/","снег"),E("shoes","/ʃuːz/","обувь/туфли")],
+25:[E("office","/ˈɒfɪs/","офис"),E("school","/skuːl/","школа"),E("teacher","/ˈtiːtʃə/","учитель"),E("computer","/kəmˈpjuːtə/","компьютер"),E("email","/ˈiːmeɪl/","электронное письмо"),E("meeting","/ˈmiːtɪŋ/","встреча/совещание")],
+26:[E("queue","/kjuː/","брит. очередь",{en:"line",ipa:"/laɪn/","ru":"Американский вариант."}),E("mobile phone","/ˌməʊbaɪl ˈfəʊn/","брит. мобильный телефон",{en:"cell phone",ipa:"/ˈsel foʊn/","ru":"Американский вариант."}),E("biscuit","/ˈbɪskɪt/","брит. печенье",{en:"cookie",ipa:"/ˈkʊki/","ru":"Частый американский вариант."}),E("crisps","/krɪsps/","брит. картофельные чипсы",{en:"chips",ipa:"/tʃɪps/","ru":"Американский вариант."}),E("chips","/tʃɪps/","брит. картофель фри",{en:"fries",ipa:"/fraɪz/","ru":"Американский вариант."}),E("post","/pəʊst/","брит. почта",{en:"mail",ipa:"/meɪl/","ru":"Американский вариант."})]
+};
+
+const referenceDeck=[
+["Местоимения",[
+E("I — me — my — mine","/aɪ — miː — maɪ — maɪn/","я — меня/мне — мой — мой (самостоятельно)"),
+E("you — you — your — yours","/juː — juː — jɔː — jɔːz/","ты/вы — тебя/вас — твой/ваш — твой/ваш (самостоятельно)"),
+E("he — him — his — his","/hiː — hɪm — hɪz — hɪz/","он — его/ему — его — его"),
+E("she — her — her — hers","/ʃiː — hɜː — hɜː — hɜːz/","она — её/ей — её — её"),
+E("it — it — its","/ɪt — ɪt — ɪts/","оно/это — его/это — его/её для предмета"),
+E("we — us — our — ours","/wiː — ʌs — aʊə — ˈaʊəz/","мы — нас/нам — наш — наш"),
+E("they — them — their — theirs","/ðeɪ — ðem — ðeə — ðeəz/","они — их/им — их — их")
+]],
+["Be и сокращения",[
+E("I am — I'm","/aɪ æm — aɪm/","я есть/являюсь"),
+E("you are — you're","/juː ɑː — jɔː/","ты/вы есть"),
+E("he is — he's","/hiː ɪz — hiːz/","он есть"),
+E("she is — she's","/ʃiː ɪz — ʃiːz/","она есть"),
+E("we are — we're","/wiː ɑː — wɪə/","мы есть"),
+E("they are — they're","/ðeɪ ɑː — ðeə/","они есть"),
+E("is not — isn't; are not — aren't","/ɪz nɒt — ˈɪznt; ɑː nɒt — ɑːnt/","отрицательные формы")
+]],
+["Вопросительные слова",[
+E("who","/huː/","кто"),E("what","/wɒt/","что/какой"),E("where","/weə/","где/куда"),E("when","/wen/","когда"),E("why","/waɪ/","почему"),E("how","/haʊ/","как"),E("which","/wɪtʃ/","который из"),E("whose","/huːz/","чей")
+]],
+["Предлоги A1",[
+E("in — on — at","/ɪn — ɒn — æt/","в — на — в/у точки времени или места"),
+E("under — behind — between","/ˈʌndə — bɪˈhaɪnd — bɪˈtwiːn/","под — за — между"),
+E("in front of — next to — near","/ɪn ˈfrʌnt əv — nekst tuː — nɪə/","перед — рядом с — около"),
+E("from — to — into — out of","/frəm — tuː — ˈɪntuː — aʊt əv/","из/от — к/в — внутрь — изнутри")
+]],
+["Базовые вспомогательные формы",[
+E("do — does — did","/duː — dʌz — dɪd/","Present Simple и Past Simple: вопросы/отрицания"),
+E("have — has — had","/hæv — hæz — hæd/","иметь: настоящее и прошлое"),
+E("can — cannot — can't","/kæn — ˈkænɒt — kɑːnt/","мочь/уметь и отрицание"),
+E("am going to — is going to — are going to","/æm ˈɡəʊɪŋ tə — ɪz ˈɡəʊɪŋ tə — ɑː ˈɡəʊɪŋ tə/","намерения и планы")
+]],
+["Окончания",[
+E("books, bags, buses","/bʊks, bæɡz, ˈbʌsɪz/","множественное число: /s/, /z/, /ɪz/"),
+E("works, reads, watches","/wɜːks, riːdz, ˈwɒtʃɪz/","3-е лицо: /s/, /z/, /ɪz/"),
+E("worked, played, visited","/wɜːkt, pleɪd, ˈvɪzɪtɪd/","Past Simple -ed: /t/, /d/, /ɪd/")
+]]
+];
+
 const coverageGroups=[
 ["Грамматика",["be: am/is/are","личные и объектные местоимения","притяжательные формы и 's","a/an/the и нулевой артикль в базовых случаях","единственное и множественное число","this/that/these/those","have/have got","Present Simple","do/does: вопросы и отрицания","наречия частоты","there is/are","предлоги места и направления","can/cannot","повелительное наклонение","countable/uncountable","some/any","how much/how many","Present Continuous","Present Simple vs Continuous","was/were","Past Simple regular","Past Simple irregular core","did: вопросы и отрицания","be going to","базовые comparatives/superlatives","like/love + -ing","would like","and/but/because/so"]],
 ["Функции общения",["представиться и спросить имя","сообщить страну/город/профессию","описать семью","назвать время, дату, цену и номер","описать распорядок","описать дом","попросить помощь/разрешение","заказать еду","купить товар","спросить дорогу","рассказать о прошлом","сказать о планах","выразить предпочтение","описать погоду","купить билет","написать короткое сообщение"]],
@@ -289,6 +360,7 @@ function renderDay(){
  const ey=document.createElement("div");ey.className="eyebrow";ey.textContent="ДЕНЬ "+d.n+" · "+d.tags.join(" · ");
  const h=document.createElement("h2");h.textContent=d.title;const p=document.createElement("p");p.textContent=d.goal;root.append(ey,h,p);
  const s=document.createElement("div");s.className="section";s.innerHTML="<h3>Материал дня</h3>";d.items.forEach(x=>s.append(card(x)));root.append(s);
+ const lex=extraLexicon[d.n]||[];if(lex.length){const v=document.createElement("div");v.className="section";v.innerHTML="<h3>Активный словарь</h3>";lex.forEach(x=>v.append(card(x)));root.append(v)}
  const q=document.createElement("div");q.className="section";q.innerHTML="<h3>Проверка без подсказки</h3>";renderQuiz(d,q);root.append(q);
  const btn=document.createElement("button");btn.className="btn primary";btn.textContent=state.days[d.n]?"✓ День отмечен пройденным":"Отметить день пройденным";btn.onclick=()=>{state.days[d.n]=!state.days[d.n];save();renderDay();renderDayGrid()};root.append(btn);
  requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,height:document.documentElement.scrollHeight},"*"));
@@ -309,9 +381,11 @@ document.getElementById("reviewWeak").onclick=()=>{
 
 let session={on:false,paused:false,mode:"full",start:0,target:3600,index:0,timer:null,utter:null};
 function queueForDay(){
- const d=days[state.current-1],base=[...d.items];
- const prior=days.slice(Math.max(0,state.current-4),state.current-1).flatMap(x=>x.items.slice(0,3));
- return [...base,...prior,...base.slice().reverse()];
+ const d=days[state.current-1],base=[...d.items,...(extraLexicon[d.n]||[])];
+ const prior=days.slice(0,state.current-1).flatMap(x=>[...x.items.slice(0,2),...(extraLexicon[x.n]||[]).slice(0,2)]);
+ const weakTags=new Set(dueWeak().map(([,r])=>r.tag));
+ const weak=days.slice(0,state.current).filter(x=>x.tags.some(t=>weakTags.has(t))).flatMap(x=>x.items.slice(0,2));
+ return [...base,...weak,...prior.slice(-24),...base.slice().reverse()];
 }
 function speak(text,lang,voiceHint,onend){
  const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=lang==="en-GB"?.88:.98;
@@ -361,7 +435,8 @@ document.getElementById("undoInk").onclick=()=>{strokes().pop();save();redraw()}
 
 function renderCoverage(){
  const root=document.getElementById("coverage");root.replaceChildren();
- coverageGroups.forEach(([name,arr])=>{const d=document.createElement("details");const s=document.createElement("summary");s.textContent=name+" · "+arr.length+" пунктов";d.append(s);const ul=document.createElement("ul");arr.forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.append(li)});d.append(ul);root.append(d)})
+ coverageGroups.forEach(([name,arr])=>{const d=document.createElement("details");const s=document.createElement("summary");s.textContent=name+" · "+arr.length+" пунктов";d.append(s);const ul=document.createElement("ul");arr.forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.append(li)});d.append(ul);root.append(d)});
+ referenceDeck.forEach(([name,arr])=>{const d=document.createElement("details");const s=document.createElement("summary");s.textContent="Справочник · "+name;d.append(s);arr.forEach(x=>d.append(card(x)));root.append(d)})
 }
 function renderExam(){
  const parts=document.getElementById("examParts");parts.replaceChildren();

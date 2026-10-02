@@ -5,7 +5,7 @@ export function setupDiscovery({ theme, zen, player }) {
   layer.hidden = true;
   layer.setAttribute(
     "aria-label",
-    "Полёт: перетаскивайте фон; колесо мыши или два пальца меняют глубину",
+    "Перемещайтесь в пространстве с помощью мыши или жестов",
   );
   const offers = [
     ["Свой сайт", "7 дней знакомства — в подарок", "#/join"],
@@ -26,7 +26,7 @@ export function setupDiscovery({ theme, zen, player }) {
   const hint = el(
     "p",
     "flight-hint",
-    "Одним пальцем — в стороны и вверх/вниз · двумя — в глубину",
+    "Перемещайтесь в пространстве с помощью мыши или жестов",
   );
   layer.append(hint);
   document.body.append(layer);

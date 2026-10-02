@@ -736,7 +736,7 @@ function createRenderer(ctx){
   let disposed=false;
   const birds=createBirdTraffic();
   const hint=document.querySelector(".flight-hint"),oldHint=hint?.textContent||"";
-  if(hint)hint.textContent="Перетаскивайте мир · два пальца — глубина";
+  if(hint)hint.textContent="Перемещайтесь в пространстве с помощью мыши или жестов";
 
   const uniforms={
     sky:{

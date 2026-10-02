@@ -56,6 +56,11 @@ export class Studio {
   }
   async render(root, token, getToken) {
     if (!this.api.online) {
+      const actions = el("div", "studio-fallback-actions");
+      actions.append(
+        link("Попробовать читалку", "#/book/turgenev_sparrow/0", "btn primary"),
+        link("Условия для партнёров", "#/join", "btn"),
+      );
       root.append(
         el("h1", "", "Редактор сайта"),
         el(
@@ -63,8 +68,7 @@ export class Studio {
           "notice",
           "Редактор работает с сервером Syolana. В статическом предпросмотре регистрация и сохранение на сервере недоступны.",
         ),
-        link("Попробовать читалку", "#/book/turgenev_sparrow/0", "btn primary"),
-        link("Условия для партнёров", "#/join"),
+        actions,
       );
       return;
     }

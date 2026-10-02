@@ -1494,6 +1494,7 @@ function lessonFrame(key, anchor = "") {
   if (!filename) return;
   const frame = el("iframe", "lesson-frame");
   frame.title = "Учебный материал Syolana";
+  if (key === "en/a1/course") frame.allow = "microphone 'self'";
   frame.src = filename + "?embed=1";
   const status = el("p", "loading", "Открываем учебный материал…");
   $("page").append(status, frame);

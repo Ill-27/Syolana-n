@@ -278,3 +278,44 @@
 @media(max-width:600px){
   :root.syolana-partner-active .partner-content{padding-inline:17px}
 }
+
+
+/* The shared theme engine writes these variables exactly as it does on Syolana. */
+html[style*="--theme-background-0"] .sy-core-aurora .one{
+  background:var(--theme-background-0);
+}
+html[style*="--theme-background-1"] .sy-core-aurora .two{
+  background:var(--theme-background-1);
+}
+html[style*="--theme-background-2"] .sy-core-aurora .three{
+  background:var(--theme-background-2);
+}
+
+/* Compatibility for controls created by individual centrally supplied themes. */
+.sy-core-actions .icon-btn,
+.sy-core-actions .theme-sound-toggle{
+  width:47px;
+  height:47px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(224,211,255,.19);
+  border-radius:50%;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.065),rgba(255,255,255,.012) 55%,rgba(189,163,255,.035)),
+    rgba(var(--sy-surface),.72);
+  color:#f4eeff;
+  backdrop-filter:blur(14px) saturate(125%);
+  -webkit-backdrop-filter:blur(14px) saturate(125%);
+  box-shadow:0 20px 65px #0003,inset 0 1px 0 #ffffff17;
+}
+.sy-core-actions .theme-sound-toggle svg{width:21px;height:21px}
+
+@media(max-width:600px){
+  .sy-core-actions .icon-btn,
+  .sy-core-actions .theme-sound-toggle{
+    width:44px;
+    height:44px;
+  }
+}

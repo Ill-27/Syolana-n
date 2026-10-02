@@ -84,7 +84,7 @@ export class ThemeEngine {
     const item = this.manifest.find((t) => t.id === id);
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
-    if (url.origin !== location.origin) throw Error("Invalid theme");
+    if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
     const { default: theme } = await import(url.href);
     if (seq !== this.sequence) return;
     this.custom?.dispose?.();

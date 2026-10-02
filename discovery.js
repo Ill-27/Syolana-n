@@ -36,12 +36,17 @@ export function setupDiscovery({ theme, zen, player }) {
     const [a, b] = [...pointers.values()];
     return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
   }
+  let suppressClickUntil = 0;
   layer.addEventListener("pointerdown", (e) => {
-    if (e.target.closest("a,button")) {
-      theme.settle?.();
-      return;
-    }
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const interactive = e.target.closest("a,button");
+    pointers.set(e.pointerId, {
+      x: e.clientX,
+      y: e.clientY,
+      startX: e.clientX,
+      startY: e.clientY,
+      interactive,
+      dragged: false,
+    });
     layer.setPointerCapture(e.pointerId);
     pinch = distance();
   });
@@ -50,7 +55,15 @@ export function setupDiscovery({ theme, zen, player }) {
     if (!prev) return;
     const dx = e.clientX - prev.x,
       dy = e.clientY - prev.y;
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (
+      !prev.dragged &&
+      Math.hypot(e.clientX - prev.startX, e.clientY - prev.startY) > 7
+    )
+      prev.dragged = true;
+    prev.x = e.clientX;
+    prev.y = e.clientY;
+    pointers.set(e.pointerId, prev);
+    if (prev.dragged && prev.interactive) e.preventDefault();
     if (pointers.size > 1) {
       const next = distance();
       if (pinch && next) theme.move(0, 0, Math.log(next / pinch) * 6);
@@ -61,11 +74,24 @@ export function setupDiscovery({ theme, zen, player }) {
     }
   });
   const end = (e) => {
+    const meta = pointers.get(e.pointerId);
+    if (meta?.dragged) suppressClickUntil = performance.now() + 320;
+    else if (meta?.interactive) theme.settle?.();
     pointers.delete(e.pointerId);
     pinch = distance();
   };
   layer.addEventListener("pointerup", end);
   layer.addEventListener("pointercancel", end);
+  layer.addEventListener(
+    "click",
+    (e) => {
+      if (performance.now() < suppressClickUntil) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    true,
+  );
   layer.addEventListener(
     "wheel",
     (e) => {

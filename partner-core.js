@@ -1,450 +1,419 @@
+import { ThemeEngine } from "./themes.js";
+
 const ROOT = new URL("./", import.meta.url);
+const byId = (id) => document.getElementById(id);
 
-const THEMES = [
-  {
-    id: "aurora",
-    name: "Сияние звёзд",
-    accent: "#d0b4ff",
-    surface: "12,12,25",
-    colors: ["#FF003C", "#0055FF", "#FFB300", "#00C853", "#AA00FF", "#00E5FF"],
-    mode: "stars",
-  },
-  {
-    id: "golden",
-    name: "Золотая волна",
-    accent: "#efd39e",
-    surface: "24,20,20",
-    colors: ["#ffd48c", "#d9a7fd", "#f0e1b4", "#eaaa66", "#efe1ff"],
-    mode: "waves",
-  },
-  {
-    id: "moon",
-    name: "Лунный сад",
-    accent: "#b4dbef",
-    surface: "10,20,32",
-    colors: ["#bce6f4", "#acb6ff", "#e8d9ff", "#8fcfd5", "#d9e8ff"],
-    mode: "petals",
-  },
-  {
-    id: "white-ocean-city",
-    name: "Белый город над океаном",
-    accent: "#dce9e8",
-    surface: "17,28,33",
-    colors: ["#eef4f2", "#d8e6e5", "#b7ced0", "#f4e9da"],
-    mode: "ocean",
-  },
-];
-
-function make(tag, className = "", text = "") {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text) node.textContent = text;
-  return node;
+function node(tag, cls = "", text = "") {
+  const el = document.createElement(tag);
+  if (cls) el.className = cls;
+  if (text) el.textContent = text;
+  return el;
 }
 
-function coreStyles() {
-  return `
-    body.syolana-core-active {
-      background: transparent !important;
-    }
-    #syolana-partner-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      pointer-events: none;
-      background: #06070d;
-    }
-    #syolana-partner-layer canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-    .syolana-core-controls {
-      position: fixed;
-      right: max(16px, env(safe-area-inset-right));
-      top: max(16px, env(safe-area-inset-top));
-      z-index: 50;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      pointer-events: auto;
-    }
-    .syolana-core-pill,
-    .syolana-core-btn {
-      border: 1px solid rgba(225,211,255,.26);
-      background: rgba(12,10,22,.72);
-      color: #f7f2fb;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 10px 34px rgba(0,0,0,.24);
-    }
-    .syolana-core-pill {
-      min-height: 42px;
-      padding: 7px 11px 7px 8px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font: 600 12px/1 system-ui, sans-serif;
-      letter-spacing: .04em;
-    }
-    .syolana-core-pill img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-    }
-    .syolana-core-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      font: 600 16px/1 system-ui, sans-serif;
-    }
-    .syolana-core-player {
-      position: fixed;
-      left: 50%;
-      bottom: max(18px, env(safe-area-inset-bottom));
-      transform: translateX(-50%);
-      z-index: 50;
-      width: min(520px, calc(100vw - 32px));
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 11px 13px;
-      border: 1px solid rgba(225,211,255,.25);
-      border-radius: 20px;
-      background: rgba(10,9,18,.82);
-      color: #f7f3fb;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 16px 50px rgba(0,0,0,.35);
-      pointer-events: auto;
-    }
-    .syolana-core-player button {
-      flex: 0 0 auto;
-      width: 42px;
-      height: 42px;
-      border: 1px solid rgba(225,211,255,.26);
-      border-radius: 50%;
-      background: rgba(130,101,177,.20);
-      color: inherit;
-      cursor: pointer;
-    }
-    .syolana-core-track {
-      min-width: 0;
-      flex: 1;
-    }
-    .syolana-core-track strong,
-    .syolana-core-track small {
-      display: block;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .syolana-core-track small {
-      margin-top: 4px;
-      color: #bdb4c8;
-      font: 12px/1.3 system-ui, sans-serif;
-    }
-    @media (max-width: 620px) {
-      .syolana-core-pill span { display: none; }
-      .syolana-core-pill { padding-right: 7px; }
-    }
-  `;
-}
-
-function createParticleState(theme, width, height) {
-  return Array.from({ length: width <= 700 ? 220 : 420 }, (_, i) => ({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    r: .5 + Math.random() * 2.4,
-    vx: -8 + Math.random() * 16,
-    vy: 12 + Math.random() * 56,
-    color: theme.colors[i % theme.colors.length],
-    phase: Math.random() * Math.PI * 2,
-  }));
-}
-
-function drawOcean(ctx, w, h, time, theme) {
-  const g = ctx.createLinearGradient(0, 0, 0, h);
-  g.addColorStop(0, "#223947");
-  g.addColorStop(.5, "#6c858b");
-  g.addColorStop(.51, "#315963");
-  g.addColorStop(1, "#0b2028");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, w, h);
-  ctx.globalAlpha = .32;
-  for (let line = 0; line < 18; line++) {
-    ctx.beginPath();
-    for (let x = 0; x <= w + 8; x += 8) {
-      const y = h * .55 + line * 10 + Math.sin(x * .022 + time * .35 + line * .42) * (6 + line * .2);
-      if (!x) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = theme.colors[line % theme.colors.length];
-    ctx.lineWidth = .7;
-    ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
-}
-
-function drawWaves(ctx, w, h, time, theme) {
-  for (let line = 0; line < 20; line++) {
-    ctx.beginPath();
-    for (let x = 0; x <= w + 8; x += 8) {
-      const y = h * .58 + Math.sin(x / 56 + time * .34 + line * .12) * 34 + line * 8;
-      if (!x) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = theme.colors[line % theme.colors.length] + "34";
-    ctx.lineWidth = 1;
-    ctx.stroke();
+function addStyles() {
+  for (const [id, href] of [
+    ["syolana-partner-fonts", new URL("assets/fonts/fonts.css", ROOT).href],
+    ["syolana-partner-core-style", new URL("partner-core.css", ROOT).href],
+  ]) {
+    if (byId(id)) continue;
+    const link = node("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = href;
+    document.head.append(link);
   }
 }
 
-function drawParticles(ctx, state, w, h, delta, time, theme) {
-  for (const p of state) {
-    p.x += p.vx * delta;
-    p.y -= p.vy * delta;
-    p.phase += delta * 1.4;
-    if (p.y < -20) {
-      p.y = h + 20;
-      p.x = Math.random() * w;
-    }
-    if (p.x < -20) p.x = w + 20;
-    if (p.x > w + 20) p.x = -20;
-
-    const alpha = .2 + (.5 + Math.sin(p.phase) * .5) * .45;
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = p.color;
-
-    if (theme.mode === "petals" && Math.round(p.r * 10) % 4 === 0) {
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.phase * .15);
-      ctx.beginPath();
-      ctx.ellipse(0, 0, p.r * 2.4, p.r * .7, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    } else {
-      ctx.shadowColor = p.color;
-      ctx.shadowBlur = 9;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-  }
-  ctx.globalAlpha = 1;
-
-  if (theme.mode !== "ocean") {
-    ctx.globalAlpha = .12;
-    ctx.fillStyle = theme.accent;
-    for (let i = 0; i < 8; i++) {
-      const x = ((i * 197 + time * 7) % (w + 220)) - 110;
-      const y = ((i * 113 + 40) % Math.max(1, h));
-      ctx.font = "500 14px system-ui,sans-serif";
-      ctx.fillText("syolana.com", x, y);
-    }
-    ctx.globalAlpha = 1;
-  }
+function iconButton(id, label, html) {
+  const button = node("button", "sy-core-icon");
+  button.id = id;
+  button.type = "button";
+  button.setAttribute("aria-label", label);
+  button.title = label;
+  button.innerHTML = html;
+  return button;
 }
 
-export async function mountPartnerLayer(options = {}) {
-  if (document.querySelector("#syolana-partner-layer")) {
-    return { destroy() {} };
-  }
+function buildChrome() {
+  const aurora = node("div", "sy-core-aurora");
+  aurora.setAttribute("aria-hidden", "true");
+  for (const cls of ["one", "two", "three"]) aurora.append(node("span", cls));
 
-  const features = options.features || {};
-  const style = make("style");
-  style.dataset.syolanaCore = "true";
-  style.textContent = coreStyles();
-  document.head.append(style);
+  const canvas = node("canvas");
+  canvas.id = "starCanvas";
+  canvas.setAttribute("aria-hidden", "true");
 
-  const layer = make("div");
-  layer.id = "syolana-partner-layer";
-  layer.setAttribute("aria-hidden", "true");
-  const canvas = make("canvas");
-  layer.append(canvas);
-  document.body.prepend(layer);
+  const top = node("header", "sy-core-top-bar");
+  top.id = "syolana-core-chrome";
 
-  const controls = make("div", "syolana-core-controls");
-  const badge = make("a", "syolana-core-pill");
-  badge.href = new URL("./", ROOT).href;
-  badge.target = "_blank";
-  badge.rel = "noopener noreferrer";
-  const logo = make("img");
+  const brand = node("a", "sy-core-brand");
+  brand.href = new URL("./", ROOT).href;
+  brand.target = "_blank";
+  brand.rel = "noopener";
+  brand.setAttribute("aria-label", "Открыть Syolana");
+
+  const logo = node("img");
   logo.src = new URL("assets/logo.svg", ROOT).href;
   logo.alt = "";
-  const badgeText = make("span", "", "Syolana");
-  badge.append(logo, badgeText);
-  controls.append(badge);
+  logo.width = 47;
+  logo.height = 47;
 
-  const themeButton = make("button", "syolana-core-btn", "✦");
-  themeButton.type = "button";
-  themeButton.title = "Сменить живую тему";
-  controls.append(themeButton);
-  document.body.append(controls);
+  const brandText = node("span");
+  brandText.append(
+    node("strong", "", "Syolana"),
+    node("small", "", "ИММЕРСИВНАЯ ПЛАТФОРМА"),
+  );
+  brand.append(logo, brandText);
 
-  let audio = null;
-  let player = null;
-  let playButton = null;
-  let songs = [];
-  let songIndex = 0;
+  const actions = node("div", "sy-core-actions top-actions");
+  const theme = iconButton("theme-toggle", "Выбрать тему", "✧");
+  const zen = iconButton(
+    "zen-toggle",
+    "Режим созерцания",
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  );
+  const full = iconButton(
+    "fullscreen",
+    "На весь экран",
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg>',
+  );
 
-  if (features.player !== false) {
-    try {
-      const config = await fetch(new URL("config.json", ROOT), { cache: "default" }).then((r) => r.json());
-      songs = (config.songs || []).map((song) => ({
-        ...song,
-        src: new URL(song.src, ROOT).href,
-      }));
-    } catch {}
+  actions.append(theme, zen, full);
+  top.append(brand, actions);
 
-    if (songs.length) {
-      audio = new Audio();
-      audio.preload = "metadata";
-      audio.volume = .34;
-      audio.src = songs[0].src;
+  const flight = node("div", "sy-core-flight-layer");
+  flight.id = "flight-layer";
+  flight.hidden = true;
+  flight.append(
+    node(
+      "div",
+      "flight-hint",
+      "Перетаскивайте мир · колесо или два пальца — в глубину",
+    ),
+  );
 
-      player = make("div", "syolana-core-player");
-      playButton = make("button", "", "▶");
-      playButton.type = "button";
-      playButton.setAttribute("aria-label", "Включить музыку");
+  document.body.prepend(aurora, canvas, top, flight);
+  return { aurora, canvas, top, flight, zen, full };
+}
 
-      const track = make("div", "syolana-core-track");
-      const title = make("strong", "", songs[0].title || "Музыка");
-      const meta = make("small", "", songs[0].sourceTitle || "Музыкальная сцена");
-      track.append(title, meta);
+function buildThemeDialog() {
+  const dialog = node("dialog", "sy-core-dialog");
+  dialog.id = "theme-dialog";
 
-      const next = make("button", "", "›");
-      next.type = "button";
-      next.setAttribute("aria-label", "Следующий трек");
+  const head = node("div", "sy-core-dialog-head");
+  const titleWrap = node("div");
+  titleWrap.append(
+    node("div", "eyebrow", "АТМОСФЕРА"),
+    node("h2", "", "Выберите свой мир"),
+  );
 
-      const sync = () => {
-        const current = songs[songIndex];
-        title.textContent = current.title || "Музыка";
-        meta.textContent = current.sourceTitle || "Музыкальная сцена";
-        playButton.textContent = audio.paused ? "▶" : "Ⅱ";
-        playButton.setAttribute("aria-label", audio.paused ? "Включить музыку" : "Пауза");
-      };
+  const close = iconButton("", "Закрыть", "×");
+  close.onclick = () => dialog.close();
+  head.append(titleWrap, close);
 
-      playButton.onclick = async () => {
-        try {
-          if (audio.paused) await audio.play();
-          else audio.pause();
-        } catch {}
-        sync();
-      };
+  const list = node("div");
+  list.id = "theme-list";
 
-      next.onclick = async () => {
-        const wasPlaying = !audio.paused;
-        songIndex = (songIndex + 1) % songs.length;
-        audio.pause();
-        audio.src = songs[songIndex].src;
-        audio.load();
-        sync();
-        if (wasPlaying) {
-          try { await audio.play(); } catch {}
-          sync();
-        }
-      };
+  const current = node("span");
+  current.id = "theme-name";
+  current.hidden = true;
 
-      audio.addEventListener("play", sync);
-      audio.addEventListener("pause", sync);
-      audio.addEventListener("ended", () => next.click());
+  dialog.append(head, list, current);
+  document.body.append(dialog);
 
-      player.append(playButton, track, next);
-      document.body.append(player);
-    }
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  return dialog;
+}
+
+function buildBanner(partnerName = "") {
+  const slot = byId("syolana-banner-slot");
+  if (!slot) return null;
+
+  slot.hidden = false;
+  const banner = node("aside", "sy-core-banner");
+  banner.setAttribute("aria-label", "О Syolana");
+
+  const mark = node("div", "sy-core-banner-mark");
+  const logo = node("img");
+  logo.src = new URL("assets/logo.svg", ROOT).href;
+  logo.alt = "";
+  mark.append(logo, node("span", "", "SYOLANA"));
+
+  banner.append(
+    mark,
+    node("div", "eyebrow", "ИММЕРСИВНАЯ ПЛАТФОРМА ДЛЯ ТВОРЧЕСТВА"),
+    node("h2", "", "Ваш сайт — живой мир."),
+    node(
+      "p",
+      "",
+      partnerName
+        ? `${partnerName} использует живые темы и иммерсивные функции Syolana.`
+        : "Живые темы, музыка, иммерсивное чтение и публикации — в одной системе.",
+    ),
+  );
+
+  const features = node("div", "sy-core-features");
+  for (const label of [
+    "Живые темы",
+    "Музыка",
+    "Иммерсивное чтение",
+    "Обновления",
+  ]) {
+    features.append(node("span", "sy-core-feature", label));
   }
 
-  const ctx = canvas.getContext("2d");
-  let themeIndex = Math.max(0, THEMES.findIndex((t) => t.id === options.theme));
-  let theme = THEMES[themeIndex];
-  let particles = [];
-  let width = 1;
-  let height = 1;
-  let ratio = 1;
-  let frame = 0;
-  let last = 0;
+  const actions = node("div", "sy-core-banner-actions");
+  const cta = node("a", "sy-core-cta", "Открыть Syolana");
+  cta.href = new URL("#/join", ROOT).href;
+  cta.target = "_blank";
+  cta.rel = "noopener";
+  actions.append(cta);
 
-  const applyTheme = () => {
-    theme = THEMES[themeIndex];
-    document.documentElement.style.setProperty("--accent", theme.accent);
-    document.documentElement.style.setProperty("--surface", theme.surface);
-    document.documentElement.dataset.partnerTheme = theme.id;
-    themeButton.title = "Тема: " + theme.name;
-    particles = createParticleState(theme, width, height);
+  banner.append(
+    features,
+    actions,
+    node(
+      "p",
+      "sy-core-note",
+      "Иммерсивный слой активен, пока действует сотрудничество.",
+    ),
+  );
+
+  slot.replaceChildren(banner);
+  return banner;
+}
+
+async function buildPlayer() {
+  let config;
+  try {
+    config = await fetch(new URL("config.json", ROOT), {
+      cache: "no-store",
+    }).then((r) => r.json());
+  } catch {
+    return null;
+  }
+
+  const songs = (config.songs || []).filter((song) => song?.src);
+  if (!songs.length) return null;
+
+  const audio = new Audio();
+  audio.preload = "none";
+  audio.volume = 0.28;
+
+  const dock = node("aside", "sy-core-player");
+  dock.setAttribute("aria-label", "Музыкальный плеер Syolana");
+
+  const track = node("div", "sy-core-track");
+  track.append(node("span", "sy-core-track-icon", "♫"));
+  const copy = node("div");
+  const title = node("strong", "", "Музыка Syolana");
+  const subtitle = node("small", "", "Откройте музыкальную библиотеку");
+  copy.append(title, subtitle);
+  track.append(copy);
+
+  const controls = node("div", "sy-core-player-controls");
+  const prev = node("button", "", "‹");
+  const play = node("button", "play", "▶");
+  const next = node("button", "", "›");
+  prev.type = play.type = next.type = "button";
+  prev.setAttribute("aria-label", "Предыдущая песня");
+  play.setAttribute("aria-label", "Слушать");
+  next.setAttribute("aria-label", "Следующая песня");
+  controls.append(prev, play, next);
+  dock.append(track, controls);
+  document.body.append(dock);
+
+  let index = 0;
+
+  function select(i, autoplay = false) {
+    index = (i + songs.length) % songs.length;
+    const song = songs[index];
+    title.textContent = song.title || "Музыка Syolana";
+    subtitle.textContent = song.sourceTitle || song.artist || "Syolana";
+    audio.src = new URL(song.src, ROOT).href;
+    audio.load();
+    play.textContent = "▶";
+    if (autoplay) audio.play().catch(() => {});
+  }
+
+  prev.onclick = () => select(index - 1, true);
+  next.onclick = () => select(index + 1, true);
+  play.onclick = () => {
+    if (audio.paused) audio.play().catch(() => {});
+    else audio.pause();
+  };
+  audio.addEventListener("playing", () => (play.textContent = "❚❚"));
+  audio.addEventListener("pause", () => (play.textContent = "▶"));
+  audio.addEventListener("ended", () => select(index + 1, true));
+
+  select(0, false);
+  return { dock, audio };
+}
+
+function setupFullscreen(button) {
+  const sync = () => {
+    const active = Boolean(
+      document.fullscreenElement || document.webkitFullscreenElement,
+    );
+    button.setAttribute("aria-pressed", String(active));
+    button.setAttribute(
+      "aria-label",
+      active ? "Выйти из полноэкранного режима" : "На весь экран",
+    );
   };
 
-  const resize = () => {
-    width = Math.max(1, innerWidth);
-    height = Math.max(1, innerHeight);
-    ratio = Math.min(devicePixelRatio || 1, width <= 700 ? 1.4 : 1.8);
-    canvas.width = Math.round(width * ratio);
-    canvas.height = Math.round(height * ratio);
-    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    particles = createParticleState(theme, width, height);
-  };
-
-  const draw = (now) => {
-    const delta = last ? Math.min(.05, (now - last) / 1000) : 0;
-    last = now;
-    ctx.clearRect(0, 0, width, height);
-
-    if (theme.mode === "ocean") drawOcean(ctx, width, height, now / 1000, theme);
-    else {
-      const g = ctx.createLinearGradient(0, 0, width, height);
-      if (theme.id === "golden") {
-        g.addColorStop(0, "#27160f");
-        g.addColorStop(.45, "#17101d");
-        g.addColorStop(1, "#05060c");
-      } else if (theme.id === "moon") {
-        g.addColorStop(0, "#132b3a");
-        g.addColorStop(.5, "#172036");
-        g.addColorStop(1, "#05060d");
+  button.onclick = async () => {
+    try {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        await (document.exitFullscreen || document.webkitExitFullscreen).call(
+          document,
+        );
       } else {
-        g.addColorStop(0, "#101b4b");
-        g.addColorStop(.45, "#45264d");
-        g.addColorStop(1, "#061016");
+        const fn =
+          document.documentElement.requestFullscreen ||
+          document.documentElement.webkitRequestFullscreen;
+        if (fn) await fn.call(document.documentElement);
       }
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, width, height);
+    } catch {}
+    sync();
+  };
+
+  document.addEventListener("fullscreenchange", sync);
+  document.addEventListener("webkitfullscreenchange", sync);
+}
+
+function setupZen(theme, button, flight) {
+  let active = false;
+  const pointers = new Map();
+  let lastSingle = null;
+  let lastDistance = 0;
+
+  const sync = () => {
+    document.body.classList.toggle("syolana-zen", active);
+    button.setAttribute("aria-pressed", String(active));
+    button.setAttribute(
+      "aria-label",
+      active ? "Вернуть интерфейс" : "Режим созерцания",
+    );
+    flight.hidden = !active;
+    theme.setZen(active);
+  };
+
+  button.onclick = () => {
+    active = !active;
+    sync();
+  };
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && active) {
+      active = false;
+      sync();
     }
+  });
 
-    if (theme.mode === "waves") drawWaves(ctx, width, height, now / 1000, theme);
-    drawParticles(ctx, particles, width, height, delta, now / 1000, theme);
-    frame = requestAnimationFrame(draw);
+  window.addEventListener(
+    "wheel",
+    (e) => {
+      if (!active) return;
+      e.preventDefault();
+      theme.move(
+        0,
+        0,
+        Math.max(-0.34, Math.min(0.34, e.deltaY * 0.0014)),
+      );
+    },
+    { passive: false },
+  );
+
+  window.addEventListener("pointerdown", (e) => {
+    if (
+      !active ||
+      e.target.closest(".sy-core-top-bar,.sy-core-player,.sy-core-dialog")
+    )
+      return;
+
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointers.size === 1)
+      lastSingle = { x: e.clientX, y: e.clientY };
+
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      lastDistance = Math.hypot(a.x - b.x, a.y - b.y);
+    }
+  });
+
+  window.addEventListener("pointermove", (e) => {
+    if (!active || !pointers.has(e.pointerId)) return;
+
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointers.size === 1 && lastSingle) {
+      const dx = (e.clientX - lastSingle.x) / Math.max(320, innerWidth);
+      const dy = (e.clientY - lastSingle.y) / Math.max(480, innerHeight);
+      theme.move(-dx * 0.9, -dy * 0.9, 0);
+      lastSingle = { x: e.clientX, y: e.clientY };
+    } else if (pointers.size >= 2) {
+      const [a, b] = [...pointers.values()];
+      const distance = Math.hypot(a.x - b.x, a.y - b.y);
+      if (lastDistance)
+        theme.move(0, 0, (distance - lastDistance) * 0.004);
+      lastDistance = distance;
+    }
+  });
+
+  const release = (e) => {
+    pointers.delete(e.pointerId);
+    if (!pointers.size) {
+      lastSingle = null;
+      lastDistance = 0;
+      theme.settle?.();
+    }
   };
 
-  themeButton.onclick = () => {
-    themeIndex = (themeIndex + 1) % THEMES.length;
-    applyTheme();
-  };
+  window.addEventListener("pointerup", release);
+  window.addEventListener("pointercancel", release);
+}
 
-  document.body.classList.add("syolana-core-active");
-  applyTheme();
-  resize();
-  addEventListener("resize", resize, { passive: true });
-  frame = requestAnimationFrame(draw);
+export async function mountPartnerCore({ partnerName = "" } = {}) {
+  if (window.__syolanaPartnerMounted)
+    return window.__syolanaPartnerMounted;
 
-  return {
+  addStyles();
+  document.documentElement.classList.add("syolana-partner-active");
+
+  const chrome = buildChrome();
+  const dialog = buildThemeDialog();
+  const banner = buildBanner(partnerName);
+  const player = await buildPlayer();
+
+  const theme = new ThemeEngine();
+  await theme.init();
+
+  setupFullscreen(chrome.full);
+  setupZen(theme, chrome.zen, chrome.flight);
+
+  const api = {
+    theme,
     destroy() {
-      cancelAnimationFrame(frame);
-      removeEventListener("resize", resize);
-      audio?.pause();
-      audio?.removeAttribute("src");
-      player?.remove();
-      controls.remove();
-      layer.remove();
-      style.remove();
-      document.body.classList.remove("syolana-core-active");
-      delete document.documentElement.dataset.partnerTheme;
+      document.documentElement.classList.remove("syolana-partner-active");
+      document.body.classList.remove("syolana-zen");
+      player?.audio?.pause();
+      player?.dock?.remove();
+      dialog.remove();
+      banner?.remove();
+      chrome.aurora.remove();
+      chrome.canvas.remove();
+      chrome.top.remove();
+      chrome.flight.remove();
+      byId("syolana-partner-fonts")?.remove();
+      byId("syolana-partner-core-style")?.remove();
+      window.__syolanaPartnerMounted = null;
     },
   };
+
+  window.__syolanaPartnerMounted = api;
+  return api;
 }

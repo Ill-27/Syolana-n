@@ -418,6 +418,10 @@ export async function mountPartnerCore(options = {}) {
   shell.prepend(pitch);
   shell.prepend(banner);
 
+  // The visual shell is complete at this point. Reveal it immediately while
+  // the selected 3D theme finishes initializing in the background.
+  window.dispatchEvent(new CustomEvent("syolana:shell-ready"));
+
   const themeDialog = buildThemeDialog();
   const playerUI = buildPlayerUI();
   buildToast();

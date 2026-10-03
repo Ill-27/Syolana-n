@@ -178,8 +178,14 @@ void main(){
   vec3 dark=vec3(.12,.065,.028);
   vec3 warm=vec3(.29,.145,.052);
   vec3 base=mix(dark,warm,.42+.32*vTone);
-  base*=.48+.62*diff;
-  base*=.87+.13*grain;
+  if(vTone<.18){
+    float barkMark=smoothstep(.74,.94,.5+.5*sin(vWorld.y*3.2+sin(vWorld.x*2.1)*1.7));
+    base=mix(vec3(.64,.61,.53),vec3(.90,.87,.78),.54+.28*diff);
+    base=mix(base,vec3(.18,.16,.13),barkMark*.26);
+  }else{
+    base*=.48+.62*diff;
+    base*=.87+.13*grain;
+  }
   float fog=smoothstep(80.0,300.0,vDistance);
   base=mix(base,vec3(.69,.60,.47),fog*.91);
   outColor=vec4(base,1.0);
@@ -305,11 +311,12 @@ void main(){
 }`;
 
 function forestPathCenter(z){
-  return Math.sin(z*.018)*10.5+Math.sin(z*.0065+1.8)*5.2+Math.sin(z*.031+.4)*2.2;
+  return trailCenter(z);
 }
 
 function trailCenter(z){
-  return Math.sin(z*.017)*9.5+Math.sin(z*.0064+1.55)*5.2+Math.sin(z*.031+2.4)*2.0;
+  const a=TAU*z/720;
+  return Math.sin(a*2.0)*7.2+Math.sin(a*5.0+1.35)*2.7+Math.sin(a+0.72)*3.9;
 }
 
 function buildForest(){
@@ -755,7 +762,8 @@ function createRenderer(ctx){
   uniform float uTravel;
 
   float trail(float z){
-    return sin(z*.017)*9.5+sin(z*.0064+1.55)*5.2+sin(z*.031+2.4)*2.0;
+    float a=6.28318530718*z/720.0;
+    return sin(a*2.0)*7.2+sin(a*5.0+1.35)*2.7+sin(a+0.72)*3.9;
   }
   void main(){
     float center=trail(vLogicalZ);

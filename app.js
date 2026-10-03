@@ -313,7 +313,7 @@ function platformPromo(kind = "themes") {
     const actions = el("div", "promo-actions");
     const idea = el("a", "btn small", "Предложить идею темы");
     idea.href =
-      "mailto:ideas@syolana.com?subject=" +
+      "mailto:syolana@yandex.ru?subject=" +
       encodeURIComponent("Идея новой темы Syolana");
     actions.append(
       idea,
@@ -711,7 +711,7 @@ function join() {
   ].forEach((s) => ul.append(el("li", "", s)));
   const contact = el("a", "btn primary", "Обсудить мой сайт");
   contact.href =
-    "mailto:partners@syolana.com?subject=" +
+    "mailto:syolana@yandex.ru?subject=" +
     encodeURIComponent("Хочу сайт Syolana · 7 дней тест-драйва");
   offer.append(ul, contact);
   grid.append(offer);
@@ -755,7 +755,7 @@ function join() {
     ),
     link(
       "Обсудить интеграцию",
-      "mailto:partners@syolana.com?subject=" +
+      "mailto:syolana@yandex.ru?subject=" +
         encodeURIComponent("Интеграция Syolana для площадки или издательства"),
       "btn primary",
     ),

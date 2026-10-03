@@ -374,7 +374,7 @@ function buildForest(){
     }
 
     // Hundreds of small leaves rather than a few oversized billboards.
-    const totalLeaves=(species===1?250:310)+Math.floor(rnd()*(species===1?70:95));
+    const totalLeaves=(species===1?430:540)+Math.floor(rnd()*(species===1?90:130));
     for(let i=0;i<totalLeaves;i++){
       const c=centers[Math.floor(rnd()*centers.length)];
       const a=rnd()*TAU,u=rnd()*2-1;
@@ -389,13 +389,13 @@ function buildForest(){
         localTone,
         species, // exactly one leaf morphology per tree
         phase+rnd()*TAU,
-        .085+rnd()*.105,
+        .105+rnd()*.085,
         (rnd()-.5)*2.5
       );
     }
 
     // A fine outer shell of smaller leaves catches sunlight and breaks up the silhouette.
-    const outer=(species===1?70:95)+Math.floor(rnd()*38);
+    const outer=(species===1?120:150)+Math.floor(rnd()*48);
     for(let i=0;i<outer;i++){
       const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.88+rnd()*.34);
       addLeaf(
@@ -405,23 +405,23 @@ function buildForest(){
         Math.max(0,Math.min(1,tone+(rnd()-.5)*.18)),
         species,
         phase+rnd()*TAU,
-        .075+rnd()*.090,
+        .090+rnd()*.075,
         (rnd()-.5)*2.7
       );
     }
   };
 
   // A real winding woodland trail: trees never spawn inside this corridor.
-  for(let z=2;z<spanZ;z+=10.8+rnd()*3.2){
+  for(let z=2;z<spanZ;z+=13.0+rnd()*4.2){
     const trail=trailCenter(z);
-    const rows=7+Math.floor(rnd()*3);
+    const rows=5+Math.floor(rnd()*2);
     for(let j=0;j<rows;j++){
       const side=rnd()<.5?-1:1;
       const near=side*(8.5+rnd()*20);
       const x=trail+near+(rnd()-.5)*4.0;
       addTree(x,z+rnd()*7);
-      if(rnd()>.44)addTree(trail+side*(31+rnd()*30),z+rnd()*9);
-      if(rnd()>.72)addTree(trail+side*(65+rnd()*55),z+rnd()*12);
+      if(rnd()>.54)addTree(trail+side*(34+rnd()*28),z+rnd()*9);
+      if(rnd()>.80)addTree(trail+side*(70+rnd()*48),z+rnd()*12);
     }
   }
 
@@ -468,9 +468,9 @@ function makeAirLeafSprites(){
 function createAirLeaves(){
   const rnd=seeded(22771),sprites=makeAirLeafSprites();
   // Three perspective layers. Every leaf starts near the vanishing point and flies toward the viewer.
-  const leaves=Array.from({length:96},(_,i)=>({
+  const leaves=Array.from({length:124},(_,i)=>({
     offset:rnd(),
-    speed:.030+rnd()*.055,
+    speed:.040+rnd()*.060,
     side:(rnd()<.5?-1:1)*(.16+rnd()*.72),
     lift:(rnd()-.5)*.46,
     curve:(rnd()-.5)*.22,
@@ -483,7 +483,7 @@ function createAirLeaves(){
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
       const vanishX=width*.50,vanishY=height*.43;
-      const count=zen?leaves.length:62;
+      const count=zen?leaves.length:78;
       for(let i=0;i<count;i++){
         const l=leaves[i];
         const p=(l.offset+time*l.speed*(zen?1.08:.78))%1;
@@ -602,6 +602,37 @@ function createThemeSound(){
   const onScene=(e)=>{if(e.detail?.enabled)stop()};
   document.addEventListener("play",onPlay,true);window.addEventListener("syolana:sceneaudio",onScene);
   return {dispose(){stop(true);document.removeEventListener("play",onPlay,true);window.removeEventListener("syolana:sceneaudio",onScene);button.remove();try{ac?.close()}catch{}}};
+}
+
+function terrainGeometry(cols=76,rows=132){
+  const verts=[],idx=[];
+  const x0=-125,x1=125,z0=34,z1=-760;
+  for(let r=0;r<=rows;r++){
+    const v=r/rows,z=z0+(z1-z0)*v;
+    for(let c=0;c<=cols;c++){
+      const u=c/cols;verts.push(x0+(x1-x0)*u,z);
+    }
+  }
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const a=r*(cols+1)+c,b=a+1,d=(r+1)*(cols+1)+c,e=d+1;
+    idx.push(a,d,b,b,d,e);
+  }
+  return {vertices:new Float32Array(verts),indices:new Uint32Array(idx)};
+}
+
+function trailGeometry(segments=180,span=720){
+  const verts=[],idx=[];
+  for(let i=0;i<=segments;i++){
+    const z=i/segments*span;
+    const center=trailCenter(z);
+    const width=5.3+.75*Math.sin(z*.023+1.2)+.35*Math.sin(z*.071);
+    verts.push(center-width,z,center+width,z);
+  }
+  for(let i=0;i<segments;i++){
+    const a=i*2,b=a+1,c=a+2,d=a+3;
+    idx.push(a,c,b,b,c,d);
+  }
+  return {vertices:new Float32Array(verts),indices:new Uint32Array(idx)};
 }
 
 function fallbackRenderer(ctx){
@@ -750,13 +781,46 @@ function createRenderer(ctx){
     outColor=vec4(col,1.0);
   }`;
 
-  let skyProgram,trunkProgram,leafProgram,groundProgram;
+  const PATH_VS_LOCAL=`#version 300 es
+  layout(location=0) in vec2 aPosition;
+  uniform mat4 uViewProj;
+  uniform float uTravel;
+  uniform float uSpan;
+  out vec2 vPath;
+  void main(){
+    float logicalZ=aPosition.y;
+    float z=mod(logicalZ+uTravel,uSpan)-uSpan;
+    float y=-.43+.026*sin(logicalZ*.052)+.016*sin(aPosition.x*.17);
+    vPath=aPosition;
+    gl_Position=uViewProj*vec4(aPosition.x,y,z,1.0);
+  }`;
+  const PATH_FS_LOCAL=`#version 300 es
+  precision highp float;
+  in vec2 vPath;
+  out vec4 outColor;
+  void main(){
+    float fine=.5+.5*sin(vPath.x*.82+vPath.y*.41);
+    float coarse=.5+.5*sin(vPath.x*.18-vPath.y*.117+sin(vPath.y*.031));
+    float litter=.5+.5*sin(vPath.x*1.73+vPath.y*.69);
+    vec3 earth=vec3(.43,.255,.105);
+    vec3 warm=vec3(.62,.39,.17);
+    vec3 ochre=vec3(.56,.25,.050);
+    vec3 russet=vec3(.40,.10,.028);
+    vec3 col=mix(earth,warm,.18+.24*fine*coarse);
+    col=mix(col,ochre,.08+.10*litter);
+    col=mix(col,russet,.035*(1.0-coarse));
+    float sunfleck=pow(max(0.0,sin(vPath.y*.087+vPath.x*.22)),8.0);
+    col+=vec3(.13,.085,.030)*sunfleck;
+    outColor=vec4(col,1.0);
+  }`;
+
+  let skyProgram,trunkProgram,leafProgram,groundProgram,pathProgram;
   try{
     const trunkVs=TRUNK_VS
       .replace("uniform float uSpan;","uniform float uSpanZ;\\nuniform float uSpanX;")
       .replace("float z=mod(iOffset.z+uTravel,uSpan)-uSpan;","float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;\\n  float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;")
       .replace("vec3 world=vec3(iOffset.x+iScale.y*sway,iOffset.y,z)+local*iScale;","vec3 world=vec3(x+iScale.y*sway,iOffset.y,z)+local*iScale;");
-    skyProgram=program(gl,SKY_VS,SKY_FS);trunkProgram=program(gl,trunkVs,TRUNK_FS);leafProgram=program(gl,LEAF_VS,LEAF_FS);groundProgram=program(gl,GROUND_VS_LOCAL,GROUND_FS_LOCAL);
+    skyProgram=program(gl,SKY_VS,SKY_FS);trunkProgram=program(gl,trunkVs,TRUNK_FS);leafProgram=program(gl,LEAF_VS,LEAF_FS);groundProgram=program(gl,GROUND_VS_LOCAL,GROUND_FS_LOCAL);pathProgram=program(gl,PATH_VS_LOCAL,PATH_FS_LOCAL);
   }catch(error){
     console.warn("Amber Forest WebGL unavailable",error);canvas.remove();
     const fallback=fallbackRenderer(ctx),base=fallback.dispose;fallback.dispose=()=>{base?.();style.remove();sound.dispose()};return fallback;
@@ -767,7 +831,7 @@ function createRenderer(ctx){
   gl.bindVertexArray(skyVao);gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
   const skyLoc=gl.getAttribLocation(skyProgram,"aPosition");gl.enableVertexAttribArray(skyLoc);gl.vertexAttribPointer(skyLoc,2,gl.FLOAT,false,0,0);
 
-  const forest=buildForest(),trunkGeo=prismGeometry(7);
+  const forest=buildForest(),trunkGeo=prismGeometry(10);
   const trunkVao=keep(gl.createVertexArray());gl.bindVertexArray(trunkVao);
   const tp=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,tp);gl.bufferData(gl.ARRAY_BUFFER,trunkGeo.positions,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
   const tn=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,tn);gl.bufferData(gl.ARRAY_BUFFER,trunkGeo.normals,gl.STATIC_DRAW);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);
@@ -798,6 +862,13 @@ function createRenderer(ctx){
   const gp=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,gp);gl.bufferData(gl.ARRAY_BUFFER,terrain.vertices,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
   const gi=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,gi);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,terrain.indices,gl.STATIC_DRAW);gl.bindVertexArray(null);
 
+  const trail=trailGeometry(180,forest.spanZ);
+  const pathVao=keep(gl.createVertexArray());gl.bindVertexArray(pathVao);
+  const pathPos=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,pathPos);gl.bufferData(gl.ARRAY_BUFFER,trail.vertices,gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  const pathIdx=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,pathIdx);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,trail.indices,gl.STATIC_DRAW);
+  gl.bindVertexArray(null);
+
   const projection=new Float32Array(16),view=new Float32Array(16),vp=new Float32Array(16);
   let cssWidth=1,cssHeight=1,disposed=false;
   const airLeaves=createAirLeaves();
@@ -805,7 +876,8 @@ function createRenderer(ctx){
     sky:{time:gl.getUniformLocation(skyProgram,"uTime"),aspect:gl.getUniformLocation(skyProgram,"uAspect"),zen:gl.getUniformLocation(skyProgram,"uZen")},
     trunk:{vp:gl.getUniformLocation(trunkProgram,"uViewProj"),travel:gl.getUniformLocation(trunkProgram,"uTravel"),spanZ:gl.getUniformLocation(trunkProgram,"uSpanZ"),spanX:gl.getUniformLocation(trunkProgram,"uSpanX"),time:gl.getUniformLocation(trunkProgram,"uTime"),camera:gl.getUniformLocation(trunkProgram,"uCamera")},
     leaf:{vp:gl.getUniformLocation(leafProgram,"uViewProj"),travel:gl.getUniformLocation(leafProgram,"uTravel"),spanZ:gl.getUniformLocation(leafProgram,"uSpanZ"),spanX:gl.getUniformLocation(leafProgram,"uSpanX"),time:gl.getUniformLocation(leafProgram,"uTime"),camera:gl.getUniformLocation(leafProgram,"uCamera")},
-    ground:{vp:gl.getUniformLocation(groundProgram,"uViewProj"),camera:gl.getUniformLocation(groundProgram,"uCamera"),travel:gl.getUniformLocation(groundProgram,"uTravel")}
+    ground:{vp:gl.getUniformLocation(groundProgram,"uViewProj"),camera:gl.getUniformLocation(groundProgram,"uCamera"),travel:gl.getUniformLocation(groundProgram,"uTravel")},
+    path:{vp:gl.getUniformLocation(pathProgram,"uViewProj"),travel:gl.getUniformLocation(pathProgram,"uTravel"),span:gl.getUniformLocation(pathProgram,"uSpan")}
   };
 
   function resize({width,height,ratio=1}){
@@ -828,11 +900,11 @@ function createRenderer(ctx){
     const pathFar=trailCenter(farLogical);
 
     const eyeX=pathNear+cx*7.4;
-    const eyeY=6.9+cy*5.6+Math.sin(time*.031)*.14;
+    const eyeY=5.25+cy*4.4+Math.sin(time*.031)*.12;
     const eye=[eyeX,eyeY,16.0];
     const target=[
       pathFar+cx*3.0,
-      eyeY-1.10+cy*.18,
+      eyeY-.82+cy*.14,
       -58
     ];
     perspective(projection,zen ? .88 : .98,cssWidth/cssHeight,.12,860);
@@ -848,6 +920,10 @@ function createRenderer(ctx){
     gl.useProgram(groundProgram);gl.bindVertexArray(groundVao);
     gl.uniformMatrix4fv(uniforms.ground.vp,false,vp);gl.uniform3f(uniforms.ground.camera,...eye);gl.uniform1f(uniforms.ground.travel,travel);
     gl.drawElements(gl.TRIANGLES,terrain.indices.length,gl.UNSIGNED_INT,0);
+
+    gl.useProgram(pathProgram);gl.bindVertexArray(pathVao);
+    gl.uniformMatrix4fv(uniforms.path.vp,false,vp);gl.uniform1f(uniforms.path.travel,travel);gl.uniform1f(uniforms.path.span,forest.spanZ);
+    gl.drawElements(gl.TRIANGLES,trail.indices.length,gl.UNSIGNED_INT,0);
 
     gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
     gl.useProgram(trunkProgram);gl.bindVertexArray(trunkVao);
@@ -872,7 +948,7 @@ function createRenderer(ctx){
     },
     dispose(){
       disposed=true;canvas.remove();style.remove();sound.dispose();
-      try{for(const p of [skyProgram,trunkProgram,leafProgram,groundProgram])gl.deleteProgram(p);for(const r of resources){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}
+      try{for(const p of [skyProgram,trunkProgram,leafProgram,groundProgram,pathProgram])gl.deleteProgram(p);for(const r of resources){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}
     }
   };
 }

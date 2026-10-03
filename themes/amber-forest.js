@@ -136,7 +136,7 @@ function prismGeometry(sides=7){
   return {positions:new Float32Array(p),normals:new Float32Array(n)};
 }
 
-const TRUNK_VS=`const TRUNK_VS=`#version 300 es
+const TRUNK_VS=`#version 300 es
 layout(location=0) in vec3 aPosition;
 layout(location=1) in vec3 aNormal;
 layout(location=2) in vec3 iOffset;
@@ -347,7 +347,7 @@ function createAirLeaves(){
   };
 }
 
-const SOUND=const SOUND={
+const SOUND={
   title:"Звучание Янтарного леса",
   loops:[
     {src:"audio-library/nature/forest_morning.ogg",volume:.15},

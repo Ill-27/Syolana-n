@@ -3,6 +3,22 @@ import { el, link } from "./utils.js";
 export const FLIGHT_HINT =
   "Перемещайтесь в пространстве с помощью мыши или жестов";
 
+export const PLATFORM_FLIGHT_OFFERS = [
+  ["Свой сайт", "7 дней знакомства — в подарок", "#/join"],
+  ["Иммерсивные книги", "Внутрь новой истории", "#/library"],
+  ["Английский A1", "Первый курс будет бесплатным", "#/languages/en"],
+  ["Песня в подарок", "Ваше творчество в общем плеере", "#/songs"],
+  ["A1 языка в подарок", "Любой язык, кроме английского", "#/languages"],
+];
+
+export function platformFlightOffers(baseURL = document.baseURI) {
+  return PLATFORM_FLIGHT_OFFERS.map(([title, subtitle, href]) => [
+    title,
+    subtitle,
+    href.startsWith("#") ? new URL(href, baseURL).href : href,
+  ]);
+}
+
 export function setupFlightLayer({
   theme,
   offers = [],

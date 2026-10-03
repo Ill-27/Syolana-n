@@ -1,0 +1,55 @@
+name: Partner access — manual switch
+
+on:
+  workflow_dispatch:
+    inputs:
+      partner_id:
+        description: "Partner ID from integration.json"
+        required: true
+        type: string
+      action:
+        description: "Enable or disable Syolana Core"
+        required: true
+        type: choice
+        options:
+          - enable
+          - disable
+      allowed_hosts:
+        description: "Optional hosts, comma-separated (used when enabling)"
+        required: false
+        type: string
+      note:
+        description: "Optional internal note"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  switch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Update partner access
+        run: >
+          node partners/manage-partner.mjs
+          "${{ inputs.partner_id }}"
+          "${{ inputs.action }}"
+          "${{ inputs.allowed_hosts }}"
+          "${{ inputs.note }}"
+      - name: Commit change
+        shell: bash
+        run: |
+          if git diff --quiet -- partners/entitlements.json; then
+            echo "Nothing changed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add partners/entitlements.json
+          git commit -m "Partner access: ${{ inputs.partner_id }} → ${{ inputs.action }}"
+          git push

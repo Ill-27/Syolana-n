@@ -155,7 +155,7 @@ out float vBranch;
 out float vDistance;
 void main(){
   float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;
-  float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;
+  float z=mod(iOffset.z+uTravel+56.0,uSpanZ)-uSpanZ+56.0;
   bool branch=iTone<0.0;
   vec3 center=vec3(x,iOffset.y,z);
   vec3 world;
@@ -163,14 +163,18 @@ void main(){
 
   if(branch){
     float az=iPhase;
-    vec3 dir=normalize(vec3(cos(az)*.67,.74,sin(az)*.67));
-    vec3 side=normalize(cross(dir,vec3(0.0,1.0,0.0)));
+    float pitch=.40+.27*(.5+.5*sin(iScale.y*.47+az*1.73));
+    vec3 dir=normalize(vec3(cos(az)*cos(pitch),sin(pitch),sin(az)*cos(pitch)));
+    vec3 ref=abs(dir.y)>.94?vec3(1.0,0.0,0.0):vec3(0.0,1.0,0.0);
+    vec3 side=normalize(cross(dir,ref));
     vec3 binormal=normalize(cross(side,dir));
+    float along=clamp(aPosition.y+.5,0.0,1.0);
+    float taper=mix(1.0,.30,along);
     world=center
       +dir*(aPosition.y*iScale.y)
-      +side*(aPosition.x*iScale.x)
-      +binormal*(aPosition.z*iScale.z);
-    normal=normalize(side*aNormal.x+binormal*aNormal.z+dir*aNormal.y*.18);
+      +side*(aPosition.x*iScale.x*taper)
+      +binormal*(aPosition.z*iScale.z*taper);
+    normal=normalize(side*aNormal.x+binormal*aNormal.z+dir*aNormal.y*.12);
   }else{
     vec3 local=aPosition;
     float y01=clamp(local.y+.5,0.,1.);
@@ -244,7 +248,7 @@ out float vBacklight;
 out float vDistance;
 void main(){
   float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;
-  float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;
+  float z=mod(iOffset.z+uTravel+56.0,uSpanZ)-uSpanZ+56.0;
   float phase=iMeta.z;
   float size=iMeta.w;
   vec3 center=vec3(x,iOffset.y,z);
@@ -376,56 +380,65 @@ function buildForest(){
     const addCenter=(cx,cy,cz,r)=>centers.push({x:cx,y:cy,z:cz,r});
 
     if(species===1){
-      for(let i=0;i<10;i++){
-        const f=i/9,a=i*2.399+rnd()*.20,reach=.75+rnd()*1.25;
-        addCenter(x+Math.cos(a)*reach,base+h*(.48+f*.44),z+Math.sin(a)*reach,.88+rnd()*.46);
+      for(let i=0;i<11;i++){
+        const f=i/10,a=i*2.399+rnd()*.20,reach=.70+rnd()*1.35;
+        addCenter(x+Math.cos(a)*reach,base+h*(.47+f*.45),z+Math.sin(a)*reach,.92+rnd()*.48);
       }
     }else if(species===2){
-      addCenter(x,base+h*.79,z,2.45+rnd()*.55);
-      for(let i=0;i<12;i++){
-        const a=i/12*TAU+rnd()*.25,reach=2.4+rnd()*2.9;
-        addCenter(x+Math.cos(a)*reach,base+h*(.54+rnd()*.25),z+Math.sin(a)*reach,1.35+rnd()*.68);
+      addCenter(x,base+h*.79,z,2.55+rnd()*.58);
+      for(let i=0;i<13;i++){
+        const a=i/13*TAU+rnd()*.24,reach=2.35+rnd()*3.05;
+        addCenter(x+Math.cos(a)*reach,base+h*(.53+rnd()*.27),z+Math.sin(a)*reach,1.38+rnd()*.72);
       }
     }else if(species===0){
-      addCenter(x,base+h*.84,z,2.10+rnd()*.58);
-      for(let i=0;i<11;i++){
-        const a=i/11*TAU+rnd()*.34,reach=1.8+rnd()*2.55;
-        addCenter(x+Math.cos(a)*reach,base+h*(.57+rnd()*.30),z+Math.sin(a)*reach,1.20+rnd()*.66);
+      addCenter(x,base+h*.84,z,2.18+rnd()*.62);
+      for(let i=0;i<12;i++){
+        const a=i/12*TAU+rnd()*.32,reach=1.75+rnd()*2.70;
+        addCenter(x+Math.cos(a)*reach,base+h*(.56+rnd()*.31),z+Math.sin(a)*reach,1.24+rnd()*.69);
       }
     }else{
-      for(let i=0;i<11;i++){
-        const f=i/10,a=i*2.12+rnd()*.22,reach=1.10+rnd()*1.55;
-        addCenter(x+Math.cos(a)*reach,base+h*(.50+f*.40),z+Math.sin(a)*reach,1.25+rnd()*.60);
+      for(let i=0;i<12;i++){
+        const f=i/11,a=i*2.12+rnd()*.22,reach=1.05+rnd()*1.72;
+        addCenter(x+Math.cos(a)*reach,base+h*(.49+f*.41),z+Math.sin(a)*reach,1.28+rnd()*.62);
       }
     }
 
-    const branchStartY=base+h*(species===2?.34:.39);
-    const maxBranches=Math.min(species===1?7:9,centers.length);
-    for(let i=0;i<maxBranches;i++){
+    const branchStartY=base+h*(species===2?.31:.37);
+    const mainCount=Math.min(species===1?9:12,centers.length);
+    for(let i=0;i<mainCount;i++){
       const c=centers[i];
-      if(rnd()<.10)continue;
+      if(rnd()<.06)continue;
       const dx=c.x-x,dz=c.z-z;
-      const horiz=Math.hypot(dx,dz);
-      const len=Math.max(2.1,Math.hypot(horiz,c.y-branchStartY)*.62);
-      trunks.push(
-        x+dx*.38,
-        branchStartY+(c.y-branchStartY)*.34,
-        z+dz*.38,
-        radius*.22,len,radius*.20,
-        -Math.max(.02,tone),
-        Math.atan2(dz,dx)
-      );
+      const az=Math.atan2(dz,dx);
+      const len=Math.max(2.0,Math.hypot(Math.hypot(dx,dz),c.y-branchStartY)*(.58+rnd()*.12));
+      const midX=x+dx*.40,midY=branchStartY+(c.y-branchStartY)*.36,midZ=z+dz*.40;
+      trunks.push(midX,midY,midZ,radius*.22,len,radius*.19,-Math.max(.02,tone),az);
+
+      // Fine secondary twig: same bark, smaller radius, subtly diverging angle.
+      if(rnd()>.14){
+        const twigAz=az+(rnd()-.5)*.78;
+        const twigLen=len*(.28+rnd()*.24);
+        const ox=x+dx*.70,oy=branchStartY+(c.y-branchStartY)*.62,oz=z+dz*.70;
+        trunks.push(
+          ox+Math.cos(twigAz)*twigLen*.18,
+          oy+twigLen*.12,
+          oz+Math.sin(twigAz)*twigLen*.18,
+          radius*.095,twigLen,radius*.075,
+          -Math.max(.02,tone),
+          twigAz
+        );
+      }
     }
 
-    const totalLeaves=(species===1?300:360)+Math.floor(rnd()*(species===1?55:75));
+    const totalLeaves=(species===1?500:610)+Math.floor(rnd()*(species===1?80:115));
     for(let i=0;i<totalLeaves;i++){
       const c=centers[Math.floor(rnd()*centers.length)];
       const a=rnd()*TAU,u=rnd()*2-1;
-      const rr=c.r*(.12+Math.pow(rnd(),.58)*.98);
+      const rr=c.r*(.10+Math.pow(rnd(),.58)*1.02);
       const radial=Math.sqrt(Math.max(0,1-u*u))*rr;
       addLeaf(
         c.x+Math.cos(a)*radial,
-        c.y+u*rr*(species===1?.96:.78),
+        c.y+u*rr*(species===1?.97:.79),
         c.z+Math.sin(a)*radial,
         Math.max(0,Math.min(1,tone+(rnd()-.5)*.14)),
         species,
@@ -435,12 +448,12 @@ function buildForest(){
       );
     }
 
-    const outer=(species===1?72:94)+Math.floor(rnd()*34);
+    const outer=(species===1?105:145)+Math.floor(rnd()*42);
     for(let i=0;i<outer;i++){
-      const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.92+rnd()*.28);
+      const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.91+rnd()*.32);
       addLeaf(
         c.x+Math.cos(a)*rr,
-        c.y+(rnd()-.50)*c.r*(species===1?1.02:.82),
+        c.y+(rnd()-.50)*c.r*(species===1?1.03:.84),
         c.z+Math.sin(a)*rr,
         Math.max(0,Math.min(1,tone+(rnd()-.5)*.16)),
         species,
@@ -451,14 +464,12 @@ function buildForest(){
     }
   };
 
-  for(let z=4;z<spanZ;z+=18+rnd()*5.5){
-    const trail=trailCenter(z);
-    const rows=3+Math.floor(rnd()*2);
-    for(let j=0;j<rows;j++){
-      const side=rnd()<.5?-1:1;
-      addTree(trail+side*(10+rnd()*18)+(rnd()-.5)*3.2,z+rnd()*7);
-      if(rnd()>.64)addTree(trail+side*(34+rnd()*27),z+rnd()*9);
-      if(rnd()>.90)addTree(trail+side*(72+rnd()*42),z+rnd()*12);
+  // Invisible flight corridor only: no path is drawn on the ground.
+  for(let z=4;z<spanZ;z+=19+rnd()*6.0){
+    for(const side of [-1,1]){
+      if(rnd()>.06)addTree(side*(12+rnd()*17)+(rnd()-.5)*3.2,z+rnd()*7);
+      if(rnd()>.55)addTree(side*(34+rnd()*28),z+rnd()*9);
+      if(rnd()>.88)addTree(side*(70+rnd()*40),z+rnd()*12);
     }
   }
 
@@ -471,7 +482,7 @@ function buildForest(){
   };
 }
 
-function makeAirLeafSprites(){
+function makeAirLeafSpritesfunction makeAirLeafSprites(){
   const make=(kind,top,bottom)=>{
     const c=document.createElement("canvas");c.width=128;c.height=128;
     const x=c.getContext("2d");x.translate(64,61);
@@ -504,65 +515,60 @@ function makeAirLeafSprites(){
 
 function createAirLeaves(){
   const rnd=seeded(22771),sprites=makeAirLeafSprites();
-  const make=(layer,count)=>Array.from({length:count},(_,i)=>({
-    layer,
-    offset:rnd(),
-    speed:layer===0?.012+rnd()*.010:layer===1?.022+rnd()*.016:.036+rnd()*.024,
-    startX:.16+rnd()*.68,
-    startY:layer===0?.28+rnd()*.26:.12+rnd()*.52,
-    endX:.04+rnd()*.92,
-    endY:layer===0?.34+rnd()*.28:.28+rnd()*.68,
-    curve:(rnd()-.5)*(layer===2?.22:.12),
-    spin:(rnd()-.5)*(layer===2?1.15:.72),
-    flip:.65+rnd()*1.45,
-    phase:rnd()*TAU,
-    sprite:(i+Math.floor(rnd()*4))%4
-  }));
-  const leaves=[...make(0,24),...make(1,18),...make(2,7)];
-
+  const count=176;
+  const leaves=Array.from({length:count},(_,i)=>{
+    const layer=i%5;
+    return {
+      offset:rnd(),
+      speed:[.028,.036,.046,.058,.070][layer]*(.82+rnd()*.36),
+      originX:.28+rnd()*.44,
+      originY:.34+rnd()*.20,
+      targetX:-.08+rnd()*1.16,
+      targetY:-.02+rnd()*1.08,
+      curve:(rnd()-.5)*(.10+layer*.035),
+      roll:(rnd()-.5)*1.15,
+      wobble:.25+rnd()*.55,
+      phase:rnd()*TAU,
+      sprite:Math.floor(rnd()*4),
+      layer
+    };
+  });
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
+      const visible=zen?leaves.length:112;
       const sunX=width*.72,sunY=height*.20;
-      for(const l of leaves){
-        const p=(l.offset+time*l.speed*(zen?1.0:.62))%1;
-        const e=p*p*(3-2*p);
-
-        let x=(l.startX+(l.endX-l.startX)*e)*width;
-        let y=(l.startY+(l.endY-l.startY)*e)*height;
-        x+=Math.sin(p*Math.PI)*l.curve*width+Math.sin(time*.41+l.phase)*width*(l.layer===2?.010:.004);
-        y+=Math.sin(time*.53+l.phase*1.7)*height*(l.layer===0?.004:l.layer===1?.008:.012);
-
-        const base=l.layer===0?4.0:l.layer===1?8.0:16.0;
-        const grow=l.layer===0?5.0:l.layer===1?14.0:30.0;
-        const size=base+grow*Math.pow(e,l.layer===2?1.25:1.0);
-
-        const cycle=time*l.spin+l.phase+p*TAU*l.flip;
-        const face=.14+.86*Math.abs(Math.cos(cycle));
-        const fade=Math.min(1,p/.10)*Math.min(1,(1-p)/.13);
-        const alpha=fade*(l.layer===0?.25:l.layer===1?.48:.68);
-
-        const sunNear=Math.max(0,1-Math.hypot(x-sunX,y-sunY)/Math.max(width,height)*1.8);
-        const shimmer=sunNear*(.25+.75*Math.abs(Math.cos(cycle)));
+      for(let i=0;i<visible;i++){
+        const l=leaves[i];
+        const p=(l.offset+time*l.speed*(zen?1.0:.72))%1;
+        const depth=Math.pow(p,1.58);
+        const ox=l.originX*width,oy=l.originY*height;
+        const tx=l.targetX*width,ty=l.targetY*height;
+        const arc=Math.sin(p*Math.PI);
+        const px=ox+(tx-ox)*depth+arc*l.curve*width;
+        const py=oy+(ty-oy)*depth-arc*height*(.018+.010*l.layer);
+        const base=[2.2,3.0,4.2,5.8,7.6][l.layer];
+        const growth=[12,18,26,36,52][l.layer];
+        const size=base+growth*Math.pow(depth,1.43);
+        const fade=Math.min(1,p/.075)*Math.min(1,(1-p)/.115);
+        const alpha=fade*(.18+.72*depth);
+        const sunProximity=Math.max(0,1-Math.hypot(px-sunX,py-sunY)/Math.max(width,height)*1.8);
+        const shimmer=sunProximity*(.28+.72*(.5+.5*Math.sin(time*1.35+l.phase)));
 
         ctx.save();
-        ctx.translate(x,y);
-        ctx.rotate(cycle*.55);
-        ctx.scale(face,1);
+        ctx.translate(px,py);
+        ctx.rotate(l.roll*p*.85+Math.sin(time*.62+l.phase)*l.wobble);
         ctx.globalAlpha=alpha;
-        if(l.layer===2){
-          ctx.globalAlpha=alpha*.10;
-          ctx.drawImage(sprites[l.sprite],-size*.54-4,-size*.52+3,size*1.08,size*1.04);
-          ctx.globalAlpha=alpha;
-        }
-        ctx.shadowColor=`rgba(255,196,86,${.05+.24*shimmer})`;
-        ctx.shadowBlur=1+9*shimmer;
-        ctx.drawImage(sprites[l.sprite],-size*.54,-size*.52,size*1.08,size*1.04);
-        if(shimmer>.30&&face>.50){
+        ctx.shadowColor=`rgba(255,202,96,${.05+.25*shimmer})`;
+        ctx.shadowBlur=1.5+9*shimmer;
+        ctx.drawImage(sprites[l.sprite],-size/2,-size/2,size,size);
+        if(shimmer>.34&&depth>.28){
           ctx.globalCompositeOperation="screen";
           ctx.globalAlpha=alpha*shimmer*.15;
-          ctx.fillStyle="#ffe3a0";
-          ctx.beginPath();ctx.ellipse(-size*.08,-size*.15,size*.12,size*.045,-.45,0,TAU);ctx.fill();
+          ctx.fillStyle="#ffe9ad";
+          ctx.beginPath();
+          ctx.ellipse(-size*.10,-size*.16,size*.13,size*.055,-.45,0,TAU);
+          ctx.fill();
         }
         ctx.restore();
       }
@@ -570,7 +576,7 @@ function createAirLeaves(){
   };
 }
 
-const SOUND={
+const SOUND={const SOUND={
   title:"Звучание Янтарного леса",
   loops:[
     {src:"audio-library/nature/forest_morning.ogg",volume:.15},
@@ -787,7 +793,7 @@ function createRenderer(ctx){
     float x=aPosition.x+uCamera.x;
     float z=aPosition.y;
     float logicalZ=z-uTravel;
-    float relief=sin(x*.031+logicalZ*.013)*.045+sin(x*.071-logicalZ*.021)*.024;
+    float relief=sin(x*.031+z*.013)*.038+sin(x*.071-z*.021)*.019;
     float y=-.64+relief;
     vWorld=vec3(x,y,z);
     vLogicalZ=logicalZ;
@@ -802,10 +808,6 @@ function createRenderer(ctx){
   uniform vec3 uCamera;
   uniform float uTravel;
 
-  float trail(float z){
-    float a=6.28318530718*z/720.0;
-    return sin(a*2.0)*7.2+sin(a*5.0+1.35)*2.7+sin(a+0.72)*3.9;
-  }
   float field(vec2 p){
     float v=0.0;
     v+=sin(p.x+sin(p.y*.71)*1.25);
@@ -815,43 +817,39 @@ function createRenderer(ctx){
   }
   void main(){
     vec2 p=vec2(vWorld.x,vLogicalZ);
-    float center=trail(vLogicalZ);
-    float dist=abs(vWorld.x-center);
-    float warp=(field(p*.055)-.5)*1.35;
-    float pathHalf=5.15+warp;
-    float edge=smoothstep(pathHalf-.85,pathHalf+.95,dist);
+    float n1=field(p*.060);
+    float n2=field(vec2(p.x*.18-p.y*.12,p.x*.12+p.y*.18)+vec2(3.2,1.7));
+    float n3=field(p*.43+vec2(-2.1,5.4));
+    float n4=field(p*.94+vec2(7.1,-3.8));
 
-    float n1=field(p*.075);
-    float n2=field(vec2(p.x*.19-p.y*.11,p.x*.11+p.y*.19)+vec2(3.2,1.7));
-    float n3=field(p*.47+vec2(-2.1,5.4));
+    vec3 soil=vec3(.090,.054,.026);
+    vec3 humus=vec3(.135,.085,.038);
+    vec3 moss=vec3(.205,.235,.080);
+    vec3 ochre=vec3(.55,.255,.055);
+    vec3 copper=vec3(.43,.105,.032);
+    vec3 pale=vec3(.62,.42,.18);
 
-    vec3 pathDark=vec3(.34,.205,.095);
-    vec3 pathLight=vec3(.58,.38,.18);
-    vec3 soil=vec3(.095,.060,.030);
-    vec3 moss=vec3(.20,.22,.075);
-    vec3 dry=vec3(.44,.205,.055);
-    vec3 copper=vec3(.42,.105,.035);
+    vec3 col=mix(soil,humus,.28+.32*n1);
+    col=mix(col,moss,smoothstep(.57,.80,n2)*(.18+.18*n1));
+    col=mix(col,ochre,smoothstep(.64,.86,n3)*.28);
+    col=mix(col,copper,smoothstep(.72,.90,n4)*.16);
+    col=mix(col,pale,smoothstep(.86,.96,n3)*.06);
 
-    vec3 path=mix(pathDark,pathLight,.30+.34*n1);
-    path=mix(path,dry,.08*n3);
+    float shadow=field(p*.025+vec2(1.2,4.1));
+    col*=.72+.25*shadow;
+    float sunPatch=smoothstep(.78,.91,field(p*.031+vec2(.7,2.8)));
+    col+=vec3(.115,.080,.026)*sunPatch;
 
-    vec3 forest=mix(soil,moss,.22+.32*n1);
-    forest=mix(forest,dry,smoothstep(.58,.80,n2)*.27);
-    forest=mix(forest,copper,smoothstep(.72,.88,n3)*.15);
+    // Fine fallen-leaf speckle without geometric tiles.
+    float speck=smoothstep(.90,.965,.5+.5*sin(p.x*1.73+sin(p.y*.81)*2.2));
+    col=mix(col,mix(ochre,copper,n2),speck*.16);
 
-    float litter=smoothstep(2.8,9.0,dist)*smoothstep(.53,.79,n3);
-    forest=mix(forest,mix(dry,copper,n2),litter*.38);
-
-    float sunPatch=smoothstep(.72,.88,field(p*.030+vec2(.7,2.8)));
-    vec3 col=mix(path,forest,edge);
-    col+=vec3(.105,.075,.025)*sunPatch*(.42+.58*edge);
-
-    float fog=smoothstep(115.0,410.0,distance(vWorld,uCamera));
-    col=mix(col,vec3(.75,.68,.56),fog*.91);
+    float fog=smoothstep(125.0,430.0,distance(vWorld,uCamera));
+    col=mix(col,vec3(.74,.67,.55),fog*.90);
     outColor=vec4(col,1.0);
   }`;
 
-  const PATH_VS_LOCAL=`#version 300 es
+  const PATH_VS_LOCAL=`  const PATH_VS_LOCAL=`#version 300 es
   layout(location=0) in vec2 aPosition;
   uniform mat4 uViewProj;
   uniform float uTravel;
@@ -959,25 +957,23 @@ function createRenderer(ctx){
 
   function renderWorld(time,camera){
     const zen=Boolean(camera);
-    const cx=Math.max(-.92,Math.min(.92,camera?.x||0));
-    const cy=Math.max(-.86,Math.min(.86,camera?.y||0));
+    const cx=Math.max(-1.12,Math.min(1.12,camera?.x||0));
+    const cy=Math.max(-1.08,Math.min(1.08,camera?.y||0));
     const cz=camera?.z||0;
 
-    const travel=time*.34+cz*96.0;
-    const nearLogical=10.0-travel;
-    const farLogical=-78.0-travel;
-    const pathNear=trailCenter(nearLogical);
-    const pathFar=trailCenter(farLogical);
-
-    const eyeX=pathNear+cx*6.6;
-    const eyeY=5.9+cy*3.7+Math.sin(time*.27)*.045;
+    // The world itself advances smoothly; manual depth only adds/subtracts travel.
+    const travel=time*(zen?5.8:.34)+cz*64.0;
+    const autoX=Math.sin(time*.075)*1.45+Math.sin(time*.031+1.2)*.85;
+    const autoY=Math.sin(time*.052+.5)*.22;
+    const eyeX=autoX+cx*8.2;
+    const eyeY=7.8+autoY+cy*5.35;
     const eye=[eyeX,eyeY,12.0];
     const target=[
-      pathFar+cx*2.4,
-      1.35+cy*.42,
-      -78
+      eyeX+Math.sin(time*.041)*1.15+cx*.55,
+      eyeY-1.55+cy*.12,
+      -94
     ];
-    perspective(projection,zen ? .91 : .98,cssWidth/cssHeight,.12,920);
+    perspective(projection,zen ? .90 : .98,cssWidth/cssHeight,.12,980);
     lookAt(view,eye,target,[0,1,0]);multiply(vp,projection,view);
 
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);
@@ -990,10 +986,6 @@ function createRenderer(ctx){
     gl.useProgram(groundProgram);gl.bindVertexArray(groundVao);
     gl.uniformMatrix4fv(uniforms.ground.vp,false,vp);gl.uniform3f(uniforms.ground.camera,...eye);gl.uniform1f(uniforms.ground.travel,travel);
     gl.drawElements(gl.TRIANGLES,terrain.indices.length,gl.UNSIGNED_INT,0);
-
-    gl.useProgram(pathProgram);gl.bindVertexArray(pathVao);
-    gl.uniformMatrix4fv(uniforms.path.vp,false,vp);gl.uniform1f(uniforms.path.travel,travel);gl.uniform1f(uniforms.path.span,forest.spanZ);
-    gl.drawElements(gl.TRIANGLES,trail.indices.length,gl.UNSIGNED_INT,0);
 
     gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
     gl.useProgram(trunkProgram);gl.bindVertexArray(trunkVao);
@@ -1031,11 +1023,12 @@ export default {
   flightCards:true,
   autoFlightCards:true,
   continuousDepth:true,
-  autoForwardSpeed:.19,
-  pathDepthGestures:true,
-  flightBounds:{x:.92,y:.86},
-  depthGain:6.4,
-  depthCap:18,
+  flightBounds:{x:1.12,y:1.08},
+  depthGain:2.8,
+  depthCap:6.0,
+  depthDirectScale:.22,
+  cameraSmoothing:4.2,
+  depthDamping:4.8,
   accent:"#f2b45b",
   dim:"#dbc9b4",
   surface:"34,23,15",

@@ -570,7 +570,10 @@ export class ThemeEngine {
     const cam = this.camera;
     cam.tx += dx;
     cam.ty += dy;
-    cam.tz += dz;
+    const depthDirectScale=Number.isFinite(this.theme?.depthDirectScale)
+      ? this.theme.depthDirectScale
+      : 1;
+    cam.tz += dz * depthDirectScale;
     const bounds=this.theme?.flightBounds;
     if(bounds){
       if(Number.isFinite(bounds.x))cam.tx=Math.max(-bounds.x,Math.min(bounds.x,cam.tx));
@@ -599,7 +602,10 @@ export class ThemeEngine {
   advanceCamera(d) {
     const cam = this.camera;
     if (!cam) return;
-    const blend = d ? 1 - Math.exp(-d * 8) : 1;
+    const cameraSmoothing=Number.isFinite(this.theme?.cameraSmoothing)
+      ? this.theme.cameraSmoothing
+      : 8;
+    const blend = d ? 1 - Math.exp(-d * cameraSmoothing) : 1;
     cam.tz += cam.vz * d;
     if (
       d &&
@@ -607,7 +613,10 @@ export class ThemeEngine {
       !this.reduced?.matches
     )
       cam.tz += this.theme.autoForwardSpeed * d;
-    cam.vz *= Math.exp(-d * 2.8);
+    const depthDamping=Number.isFinite(this.theme?.depthDamping)
+      ? this.theme.depthDamping
+      : 2.8;
+    cam.vz *= Math.exp(-d * depthDamping);
     if (Math.abs(cam.vz) < 0.002) cam.vz = 0;
     cam.x += (cam.tx - cam.x) * blend;
     cam.y += (cam.ty - cam.y) * blend;
@@ -696,14 +705,12 @@ export class ThemeEngine {
           ground.addColorStop(0,"#76552e");ground.addColorStop(.52,"#432a17");ground.addColorStop(1,"#1a120c");
           c.fillStyle=ground;c.fillRect(0,horizon,w,h-horizon);
 
-          // Winding trail.
-          c.fillStyle="#8a5b2c";
-          c.beginPath();
-          c.moveTo(vanX-14,horizon);c.lineTo(vanX+14,horizon);
-          c.bezierCurveTo(vanX+28,h*.69,vanX+58,h*.84,vanX+w*.16,h);
-          c.lineTo(vanX-w*.18,h);
-          c.bezierCurveTo(vanX-42,h*.84,vanX-25,h*.68,vanX-14,horizon);
-          c.closePath();c.fill();
+          // Natural sunlit forest floor — no geometric road.
+          const clearing=c.createRadialGradient(vanX,h*.72,8,vanX,h*.72,w*.33);
+          clearing.addColorStop(0,"rgba(186,126,54,.22)");
+          clearing.addColorStop(.46,"rgba(116,82,38,.12)");
+          clearing.addColorStop(1,"rgba(39,29,18,0)");
+          c.fillStyle=clearing;c.fillRect(0,horizon,w,h-horizon);
 
           const tree=(side,depth,species)=>{
             const sc=.20+depth*.98,x=vanX+side*(56+depth*w*.44),base=horizon+depth*(h-horizon)*.16;

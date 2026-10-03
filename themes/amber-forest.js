@@ -95,11 +95,11 @@ void main(){
   float horizon=.435;
   vec3 top=vec3(.30,.57,.70);
   vec3 upper=vec3(.55,.72,.76);
-  vec3 haze=vec3(.92,.82,.63);
+  vec3 haze=vec3(.86,.83,.70);
   vec3 col=mix(haze,mix(upper,top,smoothstep(.58,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
 
-  float sun=exp(-pow((uv.x-.73)*5.3,2.0)-pow((uv.y-.50)*21.0,2.0));
-  col+=vec3(1.0,.74,.35)*sun*.78;
+  float sun=exp(-pow((uv.x-.72)*5.7,2.0)-pow((uv.y-.70)*16.0,2.0));
+  col+=vec3(1.0,.88,.62)*sun*.66;
 
   vec2 p=vec2((uv.x-.5)*uAspect*3.0,uv.y*3.0)+vec2(uTime*.0034,-uTime*.0009);
   float c1=cloud(p);
@@ -300,94 +300,127 @@ void main(){
 }`;
 
 function buildForest(){
-  const rnd=seeded(91277),spanZ=760,spanX=380,trunks=[],leaves=[];
+  const rnd=seeded(91277),spanZ=660,spanX=360,trunks=[],leaves=[];
   const addLeaf=(x,y,z,tone,type,phase,size,angle)=>leaves.push(x,y,z,tone,type,phase,size,angle);
   const speciesLeafType=(species,r)=>{
-    if(species===0)return r<.74?0:(r<.88?3:2); // maple
-    if(species===1)return r<.74?1:(r<.88?3:0); // birch
-    if(species===2)return r<.72?2:(r<.88?3:0); // oak
-    return r<.78?3:(r<.90?1:2);               // beech
+    if(species===0)return r<.80?0:(r<.92?3:2);
+    if(species===1)return r<.82?1:(r<.93?3:0);
+    if(species===2)return r<.80?2:(r<.92?3:0);
+    return r<.82?3:(r<.93?1:2);
   };
   const clearAt=(x,z)=>{
     const a=Math.sin(z*.020)*32+Math.sin(z*.0065+1.8)*18;
-    const b=Math.sin(z*.013+2.2)*60;
-    const da=Math.abs(x-a),db=Math.abs(x-b);
-    const glade=Math.min(da,db);
-    return glade<7.5?1:(glade<13?(13-glade)/5.5:0);
+    const b=Math.sin(z*.013+2.2)*58;
+    return Math.min(Math.abs(x-a),Math.abs(x-b));
   };
   const addTree=(x,z)=>{
     const base=-.60+.14*Math.sin(x*.041)+.10*Math.sin(z*.028+x*.015);
     const species=Math.floor(rnd()*4);
-    const h=(species===1?12:10.5)+rnd()*(species===1?15:13);
-    const radius=(species===1?.30:.38)+rnd()*(species===1?.30:.48);
-    const tone=Math.max(0,Math.min(1,(species===3?.72:species===2?.50:species===1?.20:.34)+(rnd()-.5)*.26));
+    const h=(species===1?13:10.5)+rnd()*(species===1?14:12.5);
+    const radius=(species===1?.28:.38)+rnd()*(species===1?.28:.44);
+    const tone=Math.max(0,Math.min(1,(species===0?.31:species===1?.18:species===2?.52:.70)+(rnd()-.5)*.23));
     const phase=rnd()*TAU;
-
     trunks.push(x,base+h*.5,z,radius*2,h,radius*2,tone,phase);
 
-    const crownBase=base+h*(species===1?.48:.54);
-    const crownTop=base+h*(.96+rnd()*.035);
-    const branchCount=species===1?6+Math.floor(rnd()*3):8+Math.floor(rnd()*4);
-    const centers=[{x,y:crownTop-.7,z,r:species===1?1.9+rnd()*1.0:2.5+rnd()*1.35}];
+    const centers=[];
+    const addCenter=(cx,cy,cz,r)=>centers.push({x:cx,y:cy,z:cz,r});
 
-    for(let b=0;b<branchCount;b++){
-      const a=b/branchCount*TAU+rnd()*.52;
-      const reach=(species===1?1.7:2.3)+rnd()*(species===1?2.3:3.6);
-      const y=crownBase+(crownTop-crownBase)*(.18+rnd()*.72);
-      centers.push({x:x+Math.cos(a)*reach,y,z:z+Math.sin(a)*reach,r:(species===1?1.45:1.85)+rnd()*(species===1?1.0:1.55)});
-      if(rnd()>.22){
-        const sh=.16*h+rnd()*.16*h;
-        trunks.push(
-          x+Math.cos(a)*reach*.48,
-          y-sh*.46,
-          z+Math.sin(a)*reach*.48,
-          radius*.30,radius*.30+sh,radius*.30,
-          Math.min(1,tone+.08),
-          phase+a
-        );
+    if(species===1){
+      // Birch: tall airy crown, small leaf clouds, lots of sky between them.
+      const count=6+Math.floor(rnd()*2);
+      for(let i=0;i<count;i++){
+        const f=i/(count-1);
+        const a=i*2.37+rnd()*.35;
+        const reach=(1.2+rnd()*1.4)*(1.0-f*.28);
+        addCenter(x+Math.cos(a)*reach,base+h*(.54+f*.40),z+Math.sin(a)*reach,1.25+rnd()*.72);
+      }
+    }else if(species===2){
+      // Oak: broad layered crown and strong horizontal spread.
+      addCenter(x,base+h*.87,z,3.0+rnd()*.8);
+      for(let i=0;i<8;i++){
+        const a=i/8*TAU+rnd()*.35,reach=3.2+rnd()*2.2;
+        addCenter(x+Math.cos(a)*reach,base+h*(.62+rnd()*.22),z+Math.sin(a)*reach,1.75+rnd()*.85);
+      }
+    }else if(species===0){
+      // Maple: irregular rounded crown with visible gaps.
+      addCenter(x,base+h*.91,z,2.5+rnd()*.8);
+      for(let i=0;i<7;i++){
+        const a=i/7*TAU+rnd()*.55,reach=2.2+rnd()*2.8;
+        addCenter(x+Math.cos(a)*reach,base+h*(.64+rnd()*.28),z+Math.sin(a)*reach,1.55+rnd()*.95);
+      }
+    }else{
+      // Beech: tall oval crown.
+      for(let i=0;i<7;i++){
+        const f=i/6,a=i*2.12+rnd()*.30,reach=1.6+rnd()*2.0;
+        addCenter(x+Math.cos(a)*reach,base+h*(.58+f*.34),z+Math.sin(a)*reach,1.6+rnd()*.8);
       }
     }
 
-    const totalLeaves=(species===1?150:185)+Math.floor(rnd()*(species===1?55:85));
+    // A few thin inner stems give depth behind the leaves without filling the crown.
+    const stems=Math.min(6,centers.length);
+    for(let i=0;i<stems;i++){
+      const c=centers[i];
+      if(rnd()<.30)continue;
+      const sh=Math.max(2.4,c.y-(base+h*.45));
+      trunks.push(
+        x+(c.x-x)*.52,
+        base+h*.44+sh*.5,
+        z+(c.z-z)*.52,
+        radius*.25,radius*.25+sh,radius*.25,
+        Math.min(1,tone+.08),
+        phase+i*.73
+      );
+    }
+
+    const baseLeaves=species===1?118:146;
+    const totalLeaves=baseLeaves+Math.floor(rnd()*(species===1?38:54));
     for(let i=0;i<totalLeaves;i++){
       const c=centers[Math.floor(rnd()*centers.length)];
       const a=rnd()*TAU,u=rnd()*2-1;
-      const rr=Math.pow(rnd(),.58)*c.r;
+      // Shell-biased placement creates airy branch tips instead of solid balls.
+      const rr=c.r*(.36+Math.pow(rnd(),.46)*.72);
       const radial=Math.sqrt(Math.max(0,1-u*u))*rr;
-      const lx=c.x+Math.cos(a)*radial*(.92+rnd()*.16);
-      const ly=c.y+u*rr*(species===1?.82:.68);
-      const lz=c.z+Math.sin(a)*radial*(.92+rnd()*.16);
-      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.28));
-      const type=speciesLeafType(species,rnd());
-      addLeaf(lx,ly,lz,localTone,type,phase+rnd()*TAU,.18+rnd()*.27,(rnd()-.5)*2.2);
-    }
-
-    const outer=36+Math.floor(rnd()*30);
-    for(let i=0;i<outer;i++){
-      const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.90+rnd()*.48);
+      const lx=c.x+Math.cos(a)*radial;
+      const ly=c.y+u*rr*(species===1?.88:.70);
+      const lz=c.z+Math.sin(a)*radial;
+      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.27));
       addLeaf(
-        c.x+Math.cos(a)*rr,
-        c.y+(rnd()-.46)*c.r*(species===1?1.0:.82),
-        c.z+Math.sin(a)*rr,
-        Math.max(0,Math.min(1,tone+(rnd()-.5)*.34)),
+        lx,ly,lz,
+        localTone,
         speciesLeafType(species,rnd()),
         phase+rnd()*TAU,
-        .16+rnd()*.24,
+        .19+rnd()*.22,
         (rnd()-.5)*2.4
+      );
+    }
+
+    const outer=24+Math.floor(rnd()*20);
+    for(let i=0;i<outer;i++){
+      const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(1.02+rnd()*.38);
+      addLeaf(
+        c.x+Math.cos(a)*rr,
+        c.y+(rnd()-.46)*c.r*(species===1?1.04:.84),
+        c.z+Math.sin(a)*rr,
+        Math.max(0,Math.min(1,tone+(rnd()-.5)*.31)),
+        speciesLeafType(species,rnd()),
+        phase+rnd()*TAU,
+        .18+rnd()*.20,
+        (rnd()-.5)*2.5
       );
     }
   };
 
-  for(let z=4;z<spanZ;z+=11.5+rnd()*4.5){
-    const rows=7+Math.floor(rnd()*4);
+  for(let z=4;z<spanZ;z+=14.0+rnd()*4.6){
+    const rows=5+Math.floor(rnd()*3);
     for(let j=0;j<rows;j++){
       const x=-spanX*.49+rnd()*spanX*.98;
       const clear=clearAt(x,z);
-      if(clear>.72&&rnd()<.88)continue;
-      if(clear>.25&&rnd()<clear*.62)continue;
-      addTree(x,z+rnd()*8);
+      if(clear<7.2&&rnd()<.90)continue;
+      if(clear<12.5&&rnd()<(12.5-clear)/7.0*.55)continue;
+      addTree(x,z+rnd()*9);
     }
   }
+
   return {
     spanZ,spanX,
     trunks:new Float32Array(trunks),
@@ -711,7 +744,7 @@ function createRenderer(ctx){
 
   function resize({width,height,ratio=1}){
     cssWidth=Math.max(1,width);cssHeight=Math.max(1,height);
-    const q=Math.min(ratio,cssWidth<=760?1.14:1.52),w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
+    const q=Math.min(ratio,cssWidth<=760?1.08:1.50),w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}
   }
 

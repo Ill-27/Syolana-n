@@ -677,44 +677,63 @@ export class ThemeEngine {
         c.fillStyle = g;
         c.fillRect(0, 0, w, h);
         if (id === "amber-forest") {
-          const horizon=Math.round(h*.54);
+          const horizon=Math.round(h*.54),vanX=w*.50;
           const sky=c.createLinearGradient(0,0,0,horizon);
-          sky.addColorStop(0,"#547887");sky.addColorStop(.48,"#9aa58e");sky.addColorStop(.82,"#dfbd78");sky.addColorStop(1,"#f4cf88");
+          sky.addColorStop(0,"#6395aa");sky.addColorStop(.55,"#b9c7b0");sky.addColorStop(1,"#efc477");
           c.fillStyle=sky;c.fillRect(0,0,w,horizon);
-          const sun=c.createRadialGradient(w*.72,h*.24,3,w*.72,h*.24,w*.27);
-          sun.addColorStop(0,"rgba(255,238,171,.88)");sun.addColorStop(.25,"rgba(255,202,103,.33)");sun.addColorStop(1,"rgba(255,202,103,0)");c.fillStyle=sun;c.fillRect(0,0,w,h*.68);
-          const ground=c.createLinearGradient(0,horizon,0,h);ground.addColorStop(0,"#9a763e");ground.addColorStop(.52,"#664321");ground.addColorStop(1,"#2b1a0e");c.fillStyle=ground;c.fillRect(0,horizon,w,h-horizon);
-          const forestTrailPreview=true;
-          c.fillStyle="rgba(117,88,56,.72)";
-          c.beginPath();
-          c.moveTo(w*.48,horizon);
-          c.bezierCurveTo(w*.42,h*.68,w*.58,h*.78,w*.34,h);
-          c.lineTo(w*.66,h);
-          c.bezierCurveTo(w*.55,h*.78,w*.56,h*.68,w*.52,horizon);
-          c.closePath();c.fill();
-          c.strokeStyle="rgba(231,175,83,.22)";c.lineWidth=3;
-          c.beginPath();c.moveTo(w*.50,horizon+4);c.bezierCurveTo(w*.45,h*.70,w*.57,h*.82,w*.46,h);c.stroke();
 
-          const leafShape=(x,y,s,kind,color,rot)=>{
-            c.save();c.translate(x,y);c.rotate(rot);c.fillStyle=color;c.beginPath();
-            if(kind===0){
-              c.moveTo(0,-s);c.lineTo(s*.22,-s*.42);c.lineTo(s*.55,-s*.64);c.lineTo(s*.44,-s*.18);c.lineTo(s*.86,-s*.08);c.lineTo(s*.46,s*.20);c.lineTo(s*.54,s*.58);c.lineTo(s*.12,s*.38);c.lineTo(0,s*.82);
-              c.lineTo(-s*.12,s*.38);c.lineTo(-s*.54,s*.58);c.lineTo(-s*.46,s*.20);c.lineTo(-s*.86,-s*.08);c.lineTo(-s*.44,-s*.18);c.lineTo(-s*.55,-s*.64);c.lineTo(-s*.22,-s*.42);c.closePath();
-            }else if(kind===1)c.ellipse(0,0,s*.48,s*.82,0,0,Math.PI*2);
-            else{c.moveTo(0,-s*.85);c.bezierCurveTo(s*.55,-s*.65,s*.28,-s*.18,s*.62,0);c.bezierCurveTo(s*.28,s*.20,s*.45,s*.60,0,s*.84);c.bezierCurveTo(-s*.45,s*.60,-s*.28,s*.20,-s*.62,0);c.bezierCurveTo(-s*.28,-s*.18,-s*.55,-s*.65,0,-s*.85)}
-            c.fill();c.restore();
+          const sun=c.createRadialGradient(w*.73,h*.26,4,w*.73,h*.26,w*.28);
+          sun.addColorStop(0,"rgba(255,236,172,.78)");sun.addColorStop(.28,"rgba(255,193,84,.25)");sun.addColorStop(1,"rgba(255,193,84,0)");
+          c.fillStyle=sun;c.fillRect(w*.42,0,w*.58,h*.58);
+
+          const ground=c.createLinearGradient(0,horizon,0,h);
+          ground.addColorStop(0,"#76552e");ground.addColorStop(.52,"#432a17");ground.addColorStop(1,"#1a120c");
+          c.fillStyle=ground;c.fillRect(0,horizon,w,h-horizon);
+
+          // Winding trail.
+          c.fillStyle="#8a5b2c";
+          c.beginPath();
+          c.moveTo(vanX-14,horizon);c.lineTo(vanX+14,horizon);
+          c.bezierCurveTo(vanX+28,h*.69,vanX+58,h*.84,vanX+w*.16,h);
+          c.lineTo(vanX-w*.18,h);
+          c.bezierCurveTo(vanX-42,h*.84,vanX-25,h*.68,vanX-14,horizon);
+          c.closePath();c.fill();
+
+          const tree=(side,depth,species)=>{
+            const sc=.20+depth*.98,x=vanX+side*(56+depth*w*.44),base=horizon+depth*(h-horizon)*.16;
+            const trunkH=74*sc,trunkW=7*sc;
+            c.fillStyle=species===1?"#8a704e":"#5b3219";c.fillRect(x-trunkW/2,base-trunkH,trunkW,trunkH);
+            const palettes=[
+              ["#ffd45b","#e36d2d","#b83e22"],
+              ["#f1d65c","#c2a12e","#8c7f26"],
+              ["#e3a13b","#ae4c24","#74301b"],
+              ["#e88a35","#bd5727","#82361e"]
+            ][species];
+            for(let k=0;k<7;k++){
+              const a=k/7*Math.PI*2,rx=(24+((k*7)%9))*sc,ry=(18+((k*5)%7))*sc;
+              const cx=x+Math.cos(a)*18*sc,cy=base-trunkH-(k%3)*12*sc;
+              const g=c.createRadialGradient(cx-rx*.25,cy-ry*.30,2,cx,cy,rx);
+              g.addColorStop(0,palettes[0]);g.addColorStop(.52,palettes[1]);g.addColorStop(1,palettes[2]);
+              c.fillStyle=g;c.beginPath();c.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);c.fill();
+            }
           };
-          const palette=["#f4c54c","#e99730","#d46728","#b94422","#a39a32"];
-          for(let i=0;i<68;i++){
-            const depth=((i*37)%67)/67,side=i%2?-1:1,x=w*.5+side*(22+depth*w*.49)+Math.sin(i*2.1)*23,base=horizon+depth*(h-horizon)*.22,scale=.20+depth*.98;
-            c.fillStyle="#5c3218";c.fillRect(x-3*scale,base-72*scale,6*scale,72*scale);
-            for(let j=0;j<9;j++){const ang=j*.72+i*.39,r=(18+(j%3)*7)*scale;leafShape(x+Math.cos(ang)*r*.78,base-72*scale+Math.sin(ang)*r*.46,12*scale,j%3,palette[(i+j)%palette.length],ang*.25)}
+          const rows=[[.14,1],[.25,0],[.38,3],[.55,2],[.73,0],[.93,2]];
+          rows.forEach((r,i)=>{tree(-1,r[0],r[1]);tree(1,r[0],(r[1]+2)%4);});
+
+          // Leaves flying toward the viewer.
+          for(let i=0;i<16;i++){
+            const p=((t*.16+i/16)%1),d=Math.pow(p,1.55);
+            const x=vanX+((i%2)?1:-1)*d*w*(.06+(i%5)*.035);
+            const y=h*.43+d*h*(.10+(i%4)*.055);
+            const size=2+d*13;
+            c.fillStyle=["#f4c44e","#df7a2d","#c64b24","#d5b93c"][i%4];
+            c.save();c.translate(x,y);c.rotate(t+i*.7);
+            c.beginPath();c.ellipse(0,0,size*.58,size,0,0,Math.PI*2);c.fill();c.restore();
           }
-          leafShape(w*.18,h*.20,35,0,"#f2b53f",-0.42+Math.sin(t*.28)*.08);
-          leafShape(w*.82,h*.31,26,2,"#c64d25",0.58+Math.sin(t*.31)*.06);
-          leafShape(w*.66,h*.17,19,1,"#e99730",-0.20);
-          const mist=c.createLinearGradient(0,horizon-35,0,horizon+72);mist.addColorStop(0,"rgba(246,221,178,0)");mist.addColorStop(.45,"rgba(246,221,178,.18)");mist.addColorStop(1,"rgba(246,221,178,0)");c.fillStyle=mist;c.fillRect(0,horizon-35,w,112);
-          const vignette=c.createRadialGradient(w*.5,h*.44,w*.15,w*.5,h*.44,w*.72);vignette.addColorStop(0,"rgba(24,12,5,0)");vignette.addColorStop(1,"rgba(24,12,5,.27)");c.fillStyle=vignette;c.fillRect(0,0,w,h);
+
+          const mist=c.createLinearGradient(0,horizon-25,0,horizon+65);
+          mist.addColorStop(0,"rgba(247,220,176,0)");mist.addColorStop(.48,"rgba(247,220,176,.14)");mist.addColorStop(1,"rgba(247,220,176,0)");
+          c.fillStyle=mist;c.fillRect(0,horizon-25,w,95);
           continue;
         }
         if (id === "white-ocean-city") {

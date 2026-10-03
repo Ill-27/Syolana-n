@@ -80,37 +80,40 @@ uniform float uZen;
 
 float waves(vec2 p){
   float v=0.0;
-  v+=sin(p.x*.83+sin(p.y*.67)*1.16);
-  v+=sin(p.y*1.09-cos(p.x*.58)*1.04)*.62;
-  v+=sin((p.x+p.y)*1.61)*.28;
-  return .5+.5*(v/1.90);
+  v+=sin(p.x*.86+sin(p.y*.68)*1.08);
+  v+=sin(p.y*1.11-cos(p.x*.59)*1.02)*.64;
+  v+=sin((p.x+p.y)*1.66)*.28;
+  return .5+.5*(v/1.92);
 }
 float cloud(vec2 p){
-  float a=waves(p);
-  float b=waves(vec2(p.x*.82-p.y*.57,p.x*.57+p.y*.82)*1.69+vec2(2.1,4.3));
-  return a*.68+b*.32;
+  float a=waves(p),b=waves(vec2(p.x*.84-p.y*.54,p.x*.54+p.y*.84)*1.72+vec2(2.6,4.7));
+  return a*.67+b*.33;
 }
 void main(){
   vec2 uv=vUv;
-  float horizon=.435;
-  vec3 top=vec3(.30,.57,.70);
-  vec3 upper=vec3(.55,.72,.76);
-  vec3 haze=vec3(.86,.83,.70);
-  vec3 col=mix(haze,mix(upper,top,smoothstep(.58,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
+  float horizon=.43;
+  vec3 top=vec3(.24,.52,.72);
+  vec3 mid=vec3(.54,.72,.82);
+  vec3 haze=vec3(.88,.84,.70);
+  vec3 col=mix(haze,mix(mid,top,smoothstep(.58,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
 
-  float sun=exp(-pow((uv.x-.72)*5.7,2.0)-pow((uv.y-.70)*16.0,2.0));
-  col+=vec3(1.0,.88,.62)*sun*.66;
+  // Bright autumn sun.
+  float sun=exp(-pow((uv.x-.72)*5.2,2.0)-pow((uv.y-.66)*13.0,2.0));
+  float halo=exp(-pow((uv.x-.72)*2.0,2.0)-pow((uv.y-.66)*5.0,2.0));
+  col+=vec3(1.0,.82,.50)*sun*.92+vec3(1.0,.72,.35)*halo*.15;
 
-  vec2 p=vec2((uv.x-.5)*uAspect*3.0,uv.y*3.0)+vec2(uTime*.0034,-uTime*.0009);
-  float c1=cloud(p);
-  float mask=smoothstep(.52,.59,uv.y)*(1.0-smoothstep(.86,.96,uv.y));
-  float density=smoothstep(.55,.73,c1)*mask;
-  vec3 cloudCol=mix(vec3(.70,.74,.72),vec3(.97,.94,.86),smoothstep(.56,.72,c1));
-  col=mix(col,cloudCol,density*.24);
+  vec2 p=vec2((uv.x-.5)*uAspect*3.0,uv.y*3.0)+vec2(uTime*.0045,-uTime*.0012);
+  float low=cloud(p),high=cloud(p*.62+vec2(-2.4,3.2));
+  float lowMask=smoothstep(.47,.54,uv.y)*(1.0-smoothstep(.78,.88,uv.y));
+  float highMask=smoothstep(.64,.71,uv.y)*(1.0-smoothstep(.95,1.0,uv.y));
+  float d1=smoothstep(.54,.70,low)*lowMask;
+  float d2=smoothstep(.57,.72,high)*highMask;
+  col=mix(col,vec3(.91,.92,.87),d1*.28);
+  col=mix(col,vec3(.84,.88,.87),d2*.11);
 
-  float mist=exp(-pow((uv.y-horizon)*30.0,2.0));
-  col=mix(col,vec3(.95,.84,.67),mist*(.22+.05*uZen));
-  col*=1.0-.10*pow(length((uv-.5)*vec2(.82,1.0)),1.7);
+  float mist=exp(-pow((uv.y-horizon)*28.0,2.0));
+  col=mix(col,vec3(.91,.82,.65),mist*(.22+.04*uZen));
+  col*=1.0-.09*pow(length((uv-.5)*vec2(.82,1.0)),1.7);
   outColor=vec4(col,1.0);
 }`;
 
@@ -305,22 +308,20 @@ function forestPathCenter(z){
   return Math.sin(z*.018)*10.5+Math.sin(z*.0065+1.8)*5.2+Math.sin(z*.031+.4)*2.2;
 }
 
-function buildForest(){
-  const rnd=seeded(91277),spanZ=660,spanX=360,trunks=[],leaves=[];
-  const addLeaf=(x,y,z,tone,type,phase,size,angle)=>leaves.push(x,y,z,tone,type,phase,size,angle);
+function trailCenter(z){
+  return Math.sin(z*.017)*9.5+Math.sin(z*.0064+1.55)*5.2+Math.sin(z*.031+2.4)*2.0;
+}
 
+function buildForest(){
+  const rnd=seeded(91277),spanZ=720,spanX=360,trunks=[],leaves=[];
+  const addLeaf=(x,y,z,tone,type,phase,size,angle)=>leaves.push(x,y,z,tone,type,phase,size,angle);
   const addTree=(x,z)=>{
-    const base=-.58+.10*Math.sin(x*.041)+.075*Math.sin(z*.028+x*.015);
+    const base=-.58+.11*Math.sin(x*.038)+.08*Math.sin(z*.025+x*.013);
     const species=Math.floor(rnd()*4); // 0 maple, 1 birch, 2 oak, 3 beech
     const h=(species===1?14:11)+rnd()*(species===1?13:12);
-    const radius=(species===1?.26:.36)+rnd()*(species===1?.24:.40);
-    const baseTone=[
-      .42, // maple: gold/orange/red
-      .14, // birch: yellow/gold
-      .62, // oak: copper/rust
-      .76  // beech: bronze/olive
-    ][species];
-    const tone=Math.max(0,Math.min(1,baseTone+(rnd()-.5)*.16));
+    const radius=(species===1?.25:.36)+rnd()*(species===1?.24:.42);
+    const baseTone=[.36,.08,.67,.52][species]+(rnd()-.5)*.12;
+    const tone=Math.max(0,Math.min(1,baseTone));
     const phase=rnd()*TAU;
     trunks.push(x,base+h*.5,z,radius*2,h,radius*2,tone,phase);
 
@@ -328,114 +329,100 @@ function buildForest(){
     const addCenter=(cx,cy,cz,r)=>centers.push({x:cx,y:cy,z:cz,r});
 
     if(species===1){
-      // Birch: narrow, airy, vertically layered crown.
-      const count=9+Math.floor(rnd()*3);
+      // Birch: narrow, high and airy, but still leaf-rich.
+      const count=9;
       for(let i=0;i<count;i++){
-        const f=i/(count-1),a=i*2.31+rnd()*.34;
-        const reach=(1.0+rnd()*1.25)*(1.0-f*.34);
-        addCenter(x+Math.cos(a)*reach,base+h*(.50+f*.45),z+Math.sin(a)*reach,1.05+rnd()*.58);
+        const f=i/(count-1),a=i*2.399+rnd()*.28,reach=(1.0+rnd()*1.45)*(1.0-f*.20);
+        addCenter(x+Math.cos(a)*reach,base+h*(.49+f*.43),z+Math.sin(a)*reach,1.0+rnd()*.58);
       }
     }else if(species===2){
-      // Oak: wide, irregular crown with strong lateral branch masses.
-      addCenter(x,base+h*.86,z,2.7+rnd()*.7);
+      // Oak: broad, layered, horizontal crown.
+      addCenter(x,base+h*.84,z,2.55+rnd()*.65);
       for(let i=0;i<11;i++){
-        const a=i/11*TAU+rnd()*.30,reach=2.7+rnd()*2.6;
-        addCenter(x+Math.cos(a)*reach,base+h*(.58+rnd()*.25),z+Math.sin(a)*reach,1.45+rnd()*.72);
+        const a=i/11*TAU+rnd()*.27,reach=2.6+rnd()*2.7;
+        addCenter(x+Math.cos(a)*reach,base+h*(.58+rnd()*.27),z+Math.sin(a)*reach,1.45+rnd()*.72);
       }
     }else if(species===0){
-      // Maple: rounded but broken silhouette with many small branch-tip clusters.
-      addCenter(x,base+h*.90,z,2.35+rnd()*.66);
+      // Maple: rounded irregular crown with many fine branch tips.
+      addCenter(x,base+h*.88,z,2.25+rnd()*.60);
       for(let i=0;i<10;i++){
-        const a=i/10*TAU+rnd()*.48,reach=2.0+rnd()*2.7;
-        addCenter(x+Math.cos(a)*reach,base+h*(.62+rnd()*.28),z+Math.sin(a)*reach,1.35+rnd()*.72);
+        const a=i/10*TAU+rnd()*.42,reach=2.0+rnd()*2.65;
+        addCenter(x+Math.cos(a)*reach,base+h*(.60+rnd()*.29),z+Math.sin(a)*reach,1.35+rnd()*.70);
       }
     }else{
-      // Beech: tall oval crown.
+      // Beech: dense oval crown.
       for(let i=0;i<10;i++){
-        const f=i/9,a=i*2.07+rnd()*.28,reach=1.3+rnd()*1.9;
-        addCenter(x+Math.cos(a)*reach,base+h*(.54+f*.39),z+Math.sin(a)*reach,1.35+rnd()*.65);
+        const f=i/9,a=i*2.17+rnd()*.25,reach=1.25+rnd()*1.75;
+        addCenter(x+Math.cos(a)*reach,base+h*(.54+f*.37),z+Math.sin(a)*reach,1.35+rnd()*.62);
       }
     }
 
-    // Slender inner stems: subtle and mostly hidden by the much denser real leaves.
-    const stems=Math.min(8,centers.length);
+    // Slim internal branch/stem structure prevents the crown from reading as a floating mass.
+    const stems=Math.min(9,centers.length);
     for(let i=0;i<stems;i++){
       const c=centers[i];
-      if(rnd()<.34)continue;
-      const sh=Math.max(2.2,c.y-(base+h*.43));
+      if(rnd()<.18)continue;
+      const sh=Math.max(2.2,c.y-(base+h*.39));
       trunks.push(
-        x+(c.x-x)*.50,
-        base+h*.43+sh*.5,
-        z+(c.z-z)*.50,
-        radius*.18,radius*.18+sh,radius*.18,
-        Math.min(1,tone+.05),
-        phase+i*.71
+        x+(c.x-x)*.53,
+        base+h*.39+sh*.5,
+        z+(c.z-z)*.53,
+        radius*.19,radius*.19+sh,radius*.19,
+        Math.min(1,tone+.06),
+        phase+i*.67
       );
     }
 
-    // Much smaller, much denser leaves. One tree never mixes leaf species.
-    const totalLeaves=species===1
-      ? 330+Math.floor(rnd()*90)
-      : species===2
-        ? 290+Math.floor(rnd()*80)
-        : 315+Math.floor(rnd()*90);
-
+    // Hundreds of small leaves rather than a few oversized billboards.
+    const totalLeaves=(species===1?250:310)+Math.floor(rnd()*(species===1?70:95));
     for(let i=0;i<totalLeaves;i++){
       const c=centers[Math.floor(rnd()*centers.length)];
       const a=rnd()*TAU,u=rnd()*2-1;
-      const rr=c.r*(.24+Math.pow(rnd(),.58)*.92);
+      const rr=c.r*(.18+Math.pow(rnd(),.56)*.92);
       const radial=Math.sqrt(Math.max(0,1-u*u))*rr;
       const lx=c.x+Math.cos(a)*radial;
-      const ly=c.y+u*rr*(species===1?.94:.74);
+      const ly=c.y+u*rr*(species===1?.92:.76);
       const lz=c.z+Math.sin(a)*radial;
-      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*(species===1?.15:.20)));
-      const size=species===1
-        ? .075+rnd()*.070
-        : species===2
-          ? .105+rnd()*.085
-          : .090+rnd()*.080;
+      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.16));
       addLeaf(
         lx,ly,lz,
         localTone,
-        species,
+        species, // exactly one leaf morphology per tree
         phase+rnd()*TAU,
-        size,
-        (rnd()-.5)*2.7
+        .085+rnd()*.105,
+        (rnd()-.5)*2.5
       );
     }
 
-    // Extra tiny silhouette leaves at the crown edge prevent "ball" shapes.
-    const outer=55+Math.floor(rnd()*35);
+    // A fine outer shell of smaller leaves catches sunlight and breaks up the silhouette.
+    const outer=(species===1?70:95)+Math.floor(rnd()*38);
     for(let i=0;i<outer;i++){
-      const c=centers[Math.floor(rnd()*centers.length)];
-      const a=rnd()*TAU,rr=c.r*(.98+rnd()*.42);
+      const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.88+rnd()*.34);
       addLeaf(
         c.x+Math.cos(a)*rr,
-        c.y+(rnd()-.48)*c.r*(species===1?1.10:.88),
+        c.y+(rnd()-.48)*c.r*(species===1?1.02:.82),
         c.z+Math.sin(a)*rr,
-        Math.max(0,Math.min(1,tone+(rnd()-.5)*.20)),
+        Math.max(0,Math.min(1,tone+(rnd()-.5)*.18)),
         species,
         phase+rnd()*TAU,
-        species===1?.070+rnd()*.060:.085+rnd()*.070,
-        (rnd()-.5)*2.8
+        .075+rnd()*.090,
+        (rnd()-.5)*2.7
       );
     }
   };
 
-  for(let z=4;z<spanZ;z+=13.4+rnd()*4.4){
-    const rows=5+Math.floor(rnd()*2);
-    const pathX=forestPathCenter(z);
+  // A real winding woodland trail: trees never spawn inside this corridor.
+  for(let z=2;z<spanZ;z+=10.8+rnd()*3.2){
+    const trail=trailCenter(z);
+    const rows=7+Math.floor(rnd()*3);
     for(let j=0;j<rows;j++){
-      let x=-spanX*.49+rnd()*spanX*.98;
-      const d=Math.abs(x-pathX);
-      // A single readable trail: clear centre, natural soft edges.
-      if(d<6.4)continue;
-      if(d<10.5&&rnd()<(10.5-d)/4.1*.62)continue;
-      addTree(x,z+rnd()*8);
+      const side=rnd()<.5?-1:1;
+      const near=side*(8.5+rnd()*20);
+      const x=trail+near+(rnd()-.5)*4.0;
+      addTree(x,z+rnd()*7);
+      if(rnd()>.44)addTree(trail+side*(31+rnd()*30),z+rnd()*9);
+      if(rnd()>.72)addTree(trail+side*(65+rnd()*55),z+rnd()*12);
     }
-    // Guarantee richly framed near-trail trees without blocking the path.
-    if(rnd()>.18)addTree(pathX-(8.5+rnd()*7.5),z+rnd()*5);
-    if(rnd()>.18)addTree(pathX+(8.5+rnd()*7.5),z+rnd()*5);
   }
 
   return {
@@ -449,82 +436,80 @@ function buildForest(){
 
 function makeAirLeafSprites(){
   const make=(kind,top,bottom)=>{
-    const c=document.createElement("canvas");c.width=96;c.height=96;
-    const x=c.getContext("2d");x.translate(48,46);
-    const g=x.createLinearGradient(-26,-28,25,32);g.addColorStop(0,top);g.addColorStop(1,bottom);
-    x.fillStyle=g;x.strokeStyle="rgba(82,39,14,.34)";x.lineWidth=1.2;x.beginPath();
+    const c=document.createElement("canvas");c.width=128;c.height=128;
+    const x=c.getContext("2d");x.translate(64,61);
+    const g=x.createLinearGradient(-34,-38,34,42);g.addColorStop(0,top);g.addColorStop(1,bottom);
+    x.fillStyle=g;x.strokeStyle="rgba(76,37,14,.31)";x.lineWidth=1.1;x.beginPath();
     if(kind==="maple"){
-      x.moveTo(0,-38);x.lineTo(8,-19);x.lineTo(25,-29);x.lineTo(20,-9);x.lineTo(38,-5);x.lineTo(20,7);x.lineTo(24,27);x.lineTo(5,18);x.lineTo(0,37);
-      x.lineTo(-5,18);x.lineTo(-24,27);x.lineTo(-20,7);x.lineTo(-38,-5);x.lineTo(-20,-9);x.lineTo(-25,-29);x.lineTo(-8,-19);x.closePath();
+      x.moveTo(0,-50);x.lineTo(9,-25);x.lineTo(31,-39);x.lineTo(25,-12);x.lineTo(49,-7);x.lineTo(26,10);x.lineTo(31,35);x.lineTo(7,23);x.lineTo(0,48);
+      x.lineTo(-7,23);x.lineTo(-31,35);x.lineTo(-26,10);x.lineTo(-49,-7);x.lineTo(-25,-12);x.lineTo(-31,-39);x.lineTo(-9,-25);x.closePath();
     }else if(kind==="oak"){
-      x.moveTo(0,-35);x.bezierCurveTo(18,-29,13,-20,26,-14);x.bezierCurveTo(13,-7,25,4,15,9);x.bezierCurveTo(7,15,12,26,0,34);
-      x.bezierCurveTo(-12,26,-7,15,-15,9);x.bezierCurveTo(-25,4,-13,-7,-26,-14);x.bezierCurveTo(-13,-20,-18,-29,0,-35);x.closePath();
+      x.moveTo(0,-47);x.bezierCurveTo(22,-39,16,-27,33,-18);x.bezierCurveTo(17,-8,31,5,18,13);x.bezierCurveTo(8,22,14,35,0,46);
+      x.bezierCurveTo(-14,35,-8,22,-18,13);x.bezierCurveTo(-31,5,-17,-8,-33,-18);x.bezierCurveTo(-16,-27,-22,-39,0,-47);x.closePath();
+    }else if(kind==="birch"){
+      x.moveTo(0,-50);x.bezierCurveTo(29,-31,24,17,0,47);x.bezierCurveTo(-24,17,-29,-31,0,-50);x.closePath();
     }else{
-      x.moveTo(0,-37);x.bezierCurveTo(27,-21,26,14,0,35);x.bezierCurveTo(-26,14,-27,-21,0,-37);x.closePath();
+      x.moveTo(0,-47);x.bezierCurveTo(34,-27,32,19,0,44);x.bezierCurveTo(-32,19,-34,-27,0,-47);x.closePath();
     }
     x.fill();x.stroke();
-    x.strokeStyle="rgba(91,49,18,.36)";x.beginPath();x.moveTo(0,-31);x.lineTo(0,42);x.stroke();
-    x.globalAlpha=.46;x.strokeStyle="rgba(255,223,135,.48)";x.beginPath();x.moveTo(-2,-12);x.lineTo(-17,-4);x.moveTo(2,2);x.lineTo(17,10);x.stroke();
+    x.strokeStyle="rgba(87,45,16,.34)";x.beginPath();x.moveTo(0,-42);x.lineTo(0,54);x.stroke();
+    x.globalAlpha=.44;x.strokeStyle="rgba(255,228,155,.46)";
+    x.beginPath();x.moveTo(-2,-13);x.lineTo(-20,-3);x.moveTo(2,3);x.lineTo(21,13);x.stroke();
     return c;
   };
-  return [make("maple","#ffd768","#b94b1e"),make("oval","#f6c24f","#9e381b"),make("oak","#e79b34","#7b2a17"),make("maple","#d86b2f","#7d2b17"),make("oval","#d5bd45","#6f7024")];
+  return [
+    make("maple","#ffd86d","#b9471d"),
+    make("birch","#f4d75a","#9b7c1f"),
+    make("oak","#e7a03b","#7b2a17"),
+    make("beech","#e88935","#8e321d")
+  ];
 }
 
 function createAirLeaves(){
   const rnd=seeded(22771),sprites=makeAirLeafSprites();
-  const makeLeaf=()=>({
-    p:rnd(),
-    targetX:.05+rnd()*.90,
-    targetY:.24+rnd()*.74,
-    curve:(rnd()-.5)*.18,
-    speed:.060+rnd()*.095,
-    spin:(rnd()-.5)*1.05,
+  // Three perspective layers. Every leaf starts near the vanishing point and flies toward the viewer.
+  const leaves=Array.from({length:96},(_,i)=>({
+    offset:rnd(),
+    speed:.030+rnd()*.055,
+    side:(rnd()<.5?-1:1)*(.16+rnd()*.72),
+    lift:(rnd()-.5)*.46,
+    curve:(rnd()-.5)*.22,
+    spin:(rnd()-.5)*1.15,
     phase:rnd()*TAU,
-    sprite:Math.floor(rnd()*sprites.length),
-    side:rnd()<.5?-1:1
-  });
-  const leaves=Array.from({length:88},makeLeaf);
-  let last=0;
+    sprite:i%4,
+    layer:i%3
+  }));
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
-      const dt=last?Math.min(.05,time-last):1/30;last=time;
-      const count=zen?leaves.length:56;
-      const vanishX=width*.50,vanishY=height*.48;
-      const sunX=width*.72,sunY=height*.20;
-
+      const vanishX=width*.50,vanishY=height*.43;
+      const count=zen?leaves.length:62;
       for(let i=0;i<count;i++){
         const l=leaves[i];
-        l.p+=l.speed*dt*(zen?1.12:.78);
-        if(l.p>1.08){
-          Object.assign(l,makeLeaf(),{p:-rnd()*.20});
-        }
-
-        const p=Math.max(0,l.p);
-        const e=1-Math.pow(1-p,2.0);
-        const spread=Math.pow(e,1.32);
-        const px=vanishX+(l.targetX*width-vanishX)*spread+Math.sin(p*Math.PI)*l.curve*width;
-        const py=vanishY+(l.targetY*height-vanishY)*spread-Math.sin(p*Math.PI)*height*.035;
-        const size=3.5+Math.pow(e,1.75)*(zen?34:29);
-        const alpha=Math.min(1,p/.08)*Math.min(1,(1.06-p)/.12)*(.20+.67*e);
-        const shimmer=Math.max(0,1-Math.hypot(px-sunX,py-sunY)/Math.max(width,height)*2.0)
-          *(.28+.72*(.5+.5*Math.sin(time*1.35+l.phase)));
+        const p=(l.offset+time*l.speed*(zen?1.08:.78))%1;
+        const depth=Math.pow(p,1.55);
+        const layerScale=[.66,.86,1.08][l.layer];
+        const spreadX=l.side*width*.56*depth;
+        const spreadY=(.46+l.lift)*height*.66*depth;
+        const px=vanishX+spreadX+Math.sin(time*.62+l.phase)*width*.018*depth;
+        const py=vanishY+spreadY+Math.sin(time*.44+l.phase*1.6)*height*.014*depth;
+        const size=(3.5+37*depth)*layerScale;
+        const fade=Math.min(1,p/.09)*Math.min(1,(1-p)/.12);
+        const sunProximity=Math.max(0,1-Math.hypot(px-width*.72,py-height*.20)/Math.max(width,height)*1.85);
+        const shimmer=sunProximity*(.35+.65*(.5+.5*Math.sin(time*2.0+l.phase)));
 
         ctx.save();
         ctx.translate(px,py);
-        ctx.rotate(time*l.spin+l.phase+Math.sin(time*.8+l.phase)*.22);
-        ctx.globalAlpha=Math.max(0,alpha);
-        ctx.shadowColor=`rgba(255,190,76,${.08+.24*shimmer})`;
+        ctx.rotate(time*l.spin+l.phase+depth*.55);
+        ctx.globalAlpha=fade*(.30+.58*depth);
+        ctx.shadowColor=`rgba(255,199,91,${.08+.24*shimmer})`;
         ctx.shadowBlur=2+10*shimmer;
         ctx.drawImage(sprites[l.sprite],-size/2,-size/2,size,size);
-
-        if(shimmer>.26&&e>.28){
+        if(shimmer>.28){
           ctx.globalCompositeOperation="screen";
-          ctx.globalAlpha=shimmer*.16*e;
-          ctx.fillStyle="#ffe4a0";
-          ctx.beginPath();
-          ctx.ellipse(-size*.10,-size*.14,size*.14,size*.055,-.5,0,TAU);
-          ctx.fill();
+          ctx.globalAlpha=fade*shimmer*.18;
+          ctx.fillStyle="#ffe5a1";
+          ctx.beginPath();ctx.ellipse(-size*.10,-size*.16,size*.14,size*.075,-.45,0,TAU);ctx.fill();
         }
         ctx.restore();
       }
@@ -532,7 +517,7 @@ function createAirLeaves(){
   };
 }
 
-const SOUND={
+const SOUND={const SOUND={
   title:"Звучание Янтарного леса",
   loops:[
     {src:"audio-library/nature/forest_morning.ogg",volume:.15},
@@ -713,55 +698,55 @@ function createRenderer(ctx){
   uniform vec3 uCamera;
   uniform float uTravel;
   out vec3 vWorld;
+  out float vLogicalZ;
   void main(){
     float x=aPosition.x+uCamera.x;
     float z=aPosition.y;
-    float y=-.60+.08*sin((x+uTravel*.04)*.055)+.055*sin((z-uTravel)*.032+x*.018);
+    float logicalZ=z-uTravel;
+    float y=-.62+.07*sin(x*.045)+.055*sin(logicalZ*.030+x*.015);
     vWorld=vec3(x,y,z);
+    vLogicalZ=logicalZ;
     gl_Position=uViewProj*vec4(vWorld,1.0);
   }`;
   const GROUND_FS_LOCAL=`#version 300 es
   precision highp float;
   in vec3 vWorld;
+  in float vLogicalZ;
   out vec4 outColor;
   uniform vec3 uCamera;
   uniform float uTravel;
 
-  float pathCenter(float z){
-    return sin(z*.018)*10.5+sin(z*.0065+1.8)*5.2+sin(z*.031+.4)*2.2;
+  float trail(float z){
+    return sin(z*.017)*9.5+sin(z*.0064+1.55)*5.2+sin(z*.031+2.4)*2.0;
   }
-
   void main(){
-    float originalZ=mod(vWorld.z-uTravel,660.0);
-    if(originalZ<0.0)originalZ+=660.0;
-    float centre=pathCenter(originalZ);
-    float d=abs(vWorld.x-centre);
-    float path=1.0-smoothstep(2.7,5.6,d);
+    float center=trail(vLogicalZ);
+    float dist=abs(vWorld.x-center);
+    float edge=smoothstep(3.6,6.8,dist);
+    float leaf=.5+.5*sin(vWorld.x*.43+sin(vLogicalZ*.17)*1.7);
+    float leaf2=.5+.5*sin(vLogicalZ*.31-vWorld.x*.19);
+    float mottled=.5+.5*sin(vWorld.x*.12+vLogicalZ*.071);
 
-    float leaf=.5+.5*sin((vWorld.x+uTravel*.07)*.41+sin((vWorld.z-uTravel)*.16)*1.6);
-    float leaf2=.5+.5*sin((vWorld.z-uTravel)*.28-vWorld.x*.19);
-    float moss=.5+.5*sin(vWorld.x*.12+vWorld.z*.07);
+    vec3 pathDry=vec3(.38,.235,.105);
+    vec3 pathLight=vec3(.57,.36,.16);
+    vec3 soil=vec3(.115,.071,.031);
+    vec3 moss=vec3(.25,.25,.072);
+    vec3 ochre=vec3(.57,.265,.055);
+    vec3 rust=vec3(.50,.12,.035);
 
-    vec3 soil=vec3(.105,.067,.031);
-    vec3 mossCol=vec3(.23,.225,.075);
-    vec3 ochre=vec3(.48,.225,.058);
-    vec3 rust=vec3(.42,.105,.035);
-    vec3 trail=vec3(.30,.235,.155);
+    vec3 path=mix(pathDry,pathLight,.25+.28*mottled);
+    vec3 forest=mix(soil,moss,.22+.18*mottled);
+    forest=mix(forest,ochre,(.15+.25*leaf)*leaf2);
+    forest=mix(forest,rust,.12*(1.0-leaf2));
+    vec3 col=mix(path,forest,edge);
 
-    vec3 col=mix(soil,mossCol,.20+.16*moss);
-    col=mix(col,ochre,(.14+.21*leaf)*leaf2);
-    col=mix(col,rust,.09*(1.0-leaf2));
+    // Irregular leaf litter softens the trail edges.
+    float litter=smoothstep(2.4,7.8,dist)*(.18+.22*leaf*leaf2);
+    col=mix(col,ochre,litter*.42);
+    col*=.78+.18*(.5+.5*sin(vWorld.x*.031-vLogicalZ*.022));
 
-    float trailNoise=.5+.5*sin(vWorld.x*.83+vWorld.z*.47)+.22*sin(vWorld.z*1.61);
-    col=mix(col,trail*(.86+.12*trailNoise),path*.88);
-
-    // Fallen leaves soften the trail edges so it never looks like a road.
-    float edge=(1.0-smoothstep(5.2,8.4,d))*smoothstep(3.2,5.8,d);
-    col=mix(col,vec3(.50,.235,.055),edge*(.10+.15*leaf));
-
-    col*=.78+.18*(.5+.5*sin(vWorld.x*.035-vWorld.z*.021));
-    float fog=smoothstep(90.0,350.0,distance(vWorld,uCamera));
-    col=mix(col,vec3(.73,.64,.49),fog*.92);
+    float fog=smoothstep(105.0,390.0,distance(vWorld,uCamera));
+    col=mix(col,vec3(.74,.66,.52),fog*.92);
     outColor=vec4(col,1.0);
   }`;
 
@@ -832,28 +817,25 @@ function createRenderer(ctx){
   function renderWorld(time,camera){
     const zen=Boolean(camera);
     const cx=Math.max(-1.0,Math.min(1.0,camera?.x||0));
-    const cy=Math.max(-.62,Math.min(.62,camera?.y||0));
+    const cy=Math.max(-1.15,Math.min(1.15,camera?.y||0));
     const cz=camera?.z||0;
 
-    const travel=time*(zen?9.2:.30)+cz*84.0;
-    const wrap=(v,n)=>((v%n)+n)%n;
-    const nearOriginal=wrap(-travel,forest.spanZ);
-    const farOriginal=wrap(-travel-62,forest.spanZ);
+    // Constant forward glide in contemplation mode + manual depth acceleration.
+    const travel=time*(zen?9.6:.42)+cz*82.0;
+    const nearLogical=16.0-travel;
+    const farLogical=-58.0-travel;
+    const pathNear=trailCenter(nearLogical);
+    const pathFar=trailCenter(farLogical);
 
-    const pathHere=forestPathCenter(nearOriginal);
-    const pathAhead=forestPathCenter(farOriginal);
-
-    // We move along the trail, not through a static tunnel.
-    const eyeX=pathHere+cx*5.4+Math.sin(time*.025)*.18;
-    const eyeY=4.55+cy*2.9+Math.sin(time*.031)*.09;
+    const eyeX=pathNear+cx*7.4;
+    const eyeY=6.9+cy*5.6+Math.sin(time*.031)*.14;
     const eye=[eyeX,eyeY,16.0];
     const target=[
-      pathAhead+cx*1.5,
-      3.15+cy*.55,
-      -62
+      pathFar+cx*3.0,
+      eyeY-1.10+cy*.18,
+      -58
     ];
-
-    perspective(projection,zen ? .94 : 1.0,cssWidth/cssHeight,.12,760);
+    perspective(projection,zen ? .88 : .98,cssWidth/cssHeight,.12,860);
     lookAt(view,eye,target,[0,1,0]);multiply(vp,projection,view);
 
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);

@@ -104,7 +104,7 @@ function buildTopBar(partner) {
 }
 
 function buildBanner(config) {
-  const c = config.banner || {};
+  const c = config.partnerBanner || config.banner || {};
   const banner = make("aside", "banner glass");
   banner.id = "banner";
   banner.dataset.syolanaInjected = "true";
@@ -203,6 +203,68 @@ function buildBanner(config) {
 
   banner.append(visual, copy);
   return { banner, zenAction };
+}
+
+function buildPlatformPitch(config) {
+  const c = config.partnerPitch || {};
+  const section = make("section", "partner-platform-pitch glass");
+  section.dataset.syolanaInjected = "true";
+  section.setAttribute("aria-label", "О платформе Syolana");
+
+  const copy = make("div", "partner-platform-pitch-copy");
+  copy.append(
+    make("p", "eyebrow", c.eyebrow || "SYOLANA · ЕДИНАЯ ПЛАТФОРМА"),
+    make("h2", "", c.title || "Один сайт — целая творческая экосистема."),
+    make(
+      "p",
+      "partner-platform-pitch-text",
+      c.text ||
+        "Живые 3D-темы, музыка и звуковые сцены, иммерсивные книги, языковые курсы, публикации и режим созерцания работают как одна система и обновляются вместе с Syolana.",
+    ),
+  );
+
+  const features = make("div", "partner-platform-pitch-features");
+  (c.features || [
+    "Живые темы",
+    "Музыка",
+    "Книги со звуком",
+    "Языки",
+    "Публикации",
+    "Автообновления",
+  ]).forEach((label) => {
+    const item = make("span", "partner-platform-pitch-feature");
+    item.append(make("i", "", "✦"), document.createTextNode(label));
+    features.append(item);
+  });
+  copy.append(features);
+
+  const actions = make("div", "row partner-platform-pitch-actions");
+  const primary = make("a", "btn primary", c.primaryLabel || "Открыть Syolana");
+  primary.href = central(c.primaryHref || "#/");
+  primary.target = "_blank";
+  primary.rel = "noopener noreferrer";
+
+  const secondary = make(
+    "a",
+    "btn banner-secondary",
+    c.secondaryLabel || "Получить свой сайт",
+  );
+  secondary.href = central(c.secondaryHref || "#/join");
+  secondary.target = "_blank";
+  secondary.rel = "noopener noreferrer";
+
+  actions.append(primary, secondary);
+  copy.append(actions);
+
+  const note = make(
+    "p",
+    "partner-platform-pitch-note",
+    c.note ||
+      "Вы сейчас на сайте партнёра Syolana. Такой же иммерсивный слой можно подключить к вашему проекту.",
+  );
+
+  section.append(copy, note);
+  return section;
 }
 
 function buildMainNav() {
@@ -350,8 +412,10 @@ export async function mountPartnerCore(options = {}) {
   const controls = buildTopBar(partner);
   const config = await readJSON("config.json");
   const { banner, zenAction } = buildBanner(config);
+  const pitch = buildPlatformPitch(config);
   const nav = buildMainNav();
   shell.prepend(nav);
+  shell.prepend(pitch);
   shell.prepend(banner);
 
   const themeDialog = buildThemeDialog();
@@ -359,7 +423,7 @@ export async function mountPartnerCore(options = {}) {
   buildToast();
   closeDialogs();
 
-  const [{ ThemeEngine }, { Player }, { setupFlightLayer }] = await Promise.all([
+  const [{ ThemeEngine }, { Player }, { setupFlightLayer, platformFlightOffers }] = await Promise.all([
     import(central("themes.js") + "?v=" + encodeURIComponent(version)),
     import(central("player.js") + "?v=" + encodeURIComponent(version)),
     import(central("flight.js") + "?v=" + encodeURIComponent(version)),
@@ -371,7 +435,7 @@ export async function mountPartnerCore(options = {}) {
 
   const flight = setupFlightLayer({
     theme,
-    offers: [],
+    offers: platformFlightOffers(CORE_BASE),
     markInjected: true,
   });
 

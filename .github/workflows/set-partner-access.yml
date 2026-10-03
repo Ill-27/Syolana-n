@@ -1,0 +1,64 @@
+name: Partner access — manual switch
+
+on:
+  workflow_dispatch:
+    inputs:
+      partner_id:
+        description: Partner ID from integration.json
+        required: true
+        type: string
+      state:
+        description: Enable or disable Syolana
+        required: true
+        type: choice
+        options:
+          - "on"
+          - "off"
+      allowed_hosts:
+        description: Optional comma-separated hosts, e.g. example.ru,www.example.ru
+        required: false
+        type: string
+      note:
+        description: Optional internal note
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: partner-access
+  cancel-in-progress: false
+
+jobs:
+  switch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Update central partner registry
+        env:
+          PARTNER_ID: ${{ inputs.partner_id }}
+          PARTNER_STATE: ${{ inputs.state }}
+          PARTNER_HOSTS: ${{ inputs.allowed_hosts }}
+          PARTNER_NOTE: ${{ inputs.note }}
+        run: node scripts/set-partner-access.mjs "$PARTNER_ID" "$PARTNER_STATE" "$PARTNER_HOSTS" "$PARTNER_NOTE"
+
+      - name: Commit access state
+        shell: bash
+        run: |
+          if git diff --quiet -- partners/entitlements.json; then
+            echo "No registry changes."
+            exit 0
+          fi
+          git config user.name "Syolana access automation"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add partners/entitlements.json
+          git commit -m "Set partner access: ${{ inputs.partner_id }} → ${{ inputs.state }}"
+          git push

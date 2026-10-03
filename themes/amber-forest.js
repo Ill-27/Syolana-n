@@ -350,7 +350,7 @@ void main(){
 }
 `;
 
-function forestPathCenterfunction forestPathCenter(z){
+function forestPathCenter(z){
   return trailCenter(z);
 }
 

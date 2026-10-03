@@ -1,0 +1,50 @@
+name: Bump partner core version
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "styles.css"
+      - "assets/fonts/**"
+      - "config.json"
+      - "themes.js"
+      - "themes/**"
+      - "player.js"
+      - "flight.js"
+      - "partner-core.js"
+      - "partner-core.css"
+      - "audio-library/**"
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Write partner core version
+        shell: bash
+        run: |
+          mkdir -p partners
+          cat > partners/core-version.json <<JSON
+          {
+            "version": "${GITHUB_SHA}",
+            "updatedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "note": "Bumped automatically when partner-facing Syolana assets change."
+          }
+          JSON
+      - name: Commit version
+        shell: bash
+        run: |
+          if git diff --quiet -- partners/core-version.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add partners/core-version.json
+          git commit -m "Bump partner core version"
+          git push

@@ -292,3 +292,119 @@ body.zen > .partner-fallback-header {
     flex: 0 0 auto;
   }
 }
+
+
+/* Clear platform explanation for every active partner site. */
+.partner-platform-pitch {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 14px;
+  margin: 18px 0 22px;
+  padding: clamp(22px, 4.5vw, 34px);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 88% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 32%),
+    linear-gradient(145deg, #ffffff07, transparent 58%),
+    rgba(var(--surface), .66);
+}
+
+.partner-platform-pitch::after {
+  content: "";
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  right: -84px;
+  bottom: -112px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 32px color-mix(in srgb, var(--accent) 8%, transparent),
+    0 0 0 64px color-mix(in srgb, var(--accent) 4%, transparent);
+  pointer-events: none;
+}
+
+.partner-platform-pitch-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.partner-platform-pitch h2 {
+  max-width: 760px;
+  font-size: clamp(2rem, 4.7vw, 3.7rem);
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.partner-platform-pitch-text {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: var(--dim);
+  font: 400 .94rem/1.72 var(--interface);
+}
+
+.partner-platform-pitch-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.partner-platform-pitch-feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 6px 11px;
+  border: 1px solid #dacaff30;
+  border-radius: 999px;
+  background: rgba(var(--surface), .64);
+  color: #eee8f3;
+  font: 600 .72rem/1.35 var(--interface);
+}
+
+.partner-platform-pitch-feature i {
+  color: var(--accent);
+  font-style: normal;
+  font-size: .6rem;
+}
+
+.partner-platform-pitch-actions {
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.partner-platform-pitch-note {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: 760px;
+  color: color-mix(in srgb, var(--dim) 90%, white 10%);
+  font: 500 .72rem/1.55 var(--interface);
+}
+
+@media (max-width: 600px) {
+  .partner-platform-pitch {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .partner-platform-pitch h2 {
+    font-size: clamp(2rem, 9vw, 2.85rem);
+  }
+
+  .partner-platform-pitch-text {
+    font-size: .88rem;
+  }
+
+  .partner-platform-pitch-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .partner-platform-pitch-actions .btn {
+    width: 100%;
+  }
+}

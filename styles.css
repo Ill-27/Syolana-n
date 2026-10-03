@@ -3880,3 +3880,28 @@ html[data-theme="white-ocean-city"] .aurora-layer {
   border-color:color-mix(in srgb,#dce9e8 34%,var(--panel-border)) !important;
 }
 .zen #flight-layer{pointer-events:auto;touch-action:none!important;overscroll-behavior:none;}
+
+
+/* ===== SYOLANA ZEN FLIGHT CARD MOTION ===== */
+.zen .flight-planet{
+  transition:opacity .38s ease, filter .38s ease;
+}
+html[data-theme="white-ocean-city"] .flight-planet small{
+  display:block;
+  width:100%;
+  padding:2px 0 0 !important;
+  margin:0;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+  text-decoration:none !important;
+  -webkit-text-stroke:0 transparent;
+  text-shadow:none !important;
+  line-height:1.42;
+  color:var(--panel-muted) !important;
+}
+html[data-theme="white-ocean-city"] .flight-planet,
+html[data-theme="white-ocean-city"] .flight-planet *{
+  text-decoration:none !important;
+}

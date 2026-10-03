@@ -10,6 +10,7 @@ export class ThemeEngine {
     this.last = 0;
     this.phase = 0;
     this.sequence = 0;
+    this.forwardFlightUntil = 0;
     const themeBase = new URL("./themes/", import.meta.url);
     this.themeBase = themeBase;
     this.manifest = await fetch(new URL("manifest.json", themeBase), {
@@ -559,6 +560,7 @@ export class ThemeEngine {
   }
   setZen(active) {
     this.zen = active;
+    this.forwardFlightUntil = 0;
     // Enter the exact current theme, without replacing or restarting its animation.
     this.camera = { x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0, vz: 0 };
     document.querySelector(".aurora-background").style.transform = "";
@@ -568,6 +570,11 @@ export class ThemeEngine {
   move(dx = 0, dy = 0, dz = 0) {
     if (!this.zen) return;
     const cam = this.camera;
+
+    // Only forward depth flight clears the view. Sideways/up/down exploration
+    // and backwards movement keep Syolana feature cards available.
+    if (dz > 0.001) this.forwardFlightUntil = performance.now() + 1050;
+    else if (dz < -0.001) this.forwardFlightUntil = 0;
     cam.tx += dx;
     cam.ty += dy;
     const depthDirectScale=Number.isFinite(this.theme?.depthDirectScale)
@@ -641,6 +648,9 @@ export class ThemeEngine {
     const cam = this.camera,
       wrap = (v, n) => ((v % n) + n) % n;
     const drift=this.theme?.autoFlightCards?this.phase*.10:0,virtualZ=cam.z+drift;
+    const suppressForForwardFlight =
+      performance.now() < (this.forwardFlightUntil || 0) ||
+      (Number.isFinite(cam?.vz) && cam.vz > 0.055);
     const scale = Math.min(this.w, this.h) * 0.9;
     document.querySelectorAll(".flight-planet").forEach((node, i) => {
       const z = wrap(i * 1.53 + 1.4 - virtualZ, 8) + 0.45;
@@ -655,7 +665,8 @@ export class ThemeEngine {
         px > 95 &&
         px < this.w - 95 &&
         py > 140 &&
-        py < this.h - 140;
+        py < this.h - 140 &&
+        !suppressForForwardFlight;
       node.style.opacity = visible
         ? String(Math.min(1, (z - 0.85) * 2, (2.8 - z) * 2))
         : "0";

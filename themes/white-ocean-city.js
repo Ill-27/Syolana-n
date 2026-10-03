@@ -638,7 +638,6 @@ function createRenderer(ctx){
   document.head.append(style);
   const sound=createThemeSound();
   const originalFillText=ctx.fillText;
-  ctx.fillText=function(text,...args){if(text==="syolana.com")return;return originalFillText.call(this,text,...args)};
 
   const gl=canvas.getContext("webgl2",{
     alpha:false,
@@ -893,7 +892,7 @@ export default {
   id:"white-ocean-city",
   renderer:"webgl-city",
   particles:false,
-  marks:false,
+  marks:true,
   flightCards:true,
   autoFlightCards:true,
   continuousDepth:true,

@@ -163,13 +163,18 @@ void main(){
 
   if(branch){
     float az=iPhase;
-    float pitch=.40+.27*(.5+.5*sin(iScale.y*.47+az*1.73));
+    float thinBranch=1.0-smoothstep(.060,.115,iScale.x);
+    float pitch=mix(
+      .40+.27*(.5+.5*sin(iScale.y*.47+az*1.73)),
+      .82+.18*(.5+.5*sin(az*1.37+iScale.y*.31)),
+      thinBranch
+    );
     vec3 dir=normalize(vec3(cos(az)*cos(pitch),sin(pitch),sin(az)*cos(pitch)));
     vec3 ref=abs(dir.y)>.94?vec3(1.0,0.0,0.0):vec3(0.0,1.0,0.0);
     vec3 side=normalize(cross(dir,ref));
     vec3 binormal=normalize(cross(side,dir));
     float along=clamp(aPosition.y+.5,0.0,1.0);
-    float taper=mix(1.0,.30,along);
+    float taper=mix(1.0,.055,smoothstep(.06,1.0,along));
     world=center
       +dir*(aPosition.y*iScale.y)
       +side*(aPosition.x*iScale.x*taper)
@@ -178,7 +183,7 @@ void main(){
   }else{
     vec3 local=aPosition;
     float y01=clamp(local.y+.5,0.,1.);
-    local.xz*=mix(1.0,.61,smoothstep(.12,1.0,y01));
+    local.xz*=mix(1.0,.095,smoothstep(.16,.98,y01));
     float sway=sin(uTime*.34+iPhase)*.018*y01*y01;
     world=center+vec3(sway*iScale.y,0.0,0.0)+local*iScale;
     normal=aNormal;
@@ -427,10 +432,45 @@ function buildForest(){
           -Math.max(.02,tone),
           twigAz
         );
+
+        // A final twig tier makes the crown end in fine branchwork rather than rods.
+        if(rnd()>.32){
+          const tipAz=twigAz+(rnd()-.5)*.88;
+          const tipLen=twigLen*(.32+rnd()*.22);
+          const tx=ox+Math.cos(twigAz)*twigLen*.42;
+          const ty=oy+twigLen*.34;
+          const tz=oz+Math.sin(twigAz)*twigLen*.42;
+          trunks.push(
+            tx+Math.cos(tipAz)*tipLen*.14,
+            ty+tipLen*.18,
+            tz+Math.sin(tipAz)*tipLen*.14,
+            radius*.048,tipLen,radius*.036,
+            -Math.max(.02,tone),
+            tipAz
+          );
+        }
       }
     }
 
-    const totalLeaves=(species===1?500:610)+Math.floor(rnd()*(species===1?80:115));
+    // The main trunk disappears naturally into several slender crown leaders.
+    const leaderCount=species===1?3:4;
+    for(let k=0;k<leaderCount;k++){
+      const leaderAz=phase+k/leaderCount*TAU+(rnd()-.5)*.42;
+      const leaderLen=h*(.15+rnd()*.09);
+      const lx=x+Math.cos(leaderAz)*radius*.22;
+      const ly=base+h*(.79+rnd()*.055);
+      const lz=z+Math.sin(leaderAz)*radius*.22;
+      trunks.push(
+        lx+Math.cos(leaderAz)*leaderLen*.08,
+        ly+leaderLen*.24,
+        lz+Math.sin(leaderAz)*leaderLen*.08,
+        radius*.052,leaderLen,radius*.039,
+        -Math.max(.02,tone),
+        leaderAz
+      );
+    }
+
+    const totalLeaves=(species===1?565:690)+Math.floor(rnd()*(species===1?90:125));
     for(let i=0;i<totalLeaves;i++){
       const c=centers[Math.floor(rnd()*centers.length)];
       const a=rnd()*TAU,u=rnd()*2-1;
@@ -448,7 +488,7 @@ function buildForest(){
       );
     }
 
-    const outer=(species===1?105:145)+Math.floor(rnd()*42);
+    const outer=(species===1?125:175)+Math.floor(rnd()*48);
     for(let i=0;i<outer;i++){
       const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.91+rnd()*.32);
       addLeaf(
@@ -663,9 +703,9 @@ function createThemeSound(){
   return {dispose(){stop(true);document.removeEventListener("play",onPlay,true);window.removeEventListener("syolana:sceneaudio",onScene);button.remove();try{ac?.close()}catch{}}};
 }
 
-function terrainGeometry(cols=76,rows=132){
+function terrainGeometry(cols=84,rows=188){
   const verts=[],idx=[];
-  const x0=-125,x1=125,z0=34,z1=-760;
+  const x0=-220,x1=220,z0=38,z1=-1800;
   for(let r=0;r<=rows;r++){
     const v=r/rows,z=z0+(z1-z0)*v;
     for(let c=0;c<=cols;c++){
@@ -829,8 +869,12 @@ function createRenderer(ctx){
     float speck=smoothstep(.90,.965,.5+.5*sin(p.x*1.73+sin(p.y*.81)*2.2));
     col=mix(col,mix(ochre,copper,n2),speck*.16);
 
-    float fog=smoothstep(125.0,430.0,distance(vWorld,uCamera));
-    col=mix(col,vec3(.74,.67,.55),fog*.90);
+    float dist=distance(vWorld,uCamera);
+    float fog=smoothstep(92.0,360.0,dist);
+    float farFog=smoothstep(270.0,520.0,dist);
+    vec3 haze=vec3(.80,.75,.64);
+    col=mix(col,haze,fog*.94);
+    col=mix(col,haze,farFog);
     outColor=vec4(col,1.0);
   }`;
 
@@ -873,7 +917,7 @@ function createRenderer(ctx){
   gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,4,gl.FLOAT,false,ls,3*4);gl.vertexAttribDivisor(2,1);
   gl.enableVertexAttribArray(3);gl.vertexAttribPointer(3,1,gl.FLOAT,false,ls,7*4);gl.vertexAttribDivisor(3,1);
 
-  const terrain=terrainGeometry(64,116);
+  const terrain=terrainGeometry(84,188);
   const groundVao=keep(gl.createVertexArray());gl.bindVertexArray(groundVao);
   const gp=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,gp);gl.bufferData(gl.ARRAY_BUFFER,terrain.vertices,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
   const gi=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,gi);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,terrain.indices,gl.STATIC_DRAW);gl.bindVertexArray(null);
@@ -943,6 +987,17 @@ function createRenderer(ctx){
     draw({time,width,height,camera}){
       if(disposed)return;if(width!==cssWidth||height!==cssHeight)resize({width,height,ratio:window.devicePixelRatio||1});
       renderWorld(time,camera);airLeaves.draw(ctx,time,width,height,Boolean(camera));
+
+      // Horizon haze hides all geometric limits and makes the forest read as endless.
+      const horizonMist=ctx.createLinearGradient(0,height*.31,0,height*.62);
+      horizonMist.addColorStop(0,"rgba(226,211,181,0)");
+      horizonMist.addColorStop(.38,"rgba(226,211,181,.035)");
+      horizonMist.addColorStop(.58,"rgba(210,192,160,.090)");
+      horizonMist.addColorStop(.82,"rgba(202,181,147,.035)");
+      horizonMist.addColorStop(1,"rgba(202,181,147,0)");
+      ctx.fillStyle=horizonMist;
+      ctx.fillRect(0,height*.28,width,height*.38);
+
       const sun=ctx.createRadialGradient(width*.72,height*.22,4,width*.72,height*.22,Math.max(width,height)*.46);
       sun.addColorStop(0,"rgba(255,224,144,.20)");sun.addColorStop(.32,"rgba(255,186,78,.075)");sun.addColorStop(1,"rgba(255,186,78,0)");ctx.fillStyle=sun;ctx.fillRect(0,0,width,height);
       if(!camera){const veil=ctx.createLinearGradient(0,0,0,height);veil.addColorStop(0,"rgba(26,20,13,.025)");veil.addColorStop(.55,"rgba(22,15,9,.09)");veil.addColorStop(1,"rgba(14,10,6,.30)");ctx.fillStyle=veil;ctx.fillRect(0,0,width,height)}

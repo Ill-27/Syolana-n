@@ -1,509 +1,294 @@
-@font-face {
-  font-family: "Syolana Script";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("./assets/fonts/syolana-script.woff") format("woff");
-}
-@font-face {
-  font-family: "Syolana Display";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("./assets/fonts/syolana-display-500-normal.woff2") format("woff2");
-}
+/* Partner-only layout adapter.
+   The visual system itself is loaded directly from Syolana /styles.css and /assets/fonts/fonts.css. */
 
-html.syolana-active {
-  --sy-accent: var(--accent, #d0b4ff);
-  --sy-surface: var(--surface, 12, 12, 25);
-  --sy-dim: var(--dim, #ddd6e9);
-  --sy-ease: cubic-bezier(.22,1,.36,1);
-}
-
-html.syolana-active body {
+html.syolana-active,
+body.syolana-active {
   background: #030309;
 }
 
-.syolana-active .brand-copy strong {
-  font-family: "Syolana Script", "Segoe Print", cursive;
-  font-size: 1.25rem;
-  font-weight: 400;
-  line-height: 1;
-  color: var(--sy-accent);
-  text-shadow: 0 2px 8px #0007;
+body.syolana-active .site-header[hidden] {
+  display: none !important;
 }
 
-.syolana-active .partner-title,
-.syolana-active .section-heading h2,
-.syolana-active .post h3 {
-  font-family: "Syolana Script", "Segoe Print", cursive;
-  font-weight: 400;
-  color: var(--sy-accent);
-  text-shadow: 0 2px 9px #0008, 0 0 24px color-mix(in srgb, var(--sy-accent) 15%, transparent);
-}
-
-.syolana-active .partner-title {
-  font-size: clamp(3rem, 8vw, 5.4rem);
-  line-height: 1.05;
-}
-
-.syolana-active .post h3 {
-  font-size: clamp(1.65rem, 3vw, 2.2rem);
-}
-
-.syolana-active .glass,
-.syolana-active .post {
-  border-color: #e0d3ff36;
-  background:
-    linear-gradient(125deg, #ffffff06, transparent 60%),
-    rgba(var(--sy-surface), .74);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
-  box-shadow: 0 20px 65px #00000030, inset 0 1px 0 #ffffff13;
-}
-
-.syolana-core-background,
-.syolana-core-background .aurora-layer,
-.syolana-core-canvas {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.syolana-core-background {
-  z-index: -5;
-  overflow: hidden;
-  background: #030309;
-}
-
-.syolana-core-background .aurora-layer {
-  opacity: .7;
-  filter: blur(36px);
-  transform: scale(1.1);
-}
-
-.syolana-core-background .one {
-  background: radial-gradient(circle at 20% 18%, rgba(92,80,185,.28), transparent 42%);
-}
-.syolana-core-background .two {
-  background: radial-gradient(circle at 80% 20%, rgba(160,73,167,.18), transparent 38%);
-}
-.syolana-core-background .three {
-  background: radial-gradient(circle at 45% 76%, rgba(45,107,156,.18), transparent 44%);
-}
-
-.syolana-core-canvas {
-  z-index: -4;
-}
-
-.syolana-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.syolana-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.partner-brand-mark {
+  display: grid;
+  place-items: center;
   width: 47px;
   height: 47px;
   flex: 0 0 47px;
-  padding: 0;
-  border: 1px solid rgba(224,211,255,.19);
-  border-radius: 50%;
+  border: 1px solid #decaff42;
+  border-radius: 15px;
   background:
-    linear-gradient(135deg, rgba(255,255,255,.065), rgba(255,255,255,.012)),
-    rgba(var(--sy-surface), .72);
-  color: #f4eeff;
-  font: 400 24px/1 system-ui,sans-serif;
-  cursor: pointer;
-  box-shadow: 0 12px 34px #0003, inset 0 1px 0 #ffffff12;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: transform .25s var(--sy-ease), border-color .25s;
+    radial-gradient(circle at 30% 20%, #d7c4ff24, transparent 55%),
+    rgba(var(--surface), .82);
+  color: var(--accent);
+  font: 600 .72rem/1 var(--interface);
+  letter-spacing: .08em;
+  box-shadow:
+    0 0 24px color-mix(in srgb, var(--accent) 12%, transparent),
+    inset 0 1px 0 #ffffff12;
 }
 
-.syolana-icon-btn:hover,
-.syolana-icon-btn:focus-visible {
-  transform: translateY(-2px);
-  border-color: var(--sy-accent);
-  outline: none;
+.partner-brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 
-.syolana-icon-btn svg {
-  width: 21px;
-  height: 21px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+body.syolana-active #content-shell.shell > main {
+  width: auto;
+  margin: 28px 0 0;
 }
 
-.syolana-banner {
+body.syolana-active #content-shell.shell > footer {
+  width: auto;
+  margin: 54px auto 0;
+}
+
+body.syolana-active .hero {
   position: relative;
-  isolation: isolate;
-  min-height: 245px;
-  margin: 22px 0 18px;
-  padding: clamp(28px, 4.5vw, 48px);
   overflow: hidden;
-  border: 1px solid #e2d1ff42;
-  border-radius: 26px;
+  padding: clamp(32px, 5vw, 56px);
+  border-radius: var(--radius);
   background:
-    radial-gradient(circle at 80% 20%, #b68aff18, transparent 34%),
-    linear-gradient(135deg, #15101fe8, #080812f2);
-  box-shadow: 0 28px 80px #0005, inset 0 1px 0 #ffffff12;
+    radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 34%),
+    linear-gradient(135deg, #ffffff05, transparent 60%),
+    rgba(var(--surface), .68);
 }
 
-.syolana-banner::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(4,4,11,.9), rgba(6,5,14,.7) 55%, rgba(5,5,12,.28)),
-    radial-gradient(circle at 78% 26%, rgba(200,169,255,.16), transparent 34%);
-  z-index: -1;
+body.syolana-active .hero::after {
+  display: none;
 }
 
-.syolana-banner-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-  padding: 5px 10px 5px 7px;
-  border: 1px solid #dac8ff33;
-  border-radius: 999px;
-  background: #0b0914aa;
-  color: #efe7fb;
-  font: 600 .63rem/1 system-ui,sans-serif;
-  letter-spacing: .13em;
-}
-
-.syolana-banner-brand img {
-  width: 28px;
-  height: 28px;
-  filter: drop-shadow(0 0 10px #c3a2ff66);
-}
-
-.syolana-banner .eyebrow {
-  margin: 0 0 8px;
-  color: #d9cbed;
-  font: 600 .65rem/1.5 system-ui,sans-serif;
-  letter-spacing: .14em;
-}
-
-.syolana-banner h2 {
-  max-width: 680px;
-  margin: 0;
-  color: #fffaff;
-  font-family: "Syolana Script", "Segoe Print", cursive;
-  font-size: clamp(2.45rem, 5vw, 4.15rem);
+body.syolana-active .partner-title {
+  max-width: 840px;
+  font-family: var(--heading);
+  font-size: clamp(3rem, 7.4vw, 5.5rem);
   font-weight: 400;
-  line-height: 1.04;
-  text-wrap: balance;
-  text-shadow: 0 2px 26px #0008, 0 0 28px #c5a3ff1f;
+  line-height: 1.05;
+  color: var(--accent);
+  text-shadow:
+    0 2px 9px #0008,
+    0 0 24px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
-.syolana-banner p {
-  max-width: 640px;
-  margin: 14px 0 0;
-  color: #e6dfea;
-  font: 400 .95rem/1.65 system-ui,sans-serif;
+body.syolana-active .hero .tagline {
+  max-width: 760px;
+  margin-top: 17px;
+  color: #f3edf8;
+  font-size: clamp(1rem, 2vw, 1.18rem);
 }
 
-.syolana-banner-features {
+body.syolana-active .hero .description {
+  max-width: 760px;
+  margin-top: 12px;
+  color: var(--dim);
+  line-height: 1.75;
+}
+
+body.syolana-active .hero .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 18px;
-}
-
-.syolana-banner-feature {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 32px;
-  padding: 6px 11px;
-  border: 1px solid #d9c6ff26;
-  border-radius: 999px;
-  background: #0d0a17a6;
-  color: #eee7f6;
-  font: 500 .73rem/1.3 system-ui,sans-serif;
-}
-
-.syolana-banner-feature i {
-  color: var(--sy-accent);
-  font-style: normal;
-}
-
-.syolana-banner-actions {
-  display: flex;
   gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
-.syolana-banner-actions a,
-.syolana-banner-actions button {
+body.syolana-active .hero .action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 44px;
-  padding: 10px 18px;
-  border: 1px solid #decaff50;
-  border-radius: 30px;
-  background: rgba(var(--sy-surface),.86);
-  color: #f8f4ff;
-  font: 600 .84rem/1.3 system-ui,sans-serif;
-  text-decoration: none;
-  cursor: pointer;
+  padding: 9px 16px;
+  border: 1px solid #decaff42;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #be9df71c, #acbef309), #ffffff04;
+  color: #eee5ff;
+  font: 500 .82rem/1.4 var(--interface);
 }
 
-.syolana-banner-actions .primary {
-  border-color: var(--sy-accent);
-  background: linear-gradient(120deg,#a983d43d,#6c82b72e),#201a30;
+body.syolana-active .hero .action.primary {
+  border-color: var(--accent);
+  background: linear-gradient(120deg, #a983d43d, #6c82b72e), #201a30;
 }
 
-.syolana-banner-note {
-  margin-top: 11px !important;
-  color: #cfc5da !important;
-  font-size: .72rem !important;
+body.syolana-active .section {
+  margin-top: 48px;
 }
 
-.syolana-theme-dialog {
-  width: min(820px, calc(100% - 28px));
-  max-height: min(82vh, 760px);
-  padding: 22px;
-  border: 1px solid #dfceff38;
-  border-radius: 24px;
-  background: #0d0b15f7;
-  color: #f8f6ff;
-  box-shadow: 0 28px 90px #0009;
-}
-
-.syolana-theme-dialog::backdrop {
-  background: rgba(2,2,8,.68);
-  backdrop-filter: blur(8px);
-}
-
-.syolana-dialog-head {
+body.syolana-active .section-heading {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: end;
   gap: 18px;
+  flex-wrap: wrap;
   margin-bottom: 18px;
 }
 
-.syolana-dialog-head h2 {
-  margin: 0;
-  font-family: "Syolana Script", "Segoe Print", cursive;
-  font-size: clamp(2rem, 5vw, 3rem);
-  color: var(--sy-accent);
+body.syolana-active .section-heading h2,
+body.syolana-active .post h3 {
+  font-family: var(--heading);
   font-weight: 400;
+  color: var(--accent);
 }
 
-#theme-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 12px;
+body.syolana-active .section-heading h2 {
+  font-size: clamp(2.2rem, 4.6vw, 3.45rem);
 }
 
-.theme-option {
-  display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 13px;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #d9c9ff25;
-  border-radius: 18px;
-  background: #ffffff05;
-  color: #f3eef9;
-  text-align: left;
-  cursor: pointer;
+body.syolana-active .filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.theme-option[aria-pressed="true"] {
-  border-color: var(--sy-accent);
-  box-shadow: inset 0 0 0 1px var(--sy-accent);
-}
-
-.theme-option canvas {
-  width: 150px;
-  height: 88px;
-  border-radius: 12px;
-}
-
-.theme-option span {
-  display: grid;
-  gap: 4px;
-}
-
-.theme-option strong {
-  font-size: .9rem;
-}
-.theme-option small {
-  color: #c9bfd4;
-  line-height: 1.45;
-}
-
-.syolana-flight-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 180;
-  touch-action: none;
-  cursor: grab;
-}
-
-.syolana-flight-layer[hidden] {
-  display: none;
-}
-
-.syolana-flight-hint {
-  position: fixed;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%);
-  max-width: calc(100% - 32px);
-  padding: 9px 13px;
-  border: 1px solid #d9c8ff2c;
+body.syolana-active .filter {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #decaff32;
   border-radius: 999px;
-  background: #0c0a14b8;
-  color: #ded6e8;
-  font: 500 .72rem/1.4 system-ui,sans-serif;
-  text-align: center;
-  backdrop-filter: blur(10px);
-  pointer-events: none;
+  background: rgba(var(--surface), .74);
+  color: var(--dim);
+  font: 500 .76rem/1.3 var(--interface);
 }
 
-body.syolana-zen {
+body.syolana-active .filter[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+body.syolana-active .feed-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+body.syolana-active .post {
+  position: relative;
   overflow: hidden;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e0d3ff31;
+  border-radius: var(--radius);
+  background:
+    linear-gradient(125deg, #ffffff06, transparent 60%),
+    rgba(var(--surface), .72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow:
+    0 18px 52px #0000002b,
+    inset 0 1px 0 #ffffff0d;
 }
 
-body.syolana-zen .site-header > :not(.syolana-controls),
-body.syolana-zen main,
-body.syolana-zen footer,
-body.syolana-zen .syolana-music-dock {
+body.syolana-active .post::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d9c4ff66, transparent);
+}
+
+body.syolana-active .post .meta {
+  margin-bottom: 10px;
+  color: var(--accent);
+  font: 600 .68rem/1.4 var(--interface);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+body.syolana-active .post h3 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.2vw, 2.35rem);
+  line-height: 1.18;
+}
+
+body.syolana-active .post p {
+  margin: 13px 0 0;
+  color: var(--dim);
+  line-height: 1.72;
+  white-space: pre-line;
+}
+
+body.syolana-active .post-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+body.syolana-active .post-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #decaff38;
+  border-radius: 999px;
+  background: rgba(var(--surface), .72);
+  color: #f2ebf8;
+  font: 500 .76rem/1.3 var(--interface);
+}
+
+body.syolana-active .about {
+  margin-top: 48px;
+  padding: 22px 24px;
+  border-radius: var(--radius);
+  color: var(--dim);
+}
+
+body.syolana-active .about p:last-child {
+  margin: 0;
+}
+
+body.syolana-active footer {
+  color: var(--dim);
+  font-family: var(--interface);
+  font-size: .73rem;
+}
+
+body.zen #content-shell,
+body.zen > .partner-fallback-header {
   opacity: 0;
   pointer-events: none;
 }
 
-body.syolana-zen .site-header {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  z-index: 210;
-}
-
-body.syolana-zen .syolana-controls {
-  position: fixed;
-  top: max(16px, env(safe-area-inset-top));
-  right: max(16px, env(safe-area-inset-right));
-  z-index: 220;
-}
-
-.syolana-music-dock {
-  position: fixed;
-  left: 50%;
-  bottom: max(14px, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  z-index: 120;
-  display: grid;
-  grid-template-columns: minmax(0,1fr) auto auto;
-  align-items: center;
-  gap: 10px;
-  width: min(680px, calc(100% - 28px));
-  min-height: 58px;
-  padding: 8px 10px 8px 14px;
-  border: 1px solid #e0d3ff32;
-  border-radius: 20px;
-  background: rgba(var(--sy-surface), .88);
-  box-shadow: 0 18px 60px #0006;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-}
-
-.syolana-track {
-  min-width: 0;
-  display: grid;
-  gap: 1px;
-}
-.syolana-track strong,
-.syolana-track small {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.syolana-track strong {
-  font-size: .82rem;
-}
-.syolana-track small {
-  color: #c8bfce;
-  font-size: .67rem;
-}
-
-.syolana-transport {
-  display: flex;
-  gap: 6px;
-}
-.syolana-transport button {
-  width: 38px;
-  height: 38px;
-  border: 1px solid #ddceff28;
-  border-radius: 50%;
-  background: #ffffff06;
-  color: #f7f1ff;
-  cursor: pointer;
-}
-.syolana-theme-name {
-  max-width: 130px;
-  color: #cfc6d8;
-  font-size: .68rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@media (max-width: 700px) {
-  .syolana-banner {
-    min-height: 0;
-    padding: 25px 20px 23px;
-    border-radius: 22px;
+@media (max-width: 720px) {
+  body.syolana-active #content-shell.shell > main {
+    margin-top: 22px;
   }
-  .syolana-banner .eyebrow {
-    display: none;
+
+  body.syolana-active .hero {
+    padding: 29px 20px;
   }
-  .syolana-banner h2 {
-    font-size: clamp(2.35rem, 10vw, 3.35rem);
+
+  body.syolana-active .partner-title {
+    font-size: clamp(2.65rem, 11vw, 4.15rem);
   }
-  .syolana-banner-features {
-    display: none;
-  }
-  .syolana-banner-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  #theme-list {
+
+  body.syolana-active .feed-grid {
     grid-template-columns: 1fr;
   }
-  .theme-option {
-    grid-template-columns: 120px 1fr;
+
+  body.syolana-active .section-heading {
+    align-items: flex-start;
   }
-  .theme-option canvas {
-    width: 120px;
-    height: 72px;
+
+  body.syolana-active .filters {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
   }
-  .syolana-music-dock {
-    grid-template-columns: minmax(0,1fr) auto;
-  }
-  .syolana-theme-name {
+
+  body.syolana-active .filters::-webkit-scrollbar {
     display: none;
+  }
+
+  body.syolana-active .filter {
+    flex: 0 0 auto;
   }
 }

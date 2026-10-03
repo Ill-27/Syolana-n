@@ -389,7 +389,7 @@ function buildForest(){
         localTone,
         species, // exactly one leaf morphology per tree
         phase+rnd()*TAU,
-        .105+rnd()*.085,
+        species===1 ? .065+rnd()*.060 : .075+rnd()*.070,
         (rnd()-.5)*2.5
       );
     }
@@ -405,7 +405,7 @@ function buildForest(){
         Math.max(0,Math.min(1,tone+(rnd()-.5)*.18)),
         species,
         phase+rnd()*TAU,
-        .090+rnd()*.075,
+        species===1 ? .055+rnd()*.050 : .065+rnd()*.055,
         (rnd()-.5)*2.7
       );
     }
@@ -467,49 +467,56 @@ function makeAirLeafSprites(){
 
 function createAirLeaves(){
   const rnd=seeded(22771),sprites=makeAirLeafSprites();
-  // Three perspective layers. Every leaf starts near the vanishing point and flies toward the viewer.
-  const leaves=Array.from({length:124},(_,i)=>({
+  const leaves=Array.from({length:112},(_,i)=>({
     offset:rnd(),
-    speed:.040+rnd()*.060,
-    side:(rnd()<.5?-1:1)*(.16+rnd()*.72),
-    lift:(rnd()-.5)*.46,
-    curve:(rnd()-.5)*.22,
-    spin:(rnd()-.5)*1.15,
+    speed:.052+rnd()*.075,
+    targetX:.03+rnd()*.94,
+    targetY:.04+rnd()*.92,
+    curve:(rnd()-.5)*.14,
+    spin:(rnd()-.5)*1.05,
     phase:rnd()*TAU,
     sprite:i%4,
-    layer:i%3
+    layer:i%4
   }));
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
-      const vanishX=width*.50,vanishY=height*.43;
-      const count=zen?leaves.length:78;
+      const vanishX=width*.50,vanishY=height*.46;
+      const count=zen?leaves.length:74;
+      const sunX=width*.72,sunY=height*.20;
+
       for(let i=0;i<count;i++){
         const l=leaves[i];
-        const p=(l.offset+time*l.speed*(zen?1.08:.78))%1;
-        const depth=Math.pow(p,1.55);
-        const layerScale=[.66,.86,1.08][l.layer];
-        const spreadX=l.side*width*.56*depth;
-        const spreadY=(.46+l.lift)*height*.66*depth;
-        const px=vanishX+spreadX+Math.sin(time*.62+l.phase)*width*.018*depth;
-        const py=vanishY+spreadY+Math.sin(time*.44+l.phase*1.6)*height*.014*depth;
-        const size=(3.5+37*depth)*layerScale;
-        const fade=Math.min(1,p/.09)*Math.min(1,(1-p)/.12);
-        const sunProximity=Math.max(0,1-Math.hypot(px-width*.72,py-height*.20)/Math.max(width,height)*1.85);
-        const shimmer=sunProximity*(.35+.65*(.5+.5*Math.sin(time*2.0+l.phase)));
+        const p=(l.offset+time*l.speed*(zen?1.10:.76))%1;
+        const depth=Math.pow(p,1.70);
+        const scaleLayer=[.58,.76,.94,1.14][l.layer];
+
+        const tx=l.targetX*width,ty=l.targetY*height;
+        const px=vanishX+(tx-vanishX)*depth+Math.sin(p*Math.PI)*l.curve*width;
+        const py=vanishY+(ty-vanishY)*depth-Math.sin(p*Math.PI)*height*.025;
+
+        const size=(2.4+48*Math.pow(depth,1.45))*scaleLayer;
+        const fadeIn=Math.min(1,p/.075),fadeOut=Math.min(1,(1-p)/.10);
+        const alpha=Math.max(0,Math.min(fadeIn,fadeOut))*(.22+.72*depth);
+
+        const sunProximity=Math.max(0,1-Math.hypot(px-sunX,py-sunY)/Math.max(width,height)*1.75);
+        const shimmer=sunProximity*(.34+.66*(.5+.5*Math.sin(time*1.55+l.phase)));
 
         ctx.save();
         ctx.translate(px,py);
-        ctx.rotate(time*l.spin+l.phase+depth*.55);
-        ctx.globalAlpha=fade*(.30+.58*depth);
-        ctx.shadowColor=`rgba(255,199,91,${.08+.24*shimmer})`;
-        ctx.shadowBlur=2+10*shimmer;
+        ctx.rotate(time*l.spin+l.phase+Math.sin(time*.74+l.phase)*.24);
+        ctx.globalAlpha=alpha;
+        ctx.shadowColor=`rgba(255,199,91,${.07+.28*shimmer})`;
+        ctx.shadowBlur=2+11*shimmer;
         ctx.drawImage(sprites[l.sprite],-size/2,-size/2,size,size);
-        if(shimmer>.28){
+
+        if(shimmer>.25&&depth>.25){
           ctx.globalCompositeOperation="screen";
-          ctx.globalAlpha=fade*shimmer*.18;
-          ctx.fillStyle="#ffe5a1";
-          ctx.beginPath();ctx.ellipse(-size*.10,-size*.16,size*.14,size*.075,-.45,0,TAU);ctx.fill();
+          ctx.globalAlpha=alpha*shimmer*.18;
+          ctx.fillStyle="#ffe6a4";
+          ctx.beginPath();
+          ctx.ellipse(-size*.10,-size*.15,size*.14,size*.06,-.45,0,TAU);
+          ctx.fill();
         }
         ctx.restore();
       }
@@ -625,7 +632,7 @@ function trailGeometry(segments=180,span=720){
   for(let i=0;i<=segments;i++){
     const z=i/segments*span;
     const center=trailCenter(z);
-    const width=5.3+.75*Math.sin(z*.023+1.2)+.35*Math.sin(z*.071);
+    const width=7.2+.90*Math.sin(z*.023+1.2)+.45*Math.sin(z*.071);
     verts.push(center-width,z,center+width,z);
   }
   for(let i=0;i<segments;i++){
@@ -802,13 +809,13 @@ function createRenderer(ctx){
     float fine=.5+.5*sin(vPath.x*.82+vPath.y*.41);
     float coarse=.5+.5*sin(vPath.x*.18-vPath.y*.117+sin(vPath.y*.031));
     float litter=.5+.5*sin(vPath.x*1.73+vPath.y*.69);
-    vec3 earth=vec3(.43,.255,.105);
-    vec3 warm=vec3(.62,.39,.17);
-    vec3 ochre=vec3(.56,.25,.050);
-    vec3 russet=vec3(.40,.10,.028);
-    vec3 col=mix(earth,warm,.18+.24*fine*coarse);
-    col=mix(col,ochre,.08+.10*litter);
-    col=mix(col,russet,.035*(1.0-coarse));
+    vec3 earth=vec3(.51,.325,.155);
+    vec3 warm=vec3(.72,.49,.245);
+    vec3 ochre=vec3(.58,.285,.070);
+    vec3 russet=vec3(.42,.115,.035);
+    vec3 col=mix(earth,warm,.26+.30*fine*coarse);
+    col=mix(col,ochre,.055+.075*litter);
+    col=mix(col,russet,.026*(1.0-coarse));
     float sunfleck=pow(max(0.0,sin(vPath.y*.087+vPath.x*.22)),8.0);
     col+=vec3(.13,.085,.030)*sunfleck;
     outColor=vec4(col,1.0);
@@ -893,18 +900,18 @@ function createRenderer(ctx){
     const cz=camera?.z||0;
 
     // Constant forward glide in contemplation mode + manual depth acceleration.
-    const travel=time*(zen?9.6:.42)+cz*82.0;
+    const travel=time*(zen?15.2:.36)+cz*96.0;
     const nearLogical=16.0-travel;
     const farLogical=-58.0-travel;
     const pathNear=trailCenter(nearLogical);
     const pathFar=trailCenter(farLogical);
 
     const eyeX=pathNear+cx*7.4;
-    const eyeY=5.25+cy*4.4+Math.sin(time*.031)*.12;
+    const eyeY=4.35+cy*3.2+Math.sin(time*.031)*.10;
     const eye=[eyeX,eyeY,16.0];
     const target=[
       pathFar+cx*3.0,
-      eyeY-.82+cy*.14,
+      3.10+cy*.34,
       -58
     ];
     perspective(projection,zen ? .88 : .98,cssWidth/cssHeight,.12,860);
@@ -963,8 +970,8 @@ export default {
   continuousDepth:true,
   pathDepthGestures:true,
   flightBounds:{x:1.0,y:.62},
-  depthGain:6.4,
-  depthCap:18,
+  depthGain:7.4,
+  depthCap:22,
   accent:"#f2b45b",
   dim:"#dbc9b4",
   surface:"34,23,15",

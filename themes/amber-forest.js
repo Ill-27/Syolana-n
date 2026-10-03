@@ -77,48 +77,44 @@ out vec4 outColor;
 uniform float uTime;
 uniform float uAspect;
 uniform float uZen;
+
 float waves(vec2 p){
   float v=0.0;
-  v+=sin(p.x*.91+sin(p.y*.71)*1.18);
-  v+=sin(p.y*1.16-cos(p.x*.62)*1.08)*.68;
-  v+=sin((p.x+p.y)*1.72)*.31;
-  v+=sin(p.x*.47-p.y*1.39+sin(p.x*.32)*.8)*.20;
-  return .5+.5*(v/2.19);
+  v+=sin(p.x*.83+sin(p.y*.67)*1.16);
+  v+=sin(p.y*1.09-cos(p.x*.58)*1.04)*.62;
+  v+=sin((p.x+p.y)*1.61)*.28;
+  return .5+.5*(v/1.90);
 }
 float cloud(vec2 p){
   float a=waves(p);
-  float b=waves(vec2(p.x*.82-p.y*.57,p.x*.57+p.y*.82)*1.74+vec2(2.3,5.1));
-  float c=waves(vec2(p.x*.94+p.y*.34,-p.x*.34+p.y*.94)*2.85+vec2(-3.8,1.7));
-  return a*.59+b*.29+c*.12;
+  float b=waves(vec2(p.x*.82-p.y*.57,p.x*.57+p.y*.82)*1.69+vec2(2.1,4.3));
+  return a*.68+b*.32;
 }
 void main(){
   vec2 uv=vUv;
-  float horizon=.40;
-  vec3 top=vec3(.28,.48,.61);
-  vec3 upper=vec3(.55,.69,.72);
-  vec3 haze=vec3(.88,.82,.68);
-  vec3 sunlight=vec3(1.0,.78,.39);
-  vec3 col=mix(haze,mix(upper,top,smoothstep(.60,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
-  float sun=exp(-pow((uv.x-.72)*6.2,2.0)-pow((uv.y-.69)*8.8,2.0));
-  float halo=exp(-pow((uv.x-.72)*2.55,2.0)-pow((uv.y-.69)*3.9,2.0));
-  col+=sunlight*sun*.86+sunlight*halo*.10;
-  vec2 p=vec2((uv.x-.5)*uAspect*3.0,uv.y*3.0)+vec2(uTime*.0036,-uTime*.0010);
-  float low=cloud(p),high=cloud(p*.57+vec2(3.1,-2.0));
-  float lowMask=smoothstep(.40,.48,uv.y)*(1.0-smoothstep(.62,.73,uv.y));
-  float highMask=smoothstep(.57,.66,uv.y)*(1.0-smoothstep(.89,.98,uv.y));
-  float d1=smoothstep(.54,.72,low)*lowMask,d2=smoothstep(.56,.74,high)*highMask;
-  vec3 cloudShadow=vec3(.56,.58,.55),cloudBody=vec3(.85,.84,.76),cloudLight=vec3(.99,.94,.81);
-  vec3 lowCol=mix(cloudShadow,cloudBody,smoothstep(.54,.70,low));
-  lowCol=mix(lowCol,cloudLight,sun*.34);
-  col=mix(col,lowCol,d1*.42);
-  col=mix(col,vec3(.88,.88,.82),d2*.14);
+  float horizon=.435;
+  vec3 top=vec3(.30,.57,.70);
+  vec3 upper=vec3(.55,.72,.76);
+  vec3 haze=vec3(.92,.82,.63);
+  vec3 col=mix(haze,mix(upper,top,smoothstep(.58,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
+
+  float sun=exp(-pow((uv.x-.73)*5.3,2.0)-pow((uv.y-.50)*21.0,2.0));
+  col+=vec3(1.0,.74,.35)*sun*.78;
+
+  vec2 p=vec2((uv.x-.5)*uAspect*3.0,uv.y*3.0)+vec2(uTime*.0034,-uTime*.0009);
+  float c1=cloud(p);
+  float mask=smoothstep(.52,.59,uv.y)*(1.0-smoothstep(.86,.96,uv.y));
+  float density=smoothstep(.55,.73,c1)*mask;
+  vec3 cloudCol=mix(vec3(.70,.74,.72),vec3(.97,.94,.86),smoothstep(.56,.72,c1));
+  col=mix(col,cloudCol,density*.24);
+
   float mist=exp(-pow((uv.y-horizon)*30.0,2.0));
-  col=mix(col,vec3(.92,.82,.66),mist*(.22+.05*uZen));
-  col*=1.0-.08*pow(length((uv-.5)*vec2(.80,1.0)),1.72);
+  col=mix(col,vec3(.95,.84,.67),mist*(.22+.05*uZen));
+  col*=1.0-.10*pow(length((uv-.5)*vec2(.82,1.0)),1.7);
   outColor=vec4(col,1.0);
 }`;
 
-function prismGeometry(sides=7){
+function prismGeometry(function prismGeometry(sides=7){
   const p=[],n=[];
   for(let i=0;i<sides;i++){
     const a=i/sides*TAU,b=(i+1)/sides*TAU;
@@ -209,22 +205,32 @@ void main(){
   float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;
   float phase=iMeta.z;
   float size=iMeta.w;
-  float heightFactor=clamp((iOffset.y-1.5)/18.0,0.0,1.0);
-  float gust=sin(uTime*.72+phase)+.42*sin(uTime*.31+phase*1.73);
-  float angle=iAngle+gust*.16;
+
+  vec3 center=vec3(x,iOffset.y,z);
+  vec3 toCam=normalize(vec3(uCamera.x-center.x,0.0,uCamera.z-center.z));
+  vec3 right=normalize(cross(vec3(0.0,1.0,0.0),toCam));
+  vec3 up=vec3(0.0,1.0,0.0);
+
+  float gust=sin(uTime*.72+phase)+.38*sin(uTime*.31+phase*1.73);
+  float angle=iAngle+gust*.11;
   float ca=cos(angle),sa=sin(angle);
   vec2 q=vec2(aCorner.x*ca-aCorner.y*sa,aCorner.x*sa+aCorner.y*ca);
-  float flutter=sin(uTime*1.35+phase*2.1+aCorner.x*2.4)*.16;
-  vec3 world=vec3(
-    x+gust*(.12+.22*heightFactor)+q.x*size,
-    iOffset.y+q.y*size,
-    z+flutter*size*.42+sin(uTime*.47+phase)*.07
-  );
+
+  float flutter=sin(uTime*1.55+phase*2.1+aCorner.x*2.8);
+  vec3 world=center
+    +right*(q.x*size)
+    +up*(q.y*size)
+    +toCam*(flutter*.045*size)
+    +vec3(gust*.05,0.0,sin(uTime*.43+phase)*.035);
+
   gl_Position=uViewProj*vec4(world,1.0);
   vLeaf=aCorner;
   vTone=iMeta.x;vType=iMeta.y;vPhase=phase;
   vDistance=distance(world,uCamera);
-  vSun=.5+.5*sin(uTime*.58+phase*2.13+world.x*.025+world.y*.14);
+
+  vec3 sunDir=normalize(vec3(-.60,.78,.22));
+  vec3 pseudoNormal=normalize(toCam+up*.22+right*flutter*.08);
+  vSun=max(0.0,dot(pseudoNormal,sunDir));
 }`;
 
 const LEAF_FS=`#version 300 es
@@ -238,140 +244,147 @@ in float vDistance;
 out vec4 outColor;
 
 float mapleMask(vec2 p){
-  p.y*=1.02;
+  p.y*=1.04;
   float a=atan(p.y,p.x),r=length(p);
-  float lobes=.58+.18*cos(5.0*a)+.065*cos(10.0*a);
-  float leaf=1.0-smoothstep(lobes-.038,lobes+.030,r);
-  float stem=(1.0-smoothstep(.045,.095,abs(p.x)))*(1.0-smoothstep(-.98,-.52,p.y));
-  return max(leaf,stem*.72);
+  float lobes=.57+.19*cos(5.0*a)+.074*cos(10.0*a)+.025*cos(15.0*a);
+  float leaf=1.0-smoothstep(lobes-.030,lobes+.020,r);
+  float stem=(1.0-smoothstep(.030,.065,abs(p.x)))*(1.0-smoothstep(-1.02,-.60,p.y));
+  return max(leaf,stem*.74);
 }
 float birchMask(vec2 p){
-  p.y+=.02;
-  float r=pow(abs(p.x)*1.32,2.18)+pow(abs(p.y)*.91,2.05);
-  float tip=1.0-smoothstep(.72,1.02,r);
-  return tip;
+  p.y+=.05;
+  float body=pow(abs(p.x)*1.42,2.28)+pow(abs(p.y)*.92,2.0);
+  float serr=.018*sin(24.0*atan(p.y,p.x));
+  return 1.0-smoothstep(.80+serr,.98+serr,body);
 }
 float oakMask(vec2 p){
-  p.y*=.91;
+  p.y*=.92;
   float a=atan(p.y,p.x),r=length(p);
-  float lobes=.55+.105*cos(4.0*a)+.052*cos(8.0*a)+.025*cos(12.0*a);
-  return 1.0-smoothstep(lobes-.040,lobes+.032,r);
+  float lobes=.56+.115*cos(4.0*a)+.058*cos(8.0*a)+.028*cos(12.0*a);
+  return 1.0-smoothstep(lobes-.030,lobes+.022,r);
 }
 float beechMask(vec2 p){
-  float r=pow(abs(p.x)*1.14,2.0)+pow(abs(p.y)*.95,2.22);
-  return 1.0-smoothstep(.80,1.01,r);
+  float body=pow(abs(p.x)*1.16,2.12)+pow(abs(p.y)*.94,2.26);
+  float serr=.012*sin(34.0*atan(p.y,p.x));
+  return 1.0-smoothstep(.82+serr,1.0+serr,body);
 }
 void main(){
   vec2 p=vLeaf;
   float mask=vType<.5?mapleMask(p):(vType<1.5?birchMask(p):(vType<2.5?oakMask(p):beechMask(p)));
-  if(mask<.07)discard;
+  if(mask<.065)discard;
 
-  vec3 yellow=vec3(1.00,.73,.18);
-  vec3 gold=vec3(.98,.54,.09);
-  vec3 orange=vec3(.91,.29,.055);
-  vec3 scarlet=vec3(.69,.105,.035);
-  vec3 olive=vec3(.49,.44,.085);
+  vec3 yellow=vec3(1.00,.77,.22);
+  vec3 gold=vec3(1.00,.59,.08);
+  vec3 orange=vec3(.94,.33,.045);
+  vec3 scarlet=vec3(.72,.105,.028);
+  vec3 olive=vec3(.52,.47,.09);
   vec3 col=vTone<.22?mix(yellow,gold,vTone/.22):
            vTone<.50?mix(gold,orange,(vTone-.22)/.28):
            vTone<.78?mix(orange,scarlet,(vTone-.50)/.28):
            mix(scarlet,olive,(vTone-.78)/.22);
 
-  float edge=1.0-smoothstep(.72,1.02,length(p));
-  float midrib=exp(-abs(p.x)*23.0)*(.08+.22*(1.0-abs(p.y)));
-  float sideVeins=(.5+.5*sin((abs(p.y)*9.0+abs(p.x)*5.5)*3.14159))*exp(-abs(p.x)*3.0)*.055;
-  float translucency=.08+.18*max(0.0,vSun);
-  col*=.78+.28*edge;
-  col+=vec3(.28,.13,.035)*(midrib+sideVeins);
-  col+=vec3(1.0,.64,.20)*pow(max(0.0,vSun),6.0)*(.12+.28*edge);
-  col=mix(col,vec3(1.0,.72,.28),translucency*max(0.0,-p.y));
+  float r=length(p);
+  float edge=1.0-smoothstep(.70,1.02,r);
+  float midrib=exp(-abs(p.x)*26.0)*(.08+.24*(1.0-abs(p.y)));
+  float veins=(.5+.5*sin((abs(p.y)*10.0+abs(p.x)*6.0)*3.14159))*exp(-abs(p.x)*3.6)*.052;
 
-  float fog=smoothstep(95.0,360.0,vDistance);
-  col=mix(col,vec3(.77,.68,.53),fog*.93);
-  float alpha=mask*(1.0-smoothstep(285.0,390.0,vDistance));
+  col*=.80+.24*edge;
+  col+=vec3(.20,.075,.018)*(midrib+veins);
+  col+=vec3(1.0,.72,.28)*pow(vSun,5.0)*(.18+.36*edge);
+  col=mix(col,vec3(1.0,.80,.36),vSun*.16);
+
+  float fog=smoothstep(105.0,390.0,vDistance);
+  col=mix(col,vec3(.80,.70,.55),fog*.92);
+  float alpha=mask*(1.0-smoothstep(305.0,420.0,vDistance));
   outColor=vec4(col,alpha);
 }`;
 
 function buildForest(){
-  const rnd=seeded(91277),spanZ=620,spanX=260,trunks=[],leaves=[];
-  const addLeaf=(x,y,z,tone,type,phase,size,angle)=>{
-    leaves.push(x,y,z,tone,type,phase,size,angle);
+  const rnd=seeded(91277),spanZ=760,spanX=380,trunks=[],leaves=[];
+  const addLeaf=(x,y,z,tone,type,phase,size,angle)=>leaves.push(x,y,z,tone,type,phase,size,angle);
+  const speciesLeafType=(species,r)=>{
+    if(species===0)return r<.74?0:(r<.88?3:2); // maple
+    if(species===1)return r<.74?1:(r<.88?3:0); // birch
+    if(species===2)return r<.72?2:(r<.88?3:0); // oak
+    return r<.78?3:(r<.90?1:2);               // beech
+  };
+  const clearAt=(x,z)=>{
+    const a=Math.sin(z*.020)*32+Math.sin(z*.0065+1.8)*18;
+    const b=Math.sin(z*.013+2.2)*60;
+    const da=Math.abs(x-a),db=Math.abs(x-b);
+    const glade=Math.min(da,db);
+    return glade<7.5?1:(glade<13?(13-glade)/5.5:0);
   };
   const addTree=(x,z)=>{
-    const base=-.58+.16*Math.sin(x*.043)+.11*Math.sin(z*.029+x*.017);
-    const h=9.5+rnd()*14.8;
-    const radius=.38+rnd()*.52;
-    const tone=rnd();
+    const base=-.60+.14*Math.sin(x*.041)+.10*Math.sin(z*.028+x*.015);
+    const species=Math.floor(rnd()*4);
+    const h=(species===1?12:10.5)+rnd()*(species===1?15:13);
+    const radius=(species===1?.30:.38)+rnd()*(species===1?.30:.48);
+    const tone=Math.max(0,Math.min(1,(species===3?.72:species===2?.50:species===1?.20:.34)+(rnd()-.5)*.26));
     const phase=rnd()*TAU;
+
     trunks.push(x,base+h*.5,z,radius*2,h,radius*2,tone,phase);
 
-    const crownBase=base+h*(.56+rnd()*.06);
-    const crownTop=base+h*(.96+rnd()*.04);
-    const branchCount=5+Math.floor(rnd()*3);
-    const centers=[{x,y:crownTop-.8,z,r:2.6+rnd()*1.6}];
+    const crownBase=base+h*(species===1?.48:.54);
+    const crownTop=base+h*(.96+rnd()*.035);
+    const branchCount=species===1?6+Math.floor(rnd()*3):8+Math.floor(rnd()*4);
+    const centers=[{x,y:crownTop-.7,z,r:species===1?1.9+rnd()*1.0:2.5+rnd()*1.35}];
 
     for(let b=0;b<branchCount;b++){
-      const a=b/branchCount*TAU+rnd()*.65;
-      const reach=2.1+rnd()*3.4;
-      const y=crownBase+(crownTop-crownBase)*(.25+rnd()*.66);
-      centers.push({
-        x:x+Math.cos(a)*reach,
-        y,
-        z:z+Math.sin(a)*reach,
-        r:2.0+rnd()*1.85
-      });
-      // slim secondary stems make silhouettes less like poles with balls
-      if(rnd()>.35){
-        const sh=.20*h+rnd()*.15*h;
+      const a=b/branchCount*TAU+rnd()*.52;
+      const reach=(species===1?1.7:2.3)+rnd()*(species===1?2.3:3.6);
+      const y=crownBase+(crownTop-crownBase)*(.18+rnd()*.72);
+      centers.push({x:x+Math.cos(a)*reach,y,z:z+Math.sin(a)*reach,r:(species===1?1.45:1.85)+rnd()*(species===1?1.0:1.55)});
+      if(rnd()>.22){
+        const sh=.16*h+rnd()*.16*h;
         trunks.push(
-          x+Math.cos(a)*reach*.52,
-          y-sh*.48,
-          z+Math.sin(a)*reach*.52,
-          radius*.44,radius*.44+sh,radius*.44,
+          x+Math.cos(a)*reach*.48,
+          y-sh*.46,
+          z+Math.sin(a)*reach*.48,
+          radius*.30,radius*.30+sh,radius*.30,
           Math.min(1,tone+.08),
           phase+a
         );
       }
     }
 
-    const totalLeaves=72+Math.floor(rnd()*48);
+    const totalLeaves=(species===1?150:185)+Math.floor(rnd()*(species===1?55:85));
     for(let i=0;i<totalLeaves;i++){
       const c=centers[Math.floor(rnd()*centers.length)];
-      const a=rnd()*TAU;
-      const u=rnd()*2-1;
-      const rr=Math.pow(rnd(),.56)*c.r;
+      const a=rnd()*TAU,u=rnd()*2-1;
+      const rr=Math.pow(rnd(),.58)*c.r;
       const radial=Math.sqrt(Math.max(0,1-u*u))*rr;
-      const lx=c.x+Math.cos(a)*radial*(.88+rnd()*.22);
-      const ly=c.y+u*rr*(.58+rnd()*.24);
-      const lz=c.z+Math.sin(a)*radial*(.88+rnd()*.22);
-      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.38));
-      const q=rnd();
-      const type=q<.36?0:(q<.61?1:(q<.84?2:3));
-      addLeaf(lx,ly,lz,localTone,type,phase+rnd()*TAU,.42+rnd()*.42,(rnd()-.5)*1.6);
+      const lx=c.x+Math.cos(a)*radial*(.92+rnd()*.16);
+      const ly=c.y+u*rr*(species===1?.82:.68);
+      const lz=c.z+Math.sin(a)*radial*(.92+rnd()*.16);
+      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.28));
+      const type=speciesLeafType(species,rnd());
+      addLeaf(lx,ly,lz,localTone,type,phase+rnd()*TAU,.18+rnd()*.27,(rnd()-.5)*2.2);
     }
 
-    // sparse outer leaves break the crown edge and create real depth
-    const outer=18+Math.floor(rnd()*16);
+    const outer=36+Math.floor(rnd()*30);
     for(let i=0;i<outer;i++){
-      const c=centers[Math.floor(rnd()*centers.length)];
-      const a=rnd()*TAU,rr=c.r*(.88+rnd()*.55);
-      const q=rnd(),type=q<.42?0:(q<.68?1:(q<.88?2:3));
+      const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.90+rnd()*.48);
       addLeaf(
         c.x+Math.cos(a)*rr,
-        c.y+(rnd()-.45)*c.r*.95,
+        c.y+(rnd()-.46)*c.r*(species===1?1.0:.82),
         c.z+Math.sin(a)*rr,
-        Math.max(0,Math.min(1,tone+(rnd()-.5)*.44)),
-        type,phase+rnd()*TAU,.38+rnd()*.40,(rnd()-.5)*1.8
+        Math.max(0,Math.min(1,tone+(rnd()-.5)*.34)),
+        speciesLeafType(species,rnd()),
+        phase+rnd()*TAU,
+        .16+rnd()*.24,
+        (rnd()-.5)*2.4
       );
     }
   };
 
-  for(let z=4;z<spanZ;z+=10.5+rnd()*4.2){
-    const rows=5+Math.floor(rnd()*3);
+  for(let z=4;z<spanZ;z+=11.5+rnd()*4.5){
+    const rows=7+Math.floor(rnd()*4);
     for(let j=0;j<rows;j++){
-      let x=-spanX*.48+rnd()*spanX*.96;
-      // soft clear pockets instead of a straight corridor/path
-      const pocket=Math.sin(z*.027)*15+Math.sin(z*.011)*9;
-      if(Math.abs(x-pocket)<8&&rnd()>.34)x+=x<pocket?-10:10;
+      const x=-spanX*.49+rnd()*spanX*.98;
+      const clear=clearAt(x,z);
+      if(clear>.72&&rnd()<.88)continue;
+      if(clear>.25&&rnd()<clear*.62)continue;
       addTree(x,z+rnd()*8);
     }
   }
@@ -384,7 +397,7 @@ function buildForest(){
   };
 }
 
-function makeAirLeafSprites(){
+function makeAirLeafSprites()function makeAirLeafSprites(){
   const make=(kind,top,bottom)=>{
     const c=document.createElement("canvas");c.width=96;c.height=96;
     const x=c.getContext("2d");x.translate(48,46);
@@ -409,13 +422,13 @@ function makeAirLeafSprites(){
 
 function createAirLeaves(){
   const rnd=seeded(22771),sprites=makeAirLeafSprites();
-  const leaves=Array.from({length:92},()=>({x:rnd()*1.18-.09,y:rnd()*1.24-.16,depth:.28+rnd()*.92,vy:.050+rnd()*.060,vx:(rnd()-.5)*.028,spin:(rnd()-.5)*1.25,phase:rnd()*TAU,sprite:Math.floor(rnd()*sprites.length)}));
+  const leaves=Array.from({length:118},()=>({x:rnd()*1.18-.09,y:rnd()*1.24-.16,depth:.28+rnd()*.92,vy:.050+rnd()*.060,vx:(rnd()-.5)*.028,spin:(rnd()-.5)*1.25,phase:rnd()*TAU,sprite:Math.floor(rnd()*sprites.length)}));
   let last=0;
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
       const dt=last?Math.min(.05,time-last):1/30;last=time;
-      const count=zen?leaves.length:62,sunX=width*.72,sunY=height*.22;
+      const count=zen?leaves.length:76,sunX=width*.72,sunY=height*.22;
       for(let i=0;i<count;i++){
         const l=leaves[i];l.y+=l.vy*dt*(zen?1.10:.82);l.x+=(l.vx+Math.sin(time*.38+l.phase)*.010)*dt;
         if(l.y>1.12||l.x>1.14||l.x<-.14){l.y=-.14-rnd()*.24;l.x=.02+rnd()*.96;l.depth=.28+rnd()*.92;l.sprite=Math.floor(rnd()*sprites.length)}
@@ -705,20 +718,20 @@ function createRenderer(ctx){
   function renderWorld(time,camera){
     const zen=Boolean(camera);
     const cx=camera?.x||0;
-    const cy=Math.max(-1.08,Math.min(1.08,camera?.y||0));
+    const cy=Math.max(-1.42,Math.min(1.42,camera?.y||0));
     const cz=camera?.z||0;
 
-    // Camera coordinates are world travel, not tiny look offsets.
-    const worldX=cx*44.0+Math.sin(time*.026)*1.25;
-    const travel=time*(zen?3.35:.34)+cz*44.0;
-    const eyeY=8.6+cy*6.3+Math.sin(time*.035)*.20;
-    const eye=[worldX,eyeY,16.2];
+    // Three independent axes. The forest recycles around the camera, so travel is effectively endless.
+    const worldX=cx*30.0+Math.sin(time*.024)*.75;
+    const travel=time*(zen?6.2:.34)+cz*72.0;
+    const eyeY=8.4+cy*8.2+Math.sin(time*.034)*.16;
+    const eye=[worldX,eyeY,16.4];
     const target=[
-      worldX+Math.sin(time*.019)*.55,
-      eyeY-1.25+cy*.12,
-      -58
+      worldX+Math.sin(time*.018)*.42,
+      eyeY-1.10+cy*.08,
+      -64
     ];
-    perspective(projection,zen ? .91 : 1.0,cssWidth/cssHeight,.12,700);
+    perspective(projection,zen ? .90 : 1.0,cssWidth/cssHeight,.12,820);
     lookAt(view,eye,target,[0,1,0]);multiply(vp,projection,view);
 
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);
@@ -760,9 +773,9 @@ export default {
   flightCards:true,
   autoFlightCards:true,
   continuousDepth:true,
-  flightBounds:{y:1.08},
-  depthGain:3.2,
-  depthCap:8.5,
+  flightBounds:{y:1.42},
+  depthGain:5.8,
+  depthCap:16,
   accent:"#f2b45b",
   dim:"#dbc9b4",
   surface:"34,23,15",

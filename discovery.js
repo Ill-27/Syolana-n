@@ -73,7 +73,7 @@ export function setupDiscovery({ theme, zen, player }) {
     } else {
       e.preventDefault();
       const panScale=Math.min(innerWidth,innerHeight)<=700?175:Math.max(360,Math.min(innerWidth,innerHeight));
-      theme.move(dx/panScale,-dy/panScale,0);
+      theme.move(dx/(panScale*.72),-dy/(panScale*.72),0);
     }
   }, { passive:false });
   const end = (e) => {
@@ -123,7 +123,7 @@ export function setupDiscovery({ theme, zen, player }) {
       const t=e.touches[0];
       if(touchLast){
         const dx=t.clientX-touchLast.x,dy=t.clientY-touchLast.y;
-        const scale=Math.min(innerWidth,innerHeight)<=700?118:240;
+        const scale=Math.min(innerWidth,innerHeight)<=700?74:180;
         theme.move(dx/scale,-dy/scale,0);
       }
       touchLast={x:t.clientX,y:t.clientY};
@@ -132,8 +132,8 @@ export function setupDiscovery({ theme, zen, player }) {
       const next=touchDistance(e.touches);
       const centerY=(e.touches[0].clientY+e.touches[1].clientY)*.5;
       let dz=0;
-      if(touchPinch&&next)dz+=Math.log(next/touchPinch)*5.4;
-      if(touchCenterY)dz+=(touchCenterY-centerY)/54;
+      if(touchPinch&&next)dz+=Math.log(next/touchPinch)*9.0;
+      if(touchCenterY)dz+=(touchCenterY-centerY)/28;
       if(Math.abs(dz)>.001)theme.move(0,0,dz);
       touchPinch=next;
       touchCenterY=centerY;

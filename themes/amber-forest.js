@@ -679,22 +679,7 @@ function terrainGeometry(cols=76,rows=132){
   return {vertices:new Float32Array(verts),indices:new Uint32Array(idx)};
 }
 
-function trailGeometry(segments=180,span=720){
-  const verts=[],idx=[];
-  for(let i=0;i<=segments;i++){
-    const z=i/segments*span;
-    const center=trailCenter(z);
-    const width=7.2+.90*Math.sin(z*.023+1.2)+.45*Math.sin(z*.071);
-    verts.push(center-width,z,center+width,z);
-  }
-  for(let i=0;i<segments;i++){
-    const a=i*2,b=a+1,c=a+2,d=a+3;
-    idx.push(a,c,b,b,c,d);
-  }
-  return {vertices:new Float32Array(verts),indices:new Uint32Array(idx)};
-}
-
-function fallbackRenderer(ctx){
+function fallbackRenderer(ctx){function fallbackRenderer(ctx){
   const sprites=makeAirLeafSprites();
   const drifting=createAirLeaves();
   return {
@@ -849,47 +834,9 @@ function createRenderer(ctx){
     outColor=vec4(col,1.0);
   }`;
 
-  const PATH_VS_LOCAL=`  const PATH_VS_LOCAL=`#version 300 es
-  layout(location=0) in vec2 aPosition;
-  uniform mat4 uViewProj;
-  uniform float uTravel;
-  uniform float uSpan;
-  out vec2 vPath;
-  void main(){
-    float logicalZ=aPosition.y;
-    float z=mod(logicalZ+uTravel,uSpan)-uSpan;
-    float y=-.405+.020*sin(logicalZ*.052)+.012*sin(aPosition.x*.17);
-    vPath=aPosition;
-    gl_Position=uViewProj*vec4(aPosition.x,y,z,1.0);
-  }`;
-
-  const PATH_FS_LOCAL=`#version 300 es
-  precision highp float;
-  in vec2 vPath;
-  out vec4 outColor;
-  float field(vec2 p){
-    float v=0.0;
-    v+=sin(p.x+sin(p.y*.72)*1.2);
-    v+=sin(p.y*1.31-cos(p.x*.61)*1.0)*.62;
-    v+=sin((p.x+p.y)*1.87)*.28;
-    return .5+.5*(v/1.90);
-  }
-  void main(){
-    float n1=field(vPath*.085);
-    float n2=field(vec2(vPath.x*.24-vPath.y*.11,vPath.x*.11+vPath.y*.24)+vec2(4.1,-2.3));
-    vec3 earth=vec3(.46,.285,.125);
-    vec3 sun=vec3(.67,.45,.22);
-    vec3 leaf=vec3(.56,.255,.055);
-    vec3 col=mix(earth,sun,.24+.32*n1);
-    col=mix(col,leaf,smoothstep(.74,.88,n2)*.12);
-    float fleck=smoothstep(.78,.92,field(vPath*.034+vec2(1.3,2.1)));
-    col+=vec3(.11,.078,.028)*fleck;
-    outColor=vec4(col,1.0);
-  }`;
-
-  let skyProgram,trunkProgram,leafProgram,groundProgram,pathProgram;
+  let skyProgram,trunkProgram,leafProgram,groundProgram;
   try{
-    skyProgram=program(gl,SKY_VS,SKY_FS);trunkProgram=program(gl,TRUNK_VS,TRUNK_FS);leafProgram=program(gl,LEAF_VS,LEAF_FS);groundProgram=program(gl,GROUND_VS_LOCAL,GROUND_FS_LOCAL);pathProgram=program(gl,PATH_VS_LOCAL,PATH_FS_LOCAL);
+    skyProgram=program(gl,SKY_VS,SKY_FS);trunkProgram=program(gl,TRUNK_VS,TRUNK_FS);leafProgram=program(gl,LEAF_VS,LEAF_FS);groundProgram=program(gl,GROUND_VS_LOCAL,GROUND_FS_LOCAL);
   }catch(error){
     console.warn("Amber Forest WebGL unavailable",error);canvas.remove();
     const fallback=fallbackRenderer(ctx),base=fallback.dispose;fallback.dispose=()=>{base?.();style.remove();sound.dispose()};return fallback;
@@ -931,13 +878,6 @@ function createRenderer(ctx){
   const gp=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,gp);gl.bufferData(gl.ARRAY_BUFFER,terrain.vertices,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
   const gi=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,gi);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,terrain.indices,gl.STATIC_DRAW);gl.bindVertexArray(null);
 
-  const trail=trailGeometry(180,forest.spanZ);
-  const pathVao=keep(gl.createVertexArray());gl.bindVertexArray(pathVao);
-  const pathPos=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,pathPos);gl.bufferData(gl.ARRAY_BUFFER,trail.vertices,gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
-  const pathIdx=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,pathIdx);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,trail.indices,gl.STATIC_DRAW);
-  gl.bindVertexArray(null);
-
   const projection=new Float32Array(16),view=new Float32Array(16),vp=new Float32Array(16);
   let cssWidth=1,cssHeight=1,disposed=false;
   const airLeaves=createAirLeaves();
@@ -945,8 +885,7 @@ function createRenderer(ctx){
     sky:{time:gl.getUniformLocation(skyProgram,"uTime"),aspect:gl.getUniformLocation(skyProgram,"uAspect"),zen:gl.getUniformLocation(skyProgram,"uZen")},
     trunk:{vp:gl.getUniformLocation(trunkProgram,"uViewProj"),travel:gl.getUniformLocation(trunkProgram,"uTravel"),spanZ:gl.getUniformLocation(trunkProgram,"uSpanZ"),spanX:gl.getUniformLocation(trunkProgram,"uSpanX"),time:gl.getUniformLocation(trunkProgram,"uTime"),camera:gl.getUniformLocation(trunkProgram,"uCamera")},
     leaf:{vp:gl.getUniformLocation(leafProgram,"uViewProj"),travel:gl.getUniformLocation(leafProgram,"uTravel"),spanZ:gl.getUniformLocation(leafProgram,"uSpanZ"),spanX:gl.getUniformLocation(leafProgram,"uSpanX"),time:gl.getUniformLocation(leafProgram,"uTime"),camera:gl.getUniformLocation(leafProgram,"uCamera")},
-    ground:{vp:gl.getUniformLocation(groundProgram,"uViewProj"),camera:gl.getUniformLocation(groundProgram,"uCamera"),travel:gl.getUniformLocation(groundProgram,"uTravel")},
-    path:{vp:gl.getUniformLocation(pathProgram,"uViewProj"),travel:gl.getUniformLocation(pathProgram,"uTravel"),span:gl.getUniformLocation(pathProgram,"uSpan")}
+    ground:{vp:gl.getUniformLocation(groundProgram,"uViewProj"),camera:gl.getUniformLocation(groundProgram,"uCamera"),travel:gl.getUniformLocation(groundProgram,"uTravel")}
   };
 
   function resize({width,height,ratio=1}){
@@ -1010,7 +949,7 @@ function createRenderer(ctx){
     },
     dispose(){
       disposed=true;canvas.remove();style.remove();sound.dispose();
-      try{for(const p of [skyProgram,trunkProgram,leafProgram,groundProgram,pathProgram])gl.deleteProgram(p);for(const r of resources){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}
+      try{for(const p of [skyProgram,trunkProgram,leafProgram,groundProgram])gl.deleteProgram(p);for(const r of resources){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}
     }
   };
 }

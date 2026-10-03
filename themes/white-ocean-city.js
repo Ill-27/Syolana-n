@@ -1,4 +1,6 @@
 const TAU = Math.PI * 2;
+const MODULE_ORIGIN = new URL(import.meta.url).origin;
+const centralAsset = (path) => new URL("../" + path, import.meta.url).href;
 
 function seeded(seed = 73421) {
   let s = seed >>> 0;
@@ -586,11 +588,11 @@ function fallbackRenderer(ctx){
 const SOUND = {
   title:"Звучание Белого города",
   loops:[
-    {src:"audio-library/nature/ocean_waves.ogg",volume:.24},
-    {src:"audio-library/nature/wind_soft.ogg",fallback:"audio-library/compatible/nature/wind_soft.m4a",volume:.14},
-    {src:"audio-library/ambience/night_air.ogg",fallback:"audio-library/compatible/ambience/night_air.m4a",volume:.08}
+    {src:centralAsset("audio-library/nature/ocean_waves.ogg"),volume:.24},
+    {src:centralAsset("audio-library/nature/wind_soft.ogg"),fallback:centralAsset("audio-library/compatible/nature/wind_soft.m4a"),volume:.14},
+    {src:centralAsset("audio-library/ambience/night_air.ogg"),fallback:centralAsset("audio-library/compatible/ambience/night_air.m4a"),volume:.08}
   ],
-  oneShots:[{src:"audio-library/nature/bird_wings_flutter.ogg",fallback:"audio-library/compatible/nature/bird_wings_flutter.m4a",volume:.17,minDelay:11,maxDelay:27}]
+  oneShots:[{src:centralAsset("audio-library/nature/bird_wings_flutter.ogg"),fallback:centralAsset("audio-library/compatible/nature/bird_wings_flutter.m4a"),volume:.17,minDelay:11,maxDelay:27}]
 };
 
 function createThemeSound(){

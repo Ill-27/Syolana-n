@@ -1,16 +1,11 @@
 import { el, link, button, getPref, setPref } from "./utils.js";
-import { setupFlightLayer } from "./flight.js";
+import { setupFlightLayer, platformFlightOffers } from "./flight.js";
 
 export function setupDiscovery({ theme, zen, player }) {
-  const offers = [
-    ["Свой сайт", "7 дней знакомства — в подарок", "#/join"],
-    ["Иммерсивные книги", "Внутрь новой истории", "#/library"],
-    ["Английский A1", "Первый курс будет бесплатным", "#/languages/en"],
-    ["Песня в подарок", "Ваше творчество в общем плеере", "#/songs"],
-    ["A1 языка в подарок", "Любой язык, кроме английского", "#/languages"],
-  ];
-
-  setupFlightLayer({ theme, offers });
+  setupFlightLayer({
+    theme,
+    offers: platformFlightOffers(document.baseURI),
+  });
 
   // Soft in-app feature cards. They never request browser-notification
   // permission and appear at most twice per session.

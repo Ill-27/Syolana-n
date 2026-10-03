@@ -98,7 +98,7 @@ export function setupDiscovery({ theme, zen, player }) {
   );
   // Dedicated mobile touch flight. Android browsers can suppress/coalesce
   // pointermove over transformed links; touch events keep one-finger flight reliable.
-  let touchLast=null,touchPinch=0;
+  let touchLast=null,touchPinch=0,touchCenterY=0;
   const touchDistance=(list)=>{
     if(list.length<2)return 0;
     const a=list[0],b=list[1];
@@ -113,6 +113,7 @@ export function setupDiscovery({ theme, zen, player }) {
     }else if(e.touches.length>=2){
       touchLast=null;
       touchPinch=touchDistance(e.touches);
+      touchCenterY=(e.touches[0].clientY+e.touches[1].clientY)*.5;
     }
   },{passive:false});
   layer.addEventListener("touchmove",(e)=>{
@@ -122,15 +123,20 @@ export function setupDiscovery({ theme, zen, player }) {
       const t=e.touches[0];
       if(touchLast){
         const dx=t.clientX-touchLast.x,dy=t.clientY-touchLast.y;
-        const scale=Math.min(innerWidth,innerHeight)<=700?150:260;
-        theme.move(-dx/scale,-dy/scale,0);
+        const scale=Math.min(innerWidth,innerHeight)<=700?118:240;
+        theme.move(dx/scale,-dy/scale,0);
       }
       touchLast={x:t.clientX,y:t.clientY};
       touchPinch=0;
     }else if(e.touches.length>=2){
       const next=touchDistance(e.touches);
-      if(touchPinch&&next)theme.move(0,0,Math.log(next/touchPinch)*4.2);
+      const centerY=(e.touches[0].clientY+e.touches[1].clientY)*.5;
+      let dz=0;
+      if(touchPinch&&next)dz+=Math.log(next/touchPinch)*5.4;
+      if(touchCenterY)dz+=(touchCenterY-centerY)/54;
+      if(Math.abs(dz)>.001)theme.move(0,0,dz);
       touchPinch=next;
+      touchCenterY=centerY;
       touchLast=null;
     }
   },{passive:false});
@@ -141,6 +147,7 @@ export function setupDiscovery({ theme, zen, player }) {
     }else{
       touchLast=null;
       touchPinch=0;
+      touchCenterY=0;
     }
   };
   layer.addEventListener("touchend",touchEnd,{passive:true});

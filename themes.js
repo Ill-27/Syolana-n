@@ -575,8 +575,12 @@ export class ThemeEngine {
       if(Number.isFinite(bounds.y))cam.ty=Math.max(-bounds.y,Math.min(bounds.y,cam.ty));
       if(Number.isFinite(bounds.z))cam.tz=Math.max(-bounds.z,Math.min(bounds.z,cam.tz));
     }
-    const depthGain=this.theme?.continuousDepth?1.7:5;
-    const depthCap=this.theme?.continuousDepth?3.8:12;
+    const depthGain=Number.isFinite(this.theme?.depthGain)
+      ? this.theme.depthGain
+      : (this.theme?.continuousDepth?1.7:5);
+    const depthCap=Number.isFinite(this.theme?.depthCap)
+      ? this.theme.depthCap
+      : (this.theme?.continuousDepth?3.8:12);
     cam.vz = this.reduced?.matches
       ? 0
       : Math.max(-depthCap, Math.min(depthCap, cam.vz + dz * depthGain));

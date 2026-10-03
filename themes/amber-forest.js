@@ -679,7 +679,7 @@ function terrainGeometry(cols=76,rows=132){
   return {vertices:new Float32Array(verts),indices:new Uint32Array(idx)};
 }
 
-function fallbackRenderer(ctx){function fallbackRenderer(ctx){
+function fallbackRenderer(ctx){
   const sprites=makeAirLeafSprites();
   const drifting=createAirLeaves();
   return {

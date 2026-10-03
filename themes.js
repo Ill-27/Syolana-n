@@ -89,6 +89,8 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
+    const version = new URL(import.meta.url).searchParams.get("v");
+    if (version) url.searchParams.set("v", version);
     const { default: theme } = await import(url.href);
     if (seq !== this.sequence) return;
     this.custom?.dispose?.();

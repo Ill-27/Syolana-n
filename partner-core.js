@@ -321,144 +321,6 @@ function wireFullscreen(button) {
   };
 }
 
-function buildFlightLayer() {
-  const layer = make("div");
-  layer.id = "flight-layer";
-  layer.hidden = true;
-  layer.dataset.syolanaInjected = "true";
-  layer.setAttribute(
-    "aria-label",
-    "Перемещайтесь в пространстве мышью или жестами",
-  );
-  layer.append(
-    make(
-      "p",
-      "flight-hint",
-      "Перемещайтесь в пространстве · два пальца или колесо — глубина",
-    ),
-  );
-  document.body.append(layer);
-  return layer;
-}
-
-function wireFlight(theme, layer) {
-  const pointers = new Map();
-  let pinch = 0;
-
-  const distance = () => {
-    const [a, b] = [...pointers.values()];
-    return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
-  };
-
-  const down = (e) => {
-    if (e.pointerType === "touch") return;
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    layer.setPointerCapture?.(e.pointerId);
-    pinch = distance();
-  };
-
-  const move = (e) => {
-    if (e.pointerType === "touch") return;
-    const prev = pointers.get(e.pointerId);
-    if (!prev) return;
-    const dx = e.clientX - prev.x;
-    const dy = e.clientY - prev.y;
-    prev.x = e.clientX;
-    prev.y = e.clientY;
-
-    if (pointers.size > 1) {
-      const next = distance();
-      if (pinch && next) theme.move(0, 0, Math.log(next / pinch) * 6);
-      pinch = next;
-    } else {
-      e.preventDefault();
-      const scale =
-        Math.min(innerWidth, innerHeight) <= 700
-          ? 175
-          : Math.max(360, Math.min(innerWidth, innerHeight));
-      theme.move(dx / scale, -dy / scale, 0);
-      theme.guideBirds?.(e.clientX / innerWidth, e.clientY / innerHeight, true);
-    }
-  };
-
-  const end = (e) => {
-    if (e.pointerType === "touch") return;
-    pointers.delete(e.pointerId);
-    pinch = distance();
-  };
-
-  layer.addEventListener("pointerdown", down);
-  layer.addEventListener("pointermove", move, { passive: false });
-  layer.addEventListener("pointerup", end);
-  layer.addEventListener("pointercancel", end);
-
-  let touchLast = null;
-  let touchPinch = 0;
-  const touchDistance = (list) =>
-    list.length < 2
-      ? 0
-      : Math.hypot(
-          list[0].clientX - list[1].clientX,
-          list[0].clientY - list[1].clientY,
-        );
-
-  const touchStart = (e) => {
-    if (e.touches.length === 1) {
-      touchLast = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      touchPinch = 0;
-    } else {
-      touchLast = null;
-      touchPinch = touchDistance(e.touches);
-    }
-  };
-
-  const touchMove = (e) => {
-    e.preventDefault();
-    if (e.touches.length === 1) {
-      const t = e.touches[0];
-      if (touchLast) {
-        const scale = Math.min(innerWidth, innerHeight) <= 700 ? 150 : 260;
-        theme.move(
-          -(t.clientX - touchLast.x) / scale,
-          -(t.clientY - touchLast.y) / scale,
-          0,
-        );
-      }
-      touchLast = { x: t.clientX, y: t.clientY };
-      touchPinch = 0;
-    } else if (e.touches.length >= 2) {
-      const next = touchDistance(e.touches);
-      if (touchPinch && next)
-        theme.move(0, 0, Math.log(next / touchPinch) * 4.2);
-      touchPinch = next;
-      touchLast = null;
-    }
-  };
-
-  const touchEnd = (e) => {
-    if (e.touches.length === 1) {
-      touchLast = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    } else {
-      touchLast = null;
-      touchPinch = 0;
-    }
-  };
-
-  layer.addEventListener("touchstart", touchStart, { passive: false });
-  layer.addEventListener("touchmove", touchMove, { passive: false });
-  layer.addEventListener("touchend", touchEnd, { passive: true });
-  layer.addEventListener("touchcancel", touchEnd, { passive: true });
-
-  const wheel = (e) => {
-    e.preventDefault();
-    const delta =
-      e.deltaY *
-      (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
-    theme.move(0, 0, Math.max(-160, Math.min(160, delta)) * 0.009);
-  };
-  layer.addEventListener("wheel", wheel, { passive: false });
-}
-
 export async function mountPartnerCore(options = {}) {
   if (mounted) return mounted;
 
@@ -497,16 +359,21 @@ export async function mountPartnerCore(options = {}) {
   buildToast();
   closeDialogs();
 
-  const [{ ThemeEngine }, { Player }] = await Promise.all([
+  const [{ ThemeEngine }, { Player }, { setupFlightLayer }] = await Promise.all([
     import(central("themes.js") + "?v=" + encodeURIComponent(version)),
     import(central("player.js") + "?v=" + encodeURIComponent(version)),
+    import(central("flight.js") + "?v=" + encodeURIComponent(version)),
   ]);
 
   const player = new Player((config.songs || []).map(resolveSong));
   const theme = new ThemeEngine();
   await theme.init();
 
-  const flight = buildFlightLayer();
+  const flight = setupFlightLayer({
+    theme,
+    offers: [],
+    markInjected: true,
+  });
 
   const setZen = (active) => {
     const next = Boolean(active);
@@ -525,7 +392,6 @@ export async function mountPartnerCore(options = {}) {
     setZen(!document.body.classList.contains("zen"));
   zenAction?.addEventListener("click", () => setZen(true));
 
-  wireFlight(theme, flight);
   const unwireFullscreen = wireFullscreen(controls.fullscreen);
 
   const escape = (e) => {

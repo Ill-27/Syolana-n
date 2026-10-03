@@ -601,6 +601,12 @@ export class ThemeEngine {
     if (!cam) return;
     const blend = d ? 1 - Math.exp(-d * 8) : 1;
     cam.tz += cam.vz * d;
+    if (
+      d &&
+      Number.isFinite(this.theme?.autoForwardSpeed) &&
+      !this.reduced?.matches
+    )
+      cam.tz += this.theme.autoForwardSpeed * d;
     cam.vz *= Math.exp(-d * 2.8);
     if (Math.abs(cam.vz) < 0.002) cam.vz = 0;
     cam.x += (cam.tx - cam.x) * blend;

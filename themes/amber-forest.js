@@ -144,21 +144,47 @@ layout(location=4) in float iTone;
 layout(location=5) in float iPhase;
 uniform mat4 uViewProj;
 uniform float uTravel;
-uniform float uSpan;
+uniform float uSpanZ;
+uniform float uSpanX;
 uniform float uTime;
 uniform vec3 uCamera;
 out vec3 vNormal;
 out vec3 vWorld;
 out float vTone;
+out float vBranch;
 out float vDistance;
 void main(){
-  float z=mod(iOffset.z+uTravel,uSpan)-uSpan;
-  vec3 local=aPosition;
-  float y01=clamp(local.y+.5,0.,1.);
-  local.xz*=mix(1.0,.68,y01);
-  float sway=sin(uTime*.63+iPhase)*.055*y01*y01;
-  vec3 world=vec3(iOffset.x+iScale.y*sway,iOffset.y,z)+local*iScale;
-  vWorld=world;vNormal=aNormal;vTone=iTone;vDistance=distance(world,uCamera);
+  float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;
+  float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;
+  bool branch=iTone<0.0;
+  vec3 center=vec3(x,iOffset.y,z);
+  vec3 world;
+  vec3 normal;
+
+  if(branch){
+    float az=iPhase;
+    vec3 dir=normalize(vec3(cos(az)*.67,.74,sin(az)*.67));
+    vec3 side=normalize(cross(dir,vec3(0.0,1.0,0.0)));
+    vec3 binormal=normalize(cross(side,dir));
+    world=center
+      +dir*(aPosition.y*iScale.y)
+      +side*(aPosition.x*iScale.x)
+      +binormal*(aPosition.z*iScale.z);
+    normal=normalize(side*aNormal.x+binormal*aNormal.z+dir*aNormal.y*.18);
+  }else{
+    vec3 local=aPosition;
+    float y01=clamp(local.y+.5,0.,1.);
+    local.xz*=mix(1.0,.61,smoothstep(.12,1.0,y01));
+    float sway=sin(uTime*.34+iPhase)*.018*y01*y01;
+    world=center+vec3(sway*iScale.y,0.0,0.0)+local*iScale;
+    normal=aNormal;
+  }
+
+  vWorld=world;
+  vNormal=normal;
+  vTone=abs(iTone);
+  vBranch=branch?1.0:0.0;
+  vDistance=distance(world,uCamera);
   gl_Position=uViewProj*vec4(world,1.0);
 }
 `;
@@ -168,26 +194,32 @@ precision highp float;
 in vec3 vNormal;
 in vec3 vWorld;
 in float vTone;
+in float vBranch;
 in float vDistance;
 out vec4 outColor;
 void main(){
   vec3 n=normalize(vNormal);
-  vec3 lightDir=normalize(vec3(-.45,.82,.34));
+  vec3 lightDir=normalize(vec3(-.48,.83,.28));
   float diff=max(dot(n,lightDir),0.0);
-  float grain=.5+.5*sin(vWorld.y*2.4+vWorld.x*.7+sin(vWorld.z*.31));
-  vec3 dark=vec3(.12,.065,.028);
-  vec3 warm=vec3(.29,.145,.052);
-  vec3 base=mix(dark,warm,.42+.32*vTone);
+  float bark=.5+.5*sin(vWorld.y*2.6+sin(vWorld.x*.83+vWorld.z*.27)*2.0);
+  float fine=.5+.5*sin(vWorld.y*8.4+vWorld.x*1.7);
+  vec3 base;
+
   if(vTone<.18){
-    float barkMark=smoothstep(.74,.94,.5+.5*sin(vWorld.y*3.2+sin(vWorld.x*2.1)*1.7));
-    base=mix(vec3(.64,.61,.53),vec3(.90,.87,.78),.54+.28*diff);
-    base=mix(base,vec3(.18,.16,.13),barkMark*.26);
+    float scar=smoothstep(.78,.96,.5+.5*sin(vWorld.y*3.1+sin(vWorld.x*2.0+vWorld.z*.9)*1.9));
+    base=mix(vec3(.66,.63,.55),vec3(.93,.89,.79),.48+.35*diff);
+    base=mix(base,vec3(.17,.15,.13),scar*(.20+.12*fine));
   }else{
-    base*=.48+.62*diff;
-    base*=.87+.13*grain;
+    vec3 dark=vec3(.105,.054,.025);
+    vec3 warm=vec3(.31,.15,.052);
+    base=mix(dark,warm,.40+.34*vTone);
+    base*=.48+.60*diff;
+    base*=.84+.16*bark;
   }
-  float fog=smoothstep(80.0,300.0,vDistance);
-  base=mix(base,vec3(.69,.60,.47),fog*.91);
+
+  if(vBranch>.5)base*=.88;
+  float fog=smoothstep(95.0,355.0,vDistance);
+  base=mix(base,vec3(.72,.64,.52),fog*.92);
   outColor=vec4(base,1.0);
 }
 `;
@@ -208,41 +240,43 @@ out float vTone;
 out float vType;
 out float vPhase;
 out float vSun;
+out float vBacklight;
 out float vDistance;
 void main(){
   float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;
   float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;
   float phase=iMeta.z;
   float size=iMeta.w;
-
   vec3 center=vec3(x,iOffset.y,z);
-  vec3 toCam=normalize(vec3(uCamera.x-center.x,0.0,uCamera.z-center.z));
-  vec3 right=normalize(cross(vec3(0.0,1.0,0.0),toCam));
-  vec3 up=vec3(0.0,1.0,0.0);
 
-  float gust=sin(uTime*.72+phase)+.38*sin(uTime*.31+phase*1.73);
-  float angle=iAngle+gust*.11;
-  float ca=cos(angle),sa=sin(angle);
-  vec2 q=vec2(aCorner.x*ca-aCorner.y*sa,aCorner.x*sa+aCorner.y*ca);
+  float az=iAngle+phase*.19;
+  float tilt=.28+1.05*(.5+.5*sin(phase*1.37+2.1));
+  vec3 normal=normalize(vec3(cos(az)*sin(tilt),cos(tilt),sin(az)*sin(tilt)));
+  vec3 ref=abs(normal.y)<.90?vec3(0.0,1.0,0.0):vec3(1.0,0.0,0.0);
+  vec3 axisX=normalize(cross(ref,normal));
+  vec3 axisY=normalize(cross(normal,axisX));
 
-  float flutter=sin(uTime*.82+phase*2.1+aCorner.x*2.8);
-  float fold=.34+.66*abs(cos(uTime*.63+phase*1.37));
-  q.x*=fold;
+  float gust=sin(uTime*.58+phase)+.37*sin(uTime*.27+phase*1.71);
+  float flutter=sin(uTime*1.08+phase*2.13+aCorner.x*2.7);
+  axisX=normalize(axisX+normal*(gust*.045+flutter*.018));
+  axisY=normalize(axisY+normal*flutter*.035);
+
+  float fold=.84+.16*cos(uTime*.73+phase*1.41);
   vec3 world=center
-    +right*(q.x*size)
-    +up*(q.y*size)
-    +toCam*(aCorner.x*sin(uTime*.63+phase*1.37)*.22*size+flutter*.028*size)
-    +vec3(gust*.035,0.0,sin(uTime*.37+phase)*.024);
+    +axisX*(aCorner.x*size*fold)
+    +axisY*(aCorner.y*size*1.12)
+    +normal*(sin((aCorner.y+.5)*3.14159)*.05*size)
+    +vec3(gust*.020,0.0,sin(uTime*.31+phase)*.018);
 
-  gl_Position=uViewProj*vec4(world,1.0);
+  vec3 sunDir=normalize(vec3(-.56,.79,.24));
+  vSun=max(0.0,dot(normal,sunDir));
+  vBacklight=max(0.0,dot(-normal,sunDir));
   vLeaf=aCorner;
   vTone=iMeta.x;vType=iMeta.y;vPhase=phase;
   vDistance=distance(world,uCamera);
-
-  vec3 sunDir=normalize(vec3(-.60,.78,.22));
-  vec3 pseudoNormal=normalize(toCam+up*.22+right*flutter*.08);
-  vSun=max(0.0,dot(pseudoNormal,sunDir));
-}`;
+  gl_Position=uViewProj*vec4(world,1.0);
+}
+`;
 
 const LEAF_FS=`#version 300 es
 precision highp float;
@@ -251,66 +285,72 @@ in float vTone;
 in float vType;
 in float vPhase;
 in float vSun;
+in float vBacklight;
 in float vDistance;
 out vec4 outColor;
 
 float mapleMask(vec2 p){
   p.y*=1.04;
   float a=atan(p.y,p.x),r=length(p);
-  float lobes=.57+.19*cos(5.0*a)+.074*cos(10.0*a)+.025*cos(15.0*a);
-  float leaf=1.0-smoothstep(lobes-.030,lobes+.020,r);
-  float stem=(1.0-smoothstep(.030,.065,abs(p.x)))*(1.0-smoothstep(-1.02,-.60,p.y));
+  float lobes=.55+.20*cos(5.0*a)+.070*cos(10.0*a)+.024*cos(15.0*a);
+  float leaf=1.0-smoothstep(lobes-.028,lobes+.018,r);
+  float stem=(1.0-smoothstep(.025,.060,abs(p.x)))*(1.0-smoothstep(-1.02,-.58,p.y));
   return max(leaf,stem*.74);
 }
 float birchMask(vec2 p){
-  p.y+=.05;
-  float body=pow(abs(p.x)*1.42,2.28)+pow(abs(p.y)*.92,2.0);
-  float serr=.018*sin(24.0*atan(p.y,p.x));
+  p.y+=.04;
+  float body=pow(abs(p.x)*1.47,2.35)+pow(abs(p.y)*.90,2.0);
+  float serr=.020*sin(26.0*atan(p.y,p.x));
   return 1.0-smoothstep(.80+serr,.98+serr,body);
 }
 float oakMask(vec2 p){
-  p.y*=.92;
+  p.y*=.94;
   float a=atan(p.y,p.x),r=length(p);
-  float lobes=.56+.115*cos(4.0*a)+.058*cos(8.0*a)+.028*cos(12.0*a);
-  return 1.0-smoothstep(lobes-.030,lobes+.022,r);
+  float lobes=.55+.118*cos(4.0*a)+.058*cos(8.0*a)+.025*cos(12.0*a);
+  return 1.0-smoothstep(lobes-.028,lobes+.020,r);
 }
 float beechMask(vec2 p){
-  float body=pow(abs(p.x)*1.16,2.12)+pow(abs(p.y)*.94,2.26);
-  float serr=.012*sin(34.0*atan(p.y,p.x));
+  float body=pow(abs(p.x)*1.18,2.15)+pow(abs(p.y)*.93,2.28);
+  float serr=.014*sin(32.0*atan(p.y,p.x));
   return 1.0-smoothstep(.82+serr,1.0+serr,body);
 }
 void main(){
   vec2 p=vLeaf;
   float mask=vType<.5?mapleMask(p):(vType<1.5?birchMask(p):(vType<2.5?oakMask(p):beechMask(p)));
-  if(mask<.065)discard;
+  if(mask<.055)discard;
 
-  vec3 yellow=vec3(1.00,.77,.22);
-  vec3 gold=vec3(1.00,.59,.08);
-  vec3 orange=vec3(.94,.33,.045);
-  vec3 scarlet=vec3(.72,.105,.028);
-  vec3 olive=vec3(.52,.47,.09);
-  vec3 col=vTone<.22?mix(yellow,gold,vTone/.22):
-           vTone<.50?mix(gold,orange,(vTone-.22)/.28):
-           vTone<.78?mix(orange,scarlet,(vTone-.50)/.28):
-           mix(scarlet,olive,(vTone-.78)/.22);
+  float variation=.5+.5*sin(vPhase*2.37+vTone*8.1);
+  vec3 col;
+  if(vType<.5){
+    col=mix(vec3(1.0,.72,.16),vec3(.80,.12,.035),smoothstep(.18,.88,variation));
+    col=mix(col,vec3(.98,.40,.055),.32);
+  }else if(vType<1.5){
+    col=mix(vec3(.98,.86,.30),vec3(.77,.59,.10),variation*.72);
+  }else if(vType<2.5){
+    col=mix(vec3(.76,.47,.12),vec3(.42,.16,.055),variation);
+    col=mix(col,vec3(.48,.43,.10),.16);
+  }else{
+    col=mix(vec3(.92,.43,.11),vec3(.53,.19,.060),variation*.86);
+  }
 
   float r=length(p);
-  float edge=1.0-smoothstep(.70,1.02,r);
-  float midrib=exp(-abs(p.x)*26.0)*(.08+.24*(1.0-abs(p.y)));
-  float veins=(.5+.5*sin((abs(p.y)*10.0+abs(p.x)*6.0)*3.14159))*exp(-abs(p.x)*3.6)*.052;
+  float edge=1.0-smoothstep(.72,1.02,r);
+  float midrib=exp(-abs(p.x)*27.0)*(.07+.23*(1.0-abs(p.y)));
+  float veins=(.5+.5*sin((abs(p.y)*10.5+abs(p.x)*6.2)*3.14159))*exp(-abs(p.x)*3.8)*.042;
 
-  col*=.80+.24*edge;
-  col+=vec3(.20,.075,.018)*(midrib+veins);
-  col+=vec3(1.0,.72,.28)*pow(vSun,5.0)*(.18+.36*edge);
-  col=mix(col,vec3(1.0,.80,.36),vSun*.16);
+  col*=.75+.28*edge;
+  col+=vec3(.18,.065,.015)*(midrib+veins);
+  col+=vec3(1.0,.72,.27)*pow(vSun,3.7)*(.10+.28*edge);
+  col+=vec3(1.0,.52,.16)*pow(vBacklight,2.4)*.28;
 
-  float fog=smoothstep(105.0,390.0,vDistance);
-  col=mix(col,vec3(.80,.70,.55),fog*.92);
-  float alpha=mask*(1.0-smoothstep(305.0,420.0,vDistance));
+  float fog=smoothstep(110.0,405.0,vDistance);
+  col=mix(col,vec3(.79,.70,.57),fog*.91);
+  float alpha=mask*(1.0-smoothstep(320.0,450.0,vDistance));
   outColor=vec4(col,alpha);
-}`;
+}
+`;
 
-function forestPathCenter(z){
+function forestPathCenterfunction forestPathCenter(z){
   return trailCenter(z);
 }
 
@@ -322,113 +362,103 @@ function trailCenter(z){
 function buildForest(){
   const rnd=seeded(91277),spanZ=720,spanX=360,trunks=[],leaves=[];
   const addLeaf=(x,y,z,tone,type,phase,size,angle)=>leaves.push(x,y,z,tone,type,phase,size,angle);
+
   const addTree=(x,z)=>{
-    const base=-.58+.11*Math.sin(x*.038)+.08*Math.sin(z*.025+x*.013);
-    const species=Math.floor(rnd()*4); // 0 maple, 1 birch, 2 oak, 3 beech
-    const h=(species===1?14:11)+rnd()*(species===1?13:12);
-    const radius=(species===1?.25:.36)+rnd()*(species===1?.24:.42);
-    const baseTone=[.36,.08,.67,.52][species]+(rnd()-.5)*.12;
-    const tone=Math.max(0,Math.min(1,baseTone));
+    const base=-.60+.10*Math.sin(x*.037)+.07*Math.sin(z*.026+x*.014);
+    const species=Math.floor(rnd()*4);
+    const h=species===1?15+rnd()*11:species===2?11+rnd()*8:12+rnd()*9;
+    const radius=species===1?.20+rnd()*.18:.34+rnd()*.34;
+    const tone=[.36,.08,.68,.52][species]+(rnd()-.5)*.10;
     const phase=rnd()*TAU;
-    trunks.push(x,base+h*.5,z,radius*2,h,radius*2,tone,phase);
+    trunks.push(x,base+h*.5,z,radius*2,h,radius*2,Math.max(.02,tone),phase);
 
     const centers=[];
     const addCenter=(cx,cy,cz,r)=>centers.push({x:cx,y:cy,z:cz,r});
 
     if(species===1){
-      // Birch: narrow, high and airy, but still leaf-rich.
-      const count=9;
-      for(let i=0;i<count;i++){
-        const f=i/(count-1),a=i*2.399+rnd()*.28,reach=(1.0+rnd()*1.45)*(1.0-f*.20);
-        addCenter(x+Math.cos(a)*reach,base+h*(.49+f*.43),z+Math.sin(a)*reach,1.0+rnd()*.58);
+      for(let i=0;i<10;i++){
+        const f=i/9,a=i*2.399+rnd()*.20,reach=.75+rnd()*1.25;
+        addCenter(x+Math.cos(a)*reach,base+h*(.48+f*.44),z+Math.sin(a)*reach,.88+rnd()*.46);
       }
     }else if(species===2){
-      // Oak: broad, layered, horizontal crown.
-      addCenter(x,base+h*.84,z,2.55+rnd()*.65);
-      for(let i=0;i<11;i++){
-        const a=i/11*TAU+rnd()*.27,reach=2.6+rnd()*2.7;
-        addCenter(x+Math.cos(a)*reach,base+h*(.58+rnd()*.27),z+Math.sin(a)*reach,1.45+rnd()*.72);
+      addCenter(x,base+h*.79,z,2.45+rnd()*.55);
+      for(let i=0;i<12;i++){
+        const a=i/12*TAU+rnd()*.25,reach=2.4+rnd()*2.9;
+        addCenter(x+Math.cos(a)*reach,base+h*(.54+rnd()*.25),z+Math.sin(a)*reach,1.35+rnd()*.68);
       }
     }else if(species===0){
-      // Maple: rounded irregular crown with many fine branch tips.
-      addCenter(x,base+h*.88,z,2.25+rnd()*.60);
-      for(let i=0;i<10;i++){
-        const a=i/10*TAU+rnd()*.42,reach=2.0+rnd()*2.65;
-        addCenter(x+Math.cos(a)*reach,base+h*(.60+rnd()*.29),z+Math.sin(a)*reach,1.35+rnd()*.70);
+      addCenter(x,base+h*.84,z,2.10+rnd()*.58);
+      for(let i=0;i<11;i++){
+        const a=i/11*TAU+rnd()*.34,reach=1.8+rnd()*2.55;
+        addCenter(x+Math.cos(a)*reach,base+h*(.57+rnd()*.30),z+Math.sin(a)*reach,1.20+rnd()*.66);
       }
     }else{
-      // Beech: dense oval crown.
-      for(let i=0;i<10;i++){
-        const f=i/9,a=i*2.17+rnd()*.25,reach=1.25+rnd()*1.75;
-        addCenter(x+Math.cos(a)*reach,base+h*(.54+f*.37),z+Math.sin(a)*reach,1.35+rnd()*.62);
+      for(let i=0;i<11;i++){
+        const f=i/10,a=i*2.12+rnd()*.22,reach=1.10+rnd()*1.55;
+        addCenter(x+Math.cos(a)*reach,base+h*(.50+f*.40),z+Math.sin(a)*reach,1.25+rnd()*.60);
       }
     }
 
-    // Slim internal branch/stem structure prevents the crown from reading as a floating mass.
-    const stems=Math.min(9,centers.length);
-    for(let i=0;i<stems;i++){
+    const branchStartY=base+h*(species===2?.34:.39);
+    const maxBranches=Math.min(species===1?7:9,centers.length);
+    for(let i=0;i<maxBranches;i++){
       const c=centers[i];
-      if(rnd()<.18)continue;
-      const sh=Math.max(2.2,c.y-(base+h*.39));
+      if(rnd()<.10)continue;
+      const dx=c.x-x,dz=c.z-z;
+      const horiz=Math.hypot(dx,dz);
+      const len=Math.max(2.1,Math.hypot(horiz,c.y-branchStartY)*.62);
       trunks.push(
-        x+(c.x-x)*.53,
-        base+h*.39+sh*.5,
-        z+(c.z-z)*.53,
-        radius*.19,radius*.19+sh,radius*.19,
-        Math.min(1,tone+.06),
-        phase+i*.67
+        x+dx*.38,
+        branchStartY+(c.y-branchStartY)*.34,
+        z+dz*.38,
+        radius*.22,len,radius*.20,
+        -Math.max(.02,tone),
+        Math.atan2(dz,dx)
       );
     }
 
-    // Hundreds of small leaves rather than a few oversized billboards.
-    const totalLeaves=(species===1?430:540)+Math.floor(rnd()*(species===1?90:130));
+    const totalLeaves=(species===1?300:360)+Math.floor(rnd()*(species===1?55:75));
     for(let i=0;i<totalLeaves;i++){
       const c=centers[Math.floor(rnd()*centers.length)];
       const a=rnd()*TAU,u=rnd()*2-1;
-      const rr=c.r*(.18+Math.pow(rnd(),.56)*.92);
+      const rr=c.r*(.12+Math.pow(rnd(),.58)*.98);
       const radial=Math.sqrt(Math.max(0,1-u*u))*rr;
-      const lx=c.x+Math.cos(a)*radial;
-      const ly=c.y+u*rr*(species===1?.92:.76);
-      const lz=c.z+Math.sin(a)*radial;
-      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.16));
       addLeaf(
-        lx,ly,lz,
-        localTone,
-        species, // exactly one leaf morphology per tree
+        c.x+Math.cos(a)*radial,
+        c.y+u*rr*(species===1?.96:.78),
+        c.z+Math.sin(a)*radial,
+        Math.max(0,Math.min(1,tone+(rnd()-.5)*.14)),
+        species,
         phase+rnd()*TAU,
-        species===1 ? .065+rnd()*.060 : .075+rnd()*.070,
-        (rnd()-.5)*2.5
+        species===1?.070+rnd()*.052:.082+rnd()*.060,
+        (rnd()-.5)*TAU
       );
     }
 
-    // A fine outer shell of smaller leaves catches sunlight and breaks up the silhouette.
-    const outer=(species===1?120:150)+Math.floor(rnd()*48);
+    const outer=(species===1?72:94)+Math.floor(rnd()*34);
     for(let i=0;i<outer;i++){
-      const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.88+rnd()*.34);
+      const c=centers[Math.floor(rnd()*centers.length)],a=rnd()*TAU,rr=c.r*(.92+rnd()*.28);
       addLeaf(
         c.x+Math.cos(a)*rr,
-        c.y+(rnd()-.48)*c.r*(species===1?1.02:.82),
+        c.y+(rnd()-.50)*c.r*(species===1?1.02:.82),
         c.z+Math.sin(a)*rr,
-        Math.max(0,Math.min(1,tone+(rnd()-.5)*.18)),
+        Math.max(0,Math.min(1,tone+(rnd()-.5)*.16)),
         species,
         phase+rnd()*TAU,
-        species===1 ? .055+rnd()*.050 : .065+rnd()*.055,
-        (rnd()-.5)*2.7
+        species===1?.060+rnd()*.042:.068+rnd()*.048,
+        (rnd()-.5)*TAU
       );
     }
   };
 
-  // A real winding woodland trail: trees never spawn inside this corridor.
-  for(let z=2;z<spanZ;z+=13.0+rnd()*4.2){
+  for(let z=4;z<spanZ;z+=18+rnd()*5.5){
     const trail=trailCenter(z);
-    const rows=5+Math.floor(rnd()*2);
+    const rows=3+Math.floor(rnd()*2);
     for(let j=0;j<rows;j++){
       const side=rnd()<.5?-1:1;
-      const near=side*(8.5+rnd()*20);
-      const x=trail+near+(rnd()-.5)*4.0;
-      addTree(x,z+rnd()*7);
-      if(rnd()>.54)addTree(trail+side*(34+rnd()*28),z+rnd()*9);
-      if(rnd()>.80)addTree(trail+side*(70+rnd()*48),z+rnd()*12);
+      addTree(trail+side*(10+rnd()*18)+(rnd()-.5)*3.2,z+rnd()*7);
+      if(rnd()>.64)addTree(trail+side*(34+rnd()*27),z+rnd()*9);
+      if(rnd()>.90)addTree(trail+side*(72+rnd()*42),z+rnd()*12);
     }
   }
 
@@ -474,56 +504,65 @@ function makeAirLeafSprites(){
 
 function createAirLeaves(){
   const rnd=seeded(22771),sprites=makeAirLeafSprites();
-  const leaves=Array.from({length:112},(_,i)=>({
+  const make=(layer,count)=>Array.from({length:count},(_,i)=>({
+    layer,
     offset:rnd(),
-    speed:.052+rnd()*.075,
-    targetX:.03+rnd()*.94,
-    targetY:.04+rnd()*.92,
-    curve:(rnd()-.5)*.14,
-    spin:(rnd()-.5)*1.05,
+    speed:layer===0?.012+rnd()*.010:layer===1?.022+rnd()*.016:.036+rnd()*.024,
+    startX:.16+rnd()*.68,
+    startY:layer===0?.28+rnd()*.26:.12+rnd()*.52,
+    endX:.04+rnd()*.92,
+    endY:layer===0?.34+rnd()*.28:.28+rnd()*.68,
+    curve:(rnd()-.5)*(layer===2?.22:.12),
+    spin:(rnd()-.5)*(layer===2?1.15:.72),
+    flip:.65+rnd()*1.45,
     phase:rnd()*TAU,
-    sprite:i%4,
-    layer:i%4
+    sprite:(i+Math.floor(rnd()*4))%4
   }));
+  const leaves=[...make(0,24),...make(1,18),...make(2,7)];
+
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
-      const vanishX=width*.50,vanishY=height*.46;
-      const count=zen?leaves.length:74;
       const sunX=width*.72,sunY=height*.20;
+      for(const l of leaves){
+        const p=(l.offset+time*l.speed*(zen?1.0:.62))%1;
+        const e=p*p*(3-2*p);
 
-      for(let i=0;i<count;i++){
-        const l=leaves[i];
-        const p=(l.offset+time*l.speed*(zen?1.10:.76))%1;
-        const depth=Math.pow(p,1.70);
-        const scaleLayer=[.58,.76,.94,1.14][l.layer];
+        let x=(l.startX+(l.endX-l.startX)*e)*width;
+        let y=(l.startY+(l.endY-l.startY)*e)*height;
+        x+=Math.sin(p*Math.PI)*l.curve*width+Math.sin(time*.41+l.phase)*width*(l.layer===2?.010:.004);
+        y+=Math.sin(time*.53+l.phase*1.7)*height*(l.layer===0?.004:l.layer===1?.008:.012);
 
-        const tx=l.targetX*width,ty=l.targetY*height;
-        const px=vanishX+(tx-vanishX)*depth+Math.sin(p*Math.PI)*l.curve*width;
-        const py=vanishY+(ty-vanishY)*depth-Math.sin(p*Math.PI)*height*.025;
+        const base=l.layer===0?4.0:l.layer===1?8.0:16.0;
+        const grow=l.layer===0?5.0:l.layer===1?14.0:30.0;
+        const size=base+grow*Math.pow(e,l.layer===2?1.25:1.0);
 
-        const size=(2.4+48*Math.pow(depth,1.45))*scaleLayer;
-        const fadeIn=Math.min(1,p/.075),fadeOut=Math.min(1,(1-p)/.10);
-        const alpha=Math.max(0,Math.min(fadeIn,fadeOut))*(.22+.72*depth);
+        const cycle=time*l.spin+l.phase+p*TAU*l.flip;
+        const face=.14+.86*Math.abs(Math.cos(cycle));
+        const fade=Math.min(1,p/.10)*Math.min(1,(1-p)/.13);
+        const alpha=fade*(l.layer===0?.25:l.layer===1?.48:.68);
 
-        const sunProximity=Math.max(0,1-Math.hypot(px-sunX,py-sunY)/Math.max(width,height)*1.75);
-        const shimmer=sunProximity*(.34+.66*(.5+.5*Math.sin(time*1.55+l.phase)));
+        const sunNear=Math.max(0,1-Math.hypot(x-sunX,y-sunY)/Math.max(width,height)*1.8);
+        const shimmer=sunNear*(.25+.75*Math.abs(Math.cos(cycle)));
 
         ctx.save();
-        ctx.translate(px,py);
-        ctx.rotate(time*l.spin+l.phase+Math.sin(time*.74+l.phase)*.24);
+        ctx.translate(x,y);
+        ctx.rotate(cycle*.55);
+        ctx.scale(face,1);
         ctx.globalAlpha=alpha;
-        ctx.shadowColor=`rgba(255,199,91,${.07+.28*shimmer})`;
-        ctx.shadowBlur=2+11*shimmer;
-        ctx.drawImage(sprites[l.sprite],-size/2,-size/2,size,size);
-
-        if(shimmer>.25&&depth>.25){
+        if(l.layer===2){
+          ctx.globalAlpha=alpha*.10;
+          ctx.drawImage(sprites[l.sprite],-size*.54-4,-size*.52+3,size*1.08,size*1.04);
+          ctx.globalAlpha=alpha;
+        }
+        ctx.shadowColor=`rgba(255,196,86,${.05+.24*shimmer})`;
+        ctx.shadowBlur=1+9*shimmer;
+        ctx.drawImage(sprites[l.sprite],-size*.54,-size*.52,size*1.08,size*1.04);
+        if(shimmer>.30&&face>.50){
           ctx.globalCompositeOperation="screen";
-          ctx.globalAlpha=alpha*shimmer*.18;
-          ctx.fillStyle="#ffe6a4";
-          ctx.beginPath();
-          ctx.ellipse(-size*.10,-size*.15,size*.14,size*.06,-.45,0,TAU);
-          ctx.fill();
+          ctx.globalAlpha=alpha*shimmer*.15;
+          ctx.fillStyle="#ffe3a0";
+          ctx.beginPath();ctx.ellipse(-size*.08,-size*.15,size*.12,size*.045,-.45,0,TAU);ctx.fill();
         }
         ctx.restore();
       }
@@ -748,11 +787,13 @@ function createRenderer(ctx){
     float x=aPosition.x+uCamera.x;
     float z=aPosition.y;
     float logicalZ=z-uTravel;
-    float y=-.62+.07*sin(x*.045)+.055*sin(logicalZ*.030+x*.015);
+    float relief=sin(x*.031+logicalZ*.013)*.045+sin(x*.071-logicalZ*.021)*.024;
+    float y=-.64+relief;
     vWorld=vec3(x,y,z);
     vLogicalZ=logicalZ;
     gl_Position=uViewProj*vec4(vWorld,1.0);
   }`;
+
   const GROUND_FS_LOCAL=`#version 300 es
   precision highp float;
   in vec3 vWorld;
@@ -765,34 +806,48 @@ function createRenderer(ctx){
     float a=6.28318530718*z/720.0;
     return sin(a*2.0)*7.2+sin(a*5.0+1.35)*2.7+sin(a+0.72)*3.9;
   }
+  float field(vec2 p){
+    float v=0.0;
+    v+=sin(p.x+sin(p.y*.71)*1.25);
+    v+=sin(p.y*1.27-cos(p.x*.63)*1.05)*.62;
+    v+=sin((p.x+p.y)*1.91)*.29;
+    return .5+.5*(v/1.91);
+  }
   void main(){
+    vec2 p=vec2(vWorld.x,vLogicalZ);
     float center=trail(vLogicalZ);
     float dist=abs(vWorld.x-center);
-    float edge=smoothstep(3.6,6.8,dist);
-    float leaf=.5+.5*sin(vWorld.x*.43+sin(vLogicalZ*.17)*1.7);
-    float leaf2=.5+.5*sin(vLogicalZ*.31-vWorld.x*.19);
-    float mottled=.5+.5*sin(vWorld.x*.12+vLogicalZ*.071);
+    float warp=(field(p*.055)-.5)*1.35;
+    float pathHalf=5.15+warp;
+    float edge=smoothstep(pathHalf-.85,pathHalf+.95,dist);
 
-    vec3 pathDry=vec3(.38,.235,.105);
-    vec3 pathLight=vec3(.57,.36,.16);
-    vec3 soil=vec3(.115,.071,.031);
-    vec3 moss=vec3(.25,.25,.072);
-    vec3 ochre=vec3(.57,.265,.055);
-    vec3 rust=vec3(.50,.12,.035);
+    float n1=field(p*.075);
+    float n2=field(vec2(p.x*.19-p.y*.11,p.x*.11+p.y*.19)+vec2(3.2,1.7));
+    float n3=field(p*.47+vec2(-2.1,5.4));
 
-    vec3 path=mix(pathDry,pathLight,.25+.28*mottled);
-    vec3 forest=mix(soil,moss,.22+.18*mottled);
-    forest=mix(forest,ochre,(.15+.25*leaf)*leaf2);
-    forest=mix(forest,rust,.12*(1.0-leaf2));
+    vec3 pathDark=vec3(.34,.205,.095);
+    vec3 pathLight=vec3(.58,.38,.18);
+    vec3 soil=vec3(.095,.060,.030);
+    vec3 moss=vec3(.20,.22,.075);
+    vec3 dry=vec3(.44,.205,.055);
+    vec3 copper=vec3(.42,.105,.035);
+
+    vec3 path=mix(pathDark,pathLight,.30+.34*n1);
+    path=mix(path,dry,.08*n3);
+
+    vec3 forest=mix(soil,moss,.22+.32*n1);
+    forest=mix(forest,dry,smoothstep(.58,.80,n2)*.27);
+    forest=mix(forest,copper,smoothstep(.72,.88,n3)*.15);
+
+    float litter=smoothstep(2.8,9.0,dist)*smoothstep(.53,.79,n3);
+    forest=mix(forest,mix(dry,copper,n2),litter*.38);
+
+    float sunPatch=smoothstep(.72,.88,field(p*.030+vec2(.7,2.8)));
     vec3 col=mix(path,forest,edge);
+    col+=vec3(.105,.075,.025)*sunPatch*(.42+.58*edge);
 
-    // Irregular leaf litter softens the trail edges.
-    float litter=smoothstep(2.4,7.8,dist)*(.18+.22*leaf*leaf2);
-    col=mix(col,ochre,litter*.42);
-    col*=.78+.18*(.5+.5*sin(vWorld.x*.031-vLogicalZ*.022));
-
-    float fog=smoothstep(105.0,390.0,distance(vWorld,uCamera));
-    col=mix(col,vec3(.74,.66,.52),fog*.92);
+    float fog=smoothstep(115.0,410.0,distance(vWorld,uCamera));
+    col=mix(col,vec3(.75,.68,.56),fog*.91);
     outColor=vec4(col,1.0);
   }`;
 
@@ -805,37 +860,38 @@ function createRenderer(ctx){
   void main(){
     float logicalZ=aPosition.y;
     float z=mod(logicalZ+uTravel,uSpan)-uSpan;
-    float y=-.43+.026*sin(logicalZ*.052)+.016*sin(aPosition.x*.17);
+    float y=-.405+.020*sin(logicalZ*.052)+.012*sin(aPosition.x*.17);
     vPath=aPosition;
     gl_Position=uViewProj*vec4(aPosition.x,y,z,1.0);
   }`;
+
   const PATH_FS_LOCAL=`#version 300 es
   precision highp float;
   in vec2 vPath;
   out vec4 outColor;
+  float field(vec2 p){
+    float v=0.0;
+    v+=sin(p.x+sin(p.y*.72)*1.2);
+    v+=sin(p.y*1.31-cos(p.x*.61)*1.0)*.62;
+    v+=sin((p.x+p.y)*1.87)*.28;
+    return .5+.5*(v/1.90);
+  }
   void main(){
-    float fine=.5+.5*sin(vPath.x*.82+vPath.y*.41);
-    float coarse=.5+.5*sin(vPath.x*.18-vPath.y*.117+sin(vPath.y*.031));
-    float litter=.5+.5*sin(vPath.x*1.73+vPath.y*.69);
-    vec3 earth=vec3(.51,.325,.155);
-    vec3 warm=vec3(.72,.49,.245);
-    vec3 ochre=vec3(.58,.285,.070);
-    vec3 russet=vec3(.42,.115,.035);
-    vec3 col=mix(earth,warm,.26+.30*fine*coarse);
-    col=mix(col,ochre,.055+.075*litter);
-    col=mix(col,russet,.026*(1.0-coarse));
-    float sunfleck=pow(max(0.0,sin(vPath.y*.087+vPath.x*.22)),8.0);
-    col+=vec3(.13,.085,.030)*sunfleck;
+    float n1=field(vPath*.085);
+    float n2=field(vec2(vPath.x*.24-vPath.y*.11,vPath.x*.11+vPath.y*.24)+vec2(4.1,-2.3));
+    vec3 earth=vec3(.46,.285,.125);
+    vec3 sun=vec3(.67,.45,.22);
+    vec3 leaf=vec3(.56,.255,.055);
+    vec3 col=mix(earth,sun,.24+.32*n1);
+    col=mix(col,leaf,smoothstep(.74,.88,n2)*.12);
+    float fleck=smoothstep(.78,.92,field(vPath*.034+vec2(1.3,2.1)));
+    col+=vec3(.11,.078,.028)*fleck;
     outColor=vec4(col,1.0);
   }`;
 
   let skyProgram,trunkProgram,leafProgram,groundProgram,pathProgram;
   try{
-    const trunkVs=TRUNK_VS
-      .replace("uniform float uSpan;","uniform float uSpanZ;\\nuniform float uSpanX;")
-      .replace("float z=mod(iOffset.z+uTravel,uSpan)-uSpan;","float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;\\n  float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;")
-      .replace("vec3 world=vec3(iOffset.x+iScale.y*sway,iOffset.y,z)+local*iScale;","vec3 world=vec3(x+iScale.y*sway,iOffset.y,z)+local*iScale;");
-    skyProgram=program(gl,SKY_VS,SKY_FS);trunkProgram=program(gl,trunkVs,TRUNK_FS);leafProgram=program(gl,LEAF_VS,LEAF_FS);groundProgram=program(gl,GROUND_VS_LOCAL,GROUND_FS_LOCAL);pathProgram=program(gl,PATH_VS_LOCAL,PATH_FS_LOCAL);
+    skyProgram=program(gl,SKY_VS,SKY_FS);trunkProgram=program(gl,TRUNK_VS,TRUNK_FS);leafProgram=program(gl,LEAF_VS,LEAF_FS);groundProgram=program(gl,GROUND_VS_LOCAL,GROUND_FS_LOCAL);pathProgram=program(gl,PATH_VS_LOCAL,PATH_FS_LOCAL);
   }catch(error){
     console.warn("Amber Forest WebGL unavailable",error);canvas.remove();
     const fallback=fallbackRenderer(ctx),base=fallback.dispose;fallback.dispose=()=>{base?.();style.remove();sound.dispose()};return fallback;
@@ -903,26 +959,25 @@ function createRenderer(ctx){
 
   function renderWorld(time,camera){
     const zen=Boolean(camera);
-    const cx=Math.max(-1.0,Math.min(1.0,camera?.x||0));
-    const cy=Math.max(-1.15,Math.min(1.15,camera?.y||0));
+    const cx=Math.max(-.92,Math.min(.92,camera?.x||0));
+    const cy=Math.max(-.86,Math.min(.86,camera?.y||0));
     const cz=camera?.z||0;
 
-    // Constant forward glide in contemplation mode + manual depth acceleration.
-    const travel=time*(zen?15.2:.36)+cz*96.0;
-    const nearLogical=16.0-travel;
-    const farLogical=-58.0-travel;
+    const travel=time*.34+cz*96.0;
+    const nearLogical=10.0-travel;
+    const farLogical=-78.0-travel;
     const pathNear=trailCenter(nearLogical);
     const pathFar=trailCenter(farLogical);
 
-    const eyeX=pathNear+cx*7.4;
-    const eyeY=4.35+cy*3.2+Math.sin(time*.031)*.10;
-    const eye=[eyeX,eyeY,16.0];
+    const eyeX=pathNear+cx*6.6;
+    const eyeY=5.9+cy*3.7+Math.sin(time*.27)*.045;
+    const eye=[eyeX,eyeY,12.0];
     const target=[
-      pathFar+cx*3.0,
-      3.10+cy*.34,
-      -58
+      pathFar+cx*2.4,
+      1.35+cy*.42,
+      -78
     ];
-    perspective(projection,zen ? .88 : .98,cssWidth/cssHeight,.12,860);
+    perspective(projection,zen ? .91 : .98,cssWidth/cssHeight,.12,920);
     lookAt(view,eye,target,[0,1,0]);multiply(vp,projection,view);
 
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);
@@ -976,10 +1031,11 @@ export default {
   flightCards:true,
   autoFlightCards:true,
   continuousDepth:true,
+  autoForwardSpeed:.19,
   pathDepthGestures:true,
-  flightBounds:{x:1.0,y:.62},
-  depthGain:7.4,
-  depthCap:22,
+  flightBounds:{x:.92,y:.86},
+  depthGain:6.4,
+  depthCap:18,
   accent:"#f2b45b",
   dim:"#dbc9b4",
   surface:"34,23,15",

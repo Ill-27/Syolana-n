@@ -90,8 +90,8 @@ export function setupFlightLayer({
         if (theme.theme?.pathDepthGestures) {
           theme.move(
             dx / (panScale * 0.82),
-            -dy / (panScale * 3.8),
-            -dy / (panScale * 0.52),
+            -dy / (panScale * 2.15),
+            -dy / (panScale * 0.66),
           );
         } else {
           theme.move(dx / (panScale * 0.72), -dy / (panScale * 0.72), 0);
@@ -170,8 +170,8 @@ export function setupFlightLayer({
           if (theme.theme?.pathDepthGestures) {
             theme.move(
               dx / (scale * 1.05),
-              -dy / (scale * 4.4),
-              -dy / (scale * 0.62),
+              -dy / (scale * 2.25),
+              -dy / (scale * 0.72),
             );
           } else {
             theme.move(dx / scale, -dy / scale, 0);

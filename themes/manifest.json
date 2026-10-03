@@ -2,9 +2,9 @@
   {
     "id": "amber-forest",
     "name": "Янтарный лес",
-    "description": "Золотой час · живая осенняя крона, туман, река и кинематографический полёт",
+    "description": "Солнечный день · бесконечный осенний лес, настоящая листва и золотой свет",
     "module": "./amber-forest.js",
-    "preview": "linear-gradient(135deg,#3d4b3e,#d89a36 43%,#a54522 66%,#2a1b13)"
+    "preview": "linear-gradient(135deg,#5b7a7c,#f2c15c 38%,#d9672d 67%,#382317)"
   },
   {
     "id": "white-ocean-city",

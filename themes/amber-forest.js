@@ -70,14 +70,13 @@ out vec2 vUv;
 void main(){vUv=aPosition*.5+.5;gl_Position=vec4(aPosition,0.,1.);}
 `;
 
-const SKY_FS=`#version 300 es
+const SKY_FS=\`#version 300 es
 precision highp float;
 in vec2 vUv;
 out vec4 outColor;
 uniform float uTime;
 uniform float uAspect;
 uniform float uZen;
-
 float waves(vec2 p){
   float v=0.0;
   v+=sin(p.x*.91+sin(p.y*.71)*1.18);
@@ -94,37 +93,30 @@ float cloud(vec2 p){
 }
 void main(){
   vec2 uv=vUv;
-  float horizon=.44;
-  vec3 top=vec3(.20,.28,.31);
-  vec3 upper=vec3(.50,.48,.42);
-  vec3 haze=vec3(.86,.77,.62);
-  vec3 dawn=vec3(1.0,.60,.23);
-  vec3 col=mix(haze,mix(upper,top,smoothstep(.62,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
-
-  float sun=exp(-pow((uv.x-.72)*5.0,2.0)-pow((uv.y-.47)*19.0,2.0));
-  col+=dawn*sun*.53;
-
-  vec2 p=vec2((uv.x-.5)*uAspect*3.2,uv.y*3.2)+vec2(uTime*.006,-uTime*.0018);
-  float low=cloud(p);
-  float mid=cloud(p*.61+vec2(3.1,-2.0));
-  float lowMask=smoothstep(.39,.46,uv.y)*(1.0-smoothstep(.66,.76,uv.y));
-  float midMask=smoothstep(.49,.56,uv.y)*(1.0-smoothstep(.83,.93,uv.y));
-  float d1=smoothstep(.48,.67,low)*lowMask;
-  float d2=smoothstep(.50,.68,mid)*midMask;
-  vec3 shadow=vec3(.40,.39,.36);
-  vec3 body=vec3(.75,.70,.61);
-  vec3 light=vec3(.96,.84,.67);
-  vec3 c1=mix(shadow,body,smoothstep(.47,.68,low));
-  c1=mix(c1,light,sun*.35+smoothstep(.58,.72,low)*.34);
-  col=mix(col,c1,d1*.78);
-  col=mix(col,vec3(.73,.68,.60),d2*.26);
-
-  float mist=exp(-pow((uv.y-horizon)*28.0,2.0));
-  col=mix(col,vec3(.92,.80,.62),mist*(.34+.07*uZen));
-  col*=1.0-.13*pow(length((uv-.5)*vec2(.82,1.0)),1.75);
+  float horizon=.40;
+  vec3 top=vec3(.28,.48,.61);
+  vec3 upper=vec3(.55,.69,.72);
+  vec3 haze=vec3(.88,.82,.68);
+  vec3 sunlight=vec3(1.0,.78,.39);
+  vec3 col=mix(haze,mix(upper,top,smoothstep(.60,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
+  float sun=exp(-pow((uv.x-.72)*6.2,2.0)-pow((uv.y-.69)*8.8,2.0));
+  float halo=exp(-pow((uv.x-.72)*2.55,2.0)-pow((uv.y-.69)*3.9,2.0));
+  col+=sunlight*sun*.86+sunlight*halo*.10;
+  vec2 p=vec2((uv.x-.5)*uAspect*3.0,uv.y*3.0)+vec2(uTime*.0036,-uTime*.0010);
+  float low=cloud(p),high=cloud(p*.57+vec2(3.1,-2.0));
+  float lowMask=smoothstep(.40,.48,uv.y)*(1.0-smoothstep(.62,.73,uv.y));
+  float highMask=smoothstep(.57,.66,uv.y)*(1.0-smoothstep(.89,.98,uv.y));
+  float d1=smoothstep(.54,.72,low)*lowMask,d2=smoothstep(.56,.74,high)*highMask;
+  vec3 cloudShadow=vec3(.56,.58,.55),cloudBody=vec3(.85,.84,.76),cloudLight=vec3(.99,.94,.81);
+  vec3 lowCol=mix(cloudShadow,cloudBody,smoothstep(.54,.70,low));
+  lowCol=mix(lowCol,cloudLight,sun*.34);
+  col=mix(col,lowCol,d1*.42);
+  col=mix(col,vec3(.88,.88,.82),d2*.14);
+  float mist=exp(-pow((uv.y-horizon)*30.0,2.0));
+  col=mix(col,vec3(.92,.82,.66),mist*(.22+.05*uZen));
+  col*=1.0-.08*pow(length((uv-.5)*vec2(.80,1.0)),1.72);
   outColor=vec4(col,1.0);
-}
-`;
+}\`;
 
 function prismGeometry(sides=7){
   const p=[],n=[];
@@ -144,24 +136,7 @@ function prismGeometry(sides=7){
   return {positions:new Float32Array(p),normals:new Float32Array(n)};
 }
 
-function sphereGeometry(segments=7,rings=4){
-  const p=[],n=[];
-  const add=(lat,lon)=>{
-    const cl=Math.cos(lat),x=cl*Math.cos(lon),y=Math.sin(lat),z=cl*Math.sin(lon);
-    p.push(x*.5,y*.5,z*.5);n.push(x,y,z);
-  };
-  for(let r=0;r<rings;r++){
-    const la=-Math.PI/2+r/rings*Math.PI,lb=-Math.PI/2+(r+1)/rings*Math.PI;
-    for(let s=0;s<segments;s++){
-      const aa=s/segments*TAU,ab=(s+1)/segments*TAU;
-      add(la,aa);add(lb,aa);add(lb,ab);
-      add(la,aa);add(lb,ab);add(la,ab);
-    }
-  }
-  return {positions:new Float32Array(p),normals:new Float32Array(n)};
-}
-
-const TRUNK_VS=`#version 300 es
+const TRUNK_VS=`const TRUNK_VS=`#version 300 es
 layout(location=0) in vec3 aPosition;
 layout(location=1) in vec3 aNormal;
 layout(location=2) in vec3 iOffset;
@@ -212,287 +187,173 @@ void main(){
 }
 `;
 
-const LEAF_VS=`#version 300 es
-layout(location=0) in vec3 aPosition;
-layout(location=1) in vec3 aNormal;
-layout(location=2) in vec3 iOffset;
-layout(location=3) in vec3 iScale;
-layout(location=4) in float iTone;
-layout(location=5) in float iPhase;
+const LEAF_POINT_VS=\`#version 300 es
+layout(location=0) in vec3 iOffset;
+layout(location=1) in vec4 iMeta;
 uniform mat4 uViewProj;
 uniform float uTravel;
-uniform float uSpan;
+uniform float uSpanZ;
+uniform float uSpanX;
 uniform float uTime;
 uniform vec3 uCamera;
-out vec3 vNormal;
-out vec3 vWorld;
 out float vTone;
+out float vType;
 out float vPhase;
+out float vSun;
 out float vDistance;
 void main(){
-  float z=mod(iOffset.z+uTravel,uSpan)-uSpan;
-  float sway=sin(uTime*.54+iPhase)*.24+sin(uTime*.31+iPhase*1.7)*.13;
-  vec3 world=vec3(iOffset.x+sway,iOffset.y,z)+aPosition*iScale;
-  vNormal=aNormal;vWorld=world;vTone=iTone;vPhase=iPhase;vDistance=distance(world,uCamera);
-  gl_Position=uViewProj*vec4(world,1.0);
-}
-`;
+  float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;
+  float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;
+  float phase=iMeta.z;
+  float hf=clamp((iOffset.y-2.0)/17.0,0.0,1.0);
+  float gust=sin(uTime*.82+phase)+.45*sin(uTime*.39+phase*1.71);
+  x+=gust*(.20+.38*hf);
+  z+=sin(uTime*.53+phase*1.17)*(.07+.18*hf);
+  vec3 world=vec3(x,iOffset.y,z);
+  vec4 clip=uViewProj*vec4(world,1.0);
+  gl_Position=clip;
+  float dist=max(1.0,distance(world,uCamera));
+  gl_PointSize=clamp(iMeta.w*(260.0/max(8.0,clip.w)),1.35,18.0);
+  vTone=iMeta.x;vType=iMeta.y;vPhase=phase;vDistance=dist;
+  vSun=.5+.5*sin(uTime*.72+phase*2.37+world.x*.035);
+}\`;
 
-const LEAF_FS=`#version 300 es
+const LEAF_POINT_FS=\`#version 300 es
 precision highp float;
-in vec3 vNormal;
-in vec3 vWorld;
 in float vTone;
+in float vType;
 in float vPhase;
+in float vSun;
 in float vDistance;
 out vec4 outColor;
-void main(){
-  vec3 n=normalize(vNormal);
-  vec3 sunDir=normalize(vec3(-.52,.79,.30));
-  float diff=max(dot(n,sunDir),0.0);
-  float hemi=n.y*.5+.5;
-  vec3 gold=vec3(.96,.60,.10);
-  vec3 amber=vec3(.89,.34,.055);
-  vec3 rust=vec3(.62,.15,.045);
-  vec3 olive=vec3(.42,.38,.085);
-  vec3 col=vTone<.34?mix(gold,amber,vTone/.34):
-           vTone<.72?mix(amber,rust,(vTone-.34)/.38):
-           mix(rust,olive,(vTone-.72)/.28);
-  float mottled=.5+.5*sin(vWorld.x*.91+vWorld.y*1.17+vWorld.z*.43+vPhase);
-  col*=.55+.45*diff+.12*hemi;
-  col*=.91+.09*mottled;
-  float rim=pow(1.0-abs(n.z),2.0);
-  col+=vec3(.15,.075,.025)*rim*.24;
-  float fog=smoothstep(75.0,310.0,vDistance);
-  col=mix(col,vec3(.73,.62,.48),fog*.93);
-  outColor=vec4(col,1.0);
+float mapleMask(vec2 p){
+  p.y*=1.05;
+  float a=atan(p.y,p.x),r=length(p);
+  float lobes=.58+.16*cos(5.0*a)+.07*cos(10.0*a);
+  float stem=(1.0-smoothstep(.08,.15,abs(p.x)))*(1.0-smoothstep(-.98,-.48,p.y));
+  float leaf=1.0-smoothstep(lobes-.045,lobes+.035,r);
+  return max(leaf,stem*.72);
 }
-`;
-
-function terrainGeometry(cols=72,rows=120){
-  const verts=[],idx=[];
-  const x0=-110,x1=110,z0=32,z1=-620;
-  for(let r=0;r<=rows;r++){
-    const v=r/rows,z=z0+(z1-z0)*v;
-    for(let c=0;c<=cols;c++){
-      const u=c/cols;
-      verts.push(x0+(x1-x0)*u,z);
-    }
-  }
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
-    const a=r*(cols+1)+c,b=a+1,d=(r+1)*(cols+1)+c,e=d+1;
-    idx.push(a,d,b,b,d,e);
-  }
-  return {vertices:new Float32Array(verts),indices:new Uint32Array(idx)};
+float birchMask(vec2 p){
+  float r=pow(abs(p.x)*1.20,2.15)+pow(abs(p.y)*.88,2.05);
+  return 1.0-smoothstep(.82,1.03,r);
 }
-
-const GROUND_VS=`#version 300 es
-layout(location=0) in vec2 aPosition;
-uniform mat4 uViewProj;
-out vec3 vWorld;
-float heightAt(float x){
-  float bank=smoothstep(7.5,24.0,abs(x));
-  return -.72+bank*(1.75+.28*sin(abs(x)*.16));
+float oakMask(vec2 p){
+  p.y*=.88;
+  float a=atan(p.y,p.x),r=length(p);
+  float lobes=.56+.10*cos(4.0*a)+.06*cos(8.0*a);
+  return 1.0-smoothstep(lobes-.05,lobes+.035,r);
 }
 void main(){
-  float x=aPosition.x,z=aPosition.y;
-  float y=heightAt(x);
-  vWorld=vec3(x,y,z);
-  gl_Position=uViewProj*vec4(vWorld,1.0);
-}
-`;
-
-const GROUND_FS=`#version 300 es
-precision highp float;
-in vec3 vWorld;
-out vec4 outColor;
-uniform vec3 uCamera;
-uniform float uTime;
-void main(){
-  float bank=smoothstep(8.0,24.0,abs(vWorld.x));
-  float leaf=.5+.5*sin(vWorld.x*.42+sin(vWorld.z*.17)*1.7);
-  float leaf2=.5+.5*sin(vWorld.z*.31-vWorld.x*.19);
-  vec3 soil=vec3(.105,.062,.026);
-  vec3 moss=vec3(.20,.18,.052);
-  vec3 ochre=vec3(.49,.205,.045);
-  vec3 col=mix(soil,moss,bank*.38);
-  col=mix(col,ochre,bank*(.18+.22*leaf*leaf2));
-  float light=.68+.18*sin(vWorld.x*.035+vWorld.z*.018);
-  col*=light;
-  float fog=smoothstep(85.0,330.0,distance(vWorld,uCamera));
-  col=mix(col,vec3(.67,.57,.44),fog*.94);
-  outColor=vec4(col,1.0);
-}
-`;
-
-function riverGeometry(cols=34,rows=120){
-  const verts=[],idx=[];
-  const x0=-8.5,x1=8.5,z0=34,z1=-620;
-  for(let r=0;r<=rows;r++){
-    const v=r/rows,z=z0+(z1-z0)*v;
-    for(let c=0;c<=cols;c++){
-      const u=c/cols;verts.push(x0+(x1-x0)*u,z);
-    }
-  }
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
-    const a=r*(cols+1)+c,b=a+1,d=(r+1)*(cols+1)+c,e=d+1;
-    idx.push(a,d,b,b,d,e);
-  }
-  return {vertices:new Float32Array(verts),indices:new Uint32Array(idx)};
-}
-
-const RIVER_VS=`#version 300 es
-layout(location=0) in vec2 aPosition;
-uniform mat4 uViewProj;
-uniform float uTime;
-out vec3 vWorld;
-void main(){
-  float x=aPosition.x,z=aPosition.y;
-  float y=-.34+sin(z*.09+uTime*.42)*.055+sin(x*.39-z*.055-uTime*.31)*.035;
-  vWorld=vec3(x,y,z);
-  gl_Position=uViewProj*vec4(vWorld,1.0);
-}
-`;
-
-const RIVER_FS=`#version 300 es
-precision highp float;
-in vec3 vWorld;
-out vec4 outColor;
-uniform vec3 uCamera;
-uniform float uTime;
-void main(){
-  vec3 dx=dFdx(vWorld),dy=dFdy(vWorld);
-  vec3 n=normalize(cross(dx,dy));if(n.y<0.0)n=-n;
-  vec3 viewDir=normalize(uCamera-vWorld);
-  vec3 sunDir=normalize(vec3(-.52,.82,.28));
-  float fres=pow(1.0-max(dot(n,viewDir),0.0),3.1);
-  float spec=pow(max(dot(reflect(-sunDir,n),viewDir),0.0),68.0);
-  float ripple=.5+.5*sin(vWorld.z*.38+vWorld.x*.21-uTime*.75);
-  vec3 deep=vec3(.055,.115,.102);
-  vec3 tea=vec3(.18,.20,.115);
-  vec3 sky=vec3(.67,.56,.38);
-  vec3 col=mix(deep,tea,.22+.18*ripple);
-  col=mix(col,sky,.18+.48*fres);
-  col+=vec3(1.0,.58,.20)*spec*.55;
-  float fog=smoothstep(95.0,350.0,distance(vWorld,uCamera));
-  col=mix(col,vec3(.69,.59,.45),fog*.94);
-  outColor=vec4(col,1.0);
-}
-`;
-
-function terrainHeight(x){
-  const bank=Math.max(0,Math.min(1,(Math.abs(x)-7.5)/(24-7.5)));
-  const s=bank*bank*(3-2*bank);
-  return -.72+s*(1.75+.28*Math.sin(Math.abs(x)*.16));
-}
+  vec2 p=gl_PointCoord*2.0-1.0;
+  float ang=vPhase*.37;
+  mat2 rot=mat2(cos(ang),-sin(ang),sin(ang),cos(ang));
+  p=rot*p;
+  float mask=vType<.5?mapleMask(p):(vType<1.5?birchMask(p):oakMask(p));
+  if(mask<.08)discard;
+  vec3 yellow=vec3(1.00,.70,.16),gold=vec3(.95,.48,.075),orange=vec3(.88,.25,.045),scarlet=vec3(.66,.095,.035),olive=vec3(.43,.40,.075);
+  vec3 col=vTone<.24?mix(yellow,gold,vTone/.24):
+           vTone<.53?mix(gold,orange,(vTone-.24)/.29):
+           vTone<.80?mix(orange,scarlet,(vTone-.53)/.27):
+           mix(scarlet,olive,(vTone-.80)/.20);
+  float edge=smoothstep(.0,.22,mask);
+  float vein=exp(-abs(p.x)*17.0)*(.10+.18*(1.0-abs(p.y)));
+  col*=.82+.22*edge;
+  col+=vec3(.25,.13,.035)*vein;
+  float sparkle=pow(max(0.0,vSun),7.0)*(.18+.36*(1.0-abs(p.y)));
+  col+=vec3(1.0,.63,.20)*sparkle;
+  float fog=smoothstep(85.0,330.0,vDistance);
+  col=mix(col,vec3(.75,.66,.51),fog*.92);
+  float alpha=mask*(1.0-smoothstep(250.0,355.0,vDistance));
+  outColor=vec4(col,alpha);
+}\`;
 
 function buildForest(){
-  const rnd=seeded(91277),span=560,trunks=[],crowns=[];
+  const rnd=seeded(91277),spanZ=560,spanX=190,trunks=[],leaves=[];
   const addTree=(x,z)=>{
-    const base=terrainHeight(x);
-    const h=8+rnd()*12;
-    const radius=.42+rnd()*.44;
-    const tone=rnd();
-    const phase=rnd()*TAU;
+    const base=-.55+.18*Math.sin(x*.047)+.10*Math.sin(z*.031+x*.018);
+    const h=8.8+rnd()*13.5,radius=.38+rnd()*.48,tone=rnd(),phase=rnd()*TAU;
     trunks.push(x,base+h*.5,z,radius*2,h,radius*2,tone,phase);
-    const clusters=2+(rnd()>.40?1:0)+(rnd()>.78?1:0);
-    for(let i=0;i<clusters;i++){
-      const ang=rnd()*TAU;
-      const spread=(i===0?0:rnd()*(2.0+radius*2.2));
-      const cx=x+Math.cos(ang)*spread;
-      const cz=z+Math.sin(ang)*spread;
-      const cy=base+h*(.72+rnd()*.18)+(i===0?1.1:0);
-      const sx=4.0+rnd()*4.0;
-      const sy=3.2+rnd()*3.1;
-      const sz=4.0+rnd()*4.0;
-      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.25));
-      crowns.push(cx,cy,cz,sx,sy,sz,localTone,phase+i*.81);
+    const crownY=base+h*(.74+rnd()*.08),crownR=3.5+rnd()*2.8;
+    const leafCount=42+Math.floor(rnd()*36);
+    for(let i=0;i<leafCount;i++){
+      const theta=rnd()*TAU,phi=Math.acos(2*rnd()-1),rr=Math.pow(rnd(),.54);
+      const ex=Math.sin(phi)*Math.cos(theta)*crownR*(.92+rnd()*.20);
+      const ey=Math.cos(phi)*crownR*(.70+rnd()*.16);
+      const ez=Math.sin(phi)*Math.sin(theta)*crownR*(.92+rnd()*.20);
+      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.34));
+      const q=rnd(),type=q<.42?0:(q<.70?1:2);
+      leaves.push(x+ex,crownY+ey,z+ez,localTone,type,phase+rnd()*TAU,.72+rnd()*1.30);
+    }
+    const wisps=9+Math.floor(rnd()*8);
+    for(let i=0;i<wisps;i++){
+      const a=rnd()*TAU,rr=crownR*(.72+rnd()*.55);
+      const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.42));
+      const q=rnd();
+      leaves.push(x+Math.cos(a)*rr,crownY+crownR*(.35+rnd()*.62),z+Math.sin(a)*rr,localTone,q<.48?0:(q<.74?1:2),phase+rnd()*TAU,.66+rnd()*1.1);
     }
   };
-  for(let z=10;z<span;z+=8.5+rnd()*3.2){
-    for(const side of [-1,1]){
-      const near=side*(12.5+rnd()*18);
-      addTree(near,z+rnd()*5);
-      if(rnd()>.28)addTree(side*(31+rnd()*26),z+rnd()*7);
-      if(rnd()>.58)addTree(side*(59+rnd()*38),z+rnd()*10);
-    }
+  for(let z=8;z<spanZ;z+=9.8+rnd()*4.0){
+    const rows=4+Math.floor(rnd()*3);
+    for(let j=0;j<rows;j++)addTree(-spanX*.48+rnd()*spanX*.96,z+rnd()*7);
   }
-  return {
-    span,
-    trunks:new Float32Array(trunks),
-    trunkCount:trunks.length/8,
-    crowns:new Float32Array(crowns),
-    crownCount:crowns.length/8
-  };
+  return {spanZ,spanX,trunks:new Float32Array(trunks),trunkCount:trunks.length/8,leaves:new Float32Array(leaves),leafCount:leaves.length/7};
 }
 
-function makeLeafSprites(){
-  const colors=[
-    ["#f7c45f","#a95314"],
-    ["#e7882f","#7b2d0c"],
-    ["#cf5424","#6c1f12"],
-    ["#d5a73a","#77671b"]
-  ];
-  return colors.map((pair,idx)=>{
-    const c=document.createElement("canvas");c.width=64;c.height=64;
-    const x=c.getContext("2d");
-    const g=x.createLinearGradient(18,12,48,52);
-    g.addColorStop(0,pair[0]);g.addColorStop(1,pair[1]);
-    x.fillStyle=g;x.strokeStyle="rgba(73,37,15,.35)";x.lineWidth=1.1;
-    x.beginPath();
-    x.moveTo(32,8);
-    x.bezierCurveTo(49,15,53,31,32,53);
-    x.bezierCurveTo(11,31,15,15,32,8);
-    x.closePath();x.fill();x.stroke();
-    x.strokeStyle="rgba(92,48,18,.38)";
-    x.beginPath();x.moveTo(32,12);x.lineTo(32,56);x.stroke();
-    x.globalAlpha=.42;
-    x.beginPath();x.moveTo(32,27);x.lineTo(20,20);x.moveTo(32,34);x.lineTo(45,25);x.stroke();
+function makeAirLeafSprites(){
+  const make=(kind,top,bottom)=>{
+    const c=document.createElement("canvas");c.width=96;c.height=96;
+    const x=c.getContext("2d");x.translate(48,46);
+    const g=x.createLinearGradient(-26,-28,25,32);g.addColorStop(0,top);g.addColorStop(1,bottom);
+    x.fillStyle=g;x.strokeStyle="rgba(82,39,14,.34)";x.lineWidth=1.2;x.beginPath();
+    if(kind==="maple"){
+      x.moveTo(0,-38);x.lineTo(8,-19);x.lineTo(25,-29);x.lineTo(20,-9);x.lineTo(38,-5);x.lineTo(20,7);x.lineTo(24,27);x.lineTo(5,18);x.lineTo(0,37);
+      x.lineTo(-5,18);x.lineTo(-24,27);x.lineTo(-20,7);x.lineTo(-38,-5);x.lineTo(-20,-9);x.lineTo(-25,-29);x.lineTo(-8,-19);x.closePath();
+    }else if(kind==="oak"){
+      x.moveTo(0,-35);x.bezierCurveTo(18,-29,13,-20,26,-14);x.bezierCurveTo(13,-7,25,4,15,9);x.bezierCurveTo(7,15,12,26,0,34);
+      x.bezierCurveTo(-12,26,-7,15,-15,9);x.bezierCurveTo(-25,4,-13,-7,-26,-14);x.bezierCurveTo(-13,-20,-18,-29,0,-35);x.closePath();
+    }else{
+      x.moveTo(0,-37);x.bezierCurveTo(27,-21,26,14,0,35);x.bezierCurveTo(-26,14,-27,-21,0,-37);x.closePath();
+    }
+    x.fill();x.stroke();
+    x.strokeStyle="rgba(91,49,18,.36)";x.beginPath();x.moveTo(0,-31);x.lineTo(0,42);x.stroke();
+    x.globalAlpha=.46;x.strokeStyle="rgba(255,223,135,.48)";x.beginPath();x.moveTo(-2,-12);x.lineTo(-17,-4);x.moveTo(2,2);x.lineTo(17,10);x.stroke();
     return c;
-  });
+  };
+  return [make("maple","#ffd768","#b94b1e"),make("oval","#f6c24f","#9e381b"),make("oak","#e79b34","#7b2a17"),make("maple","#d86b2f","#7d2b17"),make("oval","#d5bd45","#6f7024")];
 }
 
 function createAirLeaves(){
-  const rnd=seeded(22771),sprites=makeLeafSprites();
-  const leaves=Array.from({length:18},()=>({
-    x:rnd(),y:rnd()*1.15-.1,depth:.35+rnd()*.85,
-    speed:.018+rnd()*.026,drift:(rnd()-.5)*.035,
-    spin:(rnd()-.5)*1.2,phase:rnd()*TAU,sprite:Math.floor(rnd()*sprites.length)
-  }));
+  const rnd=seeded(22771),sprites=makeAirLeafSprites();
+  const leaves=Array.from({length:44},()=>({x:rnd()*1.18-.09,y:rnd()*1.24-.16,depth:.28+rnd()*.92,vy:.012+rnd()*.022,vx:(rnd()-.5)*.018,spin:(rnd()-.5)*1.25,phase:rnd()*TAU,sprite:Math.floor(rnd()*sprites.length)}));
   let last=0;
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
       const dt=last?Math.min(.05,time-last):1/30;last=time;
-      const count=zen?leaves.length:12;
+      const count=zen?leaves.length:30,sunX=width*.72,sunY=height*.29;
       for(let i=0;i<count;i++){
-        const l=leaves[i];
-        l.y+=l.speed*dt*(zen?1.12:.82);
-        l.x+=Math.sin(time*.43+l.phase)*.0024+l.drift*dt;
-        if(l.y>1.10||l.x>1.12||l.x<-.12){
-          l.y=-.12-rnd()*.20;l.x=.04+rnd()*.92;l.depth=.35+rnd()*.85;
-          l.drift=(rnd()-.5)*.035;l.sprite=Math.floor(rnd()*sprites.length);
-        }
-        const s=(7+18*l.depth)*(zen?1.04:.92);
-        const alpha=.18+.45*l.depth;
-        ctx.save();
-        ctx.translate(l.x*width,l.y*height);
-        ctx.rotate(time*l.spin+l.phase);
-        ctx.globalAlpha=alpha;
+        const l=leaves[i];l.y+=l.vy*dt*(zen?1.10:.82);l.x+=(l.vx+Math.sin(time*.38+l.phase)*.010)*dt;
+        if(l.y>1.12||l.x>1.14||l.x<-.14){l.y=-.14-rnd()*.24;l.x=.02+rnd()*.96;l.depth=.28+rnd()*.92;l.sprite=Math.floor(rnd()*sprites.length)}
+        const px=l.x*width,py=l.y*height,s=(8+24*l.depth)*(zen?1.05:.93);
+        const shimmer=Math.max(0,1-Math.hypot(px-sunX,py-sunY)/Math.max(width,height)*2.2)*(.25+.75*(.5+.5*Math.sin(time*1.7+l.phase)));
+        ctx.save();ctx.translate(px,py);ctx.rotate(time*l.spin+l.phase);ctx.globalAlpha=.22+.58*l.depth;
+        ctx.shadowColor=\`rgba(255,190,76,\${.10+.24*shimmer})\`;ctx.shadowBlur=3+9*shimmer;
         ctx.drawImage(sprites[l.sprite],-s/2,-s/2,s,s);
+        if(shimmer>.32){ctx.globalCompositeOperation="screen";ctx.globalAlpha=shimmer*.20;ctx.fillStyle="#ffd98a";ctx.beginPath();ctx.ellipse(-s*.08,-s*.14,s*.13,s*.07,-.5,0,TAU);ctx.fill()}
         ctx.restore();
       }
     }
   };
 }
 
-const SOUND={
+const SOUND=const SOUND={
   title:"Звучание Янтарного леса",
   loops:[
     {src:"audio-library/nature/forest_morning.ogg",volume:.15},
     {src:"audio-library/nature/wind_soft.ogg",fallback:"audio-library/compatible/nature/wind_soft.m4a",volume:.12},
-    {src:"audio-library/nature/river_flow_fast.ogg",volume:.07},
-    {src:"audio-library/ambience/deep_forest.ogg",fallback:"audio-library/compatible/ambience/deep_forest.m4a",volume:.055}
+    {src:"audio-library/ambience/deep_forest.ogg",fallback:"audio-library/compatible/ambience/deep_forest.m4a",volume:.060},
+    {src:"audio-library/ambience/park_path.ogg",fallback:"audio-library/compatible/ambience/park_path.m4a",volume:.045}
   ],
   oneShots:[
     {src:"audio-library/nature/crow_caw.ogg",volume:.065,minDelay:30,maxDelay:72}
@@ -574,28 +435,24 @@ function createThemeSound(){
 }
 
 function fallbackRenderer(ctx){
-  const rnd=seeded(611);
+  const sprites=makeAirLeafSprites();
   return {
     resize(){},
     draw({time,width,height,camera}){
       const zen=Boolean(camera);
       const g=ctx.createLinearGradient(0,0,0,height);
-      g.addColorStop(0,"#364b4a");g.addColorStop(.44,"#b28a58");g.addColorStop(.58,"#77502d");g.addColorStop(1,"#17130d");
+      g.addColorStop(0,"#5f8290");g.addColorStop(.40,"#d8bd82");g.addColorStop(.59,"#8b6235");g.addColorStop(1,"#21160d");
       ctx.fillStyle=g;ctx.fillRect(0,0,width,height);
-      const horizon=height*.53;
-      for(let i=0;i<46;i++){
-        const side=i%2?-1:1;
-        const z=((i*61+time*(zen?30:7))%1000)/1000;
-        const scale=.12+z*1.18;
-        const x=width*.5+side*(50+z*width*.52);
-        const h=(45+(i%7)*9)*scale;
-        ctx.fillStyle=["#d89a31","#c95b24","#e1b94c","#8f4d20"][i%4];
-        ctx.beginPath();ctx.arc(x,horizon-h*.55,12*scale,0,TAU);ctx.fill();
-        ctx.fillStyle="#4b2813";ctx.fillRect(x-1.6*scale,horizon-h*.55,3.2*scale,h*.55);
+      const horizon=height*.55;
+      for(let i=0;i<64;i++){
+        const z=((i*53+time*(zen?23:5))%1000)/1000,scale=.10+z*1.22,x=((i*83.1)%(width*1.6))-width*.3,h=(48+(i%8)*8)*scale;
+        ctx.fillStyle="#4b2813";ctx.fillRect(x-1.4*scale,horizon-h*.52,2.8*scale,h*.52);
+        for(let j=0;j<5;j++){const ox=(j-2)*8*scale,oy=(j%2)*8*scale;ctx.globalAlpha=.76;ctx.drawImage(sprites[j%sprites.length],x+ox-10*scale,horizon-h-oy-10*scale,20*scale,20*scale)}
       }
-      const water=ctx.createLinearGradient(0,horizon,0,height);
-      water.addColorStop(0,"rgba(94,103,72,.65)");water.addColorStop(1,"rgba(18,30,26,.94)");
-      ctx.fillStyle=water;ctx.fillRect(width*.43,horizon,width*.14,height-horizon);
+      ctx.globalAlpha=1;
+      const sun=ctx.createRadialGradient(width*.72,height*.28,4,width*.72,height*.28,width*.30);
+      sun.addColorStop(0,"rgba(255,218,126,.55)");sun.addColorStop(1,"rgba(255,218,126,0)");
+      ctx.fillStyle=sun;ctx.fillRect(0,0,width,height);
     },
     dispose(){}
   };
@@ -604,182 +461,149 @@ function fallbackRenderer(ctx){
 function createRenderer(ctx){
   const sourceCanvas=ctx?.canvas;
   if(!sourceCanvas||!document.body)return fallbackRenderer(ctx);
-
   const canvas=document.createElement("canvas");
   canvas.className="theme-world-canvas amber-forest-world";
   canvas.setAttribute("aria-hidden","true");
   Object.assign(canvas.style,{position:"fixed",inset:"0",width:"100%",height:"100%",zIndex:"-2",pointerEvents:"none",display:"block",transform:"translateZ(0)",backfaceVisibility:"hidden",willChange:"transform"});
   sourceCanvas.parentNode?.insertBefore(canvas,sourceCanvas);
-
   const style=document.createElement("style");
-  style.textContent='html[data-theme="amber-forest"] .aurora-layer{animation:none!important;opacity:0!important}html[data-theme="amber-forest"] .flight-hint{color:#f4dcc0;opacity:.78}html[data-theme="amber-forest"] .theme-sound-toggle svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}html[data-theme="amber-forest"] .theme-sound-toggle svg path:first-child{fill:currentColor;stroke:none}html[data-theme="amber-forest"] .theme-sound-toggle[data-enabled="true"]{color:#fff0d2;box-shadow:0 0 0 1px #ffd28b55,0 0 28px #ec9a3d38}';
+  style.textContent='html[data-theme="amber-forest"] .aurora-layer{animation:none!important;opacity:0!important}html[data-theme="amber-forest"] .flight-hint{color:#fff0d8;opacity:.82}html[data-theme="amber-forest"] .theme-sound-toggle[data-enabled="true"]{color:#fff3d5;box-shadow:0 0 0 1px #ffd89566,0 0 30px #efaa463d}';
   document.head.append(style);
   const sound=createThemeSound();
-
   const gl=canvas.getContext("webgl2",{alpha:false,antialias:true,depth:true,stencil:false,powerPreference:"high-performance",preserveDrawingBuffer:false});
-  if(!gl){
-    canvas.remove();const fallback=fallbackRenderer(ctx),base=fallback.dispose;
-    fallback.dispose=()=>{base?.();style.remove();sound.dispose()};return fallback;
-  }
+  if(!gl){canvas.remove();const fallback=fallbackRenderer(ctx),base=fallback.dispose;fallback.dispose=()=>{base?.();style.remove();sound.dispose()};return fallback}
 
-  let skyProgram,trunkProgram,leafProgram,groundProgram,riverProgram;
+  const GROUND_VS_LOCAL=\`#version 300 es
+  layout(location=0) in vec2 aPosition;
+  uniform mat4 uViewProj;
+  uniform vec3 uCamera;
+  uniform float uTravel;
+  out vec3 vWorld;
+  void main(){
+    float x=aPosition.x+uCamera.x;
+    float z=aPosition.y;
+    float y=-.62+.12*sin((x+uTravel*.04)*.055)+.08*sin((z-uTravel)*.032+x*.018);
+    vWorld=vec3(x,y,z);
+    gl_Position=uViewProj*vec4(vWorld,1.0);
+  }\`;
+  const GROUND_FS_LOCAL=\`#version 300 es
+  precision highp float;
+  in vec3 vWorld;
+  out vec4 outColor;
+  uniform vec3 uCamera;
+  uniform float uTravel;
+  void main(){
+    float leaf=.5+.5*sin((vWorld.x+uTravel*.07)*.41+sin((vWorld.z-uTravel)*.16)*1.6);
+    float leaf2=.5+.5*sin((vWorld.z-uTravel)*.28-vWorld.x*.19);
+    float moss=.5+.5*sin(vWorld.x*.12+vWorld.z*.07);
+    vec3 soil=vec3(.12,.073,.032),green=vec3(.24,.23,.065),ochre=vec3(.53,.245,.052),rust=vec3(.49,.115,.035);
+    vec3 col=mix(soil,green,.22+.16*moss);
+    col=mix(col,ochre,(.16+.22*leaf)*leaf2);col=mix(col,rust,.11*(1.0-leaf2));
+    col*=.72+.20*(.5+.5*sin(vWorld.x*.035-vWorld.z*.021));
+    float fog=smoothstep(90.0,350.0,distance(vWorld,uCamera));
+    col=mix(col,vec3(.73,.64,.49),fog*.93);
+    outColor=vec4(col,1.0);
+  }\`;
+
+  let skyProgram,trunkProgram,leafProgram,groundProgram;
   try{
-    skyProgram=program(gl,SKY_VS,SKY_FS);
-    trunkProgram=program(gl,TRUNK_VS,TRUNK_FS);
-    leafProgram=program(gl,LEAF_VS,LEAF_FS);
-    groundProgram=program(gl,GROUND_VS,GROUND_FS);
-    riverProgram=program(gl,RIVER_VS,RIVER_FS);
+    const trunkVs=TRUNK_VS
+      .replace("uniform float uSpan;","uniform float uSpanZ;\\nuniform float uSpanX;")
+      .replace("float z=mod(iOffset.z+uTravel,uSpan)-uSpan;","float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;\\n  float z=mod(iOffset.z+uTravel,uSpanZ)-uSpanZ;")
+      .replace("vec3 world=vec3(iOffset.x+iScale.y*sway,iOffset.y,z)+local*iScale;","vec3 world=vec3(x+iScale.y*sway,iOffset.y,z)+local*iScale;");
+    skyProgram=program(gl,SKY_VS,SKY_FS);trunkProgram=program(gl,trunkVs,TRUNK_FS);leafProgram=program(gl,LEAF_POINT_VS,LEAF_POINT_FS);groundProgram=program(gl,GROUND_VS_LOCAL,GROUND_FS_LOCAL);
   }catch(error){
-    console.warn("Amber Forest WebGL unavailable",error);
-    canvas.remove();const fallback=fallbackRenderer(ctx),base=fallback.dispose;
-    fallback.dispose=()=>{base?.();style.remove();sound.dispose()};return fallback;
+    console.warn("Amber Forest WebGL unavailable",error);canvas.remove();
+    const fallback=fallbackRenderer(ctx),base=fallback.dispose;fallback.dispose=()=>{base?.();style.remove();sound.dispose()};return fallback;
   }
 
   const resources=[],keep=(x)=>{if(x)resources.push(x);return x};
-
   const skyVao=keep(gl.createVertexArray()),skyBuffer=keep(gl.createBuffer());
-  gl.bindVertexArray(skyVao);gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  gl.bindVertexArray(skyVao);gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
   const skyLoc=gl.getAttribLocation(skyProgram,"aPosition");gl.enableVertexAttribArray(skyLoc);gl.vertexAttribPointer(skyLoc,2,gl.FLOAT,false,0,0);
 
-  const forest=buildForest();
-  const trunkGeo=prismGeometry(7),leafGeo=sphereGeometry(7,4);
+  const forest=buildForest(),trunkGeo=prismGeometry(7);
+  const trunkVao=keep(gl.createVertexArray());gl.bindVertexArray(trunkVao);
+  const tp=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,tp);gl.bufferData(gl.ARRAY_BUFFER,trunkGeo.positions,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
+  const tn=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,tn);gl.bufferData(gl.ARRAY_BUFFER,trunkGeo.normals,gl.STATIC_DRAW);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);
+  const ti=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,ti);gl.bufferData(gl.ARRAY_BUFFER,forest.trunks,gl.STATIC_DRAW);
+  const ts=8*4;
+  gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,3,gl.FLOAT,false,ts,0);gl.vertexAttribDivisor(2,1);
+  gl.enableVertexAttribArray(3);gl.vertexAttribPointer(3,3,gl.FLOAT,false,ts,3*4);gl.vertexAttribDivisor(3,1);
+  gl.enableVertexAttribArray(4);gl.vertexAttribPointer(4,1,gl.FLOAT,false,ts,6*4);gl.vertexAttribDivisor(4,1);
+  gl.enableVertexAttribArray(5);gl.vertexAttribPointer(5,1,gl.FLOAT,false,ts,7*4);gl.vertexAttribDivisor(5,1);
 
-  const makeInstanced=(geo,data)=>{
-    const vao=keep(gl.createVertexArray());gl.bindVertexArray(vao);
-    const pos=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,pos);gl.bufferData(gl.ARRAY_BUFFER,geo.positions,gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
-    const norm=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,norm);gl.bufferData(gl.ARRAY_BUFFER,geo.normals,gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);
-    const inst=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,inst);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
-    const stride=8*4;
-    gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,3,gl.FLOAT,false,stride,0);gl.vertexAttribDivisor(2,1);
-    gl.enableVertexAttribArray(3);gl.vertexAttribPointer(3,3,gl.FLOAT,false,stride,3*4);gl.vertexAttribDivisor(3,1);
-    gl.enableVertexAttribArray(4);gl.vertexAttribPointer(4,1,gl.FLOAT,false,stride,6*4);gl.vertexAttribDivisor(4,1);
-    gl.enableVertexAttribArray(5);gl.vertexAttribPointer(5,1,gl.FLOAT,false,stride,7*4);gl.vertexAttribDivisor(5,1);
-    return vao;
-  };
-  const trunkVao=makeInstanced(trunkGeo,forest.trunks);
-  const leafVao=makeInstanced(leafGeo,forest.crowns);
+  const leafVao=keep(gl.createVertexArray());gl.bindVertexArray(leafVao);
+  const lb=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,lb);gl.bufferData(gl.ARRAY_BUFFER,forest.leaves,gl.STATIC_DRAW);
+  const ls=7*4;gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,ls,0);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,4,gl.FLOAT,false,ls,3*4);
 
-  const terrain=terrainGeometry();
+  const terrain=terrainGeometry(64,116);
   const groundVao=keep(gl.createVertexArray());gl.bindVertexArray(groundVao);
-  const groundPos=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,groundPos);gl.bufferData(gl.ARRAY_BUFFER,terrain.vertices,gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
-  const groundIdx=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,groundIdx);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,terrain.indices,gl.STATIC_DRAW);
-
-  const river=riverGeometry();
-  const riverVao=keep(gl.createVertexArray());gl.bindVertexArray(riverVao);
-  const riverPos=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,riverPos);gl.bufferData(gl.ARRAY_BUFFER,river.vertices,gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
-  const riverIdx=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,riverIdx);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,river.indices,gl.STATIC_DRAW);
-  gl.bindVertexArray(null);
+  const gp=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,gp);gl.bufferData(gl.ARRAY_BUFFER,terrain.vertices,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  const gi=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,gi);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,terrain.indices,gl.STATIC_DRAW);gl.bindVertexArray(null);
 
   const projection=new Float32Array(16),view=new Float32Array(16),vp=new Float32Array(16);
   let cssWidth=1,cssHeight=1,disposed=false;
   const airLeaves=createAirLeaves();
-
   const uniforms={
     sky:{time:gl.getUniformLocation(skyProgram,"uTime"),aspect:gl.getUniformLocation(skyProgram,"uAspect"),zen:gl.getUniformLocation(skyProgram,"uZen")},
-    trunk:{vp:gl.getUniformLocation(trunkProgram,"uViewProj"),travel:gl.getUniformLocation(trunkProgram,"uTravel"),span:gl.getUniformLocation(trunkProgram,"uSpan"),time:gl.getUniformLocation(trunkProgram,"uTime"),camera:gl.getUniformLocation(trunkProgram,"uCamera")},
-    leaf:{vp:gl.getUniformLocation(leafProgram,"uViewProj"),travel:gl.getUniformLocation(leafProgram,"uTravel"),span:gl.getUniformLocation(leafProgram,"uSpan"),time:gl.getUniformLocation(leafProgram,"uTime"),camera:gl.getUniformLocation(leafProgram,"uCamera")},
-    ground:{vp:gl.getUniformLocation(groundProgram,"uViewProj"),camera:gl.getUniformLocation(groundProgram,"uCamera"),time:gl.getUniformLocation(groundProgram,"uTime")},
-    river:{vp:gl.getUniformLocation(riverProgram,"uViewProj"),camera:gl.getUniformLocation(riverProgram,"uCamera"),time:gl.getUniformLocation(riverProgram,"uTime")}
+    trunk:{vp:gl.getUniformLocation(trunkProgram,"uViewProj"),travel:gl.getUniformLocation(trunkProgram,"uTravel"),spanZ:gl.getUniformLocation(trunkProgram,"uSpanZ"),spanX:gl.getUniformLocation(trunkProgram,"uSpanX"),time:gl.getUniformLocation(trunkProgram,"uTime"),camera:gl.getUniformLocation(trunkProgram,"uCamera")},
+    leaf:{vp:gl.getUniformLocation(leafProgram,"uViewProj"),travel:gl.getUniformLocation(leafProgram,"uTravel"),spanZ:gl.getUniformLocation(leafProgram,"uSpanZ"),spanX:gl.getUniformLocation(leafProgram,"uSpanX"),time:gl.getUniformLocation(leafProgram,"uTime"),camera:gl.getUniformLocation(leafProgram,"uCamera")},
+    ground:{vp:gl.getUniformLocation(groundProgram,"uViewProj"),camera:gl.getUniformLocation(groundProgram,"uCamera"),travel:gl.getUniformLocation(groundProgram,"uTravel")}
   };
 
   function resize({width,height,ratio=1}){
     cssWidth=Math.max(1,width);cssHeight=Math.max(1,height);
-    const mobile=cssWidth<=760;
-    const q=Math.min(ratio,mobile?1.16:1.55);
-    const w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
+    const q=Math.min(ratio,cssWidth<=760?1.13:1.52),w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}
   }
 
   function renderWorld(time,camera){
-    const zen=Boolean(camera);
-    const cx=Math.max(-1.08,Math.min(1.08,camera?.x||0));
-    const cy=Math.max(-.78,Math.min(.78,camera?.y||0));
-    const cz=camera?.z||0;
-    const travel=time*(zen?2.35:.40)+cz*24;
-    const eyeX=Math.sin(time*.035)*1.7+cx*7.6;
-    const eyeY=7.7+cy*4.9+Math.sin(time*.041)*.32;
-    const eye=[eyeX,eyeY,15.2];
-    const target=[eyeX+cx*.8,eyeY-1.9+cy*.28,-49];
-    perspective(projection,zen ? .91 : 1.0,cssWidth/cssHeight,.12,610);
-    lookAt(view,eye,target,[0,1,0]);multiply(vp,projection,view);
+    const zen=Boolean(camera),cx=camera?.x||0,cy=Math.max(-.82,Math.min(.82,camera?.y||0)),cz=camera?.z||0;
+    const worldX=cx*27.0+Math.sin(time*.030)*1.6,travel=time*(zen?2.15:.38)+cz*23.0,eyeY=6.9+cy*4.7+Math.sin(time*.039)*.24;
+    const eye=[worldX,eyeY,15.2],target=[worldX+Math.sin(time*.021)*.65,eyeY-1.35+cy*.22,-49];
+    perspective(projection,zen ? .93 : 1.01,cssWidth/cssHeight,.12,620);lookAt(view,eye,target,[0,1,0]);multiply(vp,projection,view);
 
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);
-    gl.useProgram(skyProgram);gl.bindVertexArray(skyVao);
-    gl.uniform1f(uniforms.sky.time,time);gl.uniform1f(uniforms.sky.aspect,cssWidth/cssHeight);gl.uniform1f(uniforms.sky.zen,zen?1:0);
-    gl.drawArrays(gl.TRIANGLES,0,3);
-
+    gl.useProgram(skyProgram);gl.bindVertexArray(skyVao);gl.uniform1f(uniforms.sky.time,time);gl.uniform1f(uniforms.sky.aspect,cssWidth/cssHeight);gl.uniform1f(uniforms.sky.zen,zen?1:0);gl.drawArrays(gl.TRIANGLES,0,3);
     gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);gl.clear(gl.DEPTH_BUFFER_BIT);
 
-    gl.useProgram(groundProgram);gl.bindVertexArray(groundVao);
-    gl.uniformMatrix4fv(uniforms.ground.vp,false,vp);gl.uniform3f(uniforms.ground.camera,...eye);gl.uniform1f(uniforms.ground.time,time);
-    gl.drawElements(gl.TRIANGLES,terrain.indices.length,gl.UNSIGNED_INT,0);
+    gl.useProgram(groundProgram);gl.bindVertexArray(groundVao);gl.uniformMatrix4fv(uniforms.ground.vp,false,vp);gl.uniform3f(uniforms.ground.camera,...eye);gl.uniform1f(uniforms.ground.travel,travel);gl.drawElements(gl.TRIANGLES,terrain.indices.length,gl.UNSIGNED_INT,0);
 
-    gl.useProgram(riverProgram);gl.bindVertexArray(riverVao);
-    gl.uniformMatrix4fv(uniforms.river.vp,false,vp);gl.uniform3f(uniforms.river.camera,...eye);gl.uniform1f(uniforms.river.time,time);
-    gl.drawElements(gl.TRIANGLES,river.indices.length,gl.UNSIGNED_INT,0);
-
-    gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
-    gl.useProgram(trunkProgram);gl.bindVertexArray(trunkVao);
-    gl.uniformMatrix4fv(uniforms.trunk.vp,false,vp);gl.uniform1f(uniforms.trunk.travel,travel);gl.uniform1f(uniforms.trunk.span,forest.span);gl.uniform1f(uniforms.trunk.time,time);gl.uniform3f(uniforms.trunk.camera,...eye);
+    gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);gl.useProgram(trunkProgram);gl.bindVertexArray(trunkVao);
+    gl.uniformMatrix4fv(uniforms.trunk.vp,false,vp);gl.uniform1f(uniforms.trunk.travel,travel);gl.uniform1f(uniforms.trunk.spanZ,forest.spanZ);gl.uniform1f(uniforms.trunk.spanX,forest.spanX);gl.uniform1f(uniforms.trunk.time,time);gl.uniform3f(uniforms.trunk.camera,...eye);
     gl.drawArraysInstanced(gl.TRIANGLES,0,trunkGeo.positions.length/3,forest.trunkCount);
 
-    gl.useProgram(leafProgram);gl.bindVertexArray(leafVao);
-    gl.uniformMatrix4fv(uniforms.leaf.vp,false,vp);gl.uniform1f(uniforms.leaf.travel,travel);gl.uniform1f(uniforms.leaf.span,forest.span);gl.uniform1f(uniforms.leaf.time,time);gl.uniform3f(uniforms.leaf.camera,...eye);
-    gl.drawArraysInstanced(gl.TRIANGLES,0,leafGeo.positions.length/3,forest.crownCount);
-
-    gl.disable(gl.CULL_FACE);gl.bindVertexArray(null);
+    gl.disable(gl.CULL_FACE);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);
+    gl.useProgram(leafProgram);gl.bindVertexArray(leafVao);gl.uniformMatrix4fv(uniforms.leaf.vp,false,vp);gl.uniform1f(uniforms.leaf.travel,travel);gl.uniform1f(uniforms.leaf.spanZ,forest.spanZ);gl.uniform1f(uniforms.leaf.spanX,forest.spanX);gl.uniform1f(uniforms.leaf.time,time);gl.uniform3f(uniforms.leaf.camera,...eye);
+    gl.drawArrays(gl.POINTS,0,forest.leafCount);gl.depthMask(true);gl.disable(gl.BLEND);gl.bindVertexArray(null);
   }
 
   return {
     resize,
     draw({time,width,height,camera}){
-      if(disposed)return;
-      if(width!==cssWidth||height!==cssHeight)resize({width,height,ratio:window.devicePixelRatio||1});
-      renderWorld(time,camera);
-      airLeaves.draw(ctx,time,width,height,Boolean(camera));
-
-      const mist=ctx.createLinearGradient(0,height*.28,0,height*.82);
-      mist.addColorStop(0,"rgba(236,202,153,0)");
-      mist.addColorStop(.48,"rgba(232,194,140,.055)");
-      mist.addColorStop(.70,"rgba(104,79,52,.035)");
-      mist.addColorStop(1,"rgba(30,22,15,.12)");
-      ctx.fillStyle=mist;ctx.fillRect(0,0,width,height);
-
-      if(!camera){
-        const veil=ctx.createLinearGradient(0,0,0,height);
-        veil.addColorStop(0,"rgba(28,19,12,.08)");
-        veil.addColorStop(.48,"rgba(22,15,10,.13)");
-        veil.addColorStop(1,"rgba(14,10,7,.38)");
-        ctx.fillStyle=veil;ctx.fillRect(0,0,width,height);
-      }
+      if(disposed)return;if(width!==cssWidth||height!==cssHeight)resize({width,height,ratio:window.devicePixelRatio||1});
+      renderWorld(time,camera);airLeaves.draw(ctx,time,width,height,Boolean(camera));
+      const sun=ctx.createRadialGradient(width*.72,height*.22,4,width*.72,height*.22,Math.max(width,height)*.46);
+      sun.addColorStop(0,"rgba(255,224,144,.20)");sun.addColorStop(.32,"rgba(255,186,78,.075)");sun.addColorStop(1,"rgba(255,186,78,0)");ctx.fillStyle=sun;ctx.fillRect(0,0,width,height);
+      if(!camera){const veil=ctx.createLinearGradient(0,0,0,height);veil.addColorStop(0,"rgba(26,20,13,.025)");veil.addColorStop(.55,"rgba(22,15,9,.09)");veil.addColorStop(1,"rgba(14,10,6,.30)");ctx.fillStyle=veil;ctx.fillRect(0,0,width,height)}
     },
     dispose(){
       disposed=true;canvas.remove();style.remove();sound.dispose();
-      try{
-        for(const p of [skyProgram,trunkProgram,leafProgram,groundProgram,riverProgram])gl.deleteProgram(p);
-        for(const r of resources){
-          if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);
-          else gl.deleteBuffer(r);
-        }
-      }catch{}
+      try{for(const p of [skyProgram,trunkProgram,leafProgram,groundProgram])gl.deleteProgram(p);for(const r of resources){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}
     }
   };
 }
 
 export default {
   id:"amber-forest",
-  renderer:"webgl-autumn-forest",
+  renderer:"webgl-infinite-autumn-forest",
   particles:false,
   marks:false,
   flightCards:true,
   autoFlightCards:true,
   continuousDepth:true,
-  flightBounds:{x:1.08,y:.78},
+  flightBounds:{y:.82},
   accent:"#f2b45b",
   dim:"#dbc9b4",
   surface:"34,23,15",
@@ -788,7 +612,7 @@ export default {
   buttonRadius:"26px",
   heading:'"Cormorant Garamond", Georgia, serif',
   body:'"Nunito", system-ui, sans-serif',
-  colors:["#f2b45b","#d96b2f","#a83f20","#8f7c2b"],
+  colors:["#ffd15c","#ee8d31","#c84d26","#8f8b2f"],
   backgrounds:[
     "radial-gradient(ellipse at 72% 20%,rgba(248,166,65,.40),transparent 42%),radial-gradient(ellipse at 20% 15%,rgba(121,94,63,.32),transparent 56%)",
     "radial-gradient(ellipse at 55% 42%,rgba(210,117,39,.16),transparent 54%)",

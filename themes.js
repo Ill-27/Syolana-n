@@ -671,75 +671,34 @@ export class ThemeEngine {
         c.fillStyle = g;
         c.fillRect(0, 0, w, h);
         if (id === "amber-forest") {
-          const horizon=Math.round(h*.53),vanX=w*.50;
+          const horizon=Math.round(h*.54);
           const sky=c.createLinearGradient(0,0,0,horizon);
-          sky.addColorStop(0,"#334645");
-          sky.addColorStop(.50,"#8b7b62");
-          sky.addColorStop(.82,"#d7aa6e");
-          sky.addColorStop(1,"#f1c17b");
+          sky.addColorStop(0,"#547887");sky.addColorStop(.48,"#9aa58e");sky.addColorStop(.82,"#dfbd78");sky.addColorStop(1,"#f4cf88");
           c.fillStyle=sky;c.fillRect(0,0,w,horizon);
+          const sun=c.createRadialGradient(w*.72,h*.24,3,w*.72,h*.24,w*.27);
+          sun.addColorStop(0,"rgba(255,238,171,.88)");sun.addColorStop(.25,"rgba(255,202,103,.33)");sun.addColorStop(1,"rgba(255,202,103,0)");c.fillStyle=sun;c.fillRect(0,0,w,h*.68);
+          const ground=c.createLinearGradient(0,horizon,0,h);ground.addColorStop(0,"#846132");ground.addColorStop(.52,"#55351e");ground.addColorStop(1,"#20140d");c.fillStyle=ground;c.fillRect(0,horizon,w,h-horizon);
 
-          const sun=c.createRadialGradient(w*.72,h*.34,4,w*.72,h*.34,w*.24);
-          sun.addColorStop(0,"rgba(255,219,145,.68)");
-          sun.addColorStop(.34,"rgba(248,164,70,.20)");
-          sun.addColorStop(1,"rgba(248,164,70,0)");
-          c.fillStyle=sun;c.fillRect(w*.44,h*.08,w*.55,h*.55);
-
-          c.save();c.filter="blur(18px)";
-          for(let i=0;i<8;i++){
-            const cx=(i*133+t*4.0)%(w+250)-125,cy=38+(i%4)*27;
-            c.globalAlpha=.08+(i%3)*.035;
-            c.fillStyle=i%2?"#ead8bb":"#7f8173";
-            c.beginPath();c.ellipse(cx,cy,100+(i%3)*32,20+(i%2)*9,0,0,Math.PI*2);c.fill();
-          }
-          c.restore();c.globalAlpha=1;c.filter="none";
-
-          const ground=c.createLinearGradient(0,horizon,0,h);
-          ground.addColorStop(0,"#75552f");ground.addColorStop(.55,"#3f2b18");ground.addColorStop(1,"#17120d");
-          c.fillStyle=ground;c.fillRect(0,horizon,w,h-horizon);
-
-          const river=c.createLinearGradient(vanX,horizon,vanX,h);
-          river.addColorStop(0,"#827e59");river.addColorStop(.55,"#40574b");river.addColorStop(1,"#172d27");
-          c.fillStyle=river;
-          c.beginPath();
-          c.moveTo(vanX-18,horizon);c.lineTo(vanX+18,horizon);c.lineTo(vanX+w*.20,h);c.lineTo(vanX-w*.20,h);c.closePath();c.fill();
-
-          for(let j=0;j<9;j++){
-            const d=(j+1)/9,y=horizon+Math.pow(d,1.55)*(h-horizon)*.88,half=18+d*w*.18;
-            c.strokeStyle=`rgba(247,202,121,${.05+d*.14})`;c.lineWidth=.8+d*1.4;
-            c.beginPath();c.moveTo(vanX-half,y);c.quadraticCurveTo(vanX,y+Math.sin(t+j)*2,vanX+half,y);c.stroke();
-          }
-
-          const tree=(side,depth,offset,pointed)=>{
-            const scale=.22+depth*.94;
-            const x=vanX+side*(55+depth*w*.43+offset*scale);
-            const base=horizon+depth*(h-horizon)*.15;
-            const trunkH=72*scale,trunkW=8*scale;
-            c.fillStyle="#5d3418";c.fillRect(x-trunkW/2,base-trunkH,trunkW,trunkH);
-            const colors=["#e5a43a","#d86c2d","#b94722","#9a7e2b"];
-            for(let k=0;k<3;k++){
-              const cx=x+(k-1)*16*scale,cy=base-trunkH-(k%2)*15*scale;
-              const r=32*scale*(1-k*.06);
-              const g=c.createRadialGradient(cx-r*.25,cy-r*.30,2,cx,cy,r);
-              g.addColorStop(0,"#f2c65f");g.addColorStop(.42,colors[(k+Math.round(depth*7))%colors.length]);g.addColorStop(1,"rgba(100,42,20,.92)");
-              c.fillStyle=g;c.beginPath();c.ellipse(cx,cy,r,r*.78,0,0,Math.PI*2);c.fill();
-            }
+          const leafShape=(x,y,s,kind,color,rot)=>{
+            c.save();c.translate(x,y);c.rotate(rot);c.fillStyle=color;c.beginPath();
+            if(kind===0){
+              c.moveTo(0,-s);c.lineTo(s*.22,-s*.42);c.lineTo(s*.55,-s*.64);c.lineTo(s*.44,-s*.18);c.lineTo(s*.86,-s*.08);c.lineTo(s*.46,s*.20);c.lineTo(s*.54,s*.58);c.lineTo(s*.12,s*.38);c.lineTo(0,s*.82);
+              c.lineTo(-s*.12,s*.38);c.lineTo(-s*.54,s*.58);c.lineTo(-s*.46,s*.20);c.lineTo(-s*.86,-s*.08);c.lineTo(-s*.44,-s*.18);c.lineTo(-s*.55,-s*.64);c.lineTo(-s*.22,-s*.42);c.closePath();
+            }else if(kind===1)c.ellipse(0,0,s*.48,s*.82,0,0,Math.PI*2);
+            else{c.moveTo(0,-s*.85);c.bezierCurveTo(s*.55,-s*.65,s*.28,-s*.18,s*.62,0);c.bezierCurveTo(s*.28,s*.20,s*.45,s*.60,0,s*.84);c.bezierCurveTo(-s*.45,s*.60,-s*.28,s*.20,-s*.62,0);c.bezierCurveTo(-s*.28,-s*.18,-s*.55,-s*.65,0,-s*.85)}
+            c.fill();c.restore();
           };
-          const rows=[[.16,2],[.28,10],[.42,-4],[.60,8],[.82,0],[.98,-2]];
-          for(const row of rows){tree(-1,row[0],row[1]);tree(1,row[0],-row[1]);}
-
-          const mist=c.createLinearGradient(0,horizon-30,0,horizon+70);
-          mist.addColorStop(0,"rgba(239,211,173,0)");mist.addColorStop(.48,"rgba(239,211,173,.20)");mist.addColorStop(1,"rgba(239,211,173,0)");
-          c.fillStyle=mist;c.fillRect(0,horizon-30,w,105);
-
-          // one foreground leaf gives the preview a tactile depth cue
-          c.save();c.translate(w*.27,h*.27);c.rotate(-.42+Math.sin(t*.35)*.08);
-          const lg=c.createLinearGradient(-18,-18,18,20);lg.addColorStop(0,"#f0b74b");lg.addColorStop(1,"#a63b1e");
-          c.fillStyle=lg;c.beginPath();c.moveTo(0,-22);c.bezierCurveTo(22,-11,24,9,0,26);c.bezierCurveTo(-24,9,-22,-11,0,-22);c.fill();c.restore();
-
-          const vignette=c.createRadialGradient(vanX,h*.46,w*.14,vanX,h*.46,w*.70);
-          vignette.addColorStop(0,"rgba(18,10,5,0)");vignette.addColorStop(1,"rgba(18,10,5,.32)");
-          c.fillStyle=vignette;c.fillRect(0,0,w,h);
+          const palette=["#f4c54c","#e99730","#d46728","#b94422","#a39a32"];
+          for(let i=0;i<68;i++){
+            const depth=((i*37)%67)/67,side=i%2?-1:1,x=w*.5+side*(22+depth*w*.49)+Math.sin(i*2.1)*23,base=horizon+depth*(h-horizon)*.22,scale=.20+depth*.98;
+            c.fillStyle="#5c3218";c.fillRect(x-3*scale,base-72*scale,6*scale,72*scale);
+            for(let j=0;j<9;j++){const ang=j*.72+i*.39,r=(18+(j%3)*7)*scale;leafShape(x+Math.cos(ang)*r*.78,base-72*scale+Math.sin(ang)*r*.46,12*scale,j%3,palette[(i+j)%palette.length],ang*.25)}
+          }
+          leafShape(w*.18,h*.20,35,0,"#f2b53f",-0.42+Math.sin(t*.28)*.08);
+          leafShape(w*.82,h*.31,26,2,"#c64d25",0.58+Math.sin(t*.31)*.06);
+          leafShape(w*.66,h*.17,19,1,"#e99730",-0.20);
+          const mist=c.createLinearGradient(0,horizon-35,0,horizon+72);mist.addColorStop(0,"rgba(246,221,178,0)");mist.addColorStop(.45,"rgba(246,221,178,.18)");mist.addColorStop(1,"rgba(246,221,178,0)");c.fillStyle=mist;c.fillRect(0,horizon-35,w,112);
+          const vignette=c.createRadialGradient(w*.5,h*.44,w*.15,w*.5,h*.44,w*.72);vignette.addColorStop(0,"rgba(24,12,5,0)");vignette.addColorStop(1,"rgba(24,12,5,.27)");c.fillStyle=vignette;c.fillRect(0,0,w,h);
           continue;
         }
         if (id === "white-ocean-city") {

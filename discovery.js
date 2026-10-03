@@ -24,7 +24,7 @@ export function setupDiscovery({ theme, zen, player }) {
         "Мы постоянно выпускаем новые живые темы и каждую делаем с душой. Расскажите нам об образе или атмосфере, которую хочется увидеть — возможно, следующая тема начнётся с вашей идеи.",
       label: "Предложить идею",
       href:
-        "mailto:ideas@syolana.com?subject=" +
+        "mailto:syolana@yandex.ru?subject=" +
         encodeURIComponent("Идея новой темы Syolana"),
     },
     {

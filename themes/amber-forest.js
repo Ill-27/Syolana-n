@@ -447,7 +447,7 @@ function buildForest(){
   };
 }
 
-function makeAirLeafSprites()function makeAirLeafSprites(){
+function makeAirLeafSprites(){
   const make=(kind,top,bottom)=>{
     const c=document.createElement("canvas");c.width=96;c.height=96;
     const x=c.getContext("2d");x.translate(48,46);
@@ -532,7 +532,7 @@ function createAirLeaves(){
   };
 }
 
-const SOUND=const SOUND={
+const SOUND={
   title:"Звучание Янтарного леса",
   loops:[
     {src:"audio-library/nature/forest_morning.ogg",volume:.15},
@@ -879,7 +879,7 @@ function createRenderer(ctx){
     gl.depthMask(true);gl.disable(gl.BLEND);gl.bindVertexArray(null);
   }
 
-  return {  return {
+  return {
     resize,
     draw({time,width,height,camera}){
       if(disposed)return;if(width!==cssWidth||height!==cssHeight)resize({width,height,ratio:window.devicePixelRatio||1});

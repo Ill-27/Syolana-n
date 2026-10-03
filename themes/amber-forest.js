@@ -482,7 +482,7 @@ function buildForest(){
   };
 }
 
-function makeAirLeafSpritesfunction makeAirLeafSprites(){
+function makeAirLeafSprites(){
   const make=(kind,top,bottom)=>{
     const c=document.createElement("canvas");c.width=128;c.height=128;
     const x=c.getContext("2d");x.translate(64,61);

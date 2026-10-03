@@ -705,7 +705,7 @@ function createRenderer(ctx){
     const eyeY=7.7+cy*4.9+Math.sin(time*.041)*.32;
     const eye=[eyeX,eyeY,15.2];
     const target=[eyeX+cx*.8,eyeY-1.9+cy*.28,-49];
-    perspective(projection,zen?.91:1.0,cssWidth/cssHeight,.12,610);
+    perspective(projection,zen ? .91 : 1.0,cssWidth/cssHeight,.12,610);
     lookAt(view,eye,target,[0,1,0]);multiply(vp,projection,view);
 
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);

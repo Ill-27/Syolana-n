@@ -70,7 +70,7 @@ out vec2 vUv;
 void main(){vUv=aPosition*.5+.5;gl_Position=vec4(aPosition,0.,1.);}
 `;
 
-const SKY_FS=\`#version 300 es
+const SKY_FS=`#version 300 es
 precision highp float;
 in vec2 vUv;
 out vec4 outColor;
@@ -116,7 +116,7 @@ void main(){
   col=mix(col,vec3(.92,.82,.66),mist*(.22+.05*uZen));
   col*=1.0-.08*pow(length((uv-.5)*vec2(.80,1.0)),1.72);
   outColor=vec4(col,1.0);
-}\`;
+}`;
 
 function prismGeometry(sides=7){
   const p=[],n=[];
@@ -187,7 +187,7 @@ void main(){
 }
 `;
 
-const LEAF_POINT_VS=\`#version 300 es
+const LEAF_POINT_VS=`#version 300 es
 layout(location=0) in vec3 iOffset;
 layout(location=1) in vec4 iMeta;
 uniform mat4 uViewProj;
@@ -216,9 +216,9 @@ void main(){
   gl_PointSize=clamp(iMeta.w*(260.0/max(8.0,clip.w)),1.35,18.0);
   vTone=iMeta.x;vType=iMeta.y;vPhase=phase;vDistance=dist;
   vSun=.5+.5*sin(uTime*.72+phase*2.37+world.x*.035);
-}\`;
+}`;
 
-const LEAF_POINT_FS=\`#version 300 es
+const LEAF_POINT_FS=`#version 300 es
 precision highp float;
 in float vTone;
 in float vType;
@@ -266,7 +266,7 @@ void main(){
   col=mix(col,vec3(.75,.66,.51),fog*.92);
   float alpha=mask*(1.0-smoothstep(250.0,355.0,vDistance));
   outColor=vec4(col,alpha);
-}\`;
+}`;
 
 function buildForest(){
   const rnd=seeded(91277),spanZ=560,spanX=190,trunks=[],leaves=[];
@@ -338,7 +338,7 @@ function createAirLeaves(){
         const px=l.x*width,py=l.y*height,s=(8+24*l.depth)*(zen?1.05:.93);
         const shimmer=Math.max(0,1-Math.hypot(px-sunX,py-sunY)/Math.max(width,height)*2.2)*(.25+.75*(.5+.5*Math.sin(time*1.7+l.phase)));
         ctx.save();ctx.translate(px,py);ctx.rotate(time*l.spin+l.phase);ctx.globalAlpha=.22+.58*l.depth;
-        ctx.shadowColor=\`rgba(255,190,76,\${.10+.24*shimmer})\`;ctx.shadowBlur=3+9*shimmer;
+        ctx.shadowColor=`rgba(255,190,76,\${.10+.24*shimmer})`;ctx.shadowBlur=3+9*shimmer;
         ctx.drawImage(sprites[l.sprite],-s/2,-s/2,s,s);
         if(shimmer>.32){ctx.globalCompositeOperation="screen";ctx.globalAlpha=shimmer*.20;ctx.fillStyle="#ffd98a";ctx.beginPath();ctx.ellipse(-s*.08,-s*.14,s*.13,s*.07,-.5,0,TAU);ctx.fill()}
         ctx.restore();
@@ -473,7 +473,7 @@ function createRenderer(ctx){
   const gl=canvas.getContext("webgl2",{alpha:false,antialias:true,depth:true,stencil:false,powerPreference:"high-performance",preserveDrawingBuffer:false});
   if(!gl){canvas.remove();const fallback=fallbackRenderer(ctx),base=fallback.dispose;fallback.dispose=()=>{base?.();style.remove();sound.dispose()};return fallback}
 
-  const GROUND_VS_LOCAL=\`#version 300 es
+  const GROUND_VS_LOCAL=`#version 300 es
   layout(location=0) in vec2 aPosition;
   uniform mat4 uViewProj;
   uniform vec3 uCamera;
@@ -485,8 +485,8 @@ function createRenderer(ctx){
     float y=-.62+.12*sin((x+uTravel*.04)*.055)+.08*sin((z-uTravel)*.032+x*.018);
     vWorld=vec3(x,y,z);
     gl_Position=uViewProj*vec4(vWorld,1.0);
-  }\`;
-  const GROUND_FS_LOCAL=\`#version 300 es
+  }`;
+  const GROUND_FS_LOCAL=`#version 300 es
   precision highp float;
   in vec3 vWorld;
   out vec4 outColor;
@@ -503,7 +503,7 @@ function createRenderer(ctx){
     float fog=smoothstep(90.0,350.0,distance(vWorld,uCamera));
     col=mix(col,vec3(.73,.64,.49),fog*.93);
     outColor=vec4(col,1.0);
-  }\`;
+  }`;
 
   let skyProgram,trunkProgram,leafProgram,groundProgram;
   try{

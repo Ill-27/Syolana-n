@@ -114,7 +114,7 @@ void main(){
   outColor=vec4(col,1.0);
 }`;
 
-function prismGeometry(function prismGeometry(sides=7){
+function prismGeometry(sides=7){
   const p=[],n=[];
   for(let i=0;i<sides;i++){
     const a=i/sides*TAU,b=(i+1)/sides*TAU;

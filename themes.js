@@ -13,7 +13,7 @@ export class ThemeEngine {
     const themeBase = new URL("./themes/", import.meta.url);
     this.themeBase = themeBase;
     this.manifest = await fetch(new URL("manifest.json", themeBase), {
-      cache: "default",
+      cache: "no-store",
     }).then((r) => {
       if (!r.ok) throw Error("Темы недоступны");
       return r.json();

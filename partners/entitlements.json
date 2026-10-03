@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "partners": {
+    "demo-partner": {
+      "active": true,
+      "allowedHosts": [
+        "ill-27.github.io",
+        "localhost",
+        "127.0.0.1"
+      ],
+      "features": {
+        "themes": true,
+        "banner": true,
+        "player": true,
+        "zen": true,
+        "publishing": true
+      }
+    }
+  }
+}

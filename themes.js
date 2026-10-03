@@ -684,6 +684,16 @@ export class ThemeEngine {
           const sun=c.createRadialGradient(w*.72,h*.24,3,w*.72,h*.24,w*.27);
           sun.addColorStop(0,"rgba(255,238,171,.88)");sun.addColorStop(.25,"rgba(255,202,103,.33)");sun.addColorStop(1,"rgba(255,202,103,0)");c.fillStyle=sun;c.fillRect(0,0,w,h*.68);
           const ground=c.createLinearGradient(0,horizon,0,h);ground.addColorStop(0,"#9a763e");ground.addColorStop(.52,"#664321");ground.addColorStop(1,"#2b1a0e");c.fillStyle=ground;c.fillRect(0,horizon,w,h-horizon);
+          const forestTrailPreview=true;
+          c.fillStyle="rgba(117,88,56,.72)";
+          c.beginPath();
+          c.moveTo(w*.48,horizon);
+          c.bezierCurveTo(w*.42,h*.68,w*.58,h*.78,w*.34,h);
+          c.lineTo(w*.66,h);
+          c.bezierCurveTo(w*.55,h*.78,w*.56,h*.68,w*.52,horizon);
+          c.closePath();c.fill();
+          c.strokeStyle="rgba(231,175,83,.22)";c.lineWidth=3;
+          c.beginPath();c.moveTo(w*.50,horizon+4);c.bezierCurveTo(w*.45,h*.70,w*.57,h*.82,w*.46,h);c.stroke();
 
           const leafShape=(x,y,s,kind,color,rot)=>{
             c.save();c.translate(x,y);c.rotate(rot);c.fillStyle=color;c.beginPath();

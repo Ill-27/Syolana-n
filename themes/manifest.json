@@ -2,9 +2,9 @@
   {
     "id": "amber-forest",
     "name": "Янтарный лес",
-    "description": "Солнечный день · бесконечный осенний лес, настоящая листва, поляны и свободный полёт",
+    "description": "Солнечный день · бесконечная осенняя тропа, настоящая листва и полёт сквозь золотой лес",
     "module": "./amber-forest.js",
-    "preview": "linear-gradient(135deg,#547f96,#efc96f 38%,#d36b2d 66%,#382317)"
+    "preview": "linear-gradient(135deg,#5f8998,#efd47a 36%,#d87532 66%,#342219)"
   },
   {
     "id": "white-ocean-city",

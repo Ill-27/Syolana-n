@@ -73,7 +73,11 @@ export function setupDiscovery({ theme, zen, player }) {
     } else {
       e.preventDefault();
       const panScale=Math.min(innerWidth,innerHeight)<=700?175:Math.max(360,Math.min(innerWidth,innerHeight));
-      theme.move(dx/(panScale*.72),-dy/(panScale*.72),0);
+      if(theme.theme?.pathDepthGestures){
+        theme.move(dx/(panScale*.82),-dy/(panScale*3.8),-dy/(panScale*.52));
+      }else{
+        theme.move(dx/(panScale*.72),-dy/(panScale*.72),0);
+      }
     }
   }, { passive:false });
   const end = (e) => {
@@ -124,7 +128,11 @@ export function setupDiscovery({ theme, zen, player }) {
       if(touchLast){
         const dx=t.clientX-touchLast.x,dy=t.clientY-touchLast.y;
         const scale=Math.min(innerWidth,innerHeight)<=700?74:180;
-        theme.move(dx/scale,-dy/scale,0);
+        if(theme.theme?.pathDepthGestures){
+          theme.move(dx/(scale*1.05),-dy/(scale*4.4),-dy/(scale*.62));
+        }else{
+          theme.move(dx/scale,-dy/scale,0);
+        }
       }
       touchLast={x:t.clientX,y:t.clientY};
       touchPinch=0;

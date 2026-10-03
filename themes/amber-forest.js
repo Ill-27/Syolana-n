@@ -213,7 +213,7 @@ void main(){
   vec4 clip=uViewProj*vec4(world,1.0);
   gl_Position=clip;
   float dist=max(1.0,distance(world,uCamera));
-  gl_PointSize=clamp(iMeta.w*(260.0/max(8.0,clip.w)),1.35,18.0);
+  gl_PointSize=clamp(iMeta.w*(420.0/max(8.0,clip.w)),1.7,24.0);
   vTone=iMeta.x;vType=iMeta.y;vPhase=phase;vDistance=dist;
   vSun=.5+.5*sin(uTime*.72+phase*2.37+world.x*.035);
 }`;
@@ -275,7 +275,7 @@ function buildForest(){
     const h=8.8+rnd()*13.5,radius=.38+rnd()*.48,tone=rnd(),phase=rnd()*TAU;
     trunks.push(x,base+h*.5,z,radius*2,h,radius*2,tone,phase);
     const crownY=base+h*(.74+rnd()*.08),crownR=3.5+rnd()*2.8;
-    const leafCount=42+Math.floor(rnd()*36);
+    const leafCount=64+Math.floor(rnd()*50);
     for(let i=0;i<leafCount;i++){
       const theta=rnd()*TAU,phi=Math.acos(2*rnd()-1),rr=Math.pow(rnd(),.54);
       const ex=Math.sin(phi)*Math.cos(theta)*crownR*(.92+rnd()*.20);
@@ -285,7 +285,7 @@ function buildForest(){
       const q=rnd(),type=q<.42?0:(q<.70?1:2);
       leaves.push(x+ex,crownY+ey,z+ez,localTone,type,phase+rnd()*TAU,.72+rnd()*1.30);
     }
-    const wisps=9+Math.floor(rnd()*8);
+    const wisps=16+Math.floor(rnd()*12);
     for(let i=0;i<wisps;i++){
       const a=rnd()*TAU,rr=crownR*(.72+rnd()*.55);
       const localTone=Math.max(0,Math.min(1,tone+(rnd()-.5)*.42));
@@ -294,7 +294,7 @@ function buildForest(){
     }
   };
   for(let z=8;z<spanZ;z+=9.8+rnd()*4.0){
-    const rows=4+Math.floor(rnd()*3);
+    const rows=6+Math.floor(rnd()*3);
     for(let j=0;j<rows;j++)addTree(-spanX*.48+rnd()*spanX*.96,z+rnd()*7);
   }
   return {spanZ,spanX,trunks:new Float32Array(trunks),trunkCount:trunks.length/8,leaves:new Float32Array(leaves),leafCount:leaves.length/7};
@@ -325,13 +325,13 @@ function makeAirLeafSprites(){
 
 function createAirLeaves(){
   const rnd=seeded(22771),sprites=makeAirLeafSprites();
-  const leaves=Array.from({length:44},()=>({x:rnd()*1.18-.09,y:rnd()*1.24-.16,depth:.28+rnd()*.92,vy:.012+rnd()*.022,vx:(rnd()-.5)*.018,spin:(rnd()-.5)*1.25,phase:rnd()*TAU,sprite:Math.floor(rnd()*sprites.length)}));
+  const leaves=Array.from({length:64},()=>({x:rnd()*1.18-.09,y:rnd()*1.24-.16,depth:.28+rnd()*.92,vy:.050+rnd()*.060,vx:(rnd()-.5)*.028,spin:(rnd()-.5)*1.25,phase:rnd()*TAU,sprite:Math.floor(rnd()*sprites.length)}));
   let last=0;
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
       const dt=last?Math.min(.05,time-last):1/30;last=time;
-      const count=zen?leaves.length:30,sunX=width*.72,sunY=height*.29;
+      const count=zen?leaves.length:44,sunX=width*.72,sunY=height*.29;
       for(let i=0;i<count;i++){
         const l=leaves[i];l.y+=l.vy*dt*(zen?1.10:.82);l.x+=(l.vx+Math.sin(time*.38+l.phase)*.010)*dt;
         if(l.y>1.12||l.x>1.14||l.x<-.14){l.y=-.14-rnd()*.24;l.x=.02+rnd()*.96;l.depth=.28+rnd()*.92;l.sprite=Math.floor(rnd()*sprites.length)}
@@ -436,23 +436,72 @@ function createThemeSound(){
 
 function fallbackRenderer(ctx){
   const sprites=makeAirLeafSprites();
+  const drifting=createAirLeaves();
   return {
     resize(){},
     draw({time,width,height,camera}){
       const zen=Boolean(camera);
+      const camX=(camera?.x||0)*52;
       const g=ctx.createLinearGradient(0,0,0,height);
-      g.addColorStop(0,"#5f8290");g.addColorStop(.40,"#d8bd82");g.addColorStop(.59,"#8b6235");g.addColorStop(1,"#21160d");
-      ctx.fillStyle=g;ctx.fillRect(0,0,width,height);
-      const horizon=height*.55;
-      for(let i=0;i<64;i++){
-        const z=((i*53+time*(zen?23:5))%1000)/1000,scale=.10+z*1.22,x=((i*83.1)%(width*1.6))-width*.3,h=(48+(i%8)*8)*scale;
-        ctx.fillStyle="#4b2813";ctx.fillRect(x-1.4*scale,horizon-h*.52,2.8*scale,h*.52);
-        for(let j=0;j<5;j++){const ox=(j-2)*8*scale,oy=(j%2)*8*scale;ctx.globalAlpha=.76;ctx.drawImage(sprites[j%sprites.length],x+ox-10*scale,horizon-h-oy-10*scale,20*scale,20*scale)}
+      g.addColorStop(0,"#6d94a0");
+      g.addColorStop(.36,"#c6b382");
+      g.addColorStop(.56,"#d39a50");
+      g.addColorStop(1,"#2a1a10");
+      ctx.fillStyle=g;
+      ctx.fillRect(0,0,width,height);
+
+      const sun=ctx.createRadialGradient(width*.72,height*.22,4,width*.72,height*.22,width*.34);
+      sun.addColorStop(0,"rgba(255,235,162,.82)");
+      sun.addColorStop(.25,"rgba(255,190,84,.24)");
+      sun.addColorStop(1,"rgba(255,190,84,0)");
+      ctx.fillStyle=sun;
+      ctx.fillRect(0,0,width,height*.72);
+
+      const horizon=height*.54;
+      const layers=[
+        {count:34,scale:.36,alpha:.32,y:horizon-18,parallax:.10},
+        {count:28,scale:.62,alpha:.55,y:horizon+5,parallax:.22},
+        {count:22,scale:1.00,alpha:.88,y:horizon+28,parallax:.42}
+      ];
+
+      for(let li=0;li<layers.length;li++){
+        const layer=layers[li];
+        for(let i=0;i<layer.count;i++){
+          const raw=((i*97.3+li*41.7-camX*layer.parallax)%(width*1.65)+width*1.65)%(width*1.65);
+          const x=raw-width*.32;
+          const sway=Math.sin(time*.25+i*.91+li)*5*layer.scale;
+          const base=layer.y+(i%4)*4*layer.scale;
+          const trunkH=(60+(i%7)*12)*layer.scale;
+          const trunkW=(4+(i%3))*layer.scale;
+          ctx.globalAlpha=layer.alpha;
+          ctx.fillStyle=li===2?"#5b3119":"#684225";
+          ctx.fillRect(x-trunkW/2+sway*.12,base-trunkH,trunkW,trunkH);
+
+          const crownY=base-trunkH;
+          const leafCount=li===2?12:8;
+          for(let j=0;j<leafCount;j++){
+            const ang=j/leafCount*TAU+i*.37;
+            const rr=(18+(j%3)*7)*layer.scale;
+            const lx=x+sway+Math.cos(ang)*rr;
+            const ly=crownY+Math.sin(ang)*rr*.62;
+            const size=(22+(j%4)*5)*layer.scale;
+            ctx.drawImage(
+              sprites[(i+j+li)%sprites.length],
+              lx-size/2,ly-size/2,size,size
+            );
+          }
+        }
       }
       ctx.globalAlpha=1;
-      const sun=ctx.createRadialGradient(width*.72,height*.28,4,width*.72,height*.28,width*.30);
-      sun.addColorStop(0,"rgba(255,218,126,.55)");sun.addColorStop(1,"rgba(255,218,126,0)");
-      ctx.fillStyle=sun;ctx.fillRect(0,0,width,height);
+
+      const mist=ctx.createLinearGradient(0,horizon-80,0,horizon+100);
+      mist.addColorStop(0,"rgba(248,222,178,0)");
+      mist.addColorStop(.48,"rgba(248,222,178,.18)");
+      mist.addColorStop(1,"rgba(248,222,178,0)");
+      ctx.fillStyle=mist;
+      ctx.fillRect(0,horizon-80,width,180);
+
+      drifting.draw(ctx,time,width,height,zen);
     },
     dispose(){}
   };
@@ -554,7 +603,7 @@ function createRenderer(ctx){
 
   function resize({width,height,ratio=1}){
     cssWidth=Math.max(1,width);cssHeight=Math.max(1,height);
-    const q=Math.min(ratio,cssWidth<=760?1.13:1.52),w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
+    const q=Math.min(ratio,cssWidth<=760?1.08:1.48),w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}
   }
 

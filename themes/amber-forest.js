@@ -765,7 +765,7 @@ function createRenderer(ctx){
     outColor=vec4(col,1.0);
   }`;
 
-  let skyProgram  let skyProgram,trunkProgram,leafProgram,groundProgram;
+  let skyProgram,trunkProgram,leafProgram,groundProgram;
   try{
     const trunkVs=TRUNK_VS
       .replace("uniform float uSpan;","uniform float uSpanZ;\\nuniform float uSpanX;")

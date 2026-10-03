@@ -517,7 +517,7 @@ function createAirLeaves(){
   };
 }
 
-const SOUND={const SOUND={
+const SOUND={
   title:"Звучание Янтарного леса",
   loops:[
     {src:"audio-library/nature/forest_morning.ogg",volume:.15},

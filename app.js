@@ -1289,64 +1289,35 @@ function contactPage() {
   $("page").append(
     heading(
       "СВЯЗАТЬСЯ С SYOLANA",
-      "Напишите туда, куда относится ваш вопрос",
-      "Все адреса ведут в одну команду Syolana, но помогают нам быстрее понять тему сообщения.",
+      "Один адрес для всех вопросов",
+      "Партнёрство, поддержка, идеи, права и общие вопросы — всё приходит в один официальный ящик Syolana.",
     ),
   );
 
-  const grid = el("div", "grid two contact-grid");
-  const contacts = [
-    {
-      title: "Общие вопросы",
-      text: "О Syolana, возможностях платформы и всём, что не относится к отдельному разделу.",
-      email: "hello@syolana.com",
-      label: "Написать Syolana",
-      subject: "Вопрос о Syolana",
-    },
-    {
-      title: "Партнёрство и сайты",
-      text: "Новый сайт, тест-драйв, подключение Syolana и сотрудничество.",
-      email: "partners@syolana.com",
-      label: "Обсудить партнёрство",
-      subject: "Партнёрство с Syolana",
-    },
-    {
-      title: "Предложить идею",
-      text: "Новая тема, атмосфера, функция или творческая идея, которую хочется увидеть в Syolana.",
-      email: "ideas@syolana.com",
-      label: "Предложить идею",
-      subject: "Идея для Syolana",
-    },
-    {
-      title: "Поддержка",
-      text: "Если что-то не работает на сайте, в читалке, плеере или у подключённого партнёра.",
-      email: "support@syolana.com",
-      label: "Написать в поддержку",
-      subject: "Поддержка Syolana",
-    },
-  ];
-
-  for (const item of contacts) {
-    const card = el("section", "card stack contact-card");
-    card.append(
-      el("h2", "", item.title),
-      el("p", "", item.text),
-      link(item.email, "mailto:" + item.email, "text-link"),
-      link(
-        item.label,
-        "mailto:" + item.email + "?subject=" + encodeURIComponent(item.subject),
-        "btn primary",
-      ),
-    );
-    grid.append(card);
-  }
+  const card = el("section", "card stack contact-card contact-card-main");
+  card.append(
+    el("span", "badge", "ОФИЦИАЛЬНАЯ ПОЧТА"),
+    el("h2", "", "Syolana"),
+    el(
+      "p",
+      "",
+      "Мы отвечаем именно с этого адреса, поэтому в переписке всегда видно один и тот же публичный контакт.",
+    ),
+    link("syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
+    link(
+      "Написать Syolana",
+      "mailto:syolana@yandex.ru?subject=" +
+        encodeURIComponent("Сообщение для Syolana"),
+      "btn primary",
+    ),
+  );
 
   $("page").append(
-    grid,
+    card,
     el(
       "p",
       "notice",
-      "Для юридических и авторско-правовых обращений: legal@syolana.com. Личные адреса команды на сайте не публикуются.",
+      "Для сообщения о нарушении прав укажите ссылку на конкретную страницу и суть обращения. Личные адреса команды не публикуются.",
     ),
   );
 }
@@ -1370,7 +1341,7 @@ function terms() {
     el(
       "p",
       "",
-      "Публикации могут проходить автоматическую и ручную проверку формата и правил Syolana до появления на сайте. Не допускаются противоправные материалы, оскорбления и травля, контент 18+, политическая и религиозная агитация. Решение по публикации можно запросить к пересмотру через поддержку.",
+      "Партнёр публикует материалы на своём сайте самостоятельно. Syolana не обязуется проводить предварительную юридическую или редакционную проверку каждой публикации. Автоматическая проверка может касаться формата, файлов и технической безопасности. При надлежащей жалобе или очевидном существенном риске Syolana может приостановить подключаемый слой и прекратить сотрудничество.",
     ),
     el("h3", "", "Доступ и оплата"),
     el(
@@ -1385,11 +1356,69 @@ function terms() {
       "Syolana стремится собирать только данные, необходимые для работы выбранных функций. В браузере сохраняются настройки темы, плеера и место чтения. Для редактора, чата и платных функций состав данных будет отдельно описан в политике обработки данных до их коммерческого запуска.",
     ),
     el("h3", "", "Контакт"),
-    link("hello@syolana.com", "mailto:hello@syolana.com", "text-link"),
+    link("syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
   );
 
   $("page").append(box);
 }
+
+function privacyPage() {
+  const box = el("article", "card stack legal-page");
+  box.append(
+    el("h1", "", "Конфиденциальность и данные"),
+    el(
+      "p",
+      "notice",
+      "Это текущая публичная информация для тестовой версии Syolana. Перед запуском Partner Studio, чата и платных функций документ будет дополнен реквизитами оператора, перечнем целей и сроков обработки и сведениями о российской инфраструктуре.",
+    ),
+    el("h3", "", "Что происходит сейчас"),
+    el(
+      "p",
+      "",
+      "Основной публичный сайт не требует обязательной регистрации. В браузере могут сохраняться локальные настройки темы, плеера, режима чтения и другие технические предпочтения. Хостинг и сетевые провайдеры могут обрабатывать стандартные технические журналы в рамках работы своей инфраструктуры.",
+    ),
+    el("h3", "", "Письма"),
+    el(
+      "p",
+      "",
+      "Если вы сами пишете на syolana@yandex.ru, содержание письма и указанные вами контактные данные используются для ответа на обращение.",
+    ),
+    el("h3", "", "Partner Studio и будущий Inbox"),
+    el(
+      "p",
+      "",
+      "До коммерческого запуска этих функций первичное хранение данных и аутентификация будут настроены в российской инфраструктуре, а публичная политика будет обновлена до начала такой обработки.",
+    ),
+    el("h3", "", "Контакт"),
+    link("syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
+  );
+  $("page").append(box);
+}
+
+function legalInfo() {
+  const box = el("article", "card stack legal-page");
+  box.append(
+    el("h1", "", "Правовая информация"),
+    el(
+      "p",
+      "notice",
+      "Syolana находится на этапе тест-драйва и пока не принимает оплату через сайт. До первого платного запуска здесь будут опубликованы окончательные реквизиты исполнителя и единая публичная оферта.",
+    ),
+    el("h3", "", "Сейчас доступны"),
+    link("Условия тест-драйва", "#/terms", "text-link"),
+    link("Конфиденциальность и данные", "#/privacy", "text-link"),
+    link("Подать жалобу или сообщить о нарушении", "#/report", "text-link"),
+    link("Связаться с Syolana", "#/contact", "text-link"),
+    el("h3", "", "До включения оплаты"),
+    el(
+      "p",
+      "",
+      "Будут опубликованы сведения об исполнителе, условия и состав услуг, способ определения стоимости, порядок акцепта, оплаты, возвратов и прекращения доступа, а также финальная политика обработки персональных данных.",
+    ),
+  );
+  $("page").append(box);
+}
+
 function report() {
   const box = el("section", "auth card stack");
   box.append(
@@ -1422,11 +1451,25 @@ function report() {
     e.preventDefault();
     submit.disabled = true;
     try {
-      if (!api.online)
-        throw Error("Форма пока не подключена. Напишите на legal@syolana.com.");
+      const payload = Object.fromEntries(new FormData(form));
+      if (!api.online) {
+        const subject = encodeURIComponent("Обращение о публикации / правах");
+        const body = encodeURIComponent(
+          "Ссылка: " +
+            payload.url +
+            "\nКонтакт: " +
+            payload.email +
+            "\n\nОписание:\n" +
+            payload.reason,
+        );
+        location.href =
+          "mailto:syolana@yandex.ru?subject=" + subject + "&body=" + body;
+        submit.disabled = false;
+        return;
+      }
       await api.request("reports", {
         method: "POST",
-        body: Object.fromEntries(new FormData(form)),
+        body: payload,
       });
       form.replaceChildren(
         el(
@@ -1492,6 +1535,8 @@ async function route() {
       await reader({ slug: a, id: c, chapter: d }, token);
     else if (view === "s") await publicSite(a, token);
     else if (view === "terms") terms();
+    else if (view === "privacy") privacyPage();
+    else if (view === "legal") legalInfo();
     else if (view === "report") report();
     else
       $("page").append(

@@ -2,9 +2,9 @@
   {
     "id": "living-sea",
     "name": "Море странствий",
-    "description": "Живой океан · корабли, рассвет, ночь, туман, дождь, буря и шторм",
+    "description": "Живой океан · объёмные волны, настоящие парусники, луна, звёзды и смена погоды",
     "module": "./living-sea.js",
-    "preview": "linear-gradient(145deg,#315e7a,#a8cad0 43%,#e4b07c 59%,#082c3f)"
+    "preview": "linear-gradient(145deg,#173d58,#7caec0 38%,#efb06e 57%,#06172b)"
   },
   {
     "id": "amber-forest",

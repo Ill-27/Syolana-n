@@ -17,10 +17,12 @@ jobs:
           node-version: '22'
       - name: Build public artifacts
         run: python build.py
-      - name: Player and catalog tests
+      - name: Player, catalog, scene audio and bundle tests
         run: |
           node tests/test_player.mjs
           node tests/test_catalog.mjs
+          node tests/test_scene_audio.mjs
+          node tests/test_build.mjs
       - name: Check JavaScript syntax
         run: |
           for file in *.js themes/*.js dist/public/legacy-scripts/*.js; do node --check "$file"; done

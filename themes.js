@@ -4,7 +4,7 @@ export class ThemeEngine {
     this.canvas = document.querySelector("#starCanvas");
     this.ctx = this.canvas.getContext("2d");
     this.reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    this.paused = this.reduced.matches;
+    this.paused = getPref("motionPaused", false) === true;
     this.blocked = false;
     this.frame = 0;
     this.last = 0;
@@ -67,10 +67,10 @@ export class ThemeEngine {
     dialog.addEventListener("close", () =>
       cancelAnimationFrame(this.previewFrame),
     );
-    this.reduced.addEventListener("change", () => {
-      this.paused = this.reduced.matches;
-      this.sync();
-    });
+    const motionToggle = document.querySelector("#motion-toggle");
+    if (motionToggle) motionToggle.onclick = () => this.setPaused(!this.paused);
+    this.reduced.addEventListener("change", () => this.sync());
+    this.sync();
     document.addEventListener("visibilitychange", () => this.sync());
     this.resizeTimer = 0;
     const scheduleResize = (delay = 0) => {
@@ -133,6 +133,11 @@ export class ThemeEngine {
       .forEach((b) =>
         b.setAttribute("aria-pressed", String(b.dataset.theme === this.id)),
       );
+  }
+  setPaused(paused) {
+    this.paused = Boolean(paused);
+    setPref("motionPaused", this.paused);
+    this.sync();
   }
   setBlocked(blocked) {
     this.blocked = blocked;
@@ -1011,6 +1016,16 @@ export class ThemeEngine {
     const stopped =
       document.hidden || this.paused || this.reduced.matches || this.blocked;
     document.body.classList.toggle("paused", stopped);
+    const control = document.querySelector("#motion-toggle");
+    if (control) {
+      control.setAttribute("aria-pressed", String(this.paused || this.reduced.matches));
+      control.disabled = this.reduced.matches;
+      const label = this.reduced.matches ? "Движение отключено настройками устройства" :
+        this.paused ? "Включить движение фона" : "Остановить движение фона";
+      control.setAttribute("aria-label", label);
+      control.title = label;
+      control.textContent = this.paused || this.reduced.matches ? "▶" : "Ⅱ";
+    }
     document.querySelectorAll("video[data-motion]").forEach((v) => {
       if (stopped || v.dataset.manualPause === "true") v.pause();
       else v.play().catch(() => {});
@@ -1034,3 +1049,4 @@ export class ThemeEngine {
     this.frame = requestAnimationFrame(tick);
   }
 }
+

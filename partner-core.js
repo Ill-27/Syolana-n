@@ -96,7 +96,12 @@ function buildTopBar(partner) {
   fullscreen.innerHTML =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg>';
 
-  actions.append(themeToggle, zenToggle, fullscreen);
+  const motionToggle = make("button", "icon-btn glass", "Ⅱ");
+  motionToggle.id = "motion-toggle";
+  motionToggle.type = "button";
+  motionToggle.setAttribute("aria-label", "Остановить движение фона");
+  motionToggle.setAttribute("aria-pressed", "false");
+  actions.append(themeToggle, motionToggle, zenToggle, fullscreen);
   header.append(brand, actions);
   document.body.prepend(header);
 
@@ -120,6 +125,7 @@ function buildBanner(config) {
 
   node.src = src || central("assets/logo.svg");
   if (node.tagName === "VIDEO") {
+    node.dataset.motion = "true";
     node.muted = true;
     node.defaultMuted = true;
     node.autoplay = true;
@@ -411,12 +417,18 @@ export async function mountPartnerCore(options = {}) {
   buildBackground();
   const controls = buildTopBar(partner);
   const config = await readJSON("config.json");
-  const { banner, zenAction } = buildBanner(config);
-  const pitch = buildPlatformPitch(config);
+  // Promotional placements require the partner's separate opt-in and a
+  // completed advertising compliance review. Basic attribution is separate.
+  const promotions = features?.marketing === true && partner?.marketing?.approved === true;
+  let zenAction = null;
+  if (promotions) {
+    const built = buildBanner(config);
+    zenAction = built.zenAction;
+    shell.prepend(buildPlatformPitch(config));
+    shell.prepend(built.banner);
+  }
   const nav = buildMainNav();
   shell.prepend(nav);
-  shell.prepend(pitch);
-  shell.prepend(banner);
 
   // The visual shell is complete at this point. Reveal it immediately while
   // the selected 3D theme finishes initializing in the background.
@@ -439,7 +451,7 @@ export async function mountPartnerCore(options = {}) {
 
   const flight = setupFlightLayer({
     theme,
-    offers: platformFlightOffers(CORE_BASE),
+    offers: promotions ? platformFlightOffers(CORE_BASE) : [],
     markInjected: true,
   });
 
@@ -498,3 +510,4 @@ export async function mountPartnerCore(options = {}) {
 
   return mounted;
 }
+

@@ -25,10 +25,10 @@ function stateAt(time){
   const pulse=Math.max(0,Math.sin(time*.66+Math.sin(time*.17)*2));o.lightning=o.storm*Math.pow(pulse,38);o.wave=.40+.30*o.wind+.74*o.storm;return o
 }
 
-const SKY_VS=\`#version 300 es
+const SKY_VS=`#version 300 es
 in vec2 aPosition;out vec2 vUv;void main(){vUv=aPosition*.5+.5;gl_Position=vec4(aPosition,0.,1.);}
-\`;
-const SKY_FS=\`#version 300 es
+`;
+const SKY_FS=`#version 300 es
 precision highp float;in vec2 vUv;out vec4 outColor;uniform float uTime,uAspect,uDay,uSunset,uNight,uStorm,uFog,uLightning;
 float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
 float cw(vec2 p){float v=sin(p.x*.9+sin(p.y*.7)*1.1);v+=sin(p.y*1.2-cos(p.x*.62)*1.0)*.68;v+=sin((p.x+p.y)*1.78)*.31;return .5+.5*(v/1.99);}
@@ -61,7 +61,7 @@ void main(){
   col=mix(col,haze,exp(-pow((uv.y-horizon)*28.,2.))*(.22+.60*uFog));col+=vec3(1.,.98,.92)*uLightning*.78;
   outColor=vec4(col,1.);
 }
-\`;
+`;
 
 function oceanGeometry(cols=82,rows=138){
   const v=[],idx=[],x0=-300,x1=300,z0=85,z1=-1250;
@@ -69,12 +69,12 @@ function oceanGeometry(cols=82,rows=138){
   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const a=r*(cols+1)+c,b=a+1,d=(r+1)*(cols+1)+c,e=d+1;idx.push(a,d,b,b,d,e)}
   return{vertices:new Float32Array(v),indices:new Uint32Array(idx)}
 }
-const OCEAN_VS=\`#version 300 es
+const OCEAN_VS=`#version 300 es
 layout(location=0) in vec2 aPosition;uniform mat4 uViewProj;uniform float uTime,uCameraZ,uWave;out vec3 vWorld;out float vCrest;
 void W(inout vec3 p,vec2 d,float amp,float freq,float speed,float steep){d=normalize(d);float ph=dot(d,p.xz)*freq+uTime*speed,a=amp*uWave;p.xz+=d*(steep*a*cos(ph));p.y+=a*sin(ph);}
 void main(){vec3 p=vec3(aPosition.x,0.,aPosition.y+uCameraZ);W(p,vec2(1.,.28),.56,.030,.72,.34);W(p,vec2(.34,1.),.38,.052,-.94,.27);W(p,vec2(-.72,.44),.23,.089,1.31,.19);W(p,vec2(.91,-.40),.11,.151,-1.74,.12);vWorld=p;vCrest=p.y;gl_Position=uViewProj*vec4(p,1.);}
-\`;
-const OCEAN_FS=\`#version 300 es
+`;
+const OCEAN_FS=`#version 300 es
 precision highp float;in vec3 vWorld;in float vCrest;out vec4 outColor;uniform vec3 uCamera;uniform float uTime,uDay,uSunset,uNight,uStorm,uFog,uLightning,uWave;
 void main(){
   vec3 n=normalize(cross(dFdx(vWorld),dFdy(vWorld)));if(n.y<0.)n=-n;vec3 V=normalize(uCamera-vWorld),L=normalize(vec3(-.53,.82,.28));
@@ -86,31 +86,31 @@ void main(){
   float f=smoothstep(170.,830.,distance(vWorld,uCamera));vec3 haze=mix(vec3(.72,.81,.83),vec3(.23,.27,.28),uStorm);haze=mix(haze,vec3(.09,.13,.19),uNight);col=mix(col,haze,f*(.54+.38*uFog));col+=vec3(1.)*uLightning*.34;
   outColor=vec4(col,1.);
 }
-\`;
+`;
 
 function boxGeometry(){const p=[],n=[],F=[[[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5],[0,0,1]],[[.5,-.5,-.5],[-.5,-.5,-.5],[-.5,.5,-.5],[.5,.5,-.5],[0,0,-1]],[[ -.5,-.5,-.5],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5],[-1,0,0]],[[.5,-.5,.5],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5],[1,0,0]],[[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5],[0,1,0]],[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5],[0,-1,0]]];for(const f of F){const[a,b,c,d,no]=f;for(const v of[a,b,c,a,c,d]){p.push(...v);n.push(...no)}}return{positions:new Float32Array(p),normals:new Float32Array(n)}}
 function prismGeometry(sides=10){const p=[],n=[];for(let i=0;i<sides;i++){const a=i/sides*TAU,b=(i+1)/sides*TAU,ax=Math.cos(a)*.5,az=Math.sin(a)*.5,bx=Math.cos(b)*.5,bz=Math.sin(b)*.5,nx=Math.cos((a+b)*.5),nz=Math.sin((a+b)*.5);p.push(ax,-.5,az,bx,-.5,bz,bx,.5,bz,ax,-.5,az,bx,.5,bz,ax,.5,az);for(let k=0;k<6;k++)n.push(nx,0,nz)}return{positions:new Float32Array(p),normals:new Float32Array(n)}}
 function hullGeometry(){const p=[],n=[],A=[-.52,.31,.48],B=[.52,.31,.48],C=[.38,.28,-.25],D=[0,.20,-.55],a=[-.33,-.34,.38],b=[.33,-.34,.38],c=[.20,-.33,-.24],d=[0,-.31,-.46],add=(x,y,z,no)=>{for(const v of[x,y,z]){p.push(...v);n.push(...no)}};add(A,B,C,[0,.36,.93]);add(A,C,D,[0,.45,.86]);add(a,c,b,[0,-1,0]);add(a,d,c,[0,-1,0]);add(A,a,B,[0,0,1]);add(a,b,B,[0,0,1]);add(B,b,C,[.88,.10,.34]);add(b,c,C,[.88,.10,.34]);add(C,c,D,[.64,.08,-.76]);add(c,d,D,[.64,.08,-.76]);add(D,d,A,[-.64,.08,-.76]);add(d,a,A,[-.64,.08,-.76]);add(A,D,C,[0,1,0]);add(A,C,B,[0,1,0]);return{positions:new Float32Array(p),normals:new Float32Array(n)}}
 function sailGeometry(rows=10){const p=[],n=[];for(let r=0;r<rows;r++)for(let c=0;c<=r;c++){const y0=-.5+r/rows,y1=-.5+(r+1)/rows,h0=(1-r/rows)*.5,h1=(1-(r+1)/rows)*.5,x00=r===0?0:mix(-h0,h0,c/r),x10=mix(-h1,h1,c/(r+1)),x11=mix(-h1,h1,(c+1)/(r+1)),a=[x00,y0,0],b=[x10,y1,0],cc=[x11,y1,0];for(const v of[a,b,cc]){p.push(...v);n.push(0,0,1)}if(c<r){const x01=mix(-h0,h0,(c+1)/r),d=[x01,y0,0];for(const v of[a,cc,d]){p.push(...v);n.push(0,0,1)}}}const copy=[...p];for(let i=copy.length-3;i>=0;i-=3){p.push(copy[i],copy[i+1],copy[i+2]);n.push(0,0,-1)}return{positions:new Float32Array(p),normals:new Float32Array(n)}}
 
-const OBJ_VS=\`#version 300 es
+const OBJ_VS=`#version 300 es
 layout(location=0)in vec3 aPosition;layout(location=1)in vec3 aNormal;uniform mat4 uViewProj;uniform vec3 uOffset,uScale,uRotation;out vec3 vNormal,vWorld;
 vec3 rx(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x,p.y*c-p.z*s,p.y*s+p.z*c);}vec3 ry(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x*c+p.z*s,p.y,-p.x*s+p.z*c);}vec3 rz(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x*c-p.y*s,p.x*s+p.y*c,p.z);}
 void main(){vec3 p=aPosition*uScale;p=rz(rx(ry(p,uRotation.y),uRotation.x),uRotation.z);vec3 n=normalize(rz(rx(ry(aNormal,uRotation.y),uRotation.x),uRotation.z));vWorld=p+uOffset;vNormal=n;gl_Position=uViewProj*vec4(vWorld,1.);}
-\`;
-const OBJ_FS=\`#version 300 es
+`;
+const OBJ_FS=`#version 300 es
 precision highp float;in vec3 vNormal,vWorld;out vec4 outColor;uniform vec3 uColor,uCamera,uFogColor;uniform float uNight,uStorm,uFog;
 void main(){vec3 n=normalize(vNormal),L=normalize(vec3(-.48,.82,.28));float d=max(dot(n,L),0.),rim=pow(1.-max(dot(n,normalize(uCamera-vWorld)),0.),2.2);vec3 col=uColor*(.34+.62*d)+vec3(.10,.12,.13)*rim*.16;col*=mix(1.,.62,uNight);col*=mix(1.,.76,uStorm);float f=smoothstep(145.,690.,distance(vWorld,uCamera))*(.48+.40*uFog);col=mix(col,uFogColor,clamp(f,0.,.95));outColor=vec4(col,1.);}
-\`;
-const SAIL_VS=\`#version 300 es
+`;
+const SAIL_VS=`#version 300 es
 layout(location=0)in vec3 aPosition;layout(location=1)in vec3 aNormal;uniform mat4 uViewProj;uniform vec3 uOffset,uScale,uRotation;uniform float uTime,uWind,uPhase;out vec3 vNormal,vWorld;
 vec3 rx(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x,p.y*c-p.z*s,p.y*s+p.z*c);}vec3 ry(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x*c+p.z*s,p.y,-p.x*s+p.z*c);}vec3 rz(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x*c-p.y*s,p.x*s+p.y*c,p.z);}
 void main(){vec3 p=aPosition;float fy=clamp(p.y+.5,0.,1.),bulge=sin(fy*3.14159);p.z+=(sin((p.x+fy)*5.2+uTime*1.65+uPhase)*.035+bulge*.11)*(.30+.70*uWind);p.x+=sin(uTime*.77+uPhase+fy*2.4)*.018*uWind;p*=uScale;p=rz(rx(ry(p,uRotation.y),uRotation.x),uRotation.z);vec3 n=normalize(rz(rx(ry(aNormal,uRotation.y),uRotation.x),uRotation.z));vWorld=p+uOffset;vNormal=n;gl_Position=uViewProj*vec4(vWorld,1.);}
-\`;
-const SAIL_FS=\`#version 300 es
+`;
+const SAIL_FS=`#version 300 es
 precision highp float;in vec3 vNormal,vWorld;out vec4 outColor;uniform vec3 uColor,uCamera,uFogColor;uniform float uNight,uStorm,uFog;
 void main(){vec3 n=normalize(vNormal),L=normalize(vec3(-.48,.82,.28));float d=.54+.46*max(dot(n,L),0.);vec3 col=uColor*d;col*=mix(1.,.68,uNight);col*=mix(1.,.83,uStorm);float f=smoothstep(150.,690.,distance(vWorld,uCamera))*(.44+.42*uFog);col=mix(col,uFogColor,clamp(f,0.,.94));outColor=vec4(col,1.);}
-\`;
+`;
 
 function gullFrames(){const out=[];for(let f=0;f<14;f++){const c=document.createElement("canvas");c.width=160;c.height=90;const x=c.getContext("2d"),flap=Math.sin(f/14*TAU),lift=9+flap*7;x.translate(80,45);const g=x.createLinearGradient(0,-18,0,22);g.addColorStop(0,"#fff");g.addColorStop(.55,"#edf1ef");g.addColorStop(1,"#a7b4b6");x.fillStyle=g;x.strokeStyle="rgba(101,124,132,.25)";x.lineWidth=.8;x.beginPath();x.moveTo(-2,-1);x.bezierCurveTo(-17,-8,-36,-lift,-59,-12-lift*.20);x.bezierCurveTo(-39,1,-19,12,-2,6);x.closePath();x.fill();x.stroke();x.beginPath();x.moveTo(2,-1);x.bezierCurveTo(17,-8,36,-lift,59,-12-lift*.20);x.bezierCurveTo(39,1,19,12,2,6);x.closePath();x.fill();x.stroke();x.fillStyle="#f6f8f5";x.beginPath();x.ellipse(0,4,6.5,16,0,0,TAU);x.fill();out.push(c)}return out}
 function atmosphere(){
@@ -167,7 +167,7 @@ function createRenderer(ctx){
   function obj(mesh,o,s,r,col,eye,fog,c){gl.useProgram(objP);gl.bindVertexArray(mesh.vao);gl.uniformMatrix4fv(ju.vp,false,VP);gl.uniform3f(ju.offset,...o);gl.uniform3f(ju.scale,...s);gl.uniform3f(ju.rotation,...r);gl.uniform3f(ju.color,...col);gl.uniform3f(ju.camera,...eye);gl.uniform3f(ju.fogColor,...fog);gl.uniform1f(ju.night,c.night);gl.uniform1f(ju.storm,c.storm);gl.uniform1f(ju.fog,c.fog);gl.drawArrays(gl.TRIANGLES,0,mesh.count)}
   function sail(o,s,r,col,eye,fog,c,t,ph){gl.disable(gl.CULL_FACE);gl.useProgram(sailP);gl.bindVertexArray(M.sail.vao);gl.uniformMatrix4fv(au.vp,false,VP);gl.uniform3f(au.offset,...o);gl.uniform3f(au.scale,...s);gl.uniform3f(au.rotation,...r);gl.uniform3f(au.color,...col);gl.uniform3f(au.camera,...eye);gl.uniform3f(au.fogColor,...fog);gl.uniform1f(au.night,c.night);gl.uniform1f(au.storm,c.storm);gl.uniform1f(au.fog,c.fog);gl.uniform1f(au.time,t);gl.uniform1f(au.wind,c.wind);gl.uniform1f(au.phase,ph);gl.drawArrays(gl.TRIANGLES,0,M.sail.count);gl.enable(gl.CULL_FACE)}
   function ship(slot,t,camZ,eye,fog,c){
-    const raw=(t+slot*19.3)/59,p=raw-Math.floor(raw);if(p<.055||p>.94)return;const epoch=Math.floor(raw),r=hash1(epoch*17.3+slot*9.7),type=Math.floor(r*3),side=(epoch+slot)%2?1:-1,x=side*(15+hash1(epoch*3.9+slot*4.7)*34),z=camZ-520+p*610,bs=type===0?1.07:type===1?.9:.58,y=.70+Math.sin(t*.54+slot)*(.08+.20*c.storm),yaw=side*.035+(r-.5)*.06,roll=Math.sin(t*.58+slot)*(.018+.05*c.storm),pitch=Math.sin(t*.42+slot*1.4)*(.01+.03*c.storm),rot=[pitch,yaw,roll],hc=type===0?[.12,.055,.027]:type===1?[.30,.13,.052]:[.19,.23,.21];
+    const raw=(t+slot*19.3)/59,p=raw-Math.floor(raw);if(p<.055||p>.94)return;const epoch=Math.floor(raw),r=hash1(epoch*17.3+slot*9.7),type=Math.floor(r*3),side=(epoch+slot)%2?1:-1,x=side*(15+hash1(epoch*3.9+slot*4.7)*34),z=camZ-520+p*610,bs=type===0?1.07:type===1 ? .9 : .58,y=.70+Math.sin(t*.54+slot)*(.08+.20*c.storm),yaw=side*.035+(r-.5)*.06,roll=Math.sin(t*.58+slot)*(.018+.05*c.storm),pitch=Math.sin(t*.42+slot*1.4)*(.01+.03*c.storm),rot=[pitch,yaw,roll],hc=type===0?[.12,.055,.027]:type===1?[.30,.13,.052]:[.19,.23,.21];
     obj(M.hull,[x,y,z],[5.7*bs,2.35*bs,18.4*bs],rot,hc,eye,fog,c);obj(M.box,[x,y+1.55*bs,z+2*bs],[4.8*bs,.48*bs,12.4*bs],rot,type===2?[.34,.33,.26]:[.32,.16,.07],eye,fog,c);
     obj(M.box,[x-2.2*bs,y+2.05*bs,z+1.8*bs],[.12*bs,.42*bs,11*bs],rot,[.20,.10,.045],eye,fog,c);obj(M.box,[x+2.2*bs,y+2.05*bs,z+1.8*bs],[.12*bs,.42*bs,11*bs],rot,[.20,.10,.045],eye,fog,c);
     const mc=type===2?1:type===0?3:2,spread=type===0?5.3:6.4,sc=type===0?[.26,.24,.20]:[.86,.80,.67];
@@ -176,7 +176,7 @@ function createRenderer(ctx){
   }
   function render(t,camera,c){
     const zen=Boolean(camera),cx=clamp(camera?.x||0,-1.2,1.2),cy=clamp(camera?.y||0,-.86,.86),cz=camera?.z||0,travel=t*(zen?7.2:.52)+cz*38,camZ=-travel,eye=[cx*9.4,6.2+cy*5+c.wave*.28*Math.sin(t*.41),camZ+18],target=[eye[0]+cx*1.2,2.7+cy*.58,camZ-110];
-    perspective(P,zen?.90:.98,W/H,.12,1280);lookAt(V,eye,target,[0,1,0]);multiply(VP,P,V);
+    perspective(P,zen ? .90 : .98,W/H,.12,1280);lookAt(V,eye,target,[0,1,0]);multiply(VP,P,V);
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);gl.useProgram(skyP);gl.bindVertexArray(skyVao);gl.uniform1f(su.time,t);gl.uniform1f(su.aspect,W/H);setC(su,c);gl.drawArrays(gl.TRIANGLES,0,3);
     gl.enable(gl.DEPTH_TEST);gl.clearDepth(1);gl.clear(gl.DEPTH_BUFFER_BIT);gl.useProgram(oceanP);gl.bindVertexArray(oceanVao);gl.uniformMatrix4fv(ou.vp,false,VP);gl.uniform1f(ou.time,t);gl.uniform1f(ou.cameraZ,camZ);gl.uniform1f(ou.wave,c.wave);gl.uniform3f(ou.camera,...eye);setC(ou,c);gl.drawElements(gl.TRIANGLES,ocean.indices.length,gl.UNSIGNED_INT,0);
     const fog=[mix(.73,.22,c.storm),mix(.81,.27,c.storm),mix(.82,.28,c.storm)];fog[0]=mix(fog[0],.09,c.night);fog[1]=mix(fog[1],.13,c.night);fog[2]=mix(fog[2],.19,c.night);gl.enable(gl.CULL_FACE);ship(0,t,camZ,eye,fog,c);ship(1,t,camZ,eye,fog,c);ship(2,t+11.7,camZ,eye,fog,c);gl.disable(gl.CULL_FACE);gl.bindVertexArray(null)

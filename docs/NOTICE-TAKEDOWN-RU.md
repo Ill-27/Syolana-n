@@ -6,7 +6,7 @@
 
 ## Канал
 
-legal@syolana.com
+syolana@yandex.ru
 
 ## Что просить у заявителя
 

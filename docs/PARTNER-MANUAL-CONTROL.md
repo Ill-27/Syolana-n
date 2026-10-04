@@ -4,16 +4,16 @@ Syolana всегда сохраняет ручной переключатель 
 
 ## Где
 
-GitHub → Actions → **Set partner access**.
+GitHub → Actions → **Partner access — manual switch**.
 
 ## Как отключить
 
 1. Запустить workflow вручную.
 2. Указать `partner_id`.
-3. Выбрать `inactive`.
+3. Выбрать `disable`.
 4. Подтвердить запуск.
 
-Workflow меняет только центральный `partners/entitlements.json`. После этого новый запрос партнёрского loader получает `active: false` и Syolana Core не загружается.
+Workflow меняет центральный `partners/entitlements.json`. После этого новый запрос партнёрского loader получает `active: false`, Syolana Core не загружается, а production Partner Studio также должен отказать в публикации по тому же entitlement.
 
 Видимо исчезают:
 
@@ -27,7 +27,7 @@ Workflow меняет только центральный `partners/entitlements
 
 ## Как вернуть доступ
 
-Запустить тот же workflow и выбрать `active`.
+Запустить тот же workflow и выбрать `enable`.
 
 ## Важно
 

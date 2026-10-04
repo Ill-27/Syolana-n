@@ -127,17 +127,17 @@ function shipThreadGeometry(){
   return new Float32Array(p);
 }
 
-const THREAD_VS=\`#version 300 es
+const THREAD_VS=`#version 300 es
 layout(location=0)in vec3 aPosition;uniform mat4 uViewProj;uniform vec3 uOffset,uScale,uRotation;
 vec3 rx(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x,p.y*c-p.z*s,p.y*s+p.z*c);}
 vec3 ry(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x*c+p.z*s,p.y,-p.x*s+p.z*c);}
 vec3 rz(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x*c-p.y*s,p.x*s+p.y*c,p.z);}
 void main(){vec3 p=aPosition*uScale;p=rz(rx(ry(p,uRotation.y),uRotation.x),uRotation.z);gl_Position=uViewProj*vec4(p+uOffset,1.);}
-\`;
-const THREAD_FS=\`#version 300 es
+`;
+const THREAD_FS=`#version 300 es
 precision highp float;out vec4 outColor;uniform vec3 uColor;uniform float uAlpha,uNight,uStorm,uFog;
 void main(){vec3 c=mix(uColor,vec3(.72,.88,1.0),uNight*.58);c=mix(c,vec3(.78,.86,.84),uStorm*.42);outColor=vec4(c,uAlpha*(1.0-uFog*.38));}
-\`;
+`;
 
 function atmosphere(){
   const stars=Array.from({length:92},(_,i)=>({

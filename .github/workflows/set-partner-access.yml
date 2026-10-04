@@ -4,47 +4,41 @@ on:
   workflow_dispatch:
     inputs:
       partner_id:
-        description: Partner ID
+        description: "Partner ID from partners/entitlements.json"
         required: true
         type: string
-      active:
-        description: Enable Syolana layer
+      state:
+        description: "Manual Syolana Core access"
         required: true
         type: choice
-        options: ["true", "false"]
-      hostname:
-        description: Allowed hostname (optional when disabling)
-        required: false
-        type: string
+        options:
+          - inactive
+          - active
 
 permissions:
   contents: write
 
 jobs:
-  update:
+  set-access:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-
-      - name: Update entitlement registry
-        env:
-          PARTNER_ID: ${{ inputs.partner_id }}
-          ACTIVE: ${{ inputs.active }}
-          HOSTNAME: ${{ inputs.hostname }}
-        run: node scripts/set-partner-access.mjs
-
-      - name: Commit access change
+      - name: Update entitlement
+        run: node scripts/set-partner-access.mjs "${{ inputs.partner_id }}" "${{ inputs.state }}"
+      - name: Commit switch
         shell: bash
         run: |
-          if git diff --quiet; then
-            echo "No changes."
+          if git diff --quiet -- partners/entitlements.json; then
+            echo "No change."
             exit 0
           fi
-          git config user.name "Syolana automation"
+          git config user.name "Syolana access control"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add partners/entitlements.json
-          git commit -m "Set partner access: ${{ inputs.partner_id }} -> ${{ inputs.active }}"
+          git commit -m "Set partner ${{ inputs.partner_id }} ${{ inputs.state }}"
           git push

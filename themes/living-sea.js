@@ -63,7 +63,7 @@ function oceanGeometry(cols=92,rows=154){
   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const a=r*(cols+1)+c,b=a+1,d=(r+1)*(cols+1)+c,e=d+1;idx.push(a,d,b,b,d,e)}
   return{vertices:new Float32Array(v),indices:new Uint32Array(idx)}
 }
-const OCEAN_VS=\`#version 300 es
+const OCEAN_VS=`#version 300 es
 layout(location=0) in vec2 aPosition;
 uniform mat4 uViewProj;
 uniform float uTime,uCameraZ,uWave,uStorm;
@@ -92,8 +92,8 @@ void main(){
   vCrest=p.y;
   gl_Position=uViewProj*vec4(p,1.);
 }
-\`;
-const OCEAN_FS=\`#version 300 es
+`;
+const OCEAN_FS=`#version 300 es
 precision highp float;
 in vec3 vWorld;
 in float vCrest;
@@ -142,7 +142,7 @@ void main(){
   col+=vec3(1.)*uLightning*.34;
   outColor=vec4(col,1.);
 }
-\`;
+`;
 
 function seaHeight(x,z,t,c){
   let y=0;
@@ -295,7 +295,7 @@ function shipWireGeometries(){
   return [make(0),make(1),make(2),make(3)];
 }
 
-const THREAD_VS=const THREAD_VS=\`#version 300 es
+const THREAD_VS=const THREAD_VS=`#version 300 es
 layout(location=0)in vec3 aPosition;
 uniform mat4 uViewProj;
 uniform vec3 uOffset,uScale,uRotation;
@@ -315,8 +315,8 @@ void main(){
   p=rz(rx(ry(p,uRotation.y),uRotation.x),uRotation.z);
   gl_Position=uViewProj*vec4(p+uOffset,1.);
 }
-\`;
-const THREAD_FS=\`#version 300 es
+`;
+const THREAD_FS=`#version 300 es
 precision highp float;
 out vec4 outColor;
 uniform vec3 uColor;
@@ -327,7 +327,7 @@ void main(){
   c=mix(c,c*vec3(.84,.88,.88),uStorm*.25);
   outColor=vec4(c,uAlpha*(1.0-uFog*.34));
 }
-\`;
+`;
 
 function makeGullSprites(){
   const out=[];

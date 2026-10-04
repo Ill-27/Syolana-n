@@ -63,7 +63,7 @@ export function setupDiscovery({ theme, zen, player }) {
     return (
       !snoozed &&
       !document.hidden &&
-      !document.body.matches(".reading,.zen,.no-effects") &&
+      !document.body.matches(".reading,.zen,.no-effects,.information-view") &&
       !document.querySelector("dialog[open]")
     );
   }
@@ -132,4 +132,5 @@ export function setupDiscovery({ theme, zen, player }) {
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) hideTip();
   });
+  window.addEventListener("hashchange", hideTip);
 }

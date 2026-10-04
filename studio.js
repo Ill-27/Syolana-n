@@ -304,7 +304,7 @@ export class Studio {
         el(
           "p",
           "fine muted",
-          "В тест-драйве восстановление доступа — через владельца платформы: sy@syolana.com.",
+          "В тест-драйве восстановление доступа — через владельца платформы: syolana@yandex.ru.",
         ),
       );
     if (register && !this.api.settings.registrationOpen) {

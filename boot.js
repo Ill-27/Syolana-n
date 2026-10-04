@@ -6,7 +6,7 @@ import("./app.js").catch((error) => {
   const text = document.createElement("p");
   text.className = "notice";
   text.textContent =
-    "Не удалось открыть сайт. Проверьте интернет и обновите страницу. Если ошибка повторяется, сообщите нам: sy@syolana.com.";
+    "Не удалось открыть сайт. Проверьте интернет и обновите страницу. Если ошибка повторяется, сообщите нам: syolana@yandex.ru.";
   const retry = document.createElement("button");
   retry.className = "btn";
   retry.textContent = "Попробовать снова";

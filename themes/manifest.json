@@ -2,9 +2,9 @@
   {
     "id": "living-sea",
     "name": "Море странствий",
-    "description": "Живой океан · объёмные волны, настоящие парусники, луна, звёзды и смена погоды",
+    "description": "Световая морская гравюра · живые волны, парусные нити, луна и быстрая смена погоды",
     "module": "./living-sea.js",
-    "preview": "linear-gradient(145deg,#173d58,#7caec0 38%,#efb06e 57%,#06172b)"
+    "preview": "linear-gradient(145deg,#051526,#0c3f56 40%,#b77b42 62%,#020815)"
   },
   {
     "id": "amber-forest",

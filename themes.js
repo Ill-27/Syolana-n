@@ -703,118 +703,58 @@ export class ThemeEngine {
         c.fillStyle = g;
         c.fillRect(0, 0, w, h);
         if (id === "living-sea") {
-          const horizon=Math.round(h*.49);
+          const horizon=Math.round(h*.50);
           const sky=c.createLinearGradient(0,0,0,horizon);
-          sky.addColorStop(0,"#376d91");
-          sky.addColorStop(.54,"#a3c3c8");
-          sky.addColorStop(1,"#e3c59c");
-          c.fillStyle=sky;
-          c.fillRect(0,0,w,horizon);
+          sky.addColorStop(0,"#06162b");sky.addColorStop(.56,"#174b63");sky.addColorStop(1,"#b07850");
+          c.fillStyle=sky;c.fillRect(0,0,w,horizon);
 
-          const glow=c.createRadialGradient(w*.73,h*.27,4,w*.73,h*.27,w*.25);
-          glow.addColorStop(0,"rgba(255,235,183,.75)");
-          glow.addColorStop(.32,"rgba(242,170,91,.20)");
-          glow.addColorStop(1,"rgba(242,170,91,0)");
-          c.fillStyle=glow;
-          c.fillRect(w*.43,0,w*.57,h*.58);
-
-          c.save();
-          c.filter="blur(13px)";
-          for(let i=0;i<8;i++){
-            const cx=(i*141+t*4.3)%(w+250)-125;
-            const cy=34+(i%4)*25;
-            c.globalAlpha=.07+(i%3)*.025;
-            c.fillStyle=i%2?"#eef1ea":"#9aaeb2";
-            c.beginPath();
-            c.ellipse(cx,cy,105+(i%2)*32,18+(i%3)*6,0,0,Math.PI*2);
-            c.fill();
+          c.save();c.globalCompositeOperation="screen";
+          for(let i=0;i<44;i++){
+            const x=((Math.sin(i*12.9898)*43758.5453)%1+1)%1*w;
+            const y=(((Math.sin(i*7.173+1.2)*19341.77)%1+1)%1)*h*.38;
+            const r=.6+((i*17)%7)*.18;
+            c.globalAlpha=.18+((i*13)%9)*.035;c.fillStyle=i%11===0?"#f1d6a2":"#c7e4ef";
+            c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();
           }
           c.restore();
-          c.globalAlpha=1;
-          c.filter="none";
 
           const sea=c.createLinearGradient(0,horizon,0,h);
-          sea.addColorStop(0,"#709aa2");
-          sea.addColorStop(.40,"#2f6171");
-          sea.addColorStop(1,"#082c3f");
-          c.fillStyle=sea;
-          c.fillRect(0,horizon,w,h-horizon);
+          sea.addColorStop(0,"#0b4c61");sea.addColorStop(.48,"#073547");sea.addColorStop(1,"#031624");
+          c.fillStyle=sea;c.fillRect(0,horizon,w,h-horizon);
 
-          for(let j=0;j<12;j++){
-            const d=(j+1)/12;
-            const y=horizon+Math.pow(d,1.52)*(h-horizon)*.91;
-            const half=44+d*w*.49;
-            c.strokeStyle="rgba(229,243,242,"+(.055+d*.11)+")";
-            c.lineWidth=.7+d*1.15;
-            c.beginPath();
-            for(let x=w*.5-half;x<=w*.5+half;x+=10){
-              const yy=y+Math.sin(x*.035+t*.45+j*.58)*(1+d*2);
-              x===w*.5-half?c.moveTo(x,yy):c.lineTo(x,yy);
+          c.save();c.globalCompositeOperation="screen";
+          for(let j=0;j<22;j++){
+            const d=(j+1)/22,y=horizon+Math.pow(d,1.56)*(h-horizon)*.91;
+            c.strokeStyle="rgba(143,219,229,"+(.025+d*.09)+")";c.lineWidth=.55+d*.80;c.beginPath();
+            for(let x=-10;x<=w+10;x+=9){
+              const yy=y+Math.sin(x*(.026+d*.022)+t*(.42+.18*d)+j*.58)*(1+d*4.2)+Math.sin(x*.011-t*.24+j)*d*2;
+              x<0?c.moveTo(x,yy):c.lineTo(x,yy);
             }
             c.stroke();
           }
 
-          const sx=w*.50,baseY=horizon+46,sc=Math.min(w/640,h/360);
-          c.save();
-          c.translate(sx,baseY);
-          c.scale(sc,sc);
-          const hull=c.createLinearGradient(-92,0,92,0);
-          hull.addColorStop(0,"#352219");
-          hull.addColorStop(.48,"#70442a");
-          hull.addColorStop(1,"#281a16");
-          c.fillStyle=hull;
-          c.beginPath();
-          c.moveTo(-88,-6);
-          c.lineTo(76,-6);
-          c.lineTo(55,31);
-          c.lineTo(-65,31);
-          c.closePath();
-          c.fill();
-          c.fillStyle="#5c3520";
-          c.fillRect(-52,-14,100,11);
-
-          c.strokeStyle="#2a1b16";
-          c.lineWidth=5;
-          const masts=[-39,0,38];
-          for(const mx of masts){
-            c.beginPath();
-            c.moveTo(mx,0);
-            c.lineTo(mx,-116);
-            c.stroke();
-            c.lineWidth=3;
-            c.beginPath();
-            c.moveTo(mx-32,-73);
-            c.lineTo(mx+32,-73);
-            c.stroke();
-            c.fillStyle="rgba(232,220,190,.93)";
-            c.beginPath();
-            c.moveTo(mx-28,-69);
-            c.lineTo(mx+28,-69);
-            c.lineTo(mx,-19);
-            c.closePath();
-            c.fill();
-            c.beginPath();
-            c.moveTo(mx-20,-104);
-            c.lineTo(mx+20,-104);
-            c.lineTo(mx,-74);
-            c.closePath();
-            c.fill();
-            c.lineWidth=5;
+          const sx=w*.50,by=horizon+38,sc=Math.min(w/640,h/360);
+          c.translate(sx,by);c.scale(sc,sc);c.lineCap="round";c.lineJoin="round";
+          c.shadowColor="rgba(157,226,230,.45)";c.shadowBlur=8;
+          c.strokeStyle="rgba(192,236,235,.82)";c.lineWidth=2.2;
+          c.beginPath();c.moveTo(-88,0);c.lineTo(82,0);c.lineTo(58,31);c.lineTo(-62,31);c.closePath();c.stroke();
+          c.strokeStyle="rgba(229,193,132,.78)";c.lineWidth=1.7;
+          const mz=[-42,0,40];
+          for(let mm=0;mm<mz.length;mm++){
+            const x=mz[mm],top=mm===1?-118:-108;
+            c.beginPath();c.moveTo(x,0);c.lineTo(x,top);c.moveTo(x-33,-72);c.lineTo(x+33,-72);c.moveTo(x-24,-98);c.lineTo(x+24,-98);c.stroke();
+            c.strokeStyle="rgba(202,235,238,.55)";
+            c.beginPath();c.moveTo(x,top);c.lineTo(x-53,4);c.moveTo(x,top);c.lineTo(x+53,4);c.stroke();
+            c.strokeStyle="rgba(229,193,132,.78)";
+            c.beginPath();c.moveTo(x-29,-70);c.lineTo(x,-22);c.lineTo(x+29,-70);c.moveTo(x-21,-96);c.lineTo(x,-73);c.lineTo(x+21,-96);c.stroke();
           }
+          c.strokeStyle="rgba(202,235,238,.45)";
+          c.beginPath();c.moveTo(-42,-108);c.lineTo(0,-118);c.lineTo(40,-108);c.moveTo(0,-118);c.lineTo(0,0);c.stroke();
           c.restore();
 
-          const mist=c.createLinearGradient(0,horizon-24,0,horizon+56);
-          mist.addColorStop(0,"rgba(228,233,226,0)");
-          mist.addColorStop(.48,"rgba(228,233,226,.15)");
-          mist.addColorStop(1,"rgba(228,233,226,0)");
-          c.fillStyle=mist;
-          c.fillRect(0,horizon-24,w,84);
-
-          const vignette=c.createRadialGradient(w*.5,h*.48,w*.16,w*.5,h*.48,w*.70);
-          vignette.addColorStop(0,"rgba(4,16,24,0)");
-          vignette.addColorStop(1,"rgba(4,16,24,.28)");
-          c.fillStyle=vignette;
-          c.fillRect(0,0,w,h);
+          const vignette=c.createRadialGradient(w*.5,h*.50,w*.14,w*.5,h*.50,w*.70);
+          vignette.addColorStop(0,"rgba(0,5,12,0)");vignette.addColorStop(1,"rgba(0,5,12,.40)");
+          c.fillStyle=vignette;c.fillRect(0,0,w,h);
           continue;
         }
         if (id === "amber-forest") {

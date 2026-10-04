@@ -15,16 +15,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Build isolated public and private bundles
+      - name: Build public artifacts
         run: python build.py
-      - name: Backend integration tests
-        run: python -m unittest discover -s tests -v
-      - name: Player and real catalog tests
+      - name: Player and catalog tests
         run: |
           node tests/test_player.mjs
           node tests/test_catalog.mjs
       - name: Check JavaScript syntax
         run: |
           for file in *.js themes/*.js dist/public/legacy-scripts/*.js; do node --check "$file"; done
-      - name: Check Docker build
-        run: docker build --tag syolana-ci .

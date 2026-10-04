@@ -702,6 +702,121 @@ export class ThemeEngine {
         g.addColorStop(1, "#04050e");
         c.fillStyle = g;
         c.fillRect(0, 0, w, h);
+        if (id === "living-sea") {
+          const horizon=Math.round(h*.49);
+          const sky=c.createLinearGradient(0,0,0,horizon);
+          sky.addColorStop(0,"#376d91");
+          sky.addColorStop(.54,"#a3c3c8");
+          sky.addColorStop(1,"#e3c59c");
+          c.fillStyle=sky;
+          c.fillRect(0,0,w,horizon);
+
+          const glow=c.createRadialGradient(w*.73,h*.27,4,w*.73,h*.27,w*.25);
+          glow.addColorStop(0,"rgba(255,235,183,.75)");
+          glow.addColorStop(.32,"rgba(242,170,91,.20)");
+          glow.addColorStop(1,"rgba(242,170,91,0)");
+          c.fillStyle=glow;
+          c.fillRect(w*.43,0,w*.57,h*.58);
+
+          c.save();
+          c.filter="blur(13px)";
+          for(let i=0;i<8;i++){
+            const cx=(i*141+t*4.3)%(w+250)-125;
+            const cy=34+(i%4)*25;
+            c.globalAlpha=.07+(i%3)*.025;
+            c.fillStyle=i%2?"#eef1ea":"#9aaeb2";
+            c.beginPath();
+            c.ellipse(cx,cy,105+(i%2)*32,18+(i%3)*6,0,0,Math.PI*2);
+            c.fill();
+          }
+          c.restore();
+          c.globalAlpha=1;
+          c.filter="none";
+
+          const sea=c.createLinearGradient(0,horizon,0,h);
+          sea.addColorStop(0,"#709aa2");
+          sea.addColorStop(.40,"#2f6171");
+          sea.addColorStop(1,"#082c3f");
+          c.fillStyle=sea;
+          c.fillRect(0,horizon,w,h-horizon);
+
+          for(let j=0;j<12;j++){
+            const d=(j+1)/12;
+            const y=horizon+Math.pow(d,1.52)*(h-horizon)*.91;
+            const half=44+d*w*.49;
+            c.strokeStyle="rgba(229,243,242,"+(.055+d*.11)+")";
+            c.lineWidth=.7+d*1.15;
+            c.beginPath();
+            for(let x=w*.5-half;x<=w*.5+half;x+=10){
+              const yy=y+Math.sin(x*.035+t*.45+j*.58)*(1+d*2);
+              x===w*.5-half?c.moveTo(x,yy):c.lineTo(x,yy);
+            }
+            c.stroke();
+          }
+
+          const sx=w*.50,baseY=horizon+46,sc=Math.min(w/640,h/360);
+          c.save();
+          c.translate(sx,baseY);
+          c.scale(sc,sc);
+          const hull=c.createLinearGradient(-92,0,92,0);
+          hull.addColorStop(0,"#352219");
+          hull.addColorStop(.48,"#70442a");
+          hull.addColorStop(1,"#281a16");
+          c.fillStyle=hull;
+          c.beginPath();
+          c.moveTo(-88,-6);
+          c.lineTo(76,-6);
+          c.lineTo(55,31);
+          c.lineTo(-65,31);
+          c.closePath();
+          c.fill();
+          c.fillStyle="#5c3520";
+          c.fillRect(-52,-14,100,11);
+
+          c.strokeStyle="#2a1b16";
+          c.lineWidth=5;
+          const masts=[-39,0,38];
+          for(const mx of masts){
+            c.beginPath();
+            c.moveTo(mx,0);
+            c.lineTo(mx,-116);
+            c.stroke();
+            c.lineWidth=3;
+            c.beginPath();
+            c.moveTo(mx-32,-73);
+            c.lineTo(mx+32,-73);
+            c.stroke();
+            c.fillStyle="rgba(232,220,190,.93)";
+            c.beginPath();
+            c.moveTo(mx-28,-69);
+            c.lineTo(mx+28,-69);
+            c.lineTo(mx,-19);
+            c.closePath();
+            c.fill();
+            c.beginPath();
+            c.moveTo(mx-20,-104);
+            c.lineTo(mx+20,-104);
+            c.lineTo(mx,-74);
+            c.closePath();
+            c.fill();
+            c.lineWidth=5;
+          }
+          c.restore();
+
+          const mist=c.createLinearGradient(0,horizon-24,0,horizon+56);
+          mist.addColorStop(0,"rgba(228,233,226,0)");
+          mist.addColorStop(.48,"rgba(228,233,226,.15)");
+          mist.addColorStop(1,"rgba(228,233,226,0)");
+          c.fillStyle=mist;
+          c.fillRect(0,horizon-24,w,84);
+
+          const vignette=c.createRadialGradient(w*.5,h*.48,w*.16,w*.5,h*.48,w*.70);
+          vignette.addColorStop(0,"rgba(4,16,24,0)");
+          vignette.addColorStop(1,"rgba(4,16,24,.28)");
+          c.fillStyle=vignette;
+          c.fillRect(0,0,w,h);
+          continue;
+        }
         if (id === "amber-forest") {
           const horizon=Math.round(h*.54),vanX=w*.50;
           const sky=c.createLinearGradient(0,0,0,horizon);

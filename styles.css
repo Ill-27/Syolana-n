@@ -3907,14 +3907,17 @@ html[data-theme="white-ocean-city"] .flight-planet *{
 }
 
 
-/* Match the partner-site text panels: content stays readable while the animated
-   atmosphere remains clearly visible underneath. Keep compact controls denser. */
+/* EXACT partner-card density across Syolana content panels.
+   Partner posts use rgba(var(--surface), .68); do not mix an already-translucent
+   --panel-bg here, otherwise the effective alpha becomes roughly half as dense. */
 :where(
   .card,.feed-post,.strip,.notice,.provider-notice,.platform-promo,.legal-note,
   .contact-card,.language-level,.language-intro,.language-author,.language-gift,
-  .lesson,.admin-item,.hero > p.muted
+  .language-methods > .card,.lesson,.admin-item,.auth .card,.editor details,
+  .question,.exam-source,.reader-audio-guidance,.partner-scale,.hero > p.muted
 ) {
   background:
-    linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.007) 60%),
-    color-mix(in srgb,var(--panel-bg) 68%,transparent) !important;
+    linear-gradient(125deg,#ffffff05,transparent 62%),
+    rgba(var(--surface),.68) !important;
+  border-color: var(--panel-border) !important;
 }

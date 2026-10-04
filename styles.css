@@ -3907,7 +3907,8 @@ html[data-theme="white-ocean-city"] .flight-planet *{
 }
 
 
-/* Keep content panels airy like the partner-site cards without sacrificing legibility. */
+/* Match the partner-site text panels: content stays readable while the animated
+   atmosphere remains clearly visible underneath. Keep compact controls denser. */
 :where(
   .card,.feed-post,.strip,.notice,.provider-notice,.platform-promo,.legal-note,
   .contact-card,.language-level,.language-intro,.language-author,.language-gift,
@@ -3915,5 +3916,5 @@ html[data-theme="white-ocean-city"] .flight-planet *{
 ) {
   background:
     linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.007) 60%),
-    color-mix(in srgb,var(--panel-bg) 92%,transparent) !important;
+    color-mix(in srgb,var(--panel-bg) 68%,transparent) !important;
 }

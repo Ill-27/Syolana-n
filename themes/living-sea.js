@@ -160,7 +160,7 @@ function seaHeight(x,z,t,c){
   return y;
 }
 
-function boxGeometry(){function boxGeometry(){const p=[],n=[],F=[[[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5],[0,0,1]],[[.5,-.5,-.5],[-.5,-.5,-.5],[-.5,.5,-.5],[.5,.5,-.5],[0,0,-1]],[[ -.5,-.5,-.5],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5],[-1,0,0]],[[.5,-.5,.5],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5],[1,0,0]],[[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5],[0,1,0]],[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5],[0,-1,0]]];for(const f of F){const[a,b,c,d,no]=f;for(const v of[a,b,c,a,c,d]){p.push(...v);n.push(...no)}}return{positions:new Float32Array(p),normals:new Float32Array(n)}}
+function boxGeometry(){const p=[],n=[],F=[[[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5],[0,0,1]],[[.5,-.5,-.5],[-.5,-.5,-.5],[-.5,.5,-.5],[.5,.5,-.5],[0,0,-1]],[[ -.5,-.5,-.5],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5],[-1,0,0]],[[.5,-.5,.5],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5],[1,0,0]],[[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5],[0,1,0]],[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5],[0,-1,0]]];for(const f of F){const[a,b,c,d,no]=f;for(const v of[a,b,c,a,c,d]){p.push(...v);n.push(...no)}}return{positions:new Float32Array(p),normals:new Float32Array(n)}}
 function prismGeometry(sides=10){const p=[],n=[];for(let i=0;i<sides;i++){const a=i/sides*TAU,b=(i+1)/sides*TAU,ax=Math.cos(a)*.5,az=Math.sin(a)*.5,bx=Math.cos(b)*.5,bz=Math.sin(b)*.5,nx=Math.cos((a+b)*.5),nz=Math.sin((a+b)*.5);p.push(ax,-.5,az,bx,-.5,bz,bx,.5,bz,ax,-.5,az,bx,.5,bz,ax,.5,az);for(let k=0;k<6;k++)n.push(nx,0,nz)}return{positions:new Float32Array(p),normals:new Float32Array(n)}}
 function hullGeometry(){const p=[],n=[],A=[-.52,.31,.48],B=[.52,.31,.48],C=[.38,.28,-.25],D=[0,.20,-.55],a=[-.33,-.34,.38],b=[.33,-.34,.38],c=[.20,-.33,-.24],d=[0,-.31,-.46],add=(x,y,z,no)=>{for(const v of[x,y,z]){p.push(...v);n.push(...no)}};add(A,B,C,[0,.36,.93]);add(A,C,D,[0,.45,.86]);add(a,c,b,[0,-1,0]);add(a,d,c,[0,-1,0]);add(A,a,B,[0,0,1]);add(a,b,B,[0,0,1]);add(B,b,C,[.88,.10,.34]);add(b,c,C,[.88,.10,.34]);add(C,c,D,[.64,.08,-.76]);add(c,d,D,[.64,.08,-.76]);add(D,d,A,[-.64,.08,-.76]);add(d,a,A,[-.64,.08,-.76]);add(A,D,C,[0,1,0]);add(A,C,B,[0,1,0]);return{positions:new Float32Array(p),normals:new Float32Array(n)}}
 function sailGeometry(rows=10){const p=[],n=[];for(let r=0;r<rows;r++)for(let c=0;c<=r;c++){const y0=-.5+r/rows,y1=-.5+(r+1)/rows,h0=(1-r/rows)*.5,h1=(1-(r+1)/rows)*.5,x00=r===0?0:mix(-h0,h0,c/r),x10=mix(-h1,h1,c/(r+1)),x11=mix(-h1,h1,(c+1)/(r+1)),a=[x00,y0,0],b=[x10,y1,0],cc=[x11,y1,0];for(const v of[a,b,cc]){p.push(...v);n.push(0,0,1)}if(c<r){const x01=mix(-h0,h0,(c+1)/r),d=[x01,y0,0];for(const v of[a,cc,d]){p.push(...v);n.push(0,0,1)}}}const copy=[...p];for(let i=copy.length-3;i>=0;i-=3){p.push(copy[i],copy[i+1],copy[i+2]);n.push(0,0,-1)}return{positions:new Float32Array(p),normals:new Float32Array(n)}}
@@ -295,7 +295,7 @@ function shipWireGeometries(){
   return [make(0),make(1),make(2),make(3)];
 }
 
-const THREAD_VS=const THREAD_VS=`#version 300 es
+const THREAD_VS=`#version 300 es
 layout(location=0)in vec3 aPosition;
 uniform mat4 uViewProj;
 uniform vec3 uOffset,uScale,uRotation;
@@ -443,7 +443,7 @@ function atmosphere(){
   }}
 }
 
-const SOUND=const SOUND={title:"Звучание Моря странствий",ocean:"audio-library/nature/ocean_waves.ogg",wind:"audio-library/nature/wind_soft.ogg",rain:"audio-library/nature/storm_heavy_rain.ogg",thunder:"audio-library/nature/thunder_claps.ogg"};
+const SOUND={title:"Звучание Моря странствий",ocean:"audio-library/nature/ocean_waves.ogg",wind:"audio-library/nature/wind_soft.ogg",rain:"audio-library/nature/storm_heavy_rain.ogg",thunder:"audio-library/nature/thunder_claps.ogg"};
 function soundscape(){
   const button=document.createElement("button");button.type="button";button.className="icon-btn glass theme-sound-toggle";button.setAttribute("aria-label","Включить звучание Моря странствий");button.setAttribute("aria-pressed","false");button.title="Звучание темы";button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path d="M16 9c1.7 1.5 1.7 4.5 0 6M18.5 6.8c3.5 3 3.5 7.4 0 10.4"/></svg>';document.querySelector(".top-actions")?.insertBefore(button,document.querySelector("#zen-toggle"));
   const Ctx=window.AudioContext||window.webkitAudioContext;let ac=null,master=null,enabled=false,current={wind:0,rain:0},seq=0,lastThunder=-99;const tracks={},cache=new Map(),root=new URL("../",import.meta.url);

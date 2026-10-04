@@ -1296,14 +1296,14 @@ function contactPage() {
 
   const card = el("section", "card stack contact-card contact-card-main");
   card.append(
-    el("span", "badge", "ОФИЦИАЛЬНАЯ ПОЧТА"),
+    el("span", "badge", "ОФИЦИАЛЬНАЯ ПОЧТА · YANDEX"),
     el("h2", "", "Syolana"),
     el(
       "p",
       "",
       "Мы отвечаем именно с этого адреса, поэтому в переписке всегда видно один и тот же публичный контакт.",
     ),
-    link("syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
+    link("Yandex-почта · syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
     link(
       "Написать Syolana",
       "mailto:syolana@yandex.ru?subject=" +

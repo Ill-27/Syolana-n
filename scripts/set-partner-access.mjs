@@ -1,36 +1,21 @@
 import { readFile, writeFile } from "node:fs/promises";
 
+const [partnerId, state] = process.argv.slice(2);
+if (!partnerId || !/^[a-z0-9._-]{2,90}$/i.test(partnerId)) {
+  throw new Error("Valid partner id is required");
+}
+if (!["active", "inactive"].includes(state)) {
+  throw new Error('State must be "active" or "inactive"');
+}
+
 const file = new URL("../partners/entitlements.json", import.meta.url);
-const partnerId = String(process.env.PARTNER_ID || "").trim();
-const active = String(process.env.ACTIVE || "") === "true";
-const hostname = String(process.env.HOSTNAME || "").trim();
+const data = JSON.parse(await readFile(file, "utf8"));
+const record = data?.partners?.[partnerId];
+if (!record) throw new Error("Unknown partner: " + partnerId);
 
-if (!partnerId) throw new Error("PARTNER_ID is required");
+record.active = state === "active";
+record.updatedAt = new Date().toISOString();
+data.version = Number(data.version || 0) + 1;
 
-const registry = JSON.parse(await readFile(file, "utf8"));
-registry.version = Number(registry.version || 1);
-registry.partners ||= {};
-
-const previous = registry.partners[partnerId] || {};
-const allowedHosts = Array.isArray(previous.allowedHosts)
-  ? previous.allowedHosts.filter(Boolean)
-  : [];
-
-if (hostname && !allowedHosts.includes(hostname)) allowedHosts.push(hostname);
-
-registry.partners[partnerId] = {
-  ...previous,
-  partnerId,
-  active,
-  features: previous.features || {
-    themes: true,
-    banner: true,
-    player: true,
-    zen: true,
-    publishing: true
-  },
-  allowedHosts
-};
-
-await writeFile(file, JSON.stringify(registry, null, 2) + "\n", "utf8");
-console.log(`${partnerId}: active=${active}; hosts=${allowedHosts.join(",")}`);
+await writeFile(file, JSON.stringify(data, null, 2) + "\n", "utf8");
+console.log(partnerId + " => " + state);

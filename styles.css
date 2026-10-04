@@ -3532,7 +3532,7 @@ strong {
 
 
 /* ===== SYOLANA THEME-AWARE GLASS SYSTEM ===== */
-:root{--panel-bg:rgba(12,12,25,.64);--panel-border:rgba(224,211,255,.20);--panel-glow:rgba(190,160,245,.14);--panel-text:#f8f6ff;--panel-muted:var(--dim);}
+:root{--panel-bg:rgba(12,12,25,.56);--panel-border:rgba(224,211,255,.20);--panel-glow:rgba(190,160,245,.14);--panel-text:#f8f6ff;--panel-muted:var(--dim);}
 dialog,#theme-dialog,.toast,.discovery-tip,.reader-toolbar,.icon-btn.glass,.brand.glass,.theme-option{
   color:var(--panel-text);border-color:var(--panel-border);
   background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.012) 56%),var(--panel-bg);
@@ -3858,7 +3858,7 @@ html[data-theme="white-ocean-city"] .aurora-layer {
     backdrop-filter:none !important;
     background:
       linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.006) 60%),
-      color-mix(in srgb,var(--panel-bg) 94%,transparent) !important;
+      color-mix(in srgb,var(--panel-bg) 90%,transparent) !important;
   }
 
   html[data-theme="white-ocean-city"] .white-ocean-world,
@@ -3904,4 +3904,16 @@ html[data-theme="white-ocean-city"] .flight-planet small{
 html[data-theme="white-ocean-city"] .flight-planet,
 html[data-theme="white-ocean-city"] .flight-planet *{
   text-decoration:none !important;
+}
+
+
+/* Keep content panels airy like the partner-site cards without sacrificing legibility. */
+:where(
+  .card,.feed-post,.strip,.notice,.provider-notice,.platform-promo,.legal-note,
+  .contact-card,.language-level,.language-intro,.language-author,.language-gift,
+  .lesson,.admin-item,.hero > p.muted
+) {
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.007) 60%),
+    color-mix(in srgb,var(--panel-bg) 92%,transparent) !important;
 }

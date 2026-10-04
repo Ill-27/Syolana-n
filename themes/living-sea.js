@@ -22,7 +22,7 @@ const STATES=[
 function stateAt(time){
   const span=12.5,raw=time/span,i=Math.floor(raw)%STATES.length,j=(i+1)%STATES.length,t=smooth(raw-Math.floor(raw)),a=STATES[i],b=STATES[j],o={};
   for(const k of Object.keys(a))o[k]=mix(a[k],b[k],t);
-  const pulse=Math.max(0,Math.sin(time*.66+Math.sin(time*.17)*2));o.lightning=o.storm*Math.pow(pulse,38);o.wave=.36+.28*o.wind+1.08*o.storm;return o
+  const pulse=Math.max(0,Math.sin(time*.66+Math.sin(time*.17)*2));o.lightning=o.storm*Math.pow(pulse,38);o.wave=1.15+.40*o.wind+1.65*o.storm;return o
 }
 
 const SKY_VS=`#version 300 es
@@ -78,15 +78,15 @@ void W(inout vec3 p,vec2 d,float amp,float freq,float speed,float steep){
 }
 void main(){
   vec3 p=vec3(aPosition.x,0.,aPosition.y+uCameraZ);
-  W(p,vec2(1.,.22),.58,.027,.68,.34);
-  W(p,vec2(.31,1.),.37,.049,-.91,.25);
-  W(p,vec2(-.72,.43),.22,.083,1.24,.18);
-  W(p,vec2(.88,-.47),.105,.147,-1.68,.10);
-  W(p,vec2(-.16,.99),.050,.226,2.05,.06);
+  W(p,vec2(1.,.22),.78,.023,.62,.43);
+  W(p,vec2(.31,1.),.48,.043,-.84,.31);
+  W(p,vec2(-.72,.43),.30,.074,1.13,.23);
+  W(p,vec2(.88,-.47),.145,.132,-1.54,.14);
+  W(p,vec2(-.16,.99),.072,.205,1.88,.08);
   if(uStorm>.02){
-    W(p,vec2(.94,.18),1.10*uStorm,.016,.52,.55);
-    W(p,vec2(-.48,.88),.72*uStorm,.026,-.74,.42);
-    W(p,vec2(.26,.97),.34*uStorm,.061,1.07,.31);
+    W(p,vec2(.94,.18),1.55*uStorm,.013,.48,.68);
+    W(p,vec2(-.48,.88),1.05*uStorm,.022,-.68,.56);
+    W(p,vec2(.26,.97),.56*uStorm,.052,1.00,.39);
   }
   vWorld=p;
   vCrest=p.y;
@@ -150,12 +150,13 @@ function seaHeight(x,z,t,c){
     const l=Math.hypot(dx,dz)||1,ph=((dx/l)*x+(dz/l)*z)*freq+t*speed;
     y+=amp*c.wave*Math.sin(ph);
   };
-  wave(1,.22,.58,.027,.68);
-  wave(.31,1,.37,.049,-.91);
-  wave(-.72,.43,.22,.083,1.24);
+  wave(1,.22,.78,.023,.62);
+  wave(.31,1,.48,.043,-.84);
+  wave(-.72,.43,.30,.074,1.13);
   if(c.storm>.02){
-    wave(.94,.18,1.10*c.storm,.016,.52);
-    wave(-.48,.88,.72*c.storm,.026,-.74);
+    wave(.94,.18,1.55*c.storm,.013,.48);
+    wave(-.48,.88,1.05*c.storm,.022,-.68);
+    wave(.26,.97,.56*c.storm,.052,1.00);
   }
   return y;
 }
@@ -329,20 +330,27 @@ void main(){
 }
 `;
 
-function makeGullSprites(){
-  const out=[];
-  for(let f=0;f<14;f++){
-    const c=document.createElement("canvas");c.width=128;c.height=72;const x=c.getContext("2d");
-    const flap=Math.sin(f/14*TAU),lift=7+flap*5.4;
-    x.translate(64,35);x.shadowColor="rgba(205,222,226,.22)";x.shadowBlur=4;
-    const g=x.createLinearGradient(0,-17,0,17);g.addColorStop(0,"#fff");g.addColorStop(.58,"#eef1ee");g.addColorStop(1,"#a7b5b8");
-    x.fillStyle=g;x.strokeStyle="rgba(115,137,144,.28)";x.lineWidth=.75;
-    x.beginPath();x.moveTo(-2,-1);x.bezierCurveTo(-14,-6,-29,-lift,-47,-12-lift*.18);x.bezierCurveTo(-31,2,-17,9,-2,5);x.closePath();x.fill();x.stroke();
-    x.beginPath();x.moveTo(2,-1);x.bezierCurveTo(14,-6,29,-lift,47,-12-lift*.18);x.bezierCurveTo(31,2,17,9,2,5);x.closePath();x.fill();x.stroke();
-    x.fillStyle="#f5f7f4";x.beginPath();x.ellipse(0,3,6,13.8,0,0,TAU);x.fill();
-    out.push(c);
-  }
-  return out;
+function makeCloudSprites(){
+  const make=(dark=false,variant=0)=>{
+    const c=document.createElement("canvas");c.width=320;c.height=180;const x=c.getContext("2d");
+    x.clearRect(0,0,c.width,c.height);
+    const rnd=n=>hash1(n*13.17+variant*21.7+(dark?8.2:1.3));
+    const base=dark?[70,78,82]:[220,226,222];
+    for(let i=0;i<23;i++){
+      const px=36+rnd(i*.71)*248,py=48+rnd(i*1.37)*80,rx=26+rnd(i*2.11)*58,ry=13+rnd(i*3.17)*26;
+      const g=x.createRadialGradient(px-rx*.18,py-ry*.30,2,px,py,rx);
+      const a=.13+rnd(i*5.3)*.18;
+      g.addColorStop(0,`rgba(${base[0]+(dark?12:18)},${base[1]+(dark?12:18)},${base[2]+(dark?12:18)},${a})`);
+      g.addColorStop(.48,`rgba(${base[0]},${base[1]},${base[2]},${a*.72})`);
+      g.addColorStop(1,`rgba(${base[0]-18},${base[1]-18},${base[2]-18},0)`);
+      x.fillStyle=g;x.beginPath();x.ellipse(px,py,rx,ry,0,0,TAU);x.fill();
+    }
+    return c;
+  };
+  return{
+    light:[0,1,2,3].map(i=>make(false,i)),
+    dark:[0,1,2,3].map(i=>make(true,i))
+  };
 }
 
 function atmosphere(){
@@ -353,23 +361,44 @@ function atmosphere(){
     phase:hash1(i*3.27+9.4)*TAU,
     warm:hash1(i*11.8+5.2)
   }));
-  const gulls=makeGullSprites();
+  const clouds=makeCloudSprites();
+  const cloudField=Array.from({length:13},(_,i)=>({
+    seed:hash1(i*7.13+2.2),
+    side:hash1(i*11.27+4.8)>.5?1:-1,
+    speed:.0045+hash1(i*17.31+1.9)*.0065,
+    lane:.10+hash1(i*23.71+8.4)*.26,
+    variant:i%4
+  }));
 
   return{draw(ctx,time,w,h,c){
     const horizon=h*.435;
+
+    // Layered smoky clouds travel from the horizon toward the viewer.
+    ctx.save();
+    for(let i=0;i<cloudField.length;i++){
+      const q=cloudField[i],p=(q.seed+time*q.speed*(1+c.wind*.75+c.storm*1.1))%1;
+      const depth=Math.pow(p,1.62),fade=Math.min(1,p/.12)*Math.min(1,(1-p)/.20);
+      const x=w*.5+q.side*w*(.035+depth*(.42+q.lane*.28))+Math.sin(time*.05+i)*w*.018;
+      const y=h*(.39-depth*(.13+q.lane*.22));
+      const sc=.20+depth*(1.18+q.lane*.55);
+      const sprite=(c.storm>.42?clouds.dark:clouds.light)[q.variant];
+      ctx.globalAlpha=fade*(.055+.14*depth)*(.72+.78*c.storm+.22*c.fog);
+      ctx.drawImage(sprite,x-160*sc,y-90*sc,320*sc,180*sc);
+    }
+    ctx.restore();
 
     if(c.night>.08&&c.storm<.88){
       const a=c.night*(1-c.storm*.92)*(1-c.fog*.55);
       ctx.save();ctx.globalCompositeOperation="screen";
       for(let i=0;i<stars.length;i++){
-        const s=stars[i],tw=.84+.16*Math.sin(time*(.28+hash1(i*.91)*.48)+s.phase);
-        const r=s.r*(.68+Math.min(w,h)/900);
+        const st=stars[i],tw=.84+.16*Math.sin(time*(.28+hash1(i*.91)*.48)+st.phase);
+        const r=st.r*(.68+Math.min(w,h)/900);
         ctx.globalAlpha=a*(.20+.58*hash1(i*5.3+2))*tw;
-        ctx.fillStyle=s.warm>.84?"#f7e8c7":s.warm>.52?"#d9e8ff":"#eef5ff";
-        ctx.beginPath();ctx.arc(s.x*w,s.y*h,r,0,TAU);ctx.fill();
+        ctx.fillStyle=st.warm>.84?"#f7e8c7":st.warm>.52?"#d9e8ff":"#eef5ff";
+        ctx.beginPath();ctx.arc(st.x*w,st.y*h,r,0,TAU);ctx.fill();
         if(r>.78&&hash1(i*2.37)>.82){
           ctx.globalAlpha*=.34;ctx.lineWidth=.38;
-          ctx.beginPath();ctx.moveTo(s.x*w-r*2.0,s.y*h);ctx.lineTo(s.x*w+r*2.0,s.y*h);ctx.moveTo(s.x*w,s.y*h-r*2.0);ctx.lineTo(s.x*w,s.y*h+r*2.0);ctx.strokeStyle=ctx.fillStyle;ctx.stroke();
+          ctx.beginPath();ctx.moveTo(st.x*w-r*2.0,st.y*h);ctx.lineTo(st.x*w+r*2.0,st.y*h);ctx.moveTo(st.x*w,st.y*h-r*2.0);ctx.lineTo(st.x*w,st.y*h+r*2.0);ctx.strokeStyle=ctx.fillStyle;ctx.stroke();
         }
       }
       ctx.restore();
@@ -383,31 +412,12 @@ function atmosphere(){
       ctx.globalAlpha=a*.92;ctx.fillStyle=moon;ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.fill();ctx.restore();
     }
 
-    // One gull only, and only during a short window. Route/scale changes every pass.
-    if(c.storm<.64&&c.rain<.58){
-      const cycle=26,epoch=Math.floor(time/cycle),local=(time%cycle);
-      const start=4.0+hash1(epoch*6.31)*7.0,duration=4.8+hash1(epoch*3.71+2)*2.8;
-      if(local>=start&&local<=start+duration){
-        const p=(local-start)/duration,e=1-Math.pow(1-p,1.35),side=hash1(epoch*8.27)>.5?1:-1;
-        const y0=.19+hash1(epoch*5.19)*.20,y1=.13+hash1(epoch*9.11)*.24;
-        const x0=side<0?-.10:1.10,x1=side<0?1.08:-.08;
-        const x=mix(x0,x1,e)*w+Math.sin(p*Math.PI)*w*(hash1(epoch*2.7)-.5)*.08;
-        const y=mix(y0,y1,e)*h-Math.sin(p*Math.PI)*h*(.025+.035*hash1(epoch*4.7));
-        const approach=hash1(epoch*12.9)>.5;
-        const depth=approach?mix(.35,1,p):mix(1,.38,p),size=(10+17*depth)*(w<760?.92:1);
-        const frame=Math.floor((time*7.2+epoch*2.3)*gulls.length)%gulls.length;
-        ctx.save();ctx.globalAlpha=Math.sin(p*Math.PI)*(.44+.43*depth)*(1-c.fog*.45);ctx.translate(x,y);
-        ctx.rotate(side*(.025+.05*Math.sin(p*Math.PI)));ctx.scale(side<0?1:-1,1);
-        ctx.drawImage(gulls[frame],-size*1.22,-size*.68,size*2.44,size*1.36);ctx.restore();
-      }
-    }
-
     if(c.rain>.035){
       ctx.save();ctx.lineCap="round";
       const layers=[
-        {n:26,s:170,a:.040,l:5,w:.34,drift:3},
-        {n:38,s:285,a:.070,l:9,w:.48,drift:6},
-        {n:44,s:430,a:.105,l:15,w:.64,drift:10}
+        {n:24,s:170,a:.032,l:5,w:.30,drift:3},
+        {n:38,s:285,a:.060,l:9,w:.44,drift:6},
+        {n:48,s:430,a:.092,l:15,w:.60,drift:10}
       ];
       for(let L=0;L<layers.length;L++){
         const q=layers[L],count=Math.round(q.n*(.28+.95*c.rain));
@@ -417,21 +427,20 @@ function atmosphere(){
           ctx.beginPath();ctx.moveTo(xx,yy);ctx.lineTo(xx-q.drift*c.wind,yy+q.l);ctx.stroke();
         }
       }
-      // small perspective impacts
       ctx.strokeStyle="rgba(222,239,239,.52)";
-      for(let i=0;i<Math.round(14*c.rain);i++){
+      for(let i=0;i<Math.round(18*c.rain);i++){
         const px=hash1(i*31.7+Math.floor(time*2.0))*w,depth=.18+hash1(i*5.27)*.76,py=horizon+depth*(h-horizon),r=.55+depth*2.7;
         ctx.globalAlpha=.055+.11*c.rain;ctx.lineWidth=.38+depth*.25;ctx.beginPath();ctx.ellipse(px,py,r,r*.20,0,0,TAU);ctx.stroke();
       }
       ctx.restore();
     }
 
-    if(c.storm>.42){
+    if(c.storm>.32){
       ctx.save();ctx.fillStyle="rgba(224,238,236,.72)";
-      const spray=Math.round(12*c.storm);
+      const spray=Math.round(18*c.storm);
       for(let i=0;i<spray;i++){
         const d=.35+hash1(i*4.7+Math.floor(time*.7))*.60,x=hash1(i*9.9+3)*w,y=horizon+d*(h-horizon)*.72;
-        ctx.globalAlpha=.025+.07*c.storm;ctx.beginPath();ctx.ellipse(x,y,1+d*2.5,.35+d*.7,-.25,0,TAU);ctx.fill();
+        ctx.globalAlpha=.025+.08*c.storm;ctx.beginPath();ctx.ellipse(x,y,1+d*2.9,.35+d*.8,-.25,0,TAU);ctx.fill();
       }
       ctx.restore();
     }
@@ -495,30 +504,94 @@ function createRenderer(ctx){
   }
 
   function ship(slot,t,camZ,eye,fog,c){
-    const raw=(t+slot*19.3)/61,p=raw-Math.floor(raw);
-    if(p<.045||p>.95)return;
+    const raw=(t+slot*20.7)/66,p=raw-Math.floor(raw);
+    if(p<.055||p>.925)return;
     const epoch=Math.floor(raw),r=hash1(epoch*17.3+slot*9.7),type=Math.floor(r*4),side=(epoch+slot)%2?1:-1;
-    const x=side*(12+hash1(epoch*3.9+slot*4.7)*39),z=camZ-545+p*650;
-    const bs=type===0?1.08:type===1?.94:type===2?.55:1.14;
-    const y=.82+seaHeight(x,z,t,c)*.68;
-    const yaw=side*.035+(r-.5)*.07;
-    const roll=Math.sin(t*.58+slot)*(.018+.070*c.storm);
-    const pitch=Math.sin(t*.42+slot*1.4)*(.012+.050*c.storm);
-    const rot=[pitch,yaw,roll],g=shipWires[type];
+    const x=side*(16+hash1(epoch*3.9+slot*4.7)*43),z=camZ-610+p*550;
+    const bs=type===0?1.72:type===1?1.56:type===2?1.32:1.82;
+    const y=1.12+seaHeight(x,z,t,c)*.90;
+    const yaw=side*.040+(r-.5)*.075;
+    const roll=Math.sin(t*.54+slot)*(.026+.105*c.storm);
+    const pitch=Math.sin(t*.40+slot*1.4)*(.020+.080*c.storm);
+    const rot=[pitch,yaw,roll],g=shipWires[type],phase=epoch*.73+slot*1.7;
+    const blackShip=slot===2;
 
-    const palettes=[
-      {wood:[.34,.15,.055],deck:[.48,.24,.085],rig:[.48,.43,.36],sail:[.055,.058,.062],accent:[.66,.48,.21]},
-      {wood:[.44,.22,.080],deck:[.58,.32,.12],rig:[.55,.49,.40],sail:[.91,.86,.74],accent:[.72,.56,.28]},
-      {wood:[.29,.24,.15],deck:[.43,.34,.20],rig:[.58,.52,.43],sail:[.84,.80,.69],accent:[.48,.56,.48]},
-      {wood:[.39,.15,.052],deck:[.55,.27,.09],rig:[.60,.55,.47],sail:[.94,.92,.84],accent:[.70,.52,.22]}
-    ][type];
+    const hull=blackShip?[.050,.043,.040]:type===1?[.28,.125,.045]:type===2?[.23,.18,.095]:type===3?[.31,.115,.038]:[.25,.095,.032];
+    const hullHi=blackShip?[.085,.075,.070]:type===2?[.38,.29,.14]:[.43,.20,.065];
+    const deckDark=blackShip?[.105,.085,.065]:type===2?[.30,.23,.13]:[.30,.145,.052];
+    const deckMid=blackShip?[.155,.125,.085]:type===2?[.43,.33,.18]:[.46,.245,.085];
+    const deckLight=blackShip?[.20,.16,.11]:type===2?[.52,.40,.22]:[.58,.33,.12];
+    const mastCol=blackShip?[.12,.095,.070]:[.28,.145,.055];
+    const sailCol=blackShip?[.018,.020,.022]:[.965,.955,.900];
+    const rigCol=blackShip?[.18,.17,.16]:[.34,.30,.24];
+    const flagCol=blackShip?[.015,.015,.018]:(slot%2?[.32,.055,.045]:[.055,.14,.28]);
 
-    const phase=epoch*.73+slot*1.7;
-    wirePart(g.wood,[x,y,z],bs,rot,palettes.wood,.86,c,t,phase,0);
-    wirePart(g.deck,[x,y,z],bs,rot,palettes.deck,.82,c,t,phase,0);
-    wirePart(g.rig,[x,y,z],bs,rot,palettes.rig,.48,c,t,phase,0);
-    wirePart(g.sail,[x,y,z],bs,rot,palettes.sail,type===0?.70:.76,c,t,phase,1);
-    wirePart(g.accent,[x,y,z],bs,rot,palettes.accent,.62,c,t,phase,0);
+    const local=(lx,ly,lz)=>{
+      let X=lx*bs,Y=ly*bs,Z=lz*bs;
+      let c0=Math.cos(yaw),s0=Math.sin(yaw),x1=X*c0+Z*s0,z1=-X*s0+Z*c0;
+      let c1=Math.cos(pitch),s1=Math.sin(pitch),y1=Y*c1-z1*s1,z2=Y*s1+z1*c1;
+      let c2=Math.cos(roll),s2=Math.sin(roll),x2=x1*c2-y1*s2,y2=x1*s2+y1*c2;
+      return[x+x2,y+y2,z+z2];
+    };
+
+    // Dense sculpted hull plus a second upper shell gives the ship visual weight.
+    obj(M.hull,local(0,-.12,0),[9.4*bs,5.5*bs,22.8*bs],rot,hull,eye,fog,c);
+    obj(M.hull,local(0,.62,1.15),[8.65*bs,3.35*bs,19.2*bs],rot,hullHi,eye,fog,c);
+
+    // Solid deck and individually shaded planks.
+    obj(M.box,local(0,1.78,.45),[8.15*bs,.38*bs,17.7*bs],rot,deckDark,eye,fog,c);
+    const plankX=[-3.35,-2.25,-1.12,0,1.12,2.25,3.35];
+    for(let i=0;i<plankX.length;i++){
+      const col=i%3===0?deckLight:i%2?deckDark:deckMid;
+      obj(M.box,local(plankX[i],1.995,.35),[.82*bs,.095*bs,16.9*bs],rot,col,eye,fog,c);
+    }
+    // Raised stern deck, quarterdeck and forecastle.
+    obj(M.box,local(0,2.42,6.25),[7.25*bs,1.15*bs,4.65*bs],rot,deckMid,eye,fog,c);
+    obj(M.box,local(0,3.16,6.55),[5.85*bs,.46*bs,3.75*bs],rot,deckLight,eye,fog,c);
+    obj(M.box,local(0,2.20,-7.35),[6.55*bs,.58*bs,3.25*bs],rot,deckMid,eye,fog,c);
+    if(type!==2){
+      obj(M.box,local(0,3.60,7.0),[4.55*bs,1.25*bs,2.95*bs],rot,blackShip?[.075,.065,.060]:[.34,.16,.055],eye,fog,c);
+      obj(M.box,local(0,4.37,7.0),[3.45*bs,.30*bs,2.25*bs],rot,deckLight,eye,fog,c);
+    }
+
+    const mastSpec=type===2
+      ?[{z:1.4,h:11.2,w:3.9}]
+      :type===1
+        ?[{z:-4.2,h:15.1,w:4.5},{z:4.1,h:16.0,w:4.2}]
+        :[{z:-5.8,h:15.6,w:4.5},{z:0,h:17.2,w:4.9},{z:5.35,h:15.9,w:4.35}];
+
+    mastSpec.forEach((m,mi)=>{
+      obj(M.mast,local(0,1.8+m.h*.50,m.z),[.25*bs,m.h*bs,.25*bs],rot,mastCol,eye,fog,c);
+      // Multiple solid yards.
+      const yardData=[[.58,1.00],[.77,.77],[.91,.53]];
+      yardData.forEach(([fy,fw])=>{
+        obj(M.box,local(0,m.h*fy,m.z),[m.w*2*fw*bs,.18*bs,.18*bs],rot,mastCol,eye,fog,c);
+      });
+
+      // White fabric for every normal ship; the one black ship stays black.
+      sail(local(0,m.h*.44,m.z-.12),[m.w*1.90*bs,m.h*.28*bs,1],rot,sailCol,eye,fog,c,t,phase+mi*.71);
+      if(type!==2){
+        sail(local(0,m.h*.69,m.z-.15),[m.w*1.36*bs,m.h*.18*bs,1],rot,sailCol,eye,fog,c,t,phase+mi*.71+1.2);
+      }
+
+      // Fluttering triangular flag at each main mast top; center mast is largest.
+      if(mi===Math.floor(mastSpec.length/2)){
+        sail(local(1.05,m.h+1.0,m.z),[2.05*bs,1.08*bs,1],rot,flagCol,eye,fog,c,t,phase+4.2);
+      }
+    });
+
+    // Fore-and-aft sails add volume between masts/bowsprit.
+    if(type!==2){
+      sail(local(0,7.0,-11.0),[4.2*bs,7.7*bs,1],rot,sailCol,eye,fog,c,t,phase+2.4);
+      if(mastSpec.length===3)sail(local(0,8.4,2.65),[3.2*bs,6.3*bs,1],rot,sailCol,eye,fog,c,t,phase+3.1);
+    }
+
+    // Fine linework now serves only as rigging/rail detail, not the body of the ship.
+    wirePart(g.wood,[x,y,z],bs,rot,mastCol,.30,c,t,phase,0);
+    wirePart(g.deck,[x,y,z],bs,rot,deckLight,.42,c,t,phase,0);
+    wirePart(g.rig,[x,y,z],bs,rot,rigCol,.56,c,t,phase,0);
+    wirePart(g.sail,[x,y,z],bs,rot,sailCol,.20,c,t,phase,1);
+    wirePart(g.accent,[x,y,z],bs,rot,blackShip?[.30,.20,.12]:[.70,.50,.20],.44,c,t,phase,0);
   }
 
   function render(t,camera,c){
@@ -526,9 +599,9 @@ function createRenderer(ctx){
     perspective(P,zen ? .90 : .98,W/H,.12,1280);lookAt(V,eye,target,[0,1,0]);multiply(VP,P,V);
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);gl.useProgram(skyP);gl.bindVertexArray(skyVao);gl.uniform1f(su.time,t);gl.uniform1f(su.aspect,W/H);setC(su,c);gl.drawArrays(gl.TRIANGLES,0,3);
     gl.enable(gl.DEPTH_TEST);gl.clearDepth(1);gl.clear(gl.DEPTH_BUFFER_BIT);gl.useProgram(oceanP);gl.bindVertexArray(oceanVao);gl.uniformMatrix4fv(ou.vp,false,VP);gl.uniform1f(ou.time,t);gl.uniform1f(ou.cameraZ,camZ);gl.uniform1f(ou.wave,c.wave);gl.uniform3f(ou.camera,...eye);setC(ou,c);gl.drawElements(gl.TRIANGLES,ocean.indices.length,gl.UNSIGNED_INT,0);
-    const fog=[mix(.73,.22,c.storm),mix(.81,.27,c.storm),mix(.82,.28,c.storm)];fog[0]=mix(fog[0],.09,c.night);fog[1]=mix(fog[1],.13,c.night);fog[2]=mix(fog[2],.19,c.night);gl.enable(gl.CULL_FACE);ship(0,t,camZ,eye,fog,c);ship(1,t+8.5,camZ,eye,fog,c);gl.disable(gl.CULL_FACE);gl.bindVertexArray(null)
+    const fog=[mix(.73,.22,c.storm),mix(.81,.27,c.storm),mix(.82,.28,c.storm)];fog[0]=mix(fog[0],.09,c.night);fog[1]=mix(fog[1],.13,c.night);fog[2]=mix(fog[2],.19,c.night);gl.enable(gl.CULL_FACE);ship(0,t,camZ,eye,fog,c);ship(1,t+8.5,camZ,eye,fog,c);ship(2,t+16.5,camZ,eye,fog,c);gl.disable(gl.CULL_FACE);gl.bindVertexArray(null)
   }
   return{resize,draw({time,width,height,camera}){if(dead)return;if(width!==W||height!==H)resize({width,height,ratio:devicePixelRatio||1});const c=stateAt(time);render(time,camera,c);fx.draw(ctx,time,width,height,c);sound.setWeather(c,time)},dispose(){dead=true;canvas.remove();style.remove();sound.dispose();try{for(const p of[skyP,oceanP,objP,sailP,threadP])gl.deleteProgram(p);for(const r of R){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}}}
 }
 
-export default{id:"living-sea",renderer:"webgl-living-sea-v5",particles:false,marks:true,flightCards:true,autoFlightCards:true,continuousDepth:true,flightBounds:{x:1.2,y:.86},accent:"#bcdde5",dim:"#c7d9dd",surface:"12,27,38",panel:{bg:"rgba(14,35,47,.54)",border:"rgba(190,224,230,.26)",glow:"rgba(83,174,194,.17)",text:"#f2fbfc",muted:"#c6dce0"},radius:"28px",buttonRadius:"28px",heading:'"Cormorant Garamond", Georgia, serif',body:'"Nunito", system-ui, sans-serif',colors:["#d9eff2","#8fc1ce","#f1c48d","#9eb6c6"],backgrounds:["radial-gradient(ellipse at 72% 18%,rgba(180,220,228,.24),transparent 45%),radial-gradient(ellipse at 28% 8%,rgba(73,124,153,.26),transparent 58%)","radial-gradient(ellipse at 60% 35%,rgba(134,182,193,.12),transparent 55%)","linear-gradient(to bottom,rgba(41,83,105,.14),rgba(6,19,28,.44))"],soundscape:SOUND,createRenderer};
+export default{id:"living-sea",renderer:"webgl-living-sea-v6",particles:false,marks:true,flightCards:true,autoFlightCards:true,continuousDepth:true,flightBounds:{x:1.2,y:.86},accent:"#bcdde5",dim:"#c7d9dd",surface:"12,27,38",panel:{bg:"rgba(14,35,47,.54)",border:"rgba(190,224,230,.26)",glow:"rgba(83,174,194,.17)",text:"#f2fbfc",muted:"#c6dce0"},radius:"28px",buttonRadius:"28px",heading:'"Cormorant Garamond", Georgia, serif',body:'"Nunito", system-ui, sans-serif',colors:["#d9eff2","#8fc1ce","#f1c48d","#9eb6c6"],backgrounds:["radial-gradient(ellipse at 72% 18%,rgba(180,220,228,.24),transparent 45%),radial-gradient(ellipse at 28% 8%,rgba(73,124,153,.26),transparent 58%)","radial-gradient(ellipse at 60% 35%,rgba(134,182,193,.12),transparent 55%)","linear-gradient(to bottom,rgba(41,83,105,.14),rgba(6,19,28,.44))"],soundscape:SOUND,createRenderer};

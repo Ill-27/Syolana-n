@@ -18,6 +18,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: syolana-partner-core-version
+  cancel-in-progress: true
+
 jobs:
   version:
     if: github.actor != 'github-actions[bot]'

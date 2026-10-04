@@ -54,7 +54,7 @@ body.syolana-active .hero {
   background:
     radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 34%),
     linear-gradient(135deg, #ffffff05, transparent 60%),
-    rgba(var(--surface), .68);
+    var(--panel-bg);
 }
 
 body.syolana-active .hero::after {
@@ -227,7 +227,7 @@ body.syolana-active .post-actions a {
   padding: 8px 14px;
   border: 1px solid #decaff38;
   border-radius: 999px;
-  background: rgba(var(--surface), .72);
+  background: var(--panel-bg);
   color: #f2ebf8;
   font: 500 .76rem/1.3 var(--interface);
 }

@@ -1547,7 +1547,7 @@ function lessonFrame(key, anchor = "") {
   frame.title = "Учебный материал Syolana";
   const englishCourse = key === "en/a1/course";
   if (englishCourse) frame.style.height = "max(640px, calc(100dvh - 125px))";
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261005-a1-4" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261005-a1-6" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   $("page").append(status, frame);
   let active = true,

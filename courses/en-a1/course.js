@@ -13,7 +13,7 @@ const select=options=>{const x=el('select');for(const [value,text] of options){c
 const normal=s=>s.toLowerCase().replace(/[’]/g,"'").replace(/[^\p{L}\p{N}' ]/gu,' ').replace(/\s+/g,' ').trim();
 
 async function init(){
-  const response=await fetch(new URL('./data.json?v=20261005-4',import.meta.url));
+  const response=await fetch(new URL('./data.json?v=20261005-6',import.meta.url));
   if(!response.ok)throw new Error('Не удалось загрузить материал курса.');
   const data=await response.json();
   const saved=store.read('settings',{});
@@ -108,9 +108,9 @@ async function init(){
     for(const day of curriculum.days){
       const c=el('article','day-card'),title=el('div','day-number',`День ${day.number} · ≈ ${duration(day.seconds)}`);c.append(title);
       const r=day.rules.map(x=>x.section.title.replace(/^\d+\. /,'')).join('; ');
-      c.append(el('p','',r?'Правила: '+r:'Повторите пройденные правила перед словарём.'),el('p','',`${day.words.length} словарных статей; ${day.extras.length} дополнительных фраз.`));
+      c.append(el('p','',r?'Правила: '+r:'Повторите пройденные правила перед словарём.'),el('p','',`Словарных статей: ${day.words.length}. Дополнительных фраз: ${day.extras.length}.`));
       const a=el('div','actions');a.append(button('▶ Слушать день',()=>start(day.units,'День '+day.number),'primary'));
-      const mark=button(doneDays.has(day.id)?'✓ Пройдено':'Отметить пройденным',()=>{doneDays.has(day.id)?doneDays.delete(day.id):doneDays.add(day.id);store.write('days',[...doneDays]);mark.textContent=doneDays.has(day.id)?'✓ Пройдено':'Отметить пройденным';});a.append(mark);c.append(a);
+      const dayKey=cfg.rate+':'+cfg.repeat+':'+day.id;const mark=button(doneDays.has(dayKey)?'✓ Пройдено':'Отметить пройденным',()=>{doneDays.has(dayKey)?doneDays.delete(dayKey):doneDays.add(dayKey);store.write('days',[...doneDays]);mark.textContent=doneDays.has(dayKey)?'✓ Пройдено':'Отметить пройденным';});a.append(mark);c.append(a);
       const explore=button('Открыть материал дня',()=>{for(const r of day.rules)document.getElementById(r.section.id).open=true;if(day.words.length){searchInput.value='';renderVocabulary(day.words);document.getElementById('vocabulary').scrollIntoView({behavior:'smooth'});}else if(day.rules[0])document.getElementById(day.rules[0].section.id).scrollIntoView({behavior:'smooth'});});c.append(explore);dayList.append(c);
     }
   }
@@ -150,7 +150,14 @@ async function init(){
   const hour=el('input'),minute=el('input');hour.type=minute.type='number';hour.min=minute.min='0';hour.max='23';minute.max='59';hour.value='8';minute.value='45';trainer('Время','Учимся говорить «четверть», «половина», «после» и «без». Сравните с электронными часами.',[field('Часы',hour),field('Минуты',minute)],()=>timePair(+hour.value,+minute.value,data.phonemeDictionary));
   const pounds=el('input'),pence=el('input');pounds.type=pence.type='number';pounds.min=pence.min='0';pounds.max='9999';pence.max='99';pounds.value='3';pence.value='50';trainer('Цены','Сумма в фунтах и пенсах. Единственное и множественное число меняются вместе с количеством.',[field('Фунты',pounds),field('Пенсы',pence)],()=>pricePair(+pounds.value,+pence.value,data.phonemeDictionary));
   const monthWords=data.vocabulary.filter(w=>w.kind==='monthname'),dayWords=data.vocabulary.filter(w=>w.kind==='dayname');
-  const date=el('input');date.type='number';date.min='1';date.max='31';date.value='5';const month=select(monthWords.map(w=>[w.word,w.ru]));month.value='October';trainer('Дата','Сначала порядковое число, затем месяц. Предлоги для дат, дней и месяцев разобраны в правилах времени.',[field('Число месяца',date),field('Месяц',month)],()=>generatedPair('the '+ordinalWords(+date.value)+' of '+month.value,date.value+' '+(monthWords.find(w=>w.word===month.value)?.ru||''),data.phonemeDictionary,'date-practice'));
+  const date=el('input'),year=el('input');date.type=year.type='number';date.min='1';date.max='31';date.value='5';year.min='1900';year.max='2100';year.value='2026';const month=select(monthWords.map(w=>[w.word,w.ru]));month.value='October';
+  trainer('Дата','Сначала порядковое число, затем месяц и год. Предлоги для дат, дней и месяцев разобраны в правилах времени.',[field('Число месяца',date),field('Месяц',month),field('Год',year)],()=>{
+    const mi=monthWords.findIndex(w=>w.word===month.value),d=+date.value,y=+year.value;
+    if(!Number.isInteger(y)||y<1900||y>2100)throw new Error('Год: от 1900 до 2100.');
+    if(!Number.isInteger(d)||d<1||d>new Date(y,mi+1,0).getDate())throw new Error('В этом месяце нет такой даты.');
+    const monthsRu=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+    return generatedPair('the '+ordinalWords(d)+' of '+month.value+', '+numberPair(y,data.phonemeDictionary).en,d+' '+monthsRu[mi]+' '+y+' года',data.phonemeDictionary,'date-practice');
+  });
   const dictation=el('article','card trainer');dictation.append(el('h3','','Дни и месяцы на слух'),el('p','','Нажмите «Задание», слушайте слово, затем напишите его. Ответ можно открыть и сравнить без оценки уровня.'));let challenge=null;const answerInput=el('input');answerInput.autocomplete='off';answerInput.spellcheck=false;answerInput.setAttribute('aria-label','Ваш ответ по-английски');const answerOutput=el('div','output');dictation.append(button('Новое задание',()=>{const pool=[...monthWords,...dayWords];challenge=pool[Math.floor(Math.random()*pool.length)].head;answerInput.value='';answerOutput.replaceChildren();playClip(challenge,'en');}),field('Запишите услышанное слово',answerInput),button('Ещё раз',()=>{if(challenge)playClip(challenge,'en');}),button('Свериться',()=>{if(!challenge){answerOutput.textContent='Сначала выберите новое задание.';return;}answerOutput.replaceChildren(el('p','answer',normal(answerInput.value)===normal(challenge.en)?'Написание совпало с образцом.':'Сравните своё написание с образцом.'),pairNode(challenge));}),answerOutput);tg.append(dictation);
   const ref=el('details','lesson reference');ref.append(el('summary','','Числа, даты и контакты: весь опорный набор'));const rp=el('div','pairs lesson-body');rp.append(...referencePairs(data).map(p=>pairNode(p)));ref.append(rp);trainers.append(ref);
   const irregulars=el('details','lesson');irregulars.append(el('summary','','Неправильные глаголы: начальная, прошедшая форма и причастие'));const irbody=el('div','lesson-body');let irregularReady=false;irregulars.addEventListener('toggle',()=>{if(!irregulars.open||irregularReady)return;irregularReady=true;for(const w of data.vocabulary.filter(w=>w.kind==='verb'&&w.forms[2]?.en!==w.word+'ed'&&!w.forms[2]?.en.endsWith('ed'))){const c=el('div','card');c.append(pairNode(w.head));const f=el('div','forms');f.append(...w.forms.slice(2,4).map(p=>pairNode(p)));c.append(f);irbody.append(c);}});irregulars.append(irbody);trainers.append(irregulars);

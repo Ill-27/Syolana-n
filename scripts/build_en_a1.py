@@ -124,7 +124,7 @@ for r in records:
     if w in {'hen','lamb','duckling','chick'}:k=r['kind']='animal'
     if w=='zoo':k=r['kind']='place'
     uncount=k in {'massFood','mass'} or w in COUNTLESS
-    r['level']='расширение A1 → A2' if r['group'] in {'moreNouns','moreAdj'} or w in {'already','yet','especially','probably','borrow','lend','download','upload','sell out','decide','should','must','if'} else 'база A1'
+    r['level']='расширение A1 → A2' if w in {'already','yet','especially','probably','borrow','lend','download','upload','sell out','decide','should','must','if'} else 'база A1'
     if k=='verb':
         r['en']=w;r['note']='Глагол. В инфинитиве перед ним может стоять показатель инфинитива; после модального глагола он не нужен.'
         base=w.split(' ')[0];tail=' '.join(w.split(' ')[1:]);p,pp,pip,ppip=IRREGULAR.get(base,(inflect(base,'past'),inflect(base,'past'),PH[inflect(base,'past')],PH[inflect(base,'past')]))
@@ -184,6 +184,6 @@ for r in records:
 if UNKNOWN:
     (SRC/'unknown-phonemes.json').write_text(json.dumps(UNKNOWN,ensure_ascii=False,indent=2))
     raise ValueError('Missing authored phonemes: '+', '.join(UNKNOWN.keys()))
-data={'version':'2026-10-05.3','title':'Английский A1 · Syolana','sources':[{'title':'CEFR: рамка и описания навыков','url':'https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-descriptors'},{'title':'Ориентиры содержания английского: British Council и Eaquals','url':'https://www.teachingenglish.org.uk/sites/teacheng/files/pub-british-council-eaquals-core-inventoryv2.pdf'}],'phonetics':phonetics,'alphabet':alphabet,'rules':rules,'groups':groups,'vocabulary':records,'variants':variants,'practice':practices,'phonemeDictionary':PH,'statistics':{'entries':len(records),'uniqueHeadwords':len(set(r['word'].lower() for r in records)),'examples':len(records)*4,'ruleSections':len(rules),'sounds':len(phonetics)}}
+data={'version':'2026-10-05.4','title':'Английский A1 · Syolana','sources':[{'title':'CEFR: рамка и описания навыков','url':'https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-descriptors'},{'title':'Ориентиры содержания английского: British Council и Eaquals','url':'https://www.teachingenglish.org.uk/sites/teacheng/files/pub-british-council-eaquals-core-inventoryv2.pdf'}],'phonetics':phonetics,'alphabet':alphabet,'rules':rules,'groups':groups,'vocabulary':records,'variants':variants,'practice':practices,'phonemeDictionary':PH,'statistics':{'entries':len(records),'uniqueHeadwords':len(set(r['word'].lower() for r in records)),'examples':len(records)*4,'ruleSections':len(rules),'sounds':len(phonetics)}}
 (SRC/'data.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
 print(json.dumps(data['statistics'],ensure_ascii=False));print('Compiled',counter,'bilingual units with IPA.')

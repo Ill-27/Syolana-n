@@ -13,13 +13,13 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261005-sea9";
+import { ThemeEngine } from "./themes.js?v=20261005-sea10";
 import { Player } from "./player.js";
 import { API } from "./api.js";
 import { lessons } from "./content.js";
 import { Studio } from "./studio.js";
 import { renderFeed, feedEditor } from "./feed.js";
-import { setupDiscovery } from "./discovery.js?v=20261005-sea9";
+import { setupDiscovery } from "./discovery.js?v=20261005-sea10";
 import { SceneAudio } from "./scene-audio.js";
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
@@ -1454,6 +1454,91 @@ function report() {
   );
   $("page").append(box);
 }
+
+async function route() {
+  const token = ++routeToken;
+  const preserveAudio = /^#\/book\//.test(location.hash) || /^#\/s\/[^/]+\/book\//.test(location.hash);
+  cleanup({ preserveAudio });
+  if (!preserveAudio) sceneAudio.stop();
+  cleanup = () => {};
+  clearTimeout(siteTimer);
+  clearTimeout(accessTimer);
+  zen(false);
+  document.body.classList.remove("reading", "no-effects", "partner-site");
+  theme.setBlocked(false);
+  document.documentElement.style.setProperty("--prose", moodColors.neutral);
+  $("page").replaceChildren();
+  window.scrollTo({ top: 0, behavior: "instant" });
+  document.title = "Syolana · Иммерсивная платформа для творчества";
+  const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
+  const [view, a, b, c, d] = parts;
+  const informationTitles = {
+    legal: "Правовая информация", offer: "Предварительные условия",
+    privacy: "Конфиденциальность", terms: "Условия тест-драйва",
+    report: "Обращения о нарушениях", contact: "Контакты",
+  };
+  const informationView = Boolean(informationTitles[view]);
+  $("banner").hidden = informationView;
+  $("provider-notice").hidden = informationView;
+  document.body.classList.toggle("information-view", informationView);
+  if (informationView) document.title = informationTitles[view] + " · Syolana";
+  document
+    .querySelectorAll("[data-nav]")
+    .forEach((x) =>
+      x.setAttribute("aria-current", x.dataset.nav === view ? "page" : "false"),
+    );
+  try {
+    if (view === "home") await home(token);
+    else if (view === "library") await library(token);
+    else if (view === "languages") languages(a, b);
+    else if (view === "songs") songsPage();
+    else if (view === "lesson") {
+      const key = [a, b, c].join("/");
+      if (!lessonFiles[key]) throw Error("Этот урок пока не опубликован.");
+      $("page").append(
+        link("К уровням языка", "#/languages/" + a, "text-link"),
+      );
+      await openLesson(key, d ? decodeURIComponent(d) : "", token);
+    } else if (view === "join") join();
+    else if (view === "contact") contactPage();
+    else if ((view === "studio" || view === "editor") && config.legacyStudioEnabled !== true) {
+      $("page").append(
+        heading("КАБИНЕТ ПАРТНЁРА", "Настройки на вашем сайте", "Кабинет подключается отдельно на инфраструктуре владельца сайта. Ссылку на него вы получаете после настройки. В режиме VK записи создаются и исправляются во ВКонтакте."),
+        link("Обсудить настройку на Авито", businessContact(), "btn primary"),
+      );
+    } else if (view === "studio") {
+      await apiReady;
+      if (token === routeToken)
+        await studio.render($("page"), token, () => routeToken);
+    } else if (view === "admin") {
+      await apiReady;
+      if (token === routeToken) await studio.admin($("page"));
+    } else if (view === "editor") feedEditor($("page"));
+    else if (view === "book") await reader({ id: a, chapter: b }, token);
+    else if (view === "s" && b === "book")
+      await reader({ slug: a, id: c, chapter: d }, token);
+    else if (view === "s") await publicSite(a, token);
+    else if (view === "terms") terms();
+    else if (view === "offer") offerPage();
+    else if (view === "privacy") privacyPage();
+    else if (view === "legal") legalInfo();
+    else if (view === "report") report();
+    else
+      $("page").append(
+        el("p", "empty", "Эта страница не найдена."),
+        link("На главную", "#/"),
+      );
+  } catch (err) {
+    if (token !== routeToken) return;
+    sceneAudio.stop();
+    $("page").replaceChildren(
+      el("p", "notice error", err.message),
+      link("На главную", "#/"),
+    );
+  }
+}
+window.addEventListener("hashchange", route);
+await route();
 
 function lessonFrame(key, anchor = "") {
   const filename = lessonFiles[key];

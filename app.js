@@ -1501,7 +1501,7 @@ async function route() {
       await openLesson(key, d ? decodeURIComponent(d) : "", token);
     } else if (view === "join") join();
     else if (view === "contact") contactPage();
-    else if ((view === "studio" || view === "editor") && config.legacyStudioEnabled !== true) {
+    else if (["studio", "editor", "admin"].includes(view) && config.legacyStudioEnabled !== true) {
       $("page").append(
         heading("КАБИНЕТ ПАРТНЁРА", "Настройки на вашем сайте", "Кабинет подключается отдельно на инфраструктуре владельца сайта. Ссылку на него вы получаете после настройки. В режиме VK записи создаются и исправляются во ВКонтакте."),
         link("Обсудить настройку на Авито", businessContact(), "btn primary"),

@@ -304,7 +304,7 @@ export class Studio {
         el(
           "p",
           "fine muted",
-          "В тест-драйве восстановление доступа — через владельца платформы: syolana@yandex.ru.",
+          "По вопросам доступа напишите Syolana в официальном профиле на Авито: https://www.avito.ru/brands/i223140984.",
         ),
       );
     if (register && !this.api.settings.registrationOpen) {

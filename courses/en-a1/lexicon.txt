@@ -1,0 +1,1295 @@
+# Авторский словарь Syolana. Формат: слово | британская IPA | перевод. Заголовок задаёт смысловую группу.
+[family|Люди и семья|person]
+person|ˈpɜːsən|человек
+man|mæn|мужчина
+woman|ˈwʊmən|женщина
+child|tʃaɪld|ребёнок
+baby|ˈbeɪbi|младенец
+boy|bɔɪ|мальчик
+girl|ɡɜːl|девочка
+teenager|ˈtiːneɪdʒə|подросток
+adult|ˈædʌlt|взрослый
+friend|frend|друг
+neighbour|ˈneɪbə|сосед
+mother|ˈmʌðə|мать
+father|ˈfɑːðə|отец
+parent|ˈpeərənt|родитель
+sister|ˈsɪstə|сестра
+brother|ˈbrʌðə|брат
+daughter|ˈdɔːtə|дочь
+son|sʌn|сын
+grandmother|ˈɡrænmʌðə|бабушка
+grandfather|ˈɡrænfɑːðə|дедушка
+grandparent|ˈɡrænpeərənt|бабушка или дедушка
+granddaughter|ˈɡrændɔːtə|внучка
+grandson|ˈɡrænsʌn|внук
+husband|ˈhʌzbənd|муж
+wife|waɪf|жена
+partner|ˈpɑːtnə|партнёр
+uncle|ˈʌŋkl|дядя
+aunt|ɑːnt|тётя
+cousin|ˈkʌzən|двоюродный брат или сестра
+niece|niːs|племянница
+nephew|ˈnefjuː|племянник
+relative|ˈrelətɪv|родственник
+guest|ɡest|гость
+visitor|ˈvɪzɪtə|посетитель
+customer|ˈkʌstəmə|покупатель
+colleague|ˈkɒliːɡ|коллега
+classmate|ˈklɑːsmeɪt|одноклассник
+family|ˈfæməli|семья
+[jobs|Работа и профессии|job]
+teacher|ˈtiːtʃə|учитель
+student|ˈstjuːdənt|студент
+pupil|ˈpjuːpl|школьник
+doctor|ˈdɒktə|врач
+nurse|nɜːs|медсестра или медбрат
+dentist|ˈdentɪst|стоматолог
+driver|ˈdraɪvə|водитель
+pilot|ˈpaɪlət|пилот
+farmer|ˈfɑːmə|фермер
+worker|ˈwɜːkə|работник
+manager|ˈmænɪdʒə|менеджер
+shop assistant|ˈʃɒp əˌsɪstənt|продавец-консультант
+waiter|ˈweɪtə|официант
+waitress|ˈweɪtrəs|официантка
+cook|kʊk|повар
+chef|ʃef|шеф-повар
+police officer|pəˈliːs ˌɒfɪsə|полицейский
+firefighter|ˈfaɪəfaɪtə|пожарный
+engineer|ˌendʒɪˈnɪə|инженер
+mechanic|mɪˈkænɪk|механик
+builder|ˈbɪldə|строитель
+cleaner|ˈkliːnə|уборщик
+hairdresser|ˈheədresə|парикмахер
+secretary|ˈsekrətri|секретарь
+receptionist|rɪˈsepʃənɪst|администратор
+businessperson|ˈbɪznəspɜːsən|предприниматель
+artist|ˈɑːtɪst|художник
+writer|ˈraɪtə|писатель
+actor|ˈæktə|актёр
+actress|ˈæktrəs|актриса
+singer|ˈsɪŋə|певец
+musician|mjuˈzɪʃən|музыкант
+dancer|ˈdɑːnsə|танцор
+photographer|fəˈtɒɡrəfə|фотограф
+journalist|ˈdʒɜːnəlɪst|журналист
+lawyer|ˈlɔːjə|юрист
+translator|trænzˈleɪtə|переводчик
+designer|dɪˈzaɪnə|дизайнер
+freelancer|ˈfriːlɑːnsə|фрилансер
+[rooms|Дом и помещения|place]
+house|haʊs|дом
+flat|flæt|квартира
+home|həʊm|жилище; дом
+room|ruːm|комната
+bedroom|ˈbedruːm|спальня
+bathroom|ˈbɑːθruːm|ванная комната
+kitchen|ˈkɪtʃɪn|кухня
+living room|ˈlɪvɪŋ ruːm|гостиная
+dining room|ˈdaɪnɪŋ ruːm|столовая
+hall|hɔːl|прихожая; зал
+garage|ˈɡærɑːʒ|гараж
+garden|ˈɡɑːdən|сад
+balcony|ˈbælkəni|балкон
+basement|ˈbeɪsmənt|подвал
+building|ˈbɪldɪŋ|здание
+office|ˈɒfɪs|офис
+classroom|ˈklɑːsruːm|классная комната
+school|skuːl|школа
+college|ˈkɒlɪdʒ|колледж
+university|ˌjuːnɪˈvɜːsəti|университет
+library|ˈlaɪbrəri|библиотека
+hospital|ˈhɒspɪtl|больница
+hotel|həʊˈtel|отель
+restaurant|ˈrestrɒnt|ресторан
+café|ˈkæfeɪ|кафе
+pub|pʌb|паб
+bank|bæŋk|банк
+shop|ʃɒp|магазин
+supermarket|ˈsuːpəmɑːkɪt|супермаркет
+market|ˈmɑːkɪt|рынок
+shopping centre|ˈʃɒpɪŋ ˌsentə|торговый центр
+post office|ˈpəʊst ˌɒfɪs|почта
+police station|pəˈliːs ˌsteɪʃən|полицейский участок
+station|ˈsteɪʃən|станция
+bus stop|ˈbʌs stɒp|автобусная остановка
+airport|ˈeəpɔːt|аэропорт
+cinema|ˈsɪnəmə|кинотеатр
+theatre|ˈθɪətə|театр
+museum|mjuˈziːəm|музей
+church|tʃɜːtʃ|церковь
+park|pɑːk|парк
+playground|ˈpleɪɡraʊnd|детская площадка
+swimming pool|ˈswɪmɪŋ puːl|бассейн
+gym|dʒɪm|спортзал
+stadium|ˈsteɪdiəm|стадион
+beach|biːtʃ|пляж
+farm|fɑːm|ферма
+village|ˈvɪlɪdʒ|деревня
+town|taʊn|город
+city|ˈsɪti|большой город
+capital|ˈkæpɪtl|столица
+country|ˈkʌntri|страна
+street|striːt|улица
+road|rəʊd|дорога
+square|skweə|площадь
+bridge|brɪdʒ|мост
+entrance|ˈentrəns|вход
+exit|ˈeɡzɪt|выход
+toilet|ˈtɔɪlət|туалет
+lift|lɪft|лифт
+[objects|Домашние вещи|object]
+door|dɔː|дверь
+window|ˈwɪndəʊ|окно
+wall|wɔːl|стена
+floor|flɔː|пол; этаж
+ceiling|ˈsiːlɪŋ|потолок
+roof|ruːf|крыша
+stair|steə|ступенька
+table|ˈteɪbl|стол
+desk|desk|письменный стол
+chair|tʃeə|стул
+armchair|ˈɑːmtʃeə|кресло
+sofa|ˈsəʊfə|диван
+bed|bed|кровать
+cupboard|ˈkʌbəd|шкаф
+wardrobe|ˈwɔːdrəʊb|платяной шкаф
+shelf|ʃelf|полка
+bookcase|ˈbʊkkeɪs|книжный шкаф
+mirror|ˈmɪrə|зеркало
+carpet|ˈkɑːpɪt|ковёр
+rug|rʌɡ|коврик
+curtain|ˈkɜːtn|занавеска
+lamp|læmp|лампа
+light|laɪt|светильник; свет
+clock|klɒk|часы
+picture|ˈpɪktʃə|картина; изображение
+photo|ˈfəʊtəʊ|фотография
+key|kiː|ключ
+lock|lɒk|замок
+fridge|frɪdʒ|холодильник
+oven|ˈʌvn|духовка
+cooker|ˈkʊkə|кухонная плита
+microwave|ˈmaɪkrəweɪv|микроволновка
+washing machine|ˈwɒʃɪŋ məˌʃiːn|стиральная машина
+dishwasher|ˈdɪʃwɒʃə|посудомоечная машина
+sink|sɪŋk|раковина
+tap|tæp|кран
+bath|bɑːθ|ванна
+shower|ˈʃaʊə|душ
+towel|ˈtaʊəl|полотенце
+blanket|ˈblæŋkɪt|одеяло
+pillow|ˈpɪləʊ|подушка
+sheet|ʃiːt|простыня; лист
+bin|bɪn|мусорное ведро
+brush|brʌʃ|щётка
+comb|kəʊm|расчёска
+toothbrush|ˈtuːθbrʌʃ|зубная щётка
+plate|pleɪt|тарелка
+bowl|bəʊl|миска
+cup|kʌp|чашка
+mug|mʌɡ|кружка
+glass|ɡlɑːs|стакан
+bottle|ˈbɒtl|бутылка
+fork|fɔːk|вилка
+knife|naɪf|нож
+spoon|spuːn|ложка
+pan|pæn|сковорода
+pot|pɒt|кастрюля
+box|bɒks|коробка
+bag|bæɡ|сумка; пакет
+basket|ˈbɑːskɪt|корзина
+toy|tɔɪ|игрушка
+ball|bɔːl|мяч
+doll|dɒl|кукла
+present|ˈprezənt|подарок
+umbrella|ʌmˈbrelə|зонт
+watch|wɒtʃ|наручные часы
+[clothes|Одежда и аксессуары|clothing]
+shirt|ʃɜːt|рубашка
+T-shirt|ˈtiːʃɜːt|футболка
+blouse|blaʊz|блузка
+dress|dres|платье
+skirt|skɜːt|юбка
+jacket|ˈdʒækɪt|куртка; пиджак
+coat|kəʊt|пальто
+jumper|ˈdʒʌmpə|джемпер
+sweater|ˈswetə|свитер
+cardigan|ˈkɑːdɪɡən|кардиган
+hoodie|ˈhʊdi|толстовка с капюшоном
+suit|suːt|костюм
+hat|hæt|шляпа; головной убор
+cap|kæp|кепка
+scarf|skɑːf|шарф
+glove|ɡlʌv|перчатка
+sock|sɒk|носок
+shoe|ʃuː|туфля; ботинок
+boot|buːt|сапог
+trainer|ˈtreɪnə|кроссовка
+belt|belt|ремень
+tie|taɪ|галстук
+ring|rɪŋ|кольцо
+necklace|ˈnekləs|ожерелье
+earring|ˈɪərɪŋ|серьга
+handbag|ˈhændbæɡ|дамская сумка
+backpack|ˈbækpæk|рюкзак
+pocket|ˈpɒkɪt|карман
+button|ˈbʌtn|пуговица; кнопка
+zip|zɪp|молния-застёжка
+swimsuit|ˈswɪmsuːt|купальник
+uniform|ˈjuːnɪfɔːm|униформа
+[pluralClothes|Одежда: парные предметы|plural]
+trousers|ˈtraʊzəz|брюки
+jeans|dʒiːnz|джинсы
+shorts|ʃɔːts|шорты
+tights|taɪts|колготки
+pyjamas|pəˈdʒɑːməz|пижама
+glasses|ˈɡlɑːsɪz|очки
+sunglasses|ˈsʌnɡlɑːsɪz|солнечные очки
+[food|Еда: то, что можно посчитать|food]
+apple|ˈæpl|яблоко
+banana|bəˈnɑːnə|банан
+orange|ˈɒrɪndʒ|апельсин
+pear|peə|груша
+peach|piːtʃ|персик
+plum|plʌm|слива
+grape|ɡreɪp|виноградина
+strawberry|ˈstrɔːbəri|клубника; ягода
+cherry|ˈtʃeri|вишня; ягода
+lemon|ˈlemən|лимон
+lime|laɪm|лайм
+melon|ˈmelən|дыня
+watermelon|ˈwɔːtəmelən|арбуз
+mango|ˈmæŋɡəʊ|манго
+pineapple|ˈpaɪnæpl|ананас
+kiwi|ˈkiːwiː|киви
+potato|pəˈteɪtəʊ|картофелина
+tomato|təˈmɑːtəʊ|помидор
+carrot|ˈkærət|морковь; корнеплод
+onion|ˈʌnjən|луковица
+cucumber|ˈkjuːkʌmbə|огурец
+pepper|ˈpepə|сладкий перец
+mushroom|ˈmʌʃruːm|гриб
+pea|piː|горошина
+bean|biːn|боб
+egg|eɡ|яйцо
+sandwich|ˈsænwɪdʒ|сэндвич
+burger|ˈbɜːɡə|бургер
+sausage|ˈsɒsɪdʒ|сосиска
+biscuit|ˈbɪskɪt|печенье; штука
+cake|keɪk|торт; пирожное
+pancake|ˈpænkeɪk|блин
+sweet|swiːt|конфета
+meal|miːl|приём пищи
+snack|snæk|перекус
+[massFood|Еда и напитки: вещества|massFood]
+food|fuːd|еда
+fruit|fruːt|фрукты
+bread|bred|хлеб
+butter|ˈbʌtə|сливочное масло
+cheese|tʃiːz|сыр
+milk|mɪlk|молоко
+yoghurt|ˈjɒɡət|йогурт
+cream|kriːm|сливки; крем
+ice cream|ˌaɪs ˈkriːm|мороженое
+meat|miːt|мясо
+beef|biːf|говядина
+pork|pɔːk|свинина
+chicken|ˈtʃɪkɪn|курятина
+fish|fɪʃ|рыба как еда
+rice|raɪs|рис
+pasta|ˈpæstə|макароны
+cereal|ˈsɪəriəl|хлопья; крупа
+flour|ˈflaʊə|мука
+sugar|ˈʃʊɡə|сахар
+salt|sɔːlt|соль
+oil|ɔɪl|масло
+water|ˈwɔːtə|вода
+tea|tiː|чай
+coffee|ˈkɒfi|кофе
+juice|dʒuːs|сок
+lemonade|ˌleməˈneɪd|лимонад
+beer|bɪə|пиво
+wine|waɪn|вино
+chocolate|ˈtʃɒklət|шоколад
+jam|dʒæm|варенье
+honey|ˈhʌni|мёд
+soup|suːp|суп
+salad|ˈsæləd|салат
+sauce|sɔːs|соус
+garlic|ˈɡɑːlɪk|чеснок
+pepper|ˈpepə|перец как приправа
+[body|Тело|body]
+head|hed|голова
+face|feɪs|лицо
+eye|aɪ|глаз
+ear|ɪə|ухо
+nose|nəʊz|нос
+mouth|maʊθ|рот
+tooth|tuːθ|зуб
+tongue|tʌŋ|язык; орган
+lip|lɪp|губа
+neck|nek|шея
+shoulder|ˈʃəʊldə|плечо
+arm|ɑːm|рука от плеча
+elbow|ˈelbəʊ|локоть
+hand|hænd|кисть руки
+finger|ˈfɪŋɡə|палец руки
+thumb|θʌm|большой палец руки
+leg|leɡ|нога
+knee|niː|колено
+foot|fʊt|ступня
+toe|təʊ|палец ноги
+back|bæk|спина
+stomach|ˈstʌmək|живот; желудок
+heart|hɑːt|сердце
+body|ˈbɒdi|тело
+[health|Здоровье и помощь|health]
+headache|ˈhedeɪk|головная боль
+toothache|ˈtuːθeɪk|зубная боль
+stomach ache|ˈstʌmək eɪk|боль в животе
+cold|kəʊld|простуда
+cough|kɒf|кашель
+temperature|ˈtemprətʃə|температура
+appointment|əˈpɔɪntmənt|назначенная встреча; приём
+accident|ˈæksɪdənt|несчастный случай
+problem|ˈprɒbləm|проблема
+emergency|ɪˈmɜːdʒənsi|чрезвычайная ситуация
+pharmacy|ˈfɑːməsi|аптека
+ambulance|ˈæmbjələns|скорая помощь
+bandage|ˈbændɪdʒ|повязка
+[animals|Животные|animal]
+animal|ˈænɪml|животное
+pet|pet|домашнее животное
+dog|dɒɡ|собака
+cat|kæt|кошка
+puppy|ˈpʌpi|щенок
+kitten|ˈkɪtn|котёнок
+rabbit|ˈræbɪt|кролик
+horse|hɔːs|лошадь
+cow|kaʊ|корова
+sheep|ʃiːp|овца
+goat|ɡəʊt|коза
+pig|pɪɡ|свинья
+duck|dʌk|утка
+bird|bɜːd|птица
+parrot|ˈpærət|попугай
+penguin|ˈpeŋɡwɪn|пингвин
+mouse|maʊs|мышь
+rat|ræt|крыса
+lion|ˈlaɪən|лев
+tiger|ˈtaɪɡə|тигр
+elephant|ˈelɪfənt|слон
+giraffe|dʒɪˈrɑːf|жираф
+monkey|ˈmʌŋki|обезьяна
+bear|beə|медведь
+panda|ˈpændə|панда
+snake|sneɪk|змея
+crocodile|ˈkrɒkədaɪl|крокодил
+turtle|ˈtɜːtl|черепаха
+frog|frɒɡ|лягушка
+shark|ʃɑːk|акула
+whale|weɪl|кит
+dolphin|ˈdɒlfɪn|дельфин
+butterfly|ˈbʌtəflaɪ|бабочка
+bee|biː|пчела
+spider|ˈspaɪdə|паук
+insect|ˈɪnsekt|насекомое
+[nature|Природа|nature]
+tree|triː|дерево
+flower|ˈflaʊə|цветок
+plant|plɑːnt|растение
+leaf|liːf|лист растения
+forest|ˈfɒrɪst|лес
+wood|wʊd|лес; древесина
+field|fiːld|поле
+hill|hɪl|холм
+mountain|ˈmaʊntən|гора
+river|ˈrɪvə|река
+lake|leɪk|озеро
+sea|siː|море
+ocean|ˈəʊʃən|океан
+island|ˈaɪlənd|остров
+rock|rɒk|камень; скала
+stone|stəʊn|камень
+star|stɑː|звезда
+planet|ˈplænɪt|планета
+cloud|klaʊd|облако
+rainbow|ˈreɪnbəʊ|радуга
+[mass|Неисчисляемое в быту|mass]
+air|eə|воздух
+hair|heə|волосы
+grass|ɡrɑːs|трава
+sand|sænd|песок
+snow|snəʊ|снег
+rain|reɪn|дождь
+wind|wɪnd|ветер
+sunshine|ˈsʌnʃaɪn|солнечный свет
+weather|ˈweðə|погода
+furniture|ˈfɜːnɪtʃə|мебель
+luggage|ˈlʌɡɪdʒ|багаж
+money|ˈmʌni|деньги
+information|ˌɪnfəˈmeɪʃən|информация
+advice|ədˈvaɪs|совет; советы
+news|njuːz|новости
+homework|ˈhəʊmwɜːk|домашняя работа
+housework|ˈhaʊswɜːk|работа по дому
+work|wɜːk|работа
+music|ˈmjuːzɪk|музыка
+art|ɑːt|искусство
+fun|fʌn|веселье
+help|help|помощь
+medicine|ˈmedsən|лекарство
+soap|səʊp|мыло
+toothpaste|ˈtuːθpeɪst|зубная паста
+electricity|ɪˌlekˈtrɪsəti|электричество
+traffic|ˈtræfɪk|дорожное движение
+transport|ˈtrænspɔːt|транспорт
+paper|ˈpeɪpə|бумага
+plastic|ˈplæstɪk|пластик
+glass|ɡlɑːs|стекло
+[transport|Поездки и транспорт|transport]
+car|kɑː|автомобиль
+bus|bʌs|автобус
+train|treɪn|поезд
+tram|træm|трамвай
+taxi|ˈtæksi|такси
+bicycle|ˈbaɪsɪkl|велосипед
+bike|baɪk|велосипед
+motorbike|ˈməʊtəbaɪk|мотоцикл
+lorry|ˈlɒri|грузовик
+boat|bəʊt|лодка
+ship|ʃɪp|корабль
+plane|pleɪn|самолёт
+helicopter|ˈhelɪkɒptə|вертолёт
+ferry|ˈferi|паром
+[travel|Поездки: вещи и действия|object]
+ticket|ˈtɪkɪt|билет
+passport|ˈpɑːspɔːt|паспорт
+visa|ˈviːzə|виза
+suitcase|ˈsuːtkeɪs|чемодан
+map|mæp|карта
+guidebook|ˈɡaɪdbʊk|путеводитель
+camera|ˈkæmərə|фотоаппарат
+seat|siːt|место; сиденье
+platform|ˈplætfɔːm|платформа
+gate|ɡeɪt|ворота; выход на посадку
+wheel|wiːl|колесо
+sign|saɪn|знак; вывеска
+stop|stɒp|остановка
+return ticket|rɪˈtɜːn ˌtɪkɪt|билет туда и обратно
+single ticket|ˈsɪŋɡl ˌtɪkɪt|билет в одну сторону
+[school|Учёба и канцелярия|object]
+book|bʊk|книга
+notebook|ˈnəʊtbʊk|тетрадь
+textbook|ˈtekstbʊk|учебник
+dictionary|ˈdɪkʃənəri|словарь
+pen|pen|ручка
+pencil|ˈpensl|карандаш
+ruler|ˈruːlə|линейка
+rubber|ˈrʌbə|ластик
+eraser|ɪˈreɪzə|ластик; также в британском
+pencil case|ˈpensl keɪs|пенал
+board|bɔːd|доска
+whiteboard|ˈwaɪtbɔːd|маркерная доска
+blackboard|ˈblækbɔːd|меловая доска
+page|peɪdʒ|страница
+letter|ˈletə|буква; письмо
+word|wɜːd|слово
+sentence|ˈsentəns|предложение
+question|ˈkwestʃən|вопрос
+answer|ˈɑːnsə|ответ
+example|ɪɡˈzɑːmpl|пример
+exercise|ˈeksəsaɪz|упражнение
+lesson|ˈlesn|урок
+class|klɑːs|занятие; класс
+course|kɔːs|курс
+subject|ˈsʌbdʒɪkt|учебный предмет
+exam|ɪɡˈzæm|экзамен
+test|test|тест
+mistake|mɪˈsteɪk|ошибка
+mark|mɑːk|оценка; отметка
+language|ˈlæŋɡwɪdʒ|язык
+[digital|Связь и цифровые вещи|object]
+phone|fəʊn|телефон
+mobile phone|ˈməʊbaɪl fəʊn|мобильный телефон
+smartphone|ˈsmɑːtfəʊn|смартфон
+computer|kəmˈpjuːtə|компьютер
+laptop|ˈlæptɒp|ноутбук
+tablet|ˈtæblət|планшет
+keyboard|ˈkiːbɔːd|клавиатура
+screen|skriːn|экран
+mouse|maʊs|компьютерная мышь
+printer|ˈprɪntə|принтер
+website|ˈwebsaɪt|сайт
+email|ˈiːmeɪl|электронное письмо
+message|ˈmesɪdʒ|сообщение
+text|tekst|текст; сообщение
+password|ˈpɑːswɜːd|пароль
+app|æp|приложение
+file|faɪl|файл
+folder|ˈfəʊldə|папка
+link|lɪŋk|ссылка
+video|ˈvɪdiəʊ|видео
+radio|ˈreɪdiəʊ|радио
+television|ˈtelɪvɪʒən|телевизор
+TV|ˌtiːˈviː|телевизор
+charger|ˈtʃɑːdʒə|зарядное устройство
+battery|ˈbætri|батарея
+headphones|ˈhedfəʊnz|наушники
+[leisure|Досуг и события|leisure]
+hobby|ˈhɒbi|хобби
+game|ɡeɪm|игра
+sport|spɔːt|вид спорта
+film|fɪlm|фильм
+song|sɒŋ|песня
+story|ˈstɔːri|рассказ
+poem|ˈpəʊɪm|стихотворение
+novel|ˈnɒvl|роман
+newspaper|ˈnjuːzpeɪpə|газета
+magazine|ˌmæɡəˈziːn|журнал
+concert|ˈkɒnsət|концерт
+party|ˈpɑːti|вечеринка
+birthday|ˈbɜːθdeɪ|день рождения
+wedding|ˈwedɪŋ|свадьба
+holiday|ˈhɒlədeɪ|отпуск; праздник
+trip|trɪp|поездка
+journey|ˈdʒɜːni|путешествие; дорога
+picnic|ˈpɪknɪk|пикник
+walk|wɔːk|прогулка
+match|mætʃ|матч
+race|reɪs|гонка
+competition|ˌkɒmpəˈtɪʃən|соревнование
+club|klʌb|клуб
+team|tiːm|команда
+player|ˈpleɪə|игрок
+guitar|ɡɪˈtɑː|гитара
+piano|piˈænəʊ|пианино
+violin|ˌvaɪəˈlɪn|скрипка
+drum|drʌm|барабан
+[concepts|Сведения, покупки и планы|concept]
+name|neɪm|имя
+surname|ˈsɜːneɪm|фамилия
+address|əˈdres|адрес
+postcode|ˈpəʊstkəʊd|почтовый индекс
+number|ˈnʌmbə|число; номер
+age|eɪdʒ|возраст
+date|deɪt|дата
+time|taɪm|время
+price|praɪs|цена
+cost|kɒst|стоимость
+size|saɪz|размер
+colour|ˈkʌlə|цвет
+shape|ʃeɪp|форма
+part|pɑːt|часть
+piece|piːs|кусочек; часть
+pair|peə|пара
+group|ɡruːp|группа
+list|lɪst|список
+menu|ˈmenjuː|меню
+bill|bɪl|счёт к оплате
+receipt|rɪˈsiːt|чек
+change|tʃeɪndʒ|изменение; сдача
+cash|kæʃ|наличные
+card|kɑːd|карта; карточка
+credit card|ˈkredɪt kɑːd|кредитная карта
+debit card|ˈdebɪt kɑːd|дебетовая карта
+sale|seɪl|распродажа; продажа
+discount|ˈdɪskaʊnt|скидка
+order|ˈɔːdə|заказ
+plan|plæn|план
+idea|aɪˈdɪə|идея
+reason|ˈriːzn|причина
+way|weɪ|способ; путь
+place|pleɪs|место
+thing|θɪŋ|вещь
+life|laɪf|жизнь
+world|wɜːld|мир
+job|dʒɒb|работа; должность
+business|ˈbɪznəs|бизнес
+meeting|ˈmiːtɪŋ|встреча
+break|breɪk|перерыв
+rule|ruːl|правило
+[descriptions|Описание предметов и людей|adjective]
+good|ɡʊd|хороший
+bad|bæd|плохой
+nice|naɪs|приятный
+great|ɡreɪt|прекрасный
+beautiful|ˈbjuːtɪfl|красивый
+pretty|ˈprɪti|симпатичный
+ugly|ˈʌɡli|некрасивый
+new|njuː|новый
+old|əʊld|старый
+young|jʌŋ|молодой
+big|bɪɡ|большой
+small|smɔːl|маленький
+large|lɑːdʒ|крупный
+little|ˈlɪtl|маленький; немного
+long|lɒŋ|длинный
+short|ʃɔːt|короткий
+tall|tɔːl|высокий; о человеке
+high|haɪ|высокий; об уровне
+low|ləʊ|низкий
+wide|waɪd|широкий
+narrow|ˈnærəʊ|узкий
+thick|θɪk|толстый
+thin|θɪn|тонкий; худой
+heavy|ˈhevi|тяжёлый
+light|laɪt|лёгкий
+strong|strɒŋ|сильный
+weak|wiːk|слабый
+fast|fɑːst|быстрый
+slow|sləʊ|медленный
+early|ˈɜːli|ранний
+late|leɪt|поздний
+hot|hɒt|горячий; жаркий
+cold|kəʊld|холодный
+warm|wɔːm|тёплый
+cool|kuːl|прохладный
+wet|wet|мокрый
+dry|draɪ|сухой
+clean|kliːn|чистый
+dirty|ˈdɜːti|грязный
+full|fʊl|полный
+empty|ˈempti|пустой
+open|ˈəʊpən|открытый
+closed|kləʊzd|закрытый
+easy|ˈiːzi|лёгкий; простой
+difficult|ˈdɪfɪkəlt|трудный
+hard|hɑːd|трудный; твёрдый
+soft|sɒft|мягкий
+cheap|tʃiːp|дешёвый
+expensive|ɪkˈspensɪv|дорогой
+free|friː|бесплатный; свободный
+right|raɪt|правильный; правый
+wrong|rɒŋ|неправильный
+true|truː|верный; истинный
+false|fɔːls|ложный
+important|ɪmˈpɔːtənt|важный
+different|ˈdɪfrənt|разный
+same|seɪm|тот же самый
+safe|seɪf|безопасный
+dangerous|ˈdeɪndʒərəs|опасный
+quiet|ˈkwaɪət|тихий
+noisy|ˈnɔɪzi|шумный
+interesting|ˈɪntrəstɪŋ|интересный
+boring|ˈbɔːrɪŋ|скучный
+famous|ˈfeɪməs|известный
+popular|ˈpɒpjələ|популярный
+special|ˈspeʃl|особенный
+simple|ˈsɪmpl|простой
+perfect|ˈpɜːfɪkt|идеальный
+comfortable|ˈkʌmftəbl|удобный
+dark|dɑːk|тёмный
+bright|braɪt|яркий
+round|raʊnd|круглый
+square|skweə|квадратный
+straight|streɪt|прямой
+flat|flæt|плоский
+deep|diːp|глубокий
+real|rɪəl|настоящий
+[feelings|Состояния и характер|feeling]
+happy|ˈhæpi|счастливый
+sad|sæd|грустный
+angry|ˈæŋɡri|сердитый
+tired|ˈtaɪəd|уставший
+hungry|ˈhʌŋɡri|голодный
+thirsty|ˈθɜːsti|испытывающий жажду
+ill|ɪl|больной
+sick|sɪk|больной; испытывающий тошноту
+well|wel|здоровый; хорошо
+busy|ˈbɪzi|занятый
+ready|ˈredi|готовый
+afraid|əˈfreɪd|испуганный
+worried|ˈwʌrid|обеспокоенный
+excited|ɪkˈsaɪtɪd|воодушевлённый
+surprised|səˈpraɪzd|удивлённый
+bored|bɔːd|скучающий
+interested|ˈɪntrəstɪd|заинтересованный
+kind|kaɪnd|добрый
+friendly|ˈfrendli|дружелюбный
+polite|pəˈlaɪt|вежливый
+rude|ruːd|грубый
+funny|ˈfʌni|смешной
+clever|ˈklevə|умный
+careful|ˈkeəfl|осторожный
+lazy|ˈleɪzi|ленивый
+married|ˈmærid|женатый; замужняя
+single|ˈsɪŋɡl|не состоящий в браке
+alone|əˈləʊn|один; без других
+[colours|Цвета|colour]
+red|red|красный
+orange|ˈɒrɪndʒ|оранжевый
+yellow|ˈjeləʊ|жёлтый
+green|ɡriːn|зелёный
+blue|bluː|синий; голубой
+purple|ˈpɜːpl|фиолетовый
+pink|pɪŋk|розовый
+brown|braʊn|коричневый
+black|blæk|чёрный
+white|waɪt|белый
+grey|ɡreɪ|серый
+gold|ɡəʊld|золотой
+silver|ˈsɪlvə|серебряный
+[time|Время и календарь|time]
+second|ˈsekənd|секунда
+minute|ˈmɪnɪt|минута
+hour|ˈaʊə|час
+day|deɪ|день
+week|wiːk|неделя
+weekend|ˌwiːkˈend|выходные
+month|mʌnθ|месяц
+year|jɪə|год
+morning|ˈmɔːnɪŋ|утро
+afternoon|ˌɑːftəˈnuːn|время после полудня
+evening|ˈiːvnɪŋ|вечер
+night|naɪt|ночь
+midday|ˌmɪdˈdeɪ|полдень
+midnight|ˈmɪdnaɪt|полночь
+spring|sprɪŋ|весна
+summer|ˈsʌmə|лето
+autumn|ˈɔːtəm|осень
+winter|ˈwɪntə|зима
+[days|Дни недели|dayname]
+Monday|ˈmʌndeɪ|понедельник
+Tuesday|ˈtjuːzdeɪ|вторник
+Wednesday|ˈwenzdeɪ|среда
+Thursday|ˈθɜːzdeɪ|четверг
+Friday|ˈfraɪdeɪ|пятница
+Saturday|ˈsætədeɪ|суббота
+Sunday|ˈsʌndeɪ|воскресенье
+[months|Месяцы|monthname]
+January|ˈdʒænjuəri|январь
+February|ˈfebruəri|февраль
+March|mɑːtʃ|март
+April|ˈeɪprəl|апрель
+May|meɪ|май
+June|dʒuːn|июнь
+July|dʒuˈlaɪ|июль
+August|ˈɔːɡəst|август
+September|sepˈtembə|сентябрь
+October|ɒkˈtəʊbə|октябрь
+November|nəʊˈvembə|ноябрь
+December|dɪˈsembə|декабрь
+[countries|Страны|country]
+Russia|ˈrʌʃə|Россия
+Britain|ˈbrɪtn|Британия
+England|ˈɪŋɡlənd|Англия
+Scotland|ˈskɒtlənd|Шотландия
+Wales|weɪlz|Уэльс
+Ireland|ˈaɪələnd|Ирландия
+France|frɑːns|Франция
+Spain|speɪn|Испания
+Portugal|ˈpɔːtʃəɡl|Португалия
+Italy|ˈɪtəli|Италия
+Germany|ˈdʒɜːməni|Германия
+Poland|ˈpəʊlənd|Польша
+Serbia|ˈsɜːbiə|Сербия
+Greece|ɡriːs|Греция
+Turkey|ˈtɜːki|Турция
+China|ˈtʃaɪnə|Китай
+Japan|dʒəˈpæn|Япония
+Korea|kəˈriːə|Корея
+India|ˈɪndiə|Индия
+Thailand|ˈtaɪlænd|Таиланд
+Indonesia|ˌɪndəˈniːʒə|Индонезия
+Australia|ɒˈstreɪliə|Австралия
+Canada|ˈkænədə|Канада
+Mexico|ˈmeksɪkəʊ|Мексика
+Brazil|brəˈzɪl|Бразилия
+Egypt|ˈiːdʒɪpt|Египет
+[languages|Языки и национальности|nationality]
+English|ˈɪŋɡlɪʃ|английский
+British|ˈbrɪtɪʃ|британский
+American|əˈmerɪkən|американский
+Russian|ˈrʌʃən|русский
+French|frentʃ|французский
+Spanish|ˈspænɪʃ|испанский
+Portuguese|ˌpɔːtʃəˈɡiːz|португальский
+Italian|ɪˈtæliən|итальянский
+German|ˈdʒɜːmən|немецкий
+Polish|ˈpəʊlɪʃ|польский
+Serbian|ˈsɜːbiən|сербский
+Greek|ɡriːk|греческий
+Turkish|ˈtɜːkɪʃ|турецкий
+Chinese|ˌtʃaɪˈniːz|китайский
+Japanese|ˌdʒæpəˈniːz|японский
+Korean|kəˈriːən|корейский
+Indian|ˈɪndiən|индийский
+Thai|taɪ|тайский
+Indonesian|ˌɪndəˈniːʒən|индонезийский
+Australian|ɒˈstreɪliən|австралийский
+Canadian|kəˈneɪdiən|канадский
+Mexican|ˈmeksɪkən|мексиканский
+Brazilian|brəˈzɪliən|бразильский
+Arabic|ˈærəbɪk|арабский
+[activities|Занятия и учебные предметы|activity]
+football|ˈfʊtbɔːl|футбол
+basketball|ˈbɑːskɪtbɔːl|баскетбол
+volleyball|ˈvɒlibɔːl|волейбол
+tennis|ˈtenɪs|теннис
+table tennis|ˈteɪbl ˌtenɪs|настольный теннис
+hockey|ˈhɒki|хоккей
+golf|ɡɒlf|гольф
+badminton|ˈbædmɪntən|бадминтон
+swimming|ˈswɪmɪŋ|плавание
+running|ˈrʌnɪŋ|бег
+cycling|ˈsaɪklɪŋ|езда на велосипеде
+walking|ˈwɔːkɪŋ|ходьба
+dancing|ˈdɑːnsɪŋ|танцы
+singing|ˈsɪŋɪŋ|пение
+reading|ˈriːdɪŋ|чтение
+writing|ˈraɪtɪŋ|письмо
+drawing|ˈdrɔːɪŋ|рисование
+painting|ˈpeɪntɪŋ|живопись
+cooking|ˈkʊkɪŋ|готовка
+fishing|ˈfɪʃɪŋ|рыбалка
+shopping|ˈʃɒpɪŋ|покупки
+camping|ˈkæmpɪŋ|кемпинг
+yoga|ˈjəʊɡə|йога
+maths|mæθs|математика
+science|ˈsaɪəns|естественные науки
+history|ˈhɪstri|история
+geography|dʒiˈɒɡrəfi|география
+biology|baɪˈɒlədʒi|биология
+chemistry|ˈkemɪstri|химия
+physics|ˈfɪzɪks|физика
+[adverbs|Наречия|adverb]
+always|ˈɔːlweɪz|всегда
+usually|ˈjuːʒuəli|обычно
+often|ˈɒfn|часто
+sometimes|ˈsʌmtaɪmz|иногда
+never|ˈnevə|никогда
+again|əˈɡen|снова
+already|ɔːlˈredi|уже
+still|stɪl|всё ещё
+yet|jet|ещё; пока
+just|dʒʌst|только что; просто
+now|naʊ|сейчас
+then|ðen|тогда; затем
+today|təˈdeɪ|сегодня
+tomorrow|təˈmɒrəʊ|завтра
+yesterday|ˈjestədeɪ|вчера
+tonight|təˈnaɪt|сегодня вечером
+here|hɪə|здесь
+there|ðeə|там
+everywhere|ˈevriweə|везде
+somewhere|ˈsʌmweə|где-то
+anywhere|ˈeniweə|где-нибудь
+nowhere|ˈnəʊweə|нигде
+inside|ˌɪnˈsaɪd|внутри
+outside|ˌaʊtˈsaɪd|снаружи
+upstairs|ˌʌpˈsteəz|наверху; на верхний этаж
+downstairs|ˌdaʊnˈsteəz|внизу; на нижний этаж
+away|əˈweɪ|прочь; вдали
+back|bæk|назад
+together|təˈɡeðə|вместе
+apart|əˈpɑːt|отдельно
+quickly|ˈkwɪkli|быстро
+slowly|ˈsləʊli|медленно
+carefully|ˈkeəfəli|осторожно
+easily|ˈiːzəli|легко
+really|ˈrɪəli|действительно
+very|ˈveri|очень
+quite|kwaɪt|довольно
+too|tuː|слишком; тоже
+also|ˈɔːlsəʊ|также
+only|ˈəʊnli|только
+almost|ˈɔːlməʊst|почти
+perhaps|pəˈhæps|возможно
+maybe|ˈmeɪbi|может быть
+probably|ˈprɒbəbli|вероятно
+especially|ɪˈspeʃəli|особенно
+[verbs|Глаголы|verb]
+be|biː|быть|happy~счастливым
+have|hæv|иметь|a bicycle~велосипед
+do|duː|делать|my homework~мою домашнюю работу
+make|meɪk|делать; создавать|a cake~торт
+go|ɡəʊ|идти; ехать|to school~в школу
+come|kʌm|приходить|home~домой
+get|ɡet|получать; приобретать|a ticket~билет
+give|ɡɪv|давать|you a book~тебе книгу
+take|teɪk|брать|a photo~фотографию
+bring|brɪŋ|приносить|a bag~сумку
+buy|baɪ|покупать|some bread~немного хлеба
+sell|sel|продавать|old books~старые книги
+pay|peɪ|платить|by card~картой
+spend|spend|тратить|money on food~деньги на еду
+cost|kɒst|стоить|ten pounds~десять фунтов
+know|nəʊ|знать|the answer~ответ
+think|θɪŋk|думать|about my family~о моей семье
+understand|ˌʌndəˈstænd|понимать|the question~вопрос
+remember|rɪˈmembə|помнить|your name~твоё имя
+forget|fəˈɡet|забывать|my keys~мои ключи
+learn|lɜːn|учить; осваивать|English~английский
+study|ˈstʌdi|учиться; изучать|English~английский
+teach|tiːtʃ|преподавать|English~английский
+read|riːd|читать|a book~книгу
+write|raɪt|писать|an email~электронное письмо
+spell|spel|называть по буквам|my name~моё имя по буквам
+say|seɪ|сказать|hello~привет
+tell|tel|рассказывать; сообщать|a story~рассказ
+speak|spiːk|говорить|English~по-английски
+talk|tɔːk|разговаривать|to my friend~с моим другом
+ask|ɑːsk|спрашивать|a question~вопрос
+answer|ˈɑːnsə|отвечать|the question~на вопрос
+listen|ˈlɪsn|слушать|to music~музыку
+hear|hɪə|слышать|the music~музыку
+see|siː|видеть|the sea~море
+look|lʊk|смотреть|at the picture~на картину
+watch|wɒtʃ|смотреть; наблюдать|a film~фильм
+find|faɪnd|находить|my keys~мои ключи
+lose|luːz|терять|my keys~мои ключи
+meet|miːt|встречать|a friend~друга
+call|kɔːl|звонить; называть|my mother~моей маме
+phone|fəʊn|звонить|my friend~моему другу
+text|tekst|писать сообщение|my sister~моей сестре
+email|ˈiːmeɪl|писать по электронной почте|my teacher~моему учителю
+send|send|отправлять|a message~сообщение
+receive|rɪˈsiːv|получать|an email~электронное письмо
+open|ˈəʊpən|открывать|the window~окно
+close|kləʊz|закрывать|the door~дверь
+start|stɑːt|начинать|the lesson~урок
+begin|bɪˈɡɪn|начинать|the lesson~урок
+finish|ˈfɪnɪʃ|заканчивать|my work~мою работу
+stop|stɒp|останавливать; прекращать|the game~игру
+wait|weɪt|ждать|for the bus~автобус
+stay|steɪ|оставаться; жить временно|at a hotel~в отеле
+live|lɪv|жить|in London~в Лондоне
+leave|liːv|уходить; оставлять|the house~из дома
+arrive|əˈraɪv|прибывать|at the station~на станцию
+return|rɪˈtɜːn|возвращаться|home~домой
+travel|ˈtrævl|путешествовать|by train~на поезде
+visit|ˈvɪzɪt|посещать|my aunt~мою тётю
+drive|draɪv|водить|a car~машину
+ride|raɪd|ездить верхом; на велосипеде|a bike~на велосипеде
+walk|wɔːk|ходить пешком|to school~в школу
+run|rʌn|бежать|in the park~в парке
+fly|flaɪ|летать|to London~в Лондон
+swim|swɪm|плавать|in the sea~в море
+sit|sɪt|сидеть|on a chair~на стуле
+stand|stænd|стоять|near the door~возле двери
+sleep|sliːp|спать|well~хорошо
+wake|weɪk|просыпаться; будить|up early~рано
+eat|iːt|есть|breakfast~завтрак
+drink|drɪŋk|пить|water~воду
+cook|kʊk|готовить|dinner~ужин
+bake|beɪk|печь|a cake~торт
+wash|wɒʃ|мыть|my hands~мои руки
+clean|kliːn|чистить; убирать|my room~мою комнату
+brush|brʌʃ|чистить щёткой|my teeth~мои зубы
+wear|weə|носить одежду|a coat~пальто
+put|pʊt|класть; ставить|the book on the table~книгу на стол
+use|juːz|использовать|a computer~компьютер
+need|niːd|нуждаться|some help~в помощи
+want|wɒnt|хотеть|some water~немного воды
+like|laɪk|нравиться; любить|this song~эту песню
+love|lʌv|любить|this city~этот город
+hate|heɪt|ненавидеть; очень не любить|cold weather~холодную погоду
+prefer|prɪˈfɜː|предпочитать|tea to coffee~чай кофе
+enjoy|ɪnˈdʒɔɪ|получать удовольствие|the music~от музыки
+hope|həʊp|надеяться|to see you soon~скоро тебя увидеть
+feel|fiːl|чувствовать себя|happy~счастливым
+help|help|помогать|my sister~моей сестре
+work|wɜːk|работать|at home~дома
+play|pleɪ|играть|football~в футбол
+practise|ˈpræktɪs|практиковать|English~английский
+try|traɪ|пробовать|this food~эту еду
+choose|tʃuːz|выбирать|a book~книгу
+decide|dɪˈsaɪd|решать|to stay~остаться
+plan|plæn|планировать|a trip~поездку
+change|tʃeɪndʒ|менять|my clothes~мою одежду
+move|muːv|двигать; переезжать|to London~в Лондон
+carry|ˈkæri|нести|a bag~сумку
+hold|həʊld|держать|the baby~младенца
+keep|kiːp|хранить; держать|my keys here~мои ключи здесь
+break|breɪk|ломать|a glass~стакан
+fix|fɪks|чинить|my bike~мой велосипед
+build|bɪld|строить|a house~дом
+cut|kʌt|резать|the bread~хлеб
+draw|drɔː|рисовать|a cat~кошку
+paint|peɪnt|рисовать красками|a picture~картину
+sing|sɪŋ|петь|a song~песню
+dance|dɑːns|танцевать|with my friend~с моим другом
+laugh|lɑːf|смеяться|at the joke~над шуткой
+smile|smaɪl|улыбаться|at the baby~младенцу
+cry|kraɪ|плакать|at night~ночью
+shout|ʃaʊt|кричать|for help~о помощи
+turn|tɜːn|поворачивать|left~налево
+follow|ˈfɒləʊ|следовать|the signs~по указателям
+cross|krɒs|переходить|the road~дорогу
+push|pʊʃ|толкать|the door~дверь
+pull|pʊl|тянуть|the door~дверь
+pick|pɪk|выбирать; срывать|a flower~цветок
+throw|θrəʊ|бросать|a ball~мяч
+catch|kætʃ|ловить|a ball~мяч
+kick|kɪk|ударять ногой|the ball~по мячу
+jump|dʒʌmp|прыгать|over the box~через коробку
+climb|klaɪm|взбираться|the hill~на холм
+fall|fɔːl|падать|down~вниз
+win|wɪn|выигрывать|the game~игру
+check|tʃek|проверять|the answer~ответ
+count|kaʊnt|считать|the books~книги
+repeat|rɪˈpiːt|повторять|the word~слово
+explain|ɪkˈspleɪn|объяснять|the rule~правило
+show|ʃəʊ|показывать|you a photo~тебе фотографию
+describe|dɪˈskraɪb|описывать|the picture~картину
+agree|əˈɡriː|соглашаться|with you~с тобой
+believe|bɪˈliːv|верить|you~тебе
+invite|ɪnˈvaɪt|приглашать|my friend~моего друга
+offer|ˈɒfə|предлагать|some help~помощь
+order|ˈɔːdə|заказывать|a coffee~чашку кофе
+book|bʊk|бронировать|a room~комнату
+rent|rent|арендовать|a flat~квартиру
+borrow|ˈbɒrəʊ|брать взаймы|a book~книгу
+lend|lend|давать взаймы|you a pen~тебе ручку
+look for|lʊk fɔː|искать|my keys~мои ключи
+look after|lʊk ˈɑːftə|присматривать за|my cat~моей кошкой
+get up|ɡet ʌp|вставать|early~рано
+sit down|sɪt daʊn|садиться|here~здесь
+stand up|stænd ʌp|вставать|slowly~медленно
+come in|kʌm ɪn|входить|now~сейчас
+go out|ɡəʊ aʊt|выходить|with friends~с друзьями
+put on|pʊt ɒn|надевать|my coat~моё пальто
+take off|teɪk ɒf|снимать одежду|my shoes~мои ботинки
+turn on|tɜːn ɒn|включать|the light~свет
+turn off|tɜːn ɒf|выключать|the TV~телевизор
+give back|ɡɪv bæk|возвращать вещь|the book~книгу
+come back|kʌm bæk|возвращаться|soon~скоро
+find out|faɪnd aʊt|выяснять|the price~цену
+grow|ɡrəʊ|расти; выращивать|flowers~цветы
+feed|fiːd|кормить|the cat~кошку
+hurt|hɜːt|причинять боль|my hand~мою руку
+let|let|позволять|you go~тебе уйти
+mean|miːn|значить; иметь в виду|this~это
+sell out|sel aʊt|распродавать|the tickets~билеты
+save|seɪv|сохранять; экономить|some money~немного денег
+add|æd|добавлять|some milk~немного молока
+mix|mɪks|смешивать|the milk and eggs~молоко и яйца
+wash up|wɒʃ ʌp|мыть посуду|after dinner~после ужина
+tidy|ˈtaɪdi|приводить в порядок|my room~мою комнату
+download|ˌdaʊnˈləʊd|скачивать|a file~файл
+upload|ˌʌpˈləʊd|загружать|a photo~фотографию
+click|klɪk|нажимать|on the link~на ссылку
+print|prɪnt|печатать на принтере|the page~страницу
+type|taɪp|набирать|a message~сообщение
+charge|tʃɑːdʒ|заряжать|my phone~мой телефон
+[moreNouns|Полезные дополнения к A1|concept]
+breakfast|ˈbrekfəst|завтрак
+lunch|lʌntʃ|обед
+dinner|ˈdɪnə|ужин
+habit|ˈhæbɪt|привычка
+routine|ruːˈtiːn|распорядок
+conversation|ˌkɒnvəˈseɪʃən|разговор
+dialogue|ˈdaɪəlɒɡ|диалог
+sound|saʊnd|звук
+voice|vɔɪs|голос
+accent|ˈæksənt|акцент
+vowel|ˈvaʊəl|гласный звук
+consonant|ˈkɒnsənənt|согласный звук
+syllable|ˈsɪləbl|слог
+stress|stres|ударение
+translation|trænzˈleɪʃən|перевод
+meaning|ˈmiːnɪŋ|значение
+form|fɔːm|форма; бланк
+title|ˈtaɪtl|название; обращение
+first name|ˈfɜːst neɪm|личное имя
+last name|ˈlɑːst neɪm|фамилия
+nationality|ˌnæʃəˈnæləti|национальность
+marital status|ˈmærɪtl ˌsteɪtəs|семейное положение
+phone number|ˈfəʊn ˌnʌmbə|номер телефона
+email address|ˈiːmeɪl əˌdres|адрес электронной почты
+envelope|ˈenvələʊp|конверт
+stamp|stæmp|почтовая марка
+postcard|ˈpəʊstkɑːd|открытка
+parcel|ˈpɑːsl|посылка
+package|ˈpækɪdʒ|упаковка; посылка
+note|nəʊt|записка; заметка
+invitation|ˌɪnvɪˈteɪʃən|приглашение
+reply|rɪˈplaɪ|ответ
+request|rɪˈkwest|просьба
+choice|tʃɔɪs|выбор
+decision|dɪˈsɪʒən|решение
+result|rɪˈzʌlt|результат
+success|səkˈses|успех
+experience|ɪkˈspɪəriəns|опыт; впечатление
+memory|ˈmeməri|воспоминание
+dream|driːm|сон; мечта
+joke|dʒəʊk|шутка
+smile|smaɪl|улыбка
+feeling|ˈfiːlɪŋ|чувство
+hope|həʊp|надежда
+wish|wɪʃ|желание
+rest|rest|отдых
+space|speɪs|место; пространство
+area|ˈeəriə|район; область
+side|saɪd|сторона
+corner|ˈkɔːnə|угол
+centre|ˈsentə|центр
+end|end|конец
+beginning|bɪˈɡɪnɪŋ|начало
+top|tɒp|верх
+bottom|ˈbɒtəm|низ
+distance|ˈdɪstəns|расстояние
+direction|dəˈrekʃən|направление
+height|haɪt|высота
+weight|weɪt|вес
+length|leŋθ|длина
+speed|spiːd|скорость
+degree|dɪˈɡriː|градус; степень
+kilometre|ˈkɪləmiːtə|километр
+metre|ˈmiːtə|метр
+centimetre|ˈsentɪmiːtə|сантиметр
+gram|ɡræm|грамм
+kilogram|ˈkɪləɡræm|килограмм
+litre|ˈliːtə|литр
+half|hɑːf|половина
+quarter|ˈkwɔːtə|четверть
+pound|paʊnd|фунт; денежная единица или вес
+penny|ˈpeni|пенни
+euro|ˈjʊərəʊ|евро
+dollar|ˈdɒlə|доллар
+cent|sent|цент
+owner|ˈəʊnə|владелец
+member|ˈmembə|участник
+passenger|ˈpæsɪndʒə|пассажир
+tourist|ˈtʊərɪst|турист
+guide|ɡaɪd|гид
+neighbourhood|ˈneɪbəhʊd|район; окрестности
+population|ˌpɒpjəˈleɪʃən|население
+east|iːst|восток
+west|west|запад
+north|nɔːθ|север
+south|saʊθ|юг
+sun|sʌn|солнце
+moon|muːn|луна
+sky|skaɪ|небо
+earth|ɜːθ|земля
+fire|ˈfaɪə|огонь
+ice|aɪs|лёд
+heat|hiːt|тепло
+energy|ˈenədʒi|энергия
+health|helθ|здоровье
+pain|peɪn|боль
+allergy|ˈælədʒi|аллергия
+tablet|ˈtæblət|таблетка
+prescription|prɪˈskrɪpʃən|рецепт врача
+dentist's|ˈdentɪsts|стоматологическая клиника
+hairdresser's|ˈheədresəz|парикмахерская
+bakery|ˈbeɪkəri|пекарня
+butcher's|ˈbʊtʃəz|мясная лавка
+greengrocer's|ˈɡriːnɡrəʊsəz|овощной магазин
+laundry|ˈlɔːndri|прачечная; стирка
+car park|ˈkɑː pɑːk|парковка
+petrol station|ˈpetrəl ˌsteɪʃən|заправка
+motorway|ˈməʊtəweɪ|автомагистраль
+crossing|ˈkrɒsɪŋ|переход
+traffic light|ˈtræfɪk laɪt|светофор
+flight|flaɪt|рейс
+arrival|əˈraɪvl|прибытие
+departure|dɪˈpɑːtʃə|отправление
+booking|ˈbʊkɪŋ|бронирование
+reception|rɪˈsepʃən|стойка регистрации
+single room|ˈsɪŋɡl ruːm|одноместный номер
+double room|ˈdʌbl ruːm|двухместный номер
+ground floor|ˌɡraʊnd ˈflɔː|первый этаж по российскому счёту
+first floor|ˌfɜːst ˈflɔː|второй этаж в британском счёте
+queue|kjuː|очередь
+service|ˈsɜːvɪs|услуга; обслуживание
+tip|tɪp|совет; чаевые
+wifi|ˈwaɪfaɪ|беспроводная сеть
+connection|kəˈnekʃən|соединение
+internet|ˈɪntənet|интернет
+account|əˈkaʊnt|учётная запись; счёт
+username|ˈjuːzəneɪm|имя пользователя
+notification|ˌnəʊtɪfɪˈkeɪʃən|уведомление
+[moreAdj|Дополнительные описания|adjective]
+local|ˈləʊkl|местный
+international|ˌɪntəˈnæʃənəl|международный
+public|ˈpʌblɪk|общественный
+private|ˈpraɪvət|частный
+online|ˌɒnˈlaɪn|в интернете
+offline|ˌɒfˈlaɪn|без интернета
+available|əˈveɪləbl|доступный
+necessary|ˈnesəsəri|необходимый
+possible|ˈpɒsəbl|возможный
+impossible|ɪmˈpɒsəbl|невозможный
+useful|ˈjuːsfl|полезный
+usual|ˈjuːʒuəl|обычный
+daily|ˈdeɪli|ежедневный
+fresh|freʃ|свежий
+delicious|dɪˈlɪʃəs|вкусный
+sweet|swiːt|сладкий
+salty|ˈsɔːlti|солёный
+spicy|ˈspaɪsi|острый; о еде
+sour|ˈsaʊə|кислый
+healthy|ˈhelθi|здоровый; полезный
+cloudy|ˈklaʊdi|облачный
+sunny|ˈsʌni|солнечный
+rainy|ˈreɪni|дождливый
+windy|ˈwɪndi|ветреный
+snowy|ˈsnəʊi|снежный
+lovely|ˈlʌvli|чудесный
+excellent|ˈeksələnt|отличный
+wonderful|ˈwʌndəfl|замечательный
+terrible|ˈterəbl|ужасный
+amazing|əˈmeɪzɪŋ|удивительный
+awake|əˈweɪk|бодрствующий
+asleep|əˈsliːp|спящий
+alive|əˈlaɪv|живой
+dead|ded|мёртвый
+broken|ˈbrəʊkən|сломанный
+lost|lɒst|потерянный
+sure|ʃɔː|уверенный
+own|əʊn|свой
+next|nekst|следующий
+last|lɑːst|последний; прошлый
+other|ˈʌðə|другой
+another|əˈnʌðə|ещё один
+each|iːtʃ|каждый
+every|ˈevri|каждый
+both|bəʊθ|оба
+all|ɔːl|все
+enough|ɪˈnʌf|достаточный
+several|ˈsevrəl|несколько
+[coreExtras|Ещё полезные слова A1|object]
+pool|puːl|бассейн
+line|laɪn|линия
+path|pɑːθ|тропа
+noise|nɔɪz|шум
+skin|skɪn|кожа
+pavement|ˈpeɪvmənt|тротуар
+schedule|ˈʃedjuːl|расписание
+coin|kɔɪn|монета
+kite|kaɪt|воздушный змей
+hen|hen|курица
+lamb|læm|ягнёнок
+duckling|ˈdʌklɪŋ|утёнок
+chick|tʃɪk|цыплёнок
+zoo|zuː|зоопарк
+[massExtras|Ещё неисчисляемые слова|mass]
+blood|blʌd|кровь
+petrol|ˈpetrəl|бензин
+rubbish|ˈrʌbɪʃ|мусор
+[extraDescriptions|Ещё описания|adjective]
+quick|kwɪk|быстрый
+far|fɑː|далёкий
+[extraFood|Продукты во множественном числе|plural]
+chips|tʃɪps|картофель фри
+crisps|krɪsps|чипсы
+vegetables|ˈvedʒtəblz|овощи
+
+[moreCore|Работа и повседневные задачи|concept]
+company|ˈkʌmpəni|компания
+document|ˈdɒkjəmənt|документ
+favour|ˈfeɪvə|услуга; одолжение
+task|tɑːsk|задание
+view|vjuː|вид; пейзаж
+[moreObjects|Ещё предметы|object]
+diamond|ˈdaɪəmənd|бриллиант
+[morePeople|Человек|person]
+human|ˈhjuːmən|человек
+
+[offers|Предложения и услуги|concept]
+offer|ˈɒfə|предложение

@@ -1,0 +1,104 @@
+# слово|IPA|значение|пример~перевод (четыре разных контекста)
+a|ə|неопределённый артикль перед согласным звуком|I have a bike.~У меня есть велосипед.||She is a doctor.~Она врач.||We need a table.~Нам нужен стол.||Can I have a cup of tea?~Можно мне чашку чая?
+an|ən|неопределённый артикль перед гласным звуком|This is an apple.~Это яблоко.||He is an artist.~Он художник.||I waited for an hour.~Я ждал(а) час.||Have you got an umbrella?~У тебя есть зонт?
+the|ðə|определённый артикль|Please close the door.~Пожалуйста, закрой дверь.||The sun is hot.~Солнце горячее.||Where is the station?~Где станция?||She is the best player.~Она лучший игрок.
+I|aɪ|я|I am ready.~Я готов(а).||I work at home.~Я работаю дома.||Can I sit here?~Можно мне сесть здесь?||Yesterday I bought a book.~Вчера я купил(а) книгу.
+you|juː|ты; вы|You are my friend.~Ты мой друг.||Do you like tea?~Ты любишь чай?||I can help you.~Я могу тебе помочь.||Are you coming tomorrow?~Ты придёшь завтра?
+he|hiː|он|He is a teacher.~Он учитель.||He lives in London.~Он живёт в Лондоне.||Can he swim?~Он умеет плавать?||He was here yesterday.~Он был здесь вчера.
+she|ʃiː|она|She is my sister.~Она моя сестра.||She likes music.~Она любит музыку.||Does she work here?~Она работает здесь?||She came home late.~Она пришла домой поздно.
+it|ɪt|оно; это; формальное подлежащее|It is cold today.~Сегодня холодно.||I like it.~Мне это нравится.||What time is it?~Который час?||It was a good film.~Это был хороший фильм.
+we|wiː|мы|We are at home.~Мы дома.||We have two cats.~У нас две кошки.||Can we go now?~Мы можем сейчас идти?||We went by train.~Мы поехали на поезде.
+they|ðeɪ|они|They are students.~Они студенты.||They live near us.~Они живут рядом с нами.||Do they speak English?~Они говорят по-английски?||They were happy.~Они были счастливы.
+me|miː|меня; мне|Please help me.~Пожалуйста, помоги мне.||This is for me.~Это для меня.||Can you hear me?~Ты меня слышишь?||She gave me a book.~Она дала мне книгу.
+him|hɪm|его; ему|I know him.~Я его знаю.||Please call him.~Пожалуйста, позвони ему.||Can you help him?~Ты можешь ему помочь?||We went with him.~Мы пошли с ним.
+her|hɜː|её; ей; её как определение|I like her.~Она мне нравится.||This is her bag.~Это её сумка.||Can I talk to her?~Можно мне с ней поговорить?||He gave her a present.~Он дал ей подарок.
+us|ʌs|нас; нам|Come with us.~Пойдём с нами.||This is for us.~Это для нас.||Can you help us?~Ты можешь нам помочь?||She told us a story.~Она рассказала нам историю.
+them|ðem|их; им|I can see them.~Я их вижу.||Please ask them.~Пожалуйста, спроси их.||Is this for them?~Это для них?||We met them yesterday.~Мы встретили их вчера.
+my|maɪ|мой; моя; мои|This is my book.~Это моя книга.||My brother is tall.~Мой брат высокий.||Where is my phone?~Где мой телефон?||I washed my hands.~Я помыл(а) руки.
+your|jɔː|твой; ваш|Is this your coat?~Это твоё пальто?||Your house is nice.~У тебя красивый дом.||What is your name?~Как тебя зовут?||Please check your answer.~Пожалуйста, проверь свой ответ.
+his|hɪz|его; принадлежащий ему|This is his car.~Это его машина.||The red bag is his.~Красная сумка — его.||Where is his sister?~Где его сестра?||I read his email.~Я прочитал(а) его письмо.
+its|ɪts|его; её у предмета или животного|The cat is in its bed.~Кошка в своей кроватке.||The shop has changed its name.~Магазин сменил название.||What is its colour?~Какой у него цвет?||The dog hurt its foot.~Собака повредила лапу.
+our|ˈaʊə|наш|Our room is small.~Наша комната маленькая.||This is our teacher.~Это наш учитель.||Where are our tickets?~Где наши билеты?||We cleaned our house.~Мы убрали наш дом.
+their|ðeə|их; принадлежащий им|Their children are happy.~Их дети счастливы.||This is their car.~Это их машина.||Where is their house?~Где их дом?||They brought their dog.~Они привели свою собаку.
+mine|maɪn|мой; моя; мои без следующего существительного|This book is mine.~Эта книга моя.||The blue coat is mine.~Синее пальто моё.||Is this yours or mine?~Это твоё или моё?||That phone was mine.~Тот телефон был моим.
+yours|jɔːz|твой; ваш без следующего существительного|This is yours.~Это твоё.||Is that bag yours?~Та сумка твоя?||My house is smaller than yours.~Мой дом меньше твоего.||The last ticket is yours.~Последний билет твой.
+ours|ˈaʊəz|наш без следующего существительного|This room is ours.~Эта комната наша.||The garden is ours.~Сад наш.||Is that car ours?~Та машина наша?||Their house is bigger than ours.~Их дом больше нашего.
+theirs|ðeəz|их без следующего существительного|The house is theirs.~Дом их.||This cat is theirs.~Эта кошка их.||Is that table theirs?~Тот стол их?||Our flat is smaller than theirs.~Наша квартира меньше их квартиры.
+this|ðɪs|этот; это близко|This is my phone.~Это мой телефон.||I like this song.~Мне нравится эта песня.||How much is this?~Сколько это стоит?||I bought this yesterday.~Я купил(а) это вчера.
+that|ðæt|тот; то дальше|That is my house.~Вон мой дом.||I like that colour.~Мне нравится тот цвет.||What is that?~Что это там?||Could you repeat that?~Не могли бы вы это повторить?
+these|ðiːz|эти|These are my keys.~Это мои ключи.||I like these shoes.~Мне нравятся эти туфли.||How much are these?~Сколько стоят эти вещи?||Please take these books.~Пожалуйста, возьми эти книги.
+those|ðəʊz|те|Those are my friends.~Вон мои друзья.||I want those apples.~Я хочу те яблоки.||Are those your bags?~Вон те сумки твои?||Please move those chairs.~Пожалуйста, передвинь те стулья.
+some|sʌm|несколько; немного|I need some water.~Мне нужно немного воды.||There are some apples.~Есть несколько яблок.||Would you like some tea?~Хочешь чаю?||Can I have some bread?~Можно мне немного хлеба?
+any|ˈeni|какой-нибудь; сколько-нибудь; любой|Have you got any money?~У тебя есть деньги?||I do not have any milk.~У меня нет молока.||Are there any chairs?~Есть стулья?||You can choose any book.~Ты можешь выбрать любую книгу.
+no|nəʊ|нет; никакой|No, thank you.~Нет, спасибо.||There is no milk.~Молока нет.||I have no time.~У меня нет времени.||No problem.~Без проблем.
+yes|jes|да|Yes, please.~Да, пожалуйста.||Yes, I am.~Да.||Yes, she can.~Да, она умеет.||Yes, we did.~Да, мы это сделали.
+not|nɒt|не|I am not tired.~Я не устал(а).||She does not drive.~Она не водит машину.||It is not my bag.~Это не моя сумка.||We did not go.~Мы не пошли.
+many|ˈmeni|много с исчисляемыми|I have many books.~У меня много книг.||How many people are here?~Сколько здесь людей?||There are not many buses.~Автобусов немного.||We bought too many apples.~Мы купили слишком много яблок.
+much|mʌtʃ|много с неисчисляемыми|How much is it?~Сколько это стоит?||I do not have much time.~У меня немного времени.||There is too much sugar.~Сахара слишком много.||Thank you very much.~Большое спасибо.
+few|fjuː|мало с исчисляемыми|There are few shops here.~Здесь мало магазинов.||I have a few friends.~У меня есть несколько друзей.||We need a few chairs.~Нам нужно несколько стульев.||She bought a few books.~Она купила несколько книг.
+little|ˈlɪtl|мало с неисчисляемыми|I have little time.~У меня мало времени.||There is a little milk.~Есть немного молока.||Can I have a little water?~Можно мне немного воды?||We ate very little.~Мы поели совсем немного.
+who|huː|кто|Who is she?~Кто она?||Who lives here?~Кто здесь живёт?||Who did you call?~Кому ты позвонил(а)?||Who can help me?~Кто может мне помочь?
+what|wɒt|что; какой|What is your name?~Как тебя зовут?||What do you want?~Что ты хочешь?||What time is it?~Который час?||What did she say?~Что она сказала?
+where|weə|где; куда|Where are you?~Где ты?||Where do you live?~Где ты живёшь?||Where is the bank?~Где банк?||Where did they go?~Куда они пошли?
+when|wen|когда|When is your birthday?~Когда твой день рождения?||When do you work?~Когда ты работаешь?||When can we meet?~Когда мы можем встретиться?||When did you arrive?~Когда ты приехал(а)?
+why|waɪ|почему|Why are you sad?~Почему ты грустишь?||Why do you study English?~Почему ты учишь английский?||Why is it closed?~Почему это закрыто?||Why did he leave?~Почему он ушёл?
+how|haʊ|как|How are you?~Как дела?||How do you spell it?~Как это пишется по буквам?||How old are you?~Сколько тебе лет?||How much are the tickets?~Сколько стоят билеты?
+which|wɪtʃ|который; какой из вариантов|Which bag is yours?~Какая сумка твоя?||Which colour do you like?~Какой цвет тебе нравится?||Which train goes to London?~Какой поезд идёт в Лондон?||Which book did you buy?~Какую книгу ты купил(а)?
+whose|huːz|чей|Whose book is this?~Чья это книга?||Whose shoes are those?~Чьи вон те туфли?||Whose car did you use?~Чьей машиной ты пользовался(-ась)?||Whose turn is it?~Чья сейчас очередь?
+someone|ˈsʌmwʌn|кто-то|Someone is here.~Кто-то здесь.||I need someone to help me.~Мне нужен кто-то, кто поможет.||Can you ask someone?~Можешь кого-нибудь спросить?||Someone called yesterday.~Кто-то вчера звонил.
+anyone|ˈeniwʌn|кто-нибудь; любой человек|Is anyone here?~Здесь кто-нибудь есть?||I cannot see anyone.~Я никого не вижу.||Anyone can play.~Любой может играть.||Did anyone call?~Кто-нибудь звонил?
+everyone|ˈevriwʌn|все; каждый человек|Everyone is ready.~Все готовы.||I know everyone here.~Я знаю здесь всех.||Is everyone happy?~Все довольны?||Everyone came early.~Все пришли рано.
+something|ˈsʌmθɪŋ|что-то|I need something to eat.~Мне нужно что-нибудь поесть.||Something is wrong.~Что-то не так.||Would you like something to drink?~Хочешь что-нибудь выпить?||She bought something nice.~Она купила что-то приятное.
+anything|ˈeniθɪŋ|что-нибудь; что угодно|Do you need anything?~Тебе что-нибудь нужно?||I did not buy anything.~Я ничего не купил(а).||You can ask anything.~Ты можешь спросить что угодно.||Is anything wrong?~Что-нибудь не так?
+everything|ˈevriθɪŋ|всё|Everything is ready.~Всё готово.||I understand everything.~Я всё понимаю.||Is everything all right?~Всё в порядке?||We checked everything.~Мы всё проверили.
+nothing|ˈnʌθɪŋ|ничего|Nothing is wrong.~Всё в порядке.||I know nothing about it.~Я ничего об этом не знаю.||There is nothing here.~Здесь ничего нет.||We bought nothing.~Мы ничего не купили.
+and|ənd|и|I like tea and coffee.~Я люблю чай и кофе.||Come and sit down.~Входи и садись.||She is kind and friendly.~Она добрая и дружелюбная.||We bought bread and milk.~Мы купили хлеб и молоко.
+but|bʌt|но|I am tired but happy.~Я устал(а), но счастлив(а).||It is small but nice.~Это маленькое, но приятное.||She can swim but cannot drive.~Она умеет плавать, но не умеет водить.||I called but he was out.~Я позвонил(а), но его не было дома.
+or|ɔː|или|Tea or coffee?~Чай или кофе?||Is it red or blue?~Это красное или синее?||You can walk or take a bus.~Можно идти пешком или поехать на автобусе.||Did you come by car or train?~Ты приехал(а) на машине или поезде?
+because|bɪˈkɒz|потому что|I am tired because I work a lot.~Я устал(а), потому что много работаю.||She is happy because it is Friday.~Она рада, потому что сегодня пятница.||We stayed home because it was cold.~Мы остались дома, потому что было холодно.||I need water because I am thirsty.~Мне нужна вода, потому что я хочу пить.
+so|səʊ|поэтому; так|It is cold, so I need a coat.~Холодно, поэтому мне нужно пальто.||I am hungry, so I want lunch.~Я голоден(-на), поэтому хочу обедать.||The shop was closed, so we went home.~Магазин был закрыт, поэтому мы пошли домой.||Thank you so much.~Огромное спасибо.
+if|ɪf|если|If you are ready, we can go.~Если ты готов(а), мы можем идти.||Call me if you need help.~Позвони мне, если нужна помощь.||If it is cold, wear a coat.~Если холодно, надень пальто.||You can sit here if you like.~Можешь сесть здесь, если хочешь.
+in|ɪn|в; внутри; для месяцев и годов|I live in London.~Я живу в Лондоне.||The keys are in my bag.~Ключи в моей сумке.||My birthday is in May.~Мой день рождения в мае.||We met in the morning.~Мы встретились утром.
+on|ɒn|на; для дней и дат|The book is on the table.~Книга на столе.||I work on Monday.~Я работаю в понедельник.||We are on the bus.~Мы в автобусе.||Turn on the light.~Включи свет.
+at|æt|в; у; для точного времени|I am at home.~Я дома.||We meet at six.~Мы встречаемся в шесть.||She is at school.~Она в школе.||Look at the photo.~Посмотри на фотографию.
+to|tuː|к; в направлении; показатель инфинитива|I go to school.~Я хожу в школу.||Please listen to me.~Пожалуйста, послушай меня.||I want to sleep.~Я хочу спать.||Give the book to her.~Дай книгу ей.
+from|frɒm|из; от|I am from Russia.~Я из России.||This is from my sister.~Это от моей сестры.||We work from nine to five.~Мы работаем с девяти до пяти.||The train comes from London.~Поезд прибывает из Лондона.
+of|ɒv|связь принадлежности; часть чего-то|A cup of tea, please.~Чашку чая, пожалуйста.||This is a photo of my cat.~Это фотография моей кошки.||The end of the film is good.~Конец фильма хороший.||I am afraid of dogs.~Я боюсь собак.
+for|fɔː|для; ради; в течение|This is for you.~Это для тебя.||Please wait for me.~Пожалуйста, подожди меня.||We stayed for two days.~Мы остались на два дня.||I paid for the tickets.~Я оплатил(а) билеты.
+with|wɪð|с|I live with my family.~Я живу с семьёй.||Tea with milk, please.~Чай с молоком, пожалуйста.||Come with me.~Пойдём со мной.||I agree with you.~Я с тобой согласен(-на).
+without|wɪˈðaʊt|без|Coffee without sugar, please.~Кофе без сахара, пожалуйста.||I cannot go without my keys.~Я не могу идти без ключей.||She went without me.~Она ушла без меня.||Can I pay without a card?~Можно заплатить без карты?
+by|baɪ|на; посредством; рядом с|We travel by train.~Мы путешествуем на поезде.||Can I pay by card?~Можно оплатить картой?||Sit by the window.~Сядь у окна.||This book is by my favourite writer.~Эту книгу написал мой любимый писатель.
+about|əˈbaʊt|о; приблизительно|Tell me about your family.~Расскажи мне о своей семье.||It costs about ten pounds.~Это стоит примерно десять фунтов.||I know about it.~Я об этом знаю.||We talked about the film.~Мы говорили о фильме.
+under|ˈʌndə|под|The cat is under the table.~Кошка под столом.||Look under the bed.~Посмотри под кроватью.||It costs under ten pounds.~Это стоит меньше десяти фунтов.||Children under five can come in.~Дети младше пяти лет могут входить.
+over|ˈəʊvə|над; через; больше чем|The plane is over the sea.~Самолёт над морем.||Jump over the box.~Перепрыгни через коробку.||She is over thirty.~Ей больше тридцати.||There is a bridge over the river.~Над рекой есть мост.
+between|bɪˈtwiːn|между|The bank is between the shops.~Банк между магазинами.||Sit between us.~Сядь между нами.||We meet between five and six.~Мы встретимся между пятью и шестью.||Choose between these two books.~Выбери одну из этих двух книг.
+behind|bɪˈhaɪnd|за; позади|The garden is behind the house.~Сад за домом.||Look behind you.~Посмотри назад.||Who is behind the door?~Кто за дверью?||I left my bag behind the chair.~Я оставил(а) сумку за стулом.
+near|nɪə|рядом с; недалеко от|I live near the station.~Я живу рядом со станцией.||Sit near me.~Сядь рядом со мной.||Is there a café near here?~Здесь рядом есть кафе?||We stayed near the beach.~Мы остановились рядом с пляжем.
+before|bɪˈfɔː|до; перед|Wash your hands before lunch.~Вымой руки перед обедом.||I get up before seven.~Я встаю до семи.||We met before the lesson.~Мы встретились перед уроком.||Read this before you go.~Прочитай это перед уходом.
+after|ˈɑːftə|после|I work after lunch.~Я работаю после обеда.||Come after six.~Приходи после шести.||We went home after the film.~Мы пошли домой после фильма.||Look after the cat.~Присмотри за кошкой.
+until|ənˈtɪl|до момента|The shop is open until six.~Магазин открыт до шести.||Wait until tomorrow.~Подожди до завтра.||I worked until midnight.~Я работал(а) до полуночи.||Stay here until I come back.~Останься здесь до моего возвращения.
+through|θruː|через; сквозь|We walk through the park.~Мы идём через парк.||Look through the window.~Посмотри сквозь окно.||The train goes through the town.~Поезд проходит через город.||We drove through France.~Мы проехали через Францию.
+across|əˈkrɒs|через; поперёк|Walk across the road.~Перейди дорогу.||The shop is across the street.~Магазин через дорогу.||We swam across the river.~Мы переплыли реку.||Can you see across the lake?~Ты видишь противоположную сторону озера?
+into|ˈɪntuː|внутрь; в направлении внутрь|Come into the room.~Войди в комнату.||Put it into the bag.~Положи это в сумку.||She went into the shop.~Она зашла в магазин.||The cat jumped into the box.~Кошка запрыгнула в коробку.
+out|aʊt|наружу; вне дома|Go out now.~Сейчас выйди.||He is out.~Его нет дома.||Take the book out.~Достань книгу.||We ate out yesterday.~Вчера мы ели вне дома.
+up|ʌp|вверх|Stand up, please.~Встань, пожалуйста.||Look up.~Посмотри вверх.||I get up at seven.~Я встаю в семь.||We walked up the hill.~Мы поднялись на холм.
+down|daʊn|вниз|Sit down, please.~Сядь, пожалуйста.||Look down.~Посмотри вниз.||Write it down.~Запиши это.||We walked down the street.~Мы прошли по улице.
+off|ɒf|отделение; выключенное состояние|Turn off the TV.~Выключи телевизор.||Take off your coat.~Сними пальто.||The light is off.~Свет выключен.||Get off the bus here.~Выйди из автобуса здесь.
+than|ðæn|чем при сравнении|She is taller than me.~Она выше меня.||This is cheaper than that.~Это дешевле того.||I have more books than you.~У меня больше книг, чем у тебя.||Today is colder than yesterday.~Сегодня холоднее, чем вчера.
+as|æz|как; в качестве|I work as a teacher.~Я работаю учителем.||She is as tall as me.~Она такого же роста, как я.||Use this box as a table.~Используй эту коробку как стол.||Come as soon as you can.~Приходи, как только сможешь.
+please|pliːz|пожалуйста в просьбе|Please come in.~Пожалуйста, входи.||A coffee, please.~Кофе, пожалуйста.||Could you help me, please?~Не могли бы вы помочь?||Yes, please.~Да, пожалуйста.
+hello|həˈləʊ|здравствуйте; привет|Hello, my name is Anna.~Здравствуйте, меня зовут Анна.||Hello, how are you?~Привет, как дела?||Say hello to your mother.~Передай привет маме.||Hello, can you hear me?~Алло, вы меня слышите?
+hi|haɪ|привет; неофициально|Hi, Anna.~Привет, Анна.||Hi, how are you?~Привет, как дела?||Hi, I am your new neighbour.~Привет, я твой новый сосед.||Say hi to your sister.~Передай привет сестре.
+goodbye|ˌɡʊdˈbaɪ|до свидания|Goodbye, see you tomorrow.~До свидания, увидимся завтра.||Goodbye, have a nice day.~До свидания, хорошего дня.||It is time to say goodbye.~Пора прощаться.||She said goodbye and left.~Она попрощалась и ушла.
+bye|baɪ|пока|Bye, see you soon.~Пока, скоро увидимся.||Bye, have fun.~Пока, хорошо повеселись.||Bye for now.~Пока, до следующей встречи.||Say bye to your friend.~Попрощайся с другом.
+thanks|θæŋks|спасибо; неофициально|Thanks for your help.~Спасибо за помощь.||Thanks, that is great.~Спасибо, это замечательно.||No, thanks.~Нет, спасибо.||Thanks for coming.~Спасибо, что пришли.
+sorry|ˈsɒri|извините; мне жаль|Sorry, I am late.~Извините, я опоздал(а).||I am sorry about that.~Мне жаль, что так вышло.||Sorry, could you repeat that?~Извините, не могли бы вы повторить?||Sorry, I cannot come.~Извините, я не могу прийти.
+OK|ˌəʊˈkeɪ|хорошо; в порядке|I am OK.~У меня всё хорошо.||Is that OK?~Это подходит?||OK, let us go.~Хорошо, пойдём.||The food was OK.~Еда была нормальной.
+can|kæn|мочь; уметь|I can swim.~Я умею плавать.||Can you help me?~Ты можешь мне помочь?||She cannot drive.~Она не умеет водить.||Can I have some water?~Можно мне немного воды?
+could|kʊd|мог; мог бы|Could you repeat that?~Не могли бы вы повторить?||I could swim when I was six.~Я умел(а) плавать в шесть лет.||Could I sit here?~Можно мне здесь сесть?||He could not come.~Он не смог прийти.
+would|wʊd|бы в вежливых формулах|I would like some tea.~Я хотел(а) бы чаю.||Would you like a coffee?~Хотите кофе?||I would like to go home.~Я хотел(а) бы пойти домой.||Would you like to sit down?~Хотите сесть?
+will|wɪl|буду; будущее и решение|I will help you.~Я тебе помогу.||Will you come tomorrow?~Ты придёшь завтра?||It will be cold.~Будет холодно.||I will call you later.~Я позвоню тебе позже.
+must|mʌst|должен; строгое правило|You must stop here.~Здесь нужно остановиться.||I must go now.~Мне сейчас нужно идти.||You must not smoke here.~Здесь нельзя курить.||We must be careful.~Нам нужно быть осторожными.
+should|ʃʊd|следует; совет|You should rest.~Тебе стоит отдохнуть.||I should call my mother.~Мне стоит позвонить маме.||Should we go now?~Нам стоит сейчас идти?||You should not be late.~Тебе не стоит опаздывать.
+hers|hɜːz|её без следующего существительного|This bag is hers.~Эта сумка её.||Is that phone hers?~Тот телефон её?||My room is smaller than hers.~Моя комната меньше её комнаты.||The red coat was hers.~Красное пальто было её.
+nobody|ˈnəʊbədi|никто|Nobody is here.~Здесь никого нет.||Nobody can help me.~Никто не может мне помочь.||I know nobody here.~Я здесь никого не знаю.||Nobody called yesterday.~Вчера никто не звонил.

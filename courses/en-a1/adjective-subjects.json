@@ -1,0 +1,578 @@
+{
+  "good": [
+    "book",
+    "driver",
+    "idea",
+    "teacher"
+  ],
+  "bad": [
+    "weather",
+    "film",
+    "food",
+    "idea"
+  ],
+  "pretty": [
+    "garden",
+    "dress",
+    "flower",
+    "picture"
+  ],
+  "ugly": [
+    "building",
+    "car",
+    "picture",
+    "toy"
+  ],
+  "young": [
+    "teacher",
+    "doctor",
+    "driver",
+    "artist"
+  ],
+  "long": [
+    "road",
+    "dress",
+    "story",
+    "book"
+  ],
+  "short": [
+    "story",
+    "dress",
+    "road",
+    "lesson"
+  ],
+  "tall": [
+    "man",
+    "woman",
+    "boy",
+    "building"
+  ],
+  "high": [
+    "price",
+    "mountain",
+    "wall",
+    "shelf"
+  ],
+  "low": [
+    "price",
+    "table",
+    "wall",
+    "shelf"
+  ],
+  "wide": [
+    "road",
+    "street",
+    "river",
+    "door"
+  ],
+  "narrow": [
+    "road",
+    "street",
+    "river",
+    "door"
+  ],
+  "thick": [
+    "book",
+    "coat",
+    "blanket",
+    "wall"
+  ],
+  "thin": [
+    "book",
+    "coat",
+    "blanket",
+    "wall"
+  ],
+  "heavy": [
+    "bag",
+    "box",
+    "suitcase",
+    "table"
+  ],
+  "light": [
+    "bag",
+    "box",
+    "suitcase",
+    "coat"
+  ],
+  "strong": [
+    "coffee",
+    "wind",
+    "man",
+    "team"
+  ],
+  "weak": [
+    "coffee",
+    "tea",
+    "wind",
+    "team"
+  ],
+  "fast": [
+    "train",
+    "car",
+    "driver",
+    "player"
+  ],
+  "slow": [
+    "train",
+    "car",
+    "driver",
+    "computer"
+  ],
+  "early": [
+    "train",
+    "bus",
+    "guest",
+    "visitor"
+  ],
+  "late": [
+    "train",
+    "bus",
+    "guest",
+    "visitor"
+  ],
+  "hot": [
+    "tea",
+    "room",
+    "soup",
+    "coffee"
+  ],
+  "cold": [
+    "water",
+    "room",
+    "soup",
+    "coffee"
+  ],
+  "warm": [
+    "room",
+    "coat",
+    "soup",
+    "water"
+  ],
+  "cool": [
+    "room",
+    "water",
+    "milk",
+    "air"
+  ],
+  "wet": [
+    "coat",
+    "floor",
+    "road",
+    "towel"
+  ],
+  "dry": [
+    "coat",
+    "floor",
+    "road",
+    "towel"
+  ],
+  "full": [
+    "bag",
+    "bottle",
+    "cup",
+    "room"
+  ],
+  "empty": [
+    "bag",
+    "bottle",
+    "cup",
+    "room"
+  ],
+  "hard": [
+    "test",
+    "question",
+    "chair",
+    "bed"
+  ],
+  "soft": [
+    "bed",
+    "pillow",
+    "chair",
+    "blanket"
+  ],
+  "free": [
+    "course",
+    "ticket",
+    "room",
+    "seat"
+  ],
+  "right": [
+    "answer",
+    "number",
+    "address",
+    "date"
+  ],
+  "wrong": [
+    "answer",
+    "number",
+    "address",
+    "date"
+  ],
+  "true": [
+    "story",
+    "answer",
+    "news",
+    "message"
+  ],
+  "false": [
+    "story",
+    "answer",
+    "news",
+    "message"
+  ],
+  "dangerous": [
+    "road",
+    "animal",
+    "place",
+    "sport"
+  ],
+  "famous": [
+    "actor",
+    "writer",
+    "artist",
+    "building"
+  ],
+  "comfortable": [
+    "chair",
+    "bed",
+    "room",
+    "sofa"
+  ],
+  "round": [
+    "table",
+    "mirror",
+    "plate",
+    "clock"
+  ],
+  "square": [
+    "table",
+    "mirror",
+    "plate",
+    "box"
+  ],
+  "straight": [
+    "road",
+    "street",
+    "line",
+    "path"
+  ],
+  "flat": [
+    "road",
+    "floor",
+    "field",
+    "roof"
+  ],
+  "deep": [
+    "river",
+    "lake",
+    "sea",
+    "pool"
+  ],
+  "fresh": [
+    "bread",
+    "food",
+    "milk",
+    "air"
+  ],
+  "delicious": [
+    "food",
+    "cake",
+    "soup",
+    "salad"
+  ],
+  "sweet": [
+    "cake",
+    "tea",
+    "apple",
+    "chocolate"
+  ],
+  "salty": [
+    "soup",
+    "food",
+    "cheese",
+    "sauce"
+  ],
+  "spicy": [
+    "soup",
+    "food",
+    "salad",
+    "sauce"
+  ],
+  "sour": [
+    "milk",
+    "apple",
+    "juice",
+    "lemon"
+  ],
+  "healthy": [
+    "food",
+    "child",
+    "animal",
+    "meal"
+  ],
+  "cloudy": [
+    "day",
+    "morning",
+    "afternoon",
+    "sky"
+  ],
+  "sunny": [
+    "day",
+    "morning",
+    "afternoon",
+    "weather"
+  ],
+  "rainy": [
+    "day",
+    "morning",
+    "afternoon",
+    "weather"
+  ],
+  "windy": [
+    "day",
+    "morning",
+    "afternoon",
+    "weather"
+  ],
+  "snowy": [
+    "day",
+    "morning",
+    "afternoon",
+    "weather"
+  ],
+  "awake": [
+    "baby",
+    "child",
+    "boy",
+    "girl"
+  ],
+  "asleep": [
+    "baby",
+    "child",
+    "boy",
+    "girl"
+  ],
+  "alive": [
+    "animal",
+    "plant",
+    "cat",
+    "bird"
+  ],
+  "dead": [
+    "plant",
+    "animal",
+    "tree",
+    "bird"
+  ],
+  "broken": [
+    "phone",
+    "chair",
+    "computer",
+    "window"
+  ],
+  "lost": [
+    "child",
+    "dog",
+    "cat",
+    "visitor"
+  ],
+  "public": [
+    "library",
+    "park",
+    "pool",
+    "building"
+  ],
+  "private": [
+    "garden",
+    "school",
+    "pool",
+    "building"
+  ],
+  "online": [
+    "shop",
+    "course",
+    "game",
+    "dictionary"
+  ],
+  "offline": [
+    "computer",
+    "phone",
+    "printer",
+    "tablet"
+  ],
+  "available": [
+    "room",
+    "ticket",
+    "book",
+    "seat"
+  ],
+  "nice": [
+    "room",
+    "teacher",
+    "meal",
+    "place"
+  ],
+  "great": [
+    "holiday",
+    "book",
+    "idea",
+    "film"
+  ],
+  "beautiful": [
+    "garden",
+    "house",
+    "flower",
+    "picture"
+  ],
+  "easy": [
+    "question",
+    "game",
+    "exercise",
+    "job"
+  ],
+  "difficult": [
+    "question",
+    "exercise",
+    "job",
+    "game"
+  ],
+  "important": [
+    "meeting",
+    "question",
+    "message",
+    "document"
+  ],
+  "different": [
+    "room",
+    "book",
+    "colour",
+    "answer"
+  ],
+  "interesting": [
+    "book",
+    "film",
+    "story",
+    "lesson"
+  ],
+  "boring": [
+    "film",
+    "book",
+    "story",
+    "lesson"
+  ],
+  "popular": [
+    "song",
+    "restaurant",
+    "game",
+    "film"
+  ],
+  "special": [
+    "day",
+    "meal",
+    "offer",
+    "place"
+  ],
+  "simple": [
+    "question",
+    "game",
+    "exercise",
+    "idea"
+  ],
+  "real": [
+    "diamond",
+    "name",
+    "story",
+    "problem"
+  ],
+  "local": [
+    "school",
+    "newspaper",
+    "shop",
+    "company"
+  ],
+  "international": [
+    "company",
+    "school",
+    "airport",
+    "meeting"
+  ],
+  "necessary": [
+    "document",
+    "meeting",
+    "exercise",
+    "information"
+  ],
+  "possible": [
+    "answer",
+    "plan",
+    "journey",
+    "change"
+  ],
+  "impossible": [
+    "task",
+    "plan",
+    "journey",
+    "dream"
+  ],
+  "useful": [
+    "book",
+    "document",
+    "information",
+    "lesson"
+  ],
+  "usual": [
+    "answer",
+    "price",
+    "place",
+    "time"
+  ],
+  "daily": [
+    "newspaper",
+    "exercise",
+    "meeting",
+    "routine"
+  ],
+  "perfect": [
+    "day",
+    "meal",
+    "answer",
+    "place"
+  ],
+  "lovely": [
+    "garden",
+    "house",
+    "day",
+    "picture"
+  ],
+  "excellent": [
+    "meal",
+    "film",
+    "answer",
+    "book"
+  ],
+  "wonderful": [
+    "holiday",
+    "day",
+    "meal",
+    "idea"
+  ],
+  "terrible": [
+    "weather",
+    "meal",
+    "film",
+    "hotel"
+  ],
+  "amazing": [
+    "view",
+    "film",
+    "story",
+    "picture"
+  ],
+  "quick": [
+    "meal",
+    "answer",
+    "shower",
+    "break"
+  ]
+}

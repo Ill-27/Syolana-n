@@ -505,7 +505,7 @@ function languages(lang = "en") {
     el(
       "p",
       "",
-      "Английское пособие A1 открыто бесплатно: 28 разделов, браузерная озвучка, IPA, упражнения, рукописная практика и повторения. Темп выбираете вы. Обозначение A1 — ориентир сложности материалов, а не подтверждение уровня или обещание результата.",
+      "Новый английский A1 открыт бесплатно: чтение и звуки, 40 разделов правил, больше 1300 слов с четырьмя примерами, британский и американский варианты, три режима озвучки и дневные блоки примерно по 30 минут. Есть тренажёры, бытовая и рукописная практика. Обозначение A1 — ориентир сложности материалов, а не подтверждение уровня или обещание результата.",
     ),
   );
   $("page").append(intro);
@@ -1545,7 +1545,8 @@ function lessonFrame(key, anchor = "") {
   if (!filename) return;
   const frame = el("iframe", "lesson-frame");
   frame.title = "Учебный материал Syolana";
-  if (key === "en/a1/course") frame.allow = "microphone 'self'";
+  const englishCourse = key === "en/a1/course";
+  if (englishCourse) frame.style.height = "max(640px, calc(100dvh - 125px))";
   frame.src = filename + "?embed=1";
   const status = el("p", "loading", "Открываем учебный материал…");
   $("page").append(status, frame);
@@ -1578,7 +1579,7 @@ function lessonFrame(key, anchor = "") {
       return;
     const data = event.data;
     if (Number.isFinite(data.height) && data.height > 0) {
-      frame.style.height = Math.min(2000000, data.height) + "px";
+      if (!englishCourse) frame.style.height = Math.min(2000000, data.height) + "px";
       status.hidden = true;
     }
     if (data.ready) {

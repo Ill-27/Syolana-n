@@ -40,7 +40,7 @@ def build():
     PUBLIC.mkdir(parents=True); PRIVATE.mkdir(parents=True)
     (PUBLIC/'legacy-scripts').mkdir()
     for name in FILES: shutil.copy2(ROOT/name, PUBLIC/name)
-    for name in ['assets','themes','books','covers','español-songs','audio-library','partner-demo']:
+    for name in ['assets','themes','books','covers','español-songs','audio-library','partner-demo','courses']:
         if (ROOT/name).exists(): shutil.copytree(ROOT/name,PUBLIC/name)
     version = hashlib.sha256(b''.join((PUBLIC/name).read_bytes() for name in ['partner-core.js','themes.js','flight.js','styles.css'])).hexdigest()[:20]
     (PUBLIC/'partners').mkdir(exist_ok=True)

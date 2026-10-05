@@ -7,38 +7,38 @@
 <style>
 :root{color-scheme:dark;--bg:#0a0911;--card:#151221d9;--line:#ffffff1a;--text:#f5f0fb;--muted:#b8afc9;--accent:#c9a7ff;--ok:#a9e8bc;--bad:#ffb7c0;--r:22px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:transparent;color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
-main{width:min(1100px,100%);margin:auto;padding:18px 12px 80px}.hero,.panel,.day,.exam{background:linear-gradient(135deg,#ffffff09,transparent 55%),var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(18px,4vw,30px);margin:14px 0;box-shadow:0 18px 65px #0003}
+main{width:min(1100px,100%);margin:auto;padding:18px 12px 80px}.hero,.panel,.day,.practice{background:linear-gradient(135deg,#ffffff09,transparent 55%),var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(18px,4vw,30px);margin:14px 0;box-shadow:0 18px 65px #0003}
 .eyebrow,.badge{font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:800}.hero h1{font-size:clamp(2rem,8vw,4.8rem);line-height:.95;margin:.35em 0}.hero p{max-width:780px}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}.btn{appearance:none;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 88%,white 5%);color:var(--text);padding:10px 14px;border-radius:999px;font:inherit;font-weight:700;cursor:pointer}.btn.primary{background:color-mix(in srgb,var(--accent) 34%,var(--card));color:var(--text);border-color:color-mix(in srgb,var(--accent) 66%,var(--line))}.btn[aria-pressed="true"]{outline:2px solid var(--accent)}.btn:disabled{opacity:.5;cursor:not-allowed}
 .progress{height:8px;background:#ffffff0d;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}.stat{padding:12px;border:1px solid var(--line);border-radius:16px;background:#0002}.stat b{display:block;font-size:1.35rem}.stat small{color:var(--muted)}
 .days{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}.daypick{border:1px solid var(--line);border-radius:18px;padding:14px;background:#ffffff07;cursor:pointer;text-align:left;color:inherit}.daypick strong{display:block}.daypick small{color:var(--muted)}.daypick.done{border-color:#a9e8bc66}.daypick.current{outline:2px solid var(--accent)}
-.day h2,.exam h2{font-size:clamp(1.6rem,5vw,2.6rem);margin:.2em 0}.section{margin:20px 0}.section h3{font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.day h2,.practice h2{font-size:clamp(1.6rem,5vw,2.6rem);margin:.2em 0}.section{margin:20px 0}.section h3{font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .item{position:relative;border:1px solid var(--line);border-radius:18px;padding:14px;margin:8px 0;background:color-mix(in srgb,var(--card) 72%,transparent);transition:.2s}.item.active{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent)}.en{font-size:1.12rem;font-weight:750}.ipa{font:italic 1rem/1.45 Georgia,serif;color:#d8c9ed;margin-top:3px}.ru{color:var(--muted);margin-top:5px}.us{margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}.us b{color:#e8d4ff}
 .quiz{border:1px solid var(--line);border-radius:18px;padding:15px;margin:10px 0}.quiz legend{font-weight:800;padding:0 6px}.option{display:block;padding:9px 10px;border-radius:12px;margin:5px 0;background:#ffffff06;cursor:pointer}.option input{margin-right:8px}.feedback{min-height:1.5em;font-weight:700}.good{color:var(--ok)}.bad{color:var(--bad)}
 .sessionbar{position:sticky;bottom:8px;z-index:10;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 94%,black 6%);backdrop-filter:blur(12px);border-radius:18px;padding:10px 12px;margin:18px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sessionbar .clock{font-variant-numeric:tabular-nums;font-weight:800;margin-left:auto}
 .canvaswrap{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fbf9ff}.canvaswrap canvas{display:block;width:100%;height:260px;touch-action:none;cursor:crosshair}.hand-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .weak{display:grid;gap:8px}.weakrow{border:1px solid var(--line);border-radius:14px;padding:10px}.weakrow b{color:var(--bad)}
-.exam-nav{display:flex;gap:8px;flex-wrap:wrap}.exam-part{display:none}.exam-part.active{display:block}.prompt{padding:14px;border-left:3px solid var(--accent);background:#ffffff07;border-radius:0 14px 14px 0}.answerbox{width:100%;min-height:130px;background:color-mix(in srgb,var(--card) 88%,black 12%);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;font:inherit}.exam-source{border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;background:#0002}.exam-source .en{font-size:1.08rem;font-weight:750}.exam-source .ipa{display:none}.exam-source.revealed .ipa{display:block}.exam-source .after{display:none;color:var(--muted);margin-top:8px}.exam-source.revealed .after{display:block}
+.practice-nav{display:flex;gap:8px;flex-wrap:wrap}.practice-part{display:none}.practice-part.active{display:block}.prompt{padding:14px;border-left:3px solid var(--accent);background:#ffffff07;border-radius:0 14px 14px 0}.answerbox{width:100%;min-height:130px;background:color-mix(in srgb,var(--card) 88%,black 12%);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;font:inherit}.practice-source{border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;background:#0002}.practice-source .en{font-size:1.08rem;font-weight:750}.practice-source .ipa{display:none}.practice-source.revealed .ipa{display:block}.practice-source .after{display:none;color:var(--muted);margin-top:8px}.practice-source.revealed .after{display:block}
 details{border:1px solid var(--line);border-radius:16px;padding:12px;margin:9px 0}summary{cursor:pointer;font-weight:800}
 .note{color:var(--muted);font-size:.9rem}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}.hero,.panel,.day,.exam{border-radius:18px}.sessionbar .clock{width:100%;margin-left:0}}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}.hero,.panel,.day,.practice{border-radius:18px}.sessionbar .clock{width:100%;margin-left:0}}
 </style>
 </head>
 <body>
 <main>
 <section class="hero">
 <div class="eyebrow">SYOLANA · АНГЛИЙСКИЙ A1</div>
-<h1>С нуля до уверенного A1</h1>
-<p>28 дней без воды: британский английский как основа, американские варианты для узнавания, произношение, грамматика, лексика, понимание речи, чтение, письмо, говорение и постоянное возвращение к слабым местам.</p>
-<div class="item"><div class="en">British English</div><div class="ipa">/ˌbrɪtɪʃ ˈɪŋɡlɪʃ/</div><div class="ru">Основная норма курса.</div><div class="us"><b>Американский вариант</b><div class="ipa">/əˌmerɪkən ˈɪŋɡlɪʃ/</div><div class="ru">Отдельно отмечаем частотные отличия, чтобы ученик понимал обе нормы и не смешивал их бессознательно.</div></div></div>
+<h1>Английский · самостоятельное пособие A1</h1>
+<p>28 разделов для самостоятельного использования: правила, слова, британская транскрипция, браузерная озвучка и упражнения. Материалы составлены на основе личного опыта автора. A1 — ориентир сложности; срок прохождения и достижение уровня не гарантируются. Преподавания, экзаменов и проверки уровня нет.</p>
+<div class="item"><div class="en">British English</div><div class="ipa">/ˌbrɪtɪʃ ˈɪŋɡlɪʃ/</div><div class="ru">Основная норма пособия.</div><div class="us"><b>Американский вариант</b><div class="ipa">/əˌmerɪkən ˈɪŋɡlɪʃ/</div><div class="ru">Отдельно отмечаем частотные отличия, чтобы ученик понимал обе нормы и не смешивал их бессознательно.</div></div></div>
 <div class="stats">
-<div class="stat"><b id="statDays">0/28</b><small>дней закрыто</small></div>
-<div class="stat"><b id="statMastery">0%</b><small>мастерство</small></div>
+<div class="stat"><b id="statDays">0/28</b><small>разделов отмечено</small></div>
+<div class="stat"><b id="statMastery">0%</b><small>карточек закреплено</small></div>
 <div class="stat"><b id="statErrors">0</b><small>ошибок к повтору</small></div>
 <div class="stat"><b id="statStreak">0</b><small>серия ответов</small></div>
 </div>
-<div class="progress" aria-label="Прогресс курса"><i id="courseProgress"></i></div><p class="note" id="syncStatus">Прогресс сохраняется на этом устройстве.</p>
+<div class="progress" aria-label="Отметки о работе с пособием"><i id="courseProgress"></i></div><p class="note" id="syncStatus">Прогресс сохраняется на этом устройстве.</p>
 </section>
 
 <section class="panel">
@@ -85,18 +85,18 @@ details{border:1px solid var(--line);border-radius:16px;padding:12px;margin:9px 
 <button class="btn" id="reviewWeak">Повторить слабое сейчас</button>
 </section>
 
-<section class="exam" id="exam">
-<div class="eyebrow">ИТОГОВЫЙ ЭКЗАМЕН SYOLANA · CEFR A1</div>
-<h2>Итоговый экзамен A1</h2>
+<section class="practice" id="practice">
+<div class="eyebrow">САМОСТОЯТЕЛЬНАЯ ПРАКТИКА</div>
+<h2>Слушайте, читайте и пробуйте сами</h2>
 <div class="item"><div class="en">I can understand and use familiar everyday expressions.</div><div class="ipa">/aɪ kən ˌʌndəˈstænd ən juːz fəˈmɪliə ˈevrideɪ ɪkˈspreʃənz/</div><div class="ru">Я могу понимать и использовать знакомые повседневные выражения.</div></div>
-<p>Экзамен проверяет аудирование, чтение, письмо и устную речь. Это внутренний экзамен Syolana по уровню CEFR A1, а не сертификат сторонней экзаменационной организации.</p>
-<div class="exam-nav"><button class="btn primary" data-exam="listen">Аудирование</button><button class="btn" data-exam="read">Чтение</button><button class="btn" data-exam="write">Письмо</button><button class="btn" data-exam="speak">Устная речь</button><button class="btn" data-exam="result">Результат</button></div>
-<div id="examParts"></div>
+<p>Дополнительные упражнения для самостоятельного повторения. Тексты, транскрипция, перевод и ответы доступны для сверки. Экзаменов, преподавательской проверки, оценки уровня и сертификатов нет.</p>
+<div class="practice-nav"><button class="btn primary" data-practice="listen">Аудирование</button><button class="btn" data-practice="read">Чтение</button><button class="btn" data-practice="write">Письмо</button><button class="btn" data-practice="speak">Устная речь</button></div>
+<div id="practiceParts"></div>
 </section>
 
 <section class="panel">
 <div class="eyebrow">КАРТА ПОКРЫТИЯ</div>
-<h2>Что именно закрывает A1</h2>
+<h2>Темы и примеры в пособии</h2>
 <div id="coverage"></div>
 </section>
 </main>
@@ -195,9 +195,9 @@ quiz:[Q("d26q1","Американский вариант lift:",[E("elevator","/
 {n:27,title:"Большое спиральное повторение",goal:"Смешать все темы и убрать последние пробелы.",tags:["review","mastery"],items:[
 E("Could you help me, please?","/kʊd juː help miː pliːz/","Не могли бы вы мне помочь?"),E("I usually work at home, but today I am working in a café.","/aɪ ˈjuːʒuəli wɜːk ət həʊm bət təˈdeɪ aɪ æm ˈwɜːkɪŋ ɪn ə ˈkæfeɪ/","Обычно я работаю дома, но сегодня работаю в кафе."),E("Yesterday we went to the station by bus.","/ˈjestədeɪ wiː went tə ðə ˈsteɪʃn baɪ bʌs/","Вчера мы поехали на станцию автобусом."),E("Tomorrow I am going to visit my family.","/təˈmɒrəʊ aɪ æm ˈɡəʊɪŋ tə ˈvɪzɪt maɪ ˈfæməli/","Завтра я собираюсь навестить семью."),E("How much is this ticket?","/haʊ mʌtʃ ɪz ðɪs ˈtɪkɪt/","Сколько стоит этот билет?"),E("There are two books on the table.","/ðeər ɑː tuː bʊks ɒn ðə ˈteɪbl/","На столе две книги.")],
 quiz:[Q("d27q1","Выберите действие сейчас:",[E("I work every day.","/aɪ wɜːk ˈevri deɪ/",""),E("I am working now.","/aɪ æm ˈwɜːkɪŋ naʊ/",""),E("I worked yesterday.","/aɪ wɜːkt ˈjestədeɪ/","")],1,"mastery"),Q("d27q2","Выберите прошлое завершённое действие:",[E("I went yesterday.","/aɪ went ˈjestədeɪ/",""),E("I go every day.","/aɪ ɡəʊ ˈevri deɪ/",""),E("I am going now.","/aɪ æm ˈɡəʊɪŋ naʊ/","")],0,"mastery")]},
-{n:28,title:"Экзамен и закрепление",goal:"Пройти четыре навыка и сформировать план повторения.",tags:["exam"],items:[
+{n:28,title:"Свободная практика и закрепление",goal:"Пройти четыре навыка и сформировать план повторения.",tags:["practice"],items:[
 E("Listen carefully.","/ˈlɪsn ˈkeəfəli/","Слушайте внимательно."),E("Read the text.","/riːd ðə tekst/","Прочитайте текст."),E("Write a short message.","/raɪt ə ʃɔːt ˈmesɪdʒ/","Напишите короткое сообщение."),E("Speak about yourself.","/spiːk əˈbaʊt jɔːˈself/","Расскажите о себе."),E("Check your answers.","/tʃek jɔːr ˈɑːnsəz/","Проверьте ответы."),E("Keep practising.","/kiːp ˈpræktɪsɪŋ/","Продолжайте практиковаться.")],
-quiz:[Q("d28q1","Перед экзаменом лучше:",[E("review weak points","/rɪˈvjuː wiːk pɔɪnts/","повторить слабые места"),E("guess every answer","/ɡes ˈevri ˈɑːnsə/","угадывать всё"),E("skip listening","/skɪp ˈlɪsnɪŋ/","пропустить аудирование")],0,"exam"),Q("d28q2","После экзамена:",[E("keep practising","/kiːp ˈpræktɪsɪŋ/",""),E("forget everything","/fəˈɡet ˈevriθɪŋ/",""),E("never listen again","/ˈnevə ˈlɪsn əˈɡen/","")],0,"exam")]}
+quiz:[Q("d28q1","Перед практикой полезно:",[E("review weak points","/rɪˈvjuː wiːk pɔɪnts/","повторить слабые места"),E("guess every answer","/ɡes ˈevri ˈɑːnsə/","угадывать всё"),E("skip listening","/skɪp ˈlɪsnɪŋ/","пропустить аудирование")],0,"practice"),Q("d28q2","После повторения:",[E("keep practising","/kiːp ˈpræktɪsɪŋ/",""),E("forget everything","/fəˈɡet ˈevriθɪŋ/",""),E("never listen again","/ˈnevə ˈlɪsn əˈɡen/","")],0,"practice")]}
 ];
 
 
@@ -279,10 +279,10 @@ const coverageGroups=[
 ["Навыки",["понять очень медленную и ясную бытовую речь","понять короткие объявления и инструкции","прочитать вывески, расписания и короткие сообщения","заполнить базовые личные данные","написать короткую записку или сообщение","ответить на простые личные вопросы","поддержать короткий предсказуемый обмен репликами"]]
 ];
 
-const examData={
+const practiceData={
 listen:{
 title:"Аудирование",
-intro:"8 оригинальных заданий. Каждую реплику можно прослушать не более двух раз. Текст, IPA и перевод во время проверки не показываются.",
+intro:"8 упражнений для самостоятельной практики. Слушайте сколько удобно; текст, британская транскрипция, перевод и ответы доступны рядом.",
 items:[
 {audio:E("The train leaves at half past eight.","/ðə treɪn liːvz ət hɑːf pɑːst eɪt/","Поезд отправляется в половине девятого."),q:"Когда отправляется поезд?",opts:["7:30","8:30","9:30"],a:1},
 {audio:E("I usually work at home, but today I am in the office.","/aɪ ˈjuːʒuəli wɜːk ət həʊm bət təˈdeɪ aɪ æm ɪn ði ˈɒfɪs/","Обычно я работаю дома, но сегодня я в офисе."),q:"Где человек сегодня?",opts:["Дома","В офисе","В кафе"],a:1},
@@ -295,7 +295,7 @@ items:[
 ]},
 read:{
 title:"Чтение",
-intro:"2 коротких текста, 8 заданий. В экзаменационном режиме перевод скрыт; IPA можно открыть только после ответа на вопросы к тексту.",
+intro:"2 коротких текста и 8 упражнений. Транскрипция, перевод и ответы доступны для самостоятельной сверки.",
 passages:[
 {text:E("Hi! My name is Leo. I live in a small flat near the city centre. I work in a bookshop from Monday to Friday. On Saturdays I usually meet my sister, and on Sundays I stay at home and cook.","/haɪ. maɪ neɪm ɪz ˈliːəʊ. aɪ lɪv ɪn ə smɔːl flæt nɪə ðə ˈsɪti ˈsentə. aɪ wɜːk ɪn ə ˈbʊkʃɒp frəm ˈmʌndeɪ tə ˈfraɪdeɪ. ɒn ˈsætədeɪz aɪ ˈjuːʒuəli miːt maɪ ˈsɪstə, ənd ɒn ˈsʌndeɪz aɪ steɪ ət həʊm ənd kʊk/","Привет! Меня зовут Лео. Я живу в маленькой квартире недалеко от центра города. Я работаю в книжном магазине с понедельника по пятницу. По субботам обычно встречаюсь с сестрой, а по воскресеньям остаюсь дома и готовлю."),
 items:[
@@ -314,14 +314,14 @@ items:[
 ]},
 write:{
 title:"Письмо",
-intro:"Два задания. Сначала заполните простые личные данные, затем напишите сообщение 35–50 слов. Свободное письмо нельзя честно оценить только по длине — итоговая проверка требует человека или языковой модели.",
+intro:"Придумайте персонажа и напишите короткое сообщение. Используйте вымышленные сведения вместо своих персональных данных. Образец помогает сравнить структуру; автор не проверяет ответы, баллы и уровень не выставляются.",
 fields:["Имя","Город","Страна","Языки","Занятие / работа"],
 prompt:"Напишите короткое сообщение новому знакомому: представьтесь, скажите, где живёте, чем занимаетесь, что любите делать и предложите встретиться.",
 model:E("Hello! My name is Anna. I live in London and I work from home. I like reading and music. I usually go to a café on Saturday. Would you like to meet there this weekend? Best wishes, Anna","/həˈləʊ. maɪ neɪm ɪz ˈænə. aɪ lɪv ɪn ˈlʌndən ənd aɪ wɜːk frəm həʊm. aɪ laɪk ˈriːdɪŋ ənd ˈmjuːzɪk. aɪ ˈjuːʒuəli ɡəʊ tə ə ˈkæfeɪ ɒn ˈsætədeɪ. wʊd juː laɪk tə miːt ðeə ðɪs ˌwiːkˈend. best ˈwɪʃɪz, ˈænə/","Образец структуры.")
 },
 speak:{
 title:"Устная речь",
-intro:"Три части: личные вопросы, рассказ о повседневной жизни и короткая ситуационная реплика. Можно записать себя встроенным диктофоном.",
+intro:"Произносите примеры и придуманные ответы вслух. При желании можно записать себя и прослушать запись в браузере. Запись не направляется на преподавательскую проверку.",
 prompts:[
 E("What is your name and where are you from?","/wɒt ɪz jɔː neɪm ənd weər ɑː juː frəm/","Как вас зовут и откуда вы?"),
 E("Where do you live and who do you live with?","/weə duː juː lɪv ənd huː duː juː lɪv wɪð/","Где и с кем вы живёте?"),
@@ -336,39 +336,16 @@ E("You are lost. Ask where the station is.","/juː ɑː lɒst. ɑːsk weə ðə 
 
 let state;
 try{state=JSON.parse(localStorage.getItem(SKEY))||{}}catch{state={}}
-const syncCtx={user:null,csrf:"",timer:null};
 function normaliseState(){
  state.current=Math.min(28,Math.max(1,Number(state.current)||1));
- state.days=state.days||{};state.items=state.items||{};state.exam=state.exam||{};state.ink=state.ink||{};state.streak=Number(state.streak)||0;state.updatedAt=Number(state.updatedAt)||0;
+ state.days=state.days||{};state.items=state.items||{};state.practice=state.practice||state.exam||{};state.ink=state.ink||{};state.streak=Number(state.streak)||0;state.updatedAt=Number(state.updatedAt)||0;
 }
 normaliseState();
-function compactProgress(){return {current:state.current,days:state.days,items:state.items,exam:state.exam,streak:state.streak,updatedAt:state.updatedAt}}
 function writeLocal(){
  localStorage.setItem(SKEY,JSON.stringify(state));renderStats();renderWeak();
- window.parent?.postMessage({syolanaLesson:true,learningProgress:{course:"en-a1",days:state.days,items:state.items,exam:state.exam}},"*");
+ window.parent?.postMessage({syolanaLesson:true,learningProgress:{course:"en-a1",days:state.days,items:state.items}},"*");
 }
-function scheduleSync(){
- if(!syncCtx.user||!syncCtx.csrf)return;clearTimeout(syncCtx.timer);
- syncCtx.timer=setTimeout(async()=>{try{
-  const res=await fetch("/api/learning/en-a1",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-CSRF-Token":syncCtx.csrf},body:JSON.stringify({progress:compactProgress()})});
-  if(res.ok){const j=await res.json();state.lastServerUpdated=Number(j.updated)||0;localStorage.setItem(SKEY,JSON.stringify(state));document.getElementById("syncStatus").textContent="Прогресс синхронизирован с аккаунтом."}
- }catch{}},700);
-}
-function save(){state.updatedAt=Date.now();writeLocal();scheduleSync()}
-async function syncInit(){
- try{
-  const sr=await fetch("/api/session",{credentials:"same-origin",cache:"no-store"});if(!sr.ok)return;
-  const session=await sr.json();if(!session.user||!session.csrf)return;
-  syncCtx.user=session.user;syncCtx.csrf=session.csrf;document.getElementById("syncStatus").textContent="Аккаунт найден · проверяем прогресс…";
-  const pr=await fetch("/api/learning/en-a1",{credentials:"same-origin",cache:"no-store"});if(!pr.ok)return;
-  const remote=await pr.json(),serverMs=(Number(remote.updated)||0)*1000,localMs=Number(state.updatedAt)||0;
-  if(remote.progress&&Object.keys(remote.progress).length&&serverMs>localMs){
-   const localInk=state.ink||{};state={...remote.progress,ink:localInk,lastServerUpdated:Number(remote.updated)||0};normaliseState();writeLocal();
-   renderDayGrid();renderDay();renderExam();redraw();
-  }else if(localMs>serverMs){scheduleSync()}
-  document.getElementById("syncStatus").textContent="Синхронизация с аккаунтом включена.";
- }catch{document.getElementById("syncStatus").textContent="Прогресс сохраняется на этом устройстве."}
-}
+function save(){state.updatedAt=Date.now();writeLocal()}
 function itemRec(id){return state.items[id]||(state.items[id]={correct:0,wrong:0,level:0,due:today()})}
 function mark(id,ok,tag){
  const r=itemRec(id); if(ok){r.correct++;r.level=Math.min(5,(r.level||0)+1);state.streak++;}else{r.wrong++;r.level=Math.max(0,(r.level||0)-1);state.streak=0;}
@@ -408,7 +385,7 @@ function renderQuiz(d,wrap){
 }
 function renderDay(){
  const d=days[state.current-1],root=document.getElementById("lesson");root.replaceChildren();
- const ey=document.createElement("div");ey.className="eyebrow";ey.textContent="ДЕНЬ "+d.n+" · УРОК УРОВНЯ A1";
+ const ey=document.createElement("div");ey.className="eyebrow";ey.textContent="РАЗДЕЛ "+d.n+" · САМОСТОЯТЕЛЬНАЯ ПРАКТИКА";
  const h=document.createElement("h2");h.textContent=d.title;const p=document.createElement("p");p.textContent=d.goal;root.append(ey,h,p);
  const s=document.createElement("div");s.className="section";s.innerHTML="<h3>Материал дня</h3>";d.items.forEach(x=>s.append(card(x)));root.append(s);
  const lex=extraLexicon[d.n]||[];if(lex.length){const v=document.createElement("div");v.className="section";v.innerHTML="<h3>Активный словарь</h3>";lex.forEach(x=>v.append(card(x)));root.append(v)}
@@ -489,62 +466,47 @@ function renderCoverage(){
  coverageGroups.forEach(([name,arr])=>{const d=document.createElement("details");const s=document.createElement("summary");s.textContent=name+" · "+arr.length+" пунктов";d.append(s);const ul=document.createElement("ul");arr.forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.append(li)});d.append(ul);root.append(d)});
  referenceDeck.forEach(([name,arr])=>{const d=document.createElement("details");const s=document.createElement("summary");s.textContent="Справочник · "+name;d.append(s);arr.forEach(x=>d.append(card(x)));root.append(d)})
 }
-function examSource(x){
- const d=document.createElement("div");d.className="exam-source";
+function practiceSource(x){
+ const d=document.createElement("div");d.className="practice-source";
  const en=document.createElement("div");en.className="en";en.textContent=x.en;
  const ipa=document.createElement("div");ipa.className="ipa";ipa.textContent=x.ipa;
  const after=document.createElement("div");after.className="after";after.textContent=x.ru||"";
  d.append(en,ipa,after);return d
 }
-function renderExam(){
- const parts=document.getElementById("examParts");parts.replaceChildren();
-
- const listen=document.createElement("div");listen.className="exam-part active";listen.dataset.part="listen";listen.innerHTML="<h3>Аудирование</h3><p></p>";
- listen.querySelector("p").textContent=examData.listen.intro;
- examData.listen.items.forEach((x,i)=>{
+function renderPractice(){
+ const parts=document.getElementById("practiceParts");parts.replaceChildren();
+ const answer=(x)=>{const d=document.createElement("details");const summary=document.createElement("summary");summary.textContent="Показать ответ";const p=document.createElement("p");p.textContent=x.opts[x.a];d.append(summary,p);return d};
+ const options=(x,key,box)=>{x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="practice-"+key;inp.checked=state.practice[key]===j;inp.onchange=()=>{state.practice[key]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});box.append(answer(x))};
+ const listen=document.createElement("div");listen.className="practice-part active";listen.dataset.part="listen";listen.innerHTML="<h3>Слушание</h3><p></p>";
+ listen.querySelector("p").textContent=practiceData.listen.intro;
+ practiceData.listen.items.forEach((x,i)=>{
   const box=document.createElement("div");box.className="quiz";
-  let plays=Number(state.exam["lp"+i])||0;
-  const play=document.createElement("button");play.className="btn";play.textContent=plays>=2?"Прослушивания использованы":"▶ Прослушать "+(i+1)+" · "+(2-plays)+" осталось";play.disabled=plays>=2;
-  play.onclick=()=>{plays++;state.exam["lp"+i]=plays;save();play.textContent=plays>=2?"Прослушивания использованы":"▶ Прослушать "+(i+1)+" · "+(2-plays)+" осталось";play.disabled=plays>=2;speak(x.audio.en,"en-GB",null,()=>{})};
-  box.append(play);const p=document.createElement("p");p.textContent=x.q;box.append(p);
-  x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="exl"+i;inp.checked=state.exam["l"+i]===j;inp.onchange=()=>{state.exam["l"+i]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});
-  listen.append(box)
- });
- parts.append(listen);
-
- const read=document.createElement("div");read.className="exam-part";read.dataset.part="read";read.innerHTML="<h3>Чтение</h3><p></p>";
- read.querySelector("p").textContent=examData.read.intro;let ridx=0;
- examData.read.passages.forEach((passage,pi)=>{
-  const source=examSource(passage.text);read.append(source);
-  passage.items.forEach(x=>{const i=ridx++;const box=document.createElement("div");box.className="quiz";const p=document.createElement("p");p.textContent=x.q;box.append(p);x.opts.forEach((o,j)=>{const l=document.createElement("label");l.className="option";const inp=document.createElement("input");inp.type="radio";inp.name="exr"+i;inp.checked=state.exam["r"+i]===j;inp.onchange=()=>{state.exam["r"+i]=j;save()};l.append(inp,document.createTextNode(o));box.append(l)});read.append(box)});
-  const reveal=document.createElement("button");reveal.className="btn";reveal.textContent="Показать IPA и перевод после ответов";reveal.onclick=()=>{source.classList.add("revealed");reveal.disabled=true};read.append(reveal)
+  const source=practiceSource(x.audio);source.classList.add("revealed");
+  const play=document.createElement("button");play.className="btn";play.textContent="▶ Прослушать "+(i+1);
+  play.onclick=()=>speak(x.audio.en,"en-GB",null,()=>{});
+  const p=document.createElement("p");p.textContent=x.q;box.append(source,play,p);
+  options(x,"l"+i,box);listen.append(box)
+ });parts.append(listen);
+ const read=document.createElement("div");read.className="practice-part";read.dataset.part="read";read.innerHTML="<h3>Чтение</h3><p></p>";
+ read.querySelector("p").textContent=practiceData.read.intro;let ridx=0;
+ practiceData.read.passages.forEach(passage=>{
+  const source=practiceSource(passage.text);source.classList.add("revealed");read.append(source);
+  passage.items.forEach(x=>{const box=document.createElement("div");box.className="quiz";const p=document.createElement("p");p.textContent=x.q;box.append(p);options(x,"r"+ridx++,box);read.append(box)})
  });parts.append(read);
-
- const write=document.createElement("div");write.className="exam-part";write.dataset.part="write";write.innerHTML="<h3>Письмо</h3><p></p><h4>Задание 1 · личные данные</h4>";
- write.querySelector("p").textContent=examData.write.intro;
+ const write=document.createElement("div");write.className="practice-part";write.dataset.part="write";write.innerHTML="<h3>Письмо</h3><p></p><h4>Придумайте персонажа</h4>";
+ write.querySelector("p").textContent=practiceData.write.intro;
  const form=document.createElement("div");form.className="grid two";
- examData.write.fields.forEach((label,i)=>{const wrap=document.createElement("label");wrap.className="stack";wrap.textContent=label;const inp=document.createElement("input");inp.className="answerbox";inp.style.minHeight="0";inp.value=state.exam["wf"+i]||"";inp.oninput=()=>{state.exam["wf"+i]=inp.value;save()};wrap.append(inp);form.append(wrap)});write.append(form);
- const wh=document.createElement("h4");wh.textContent="Задание 2 · короткое сообщение";const prompt=document.createElement("div");prompt.className="prompt";prompt.textContent=examData.write.prompt;const ta=document.createElement("textarea");ta.className="answerbox";ta.placeholder="Пишите здесь…";ta.value=state.exam.writing||"";ta.oninput=()=>{state.exam.writing=ta.value;save()};
- const wc=document.createElement("p");wc.className="note";const updateWords=()=>{const n=ta.value.trim()?ta.value.trim().split(/\s+/).length:0;wc.textContent=n+" слов · цель 35–50"};ta.addEventListener("input",updateWords);updateWords();
- const details=document.createElement("details");details.innerHTML="<summary>Показать образец только после выполнения</summary>";details.append(card(examData.write.model));write.append(wh,prompt,ta,wc,details);parts.append(write);
-
- const speakPart=document.createElement("div");speakPart.className="exam-part";speakPart.dataset.part="speak";speakPart.innerHTML="<h3>Устная речь</h3><p></p>";speakPart.querySelector("p").textContent=examData.speak.intro;
- examData.speak.prompts.forEach((x,i)=>{const d=card(x);const lab=document.createElement("span");lab.className="badge";lab.textContent=i<2?"ЧАСТЬ 1":i<6?"ЧАСТЬ 2":"ЧАСТЬ 3";d.prepend(lab);speakPart.append(d)});
- const rec=document.createElement("button");rec.className="btn";rec.textContent="● Записать ответ";let mr,chunks=[];
+ practiceData.write.fields.forEach((label,i)=>{const wrap=document.createElement("label");wrap.className="stack";wrap.textContent=label;const inp=document.createElement("input");inp.className="answerbox";inp.style.minHeight="0";inp.placeholder="Вымышленные сведения";inp.value=state.practice["wf"+i]||"";inp.oninput=()=>{state.practice["wf"+i]=inp.value;save()};wrap.append(inp);form.append(wrap)});write.append(form);
+ const wh=document.createElement("h4");wh.textContent="Короткое сообщение";const prompt=document.createElement("div");prompt.className="prompt";prompt.textContent=practiceData.write.prompt;const ta=document.createElement("textarea");ta.className="answerbox";ta.placeholder="Пишите здесь…";ta.value=state.practice.writing||"";ta.oninput=()=>{state.practice.writing=ta.value;save()};
+ const wc=document.createElement("p");wc.className="note";const updateWords=()=>{const n=ta.value.trim()?ta.value.trim().split(/\s+/).length:0;wc.textContent=n+" слов · примерный объём 35–50, без оценки"};ta.addEventListener("input",updateWords);updateWords();
+ const details=document.createElement("details");details.innerHTML="<summary>Посмотреть образец</summary>";details.append(card(practiceData.write.model));write.append(wh,prompt,ta,wc,details);parts.append(write);
+ const speakPart=document.createElement("div");speakPart.className="practice-part";speakPart.dataset.part="speak";speakPart.innerHTML="<h3>Речевая практика</h3><p></p>";speakPart.querySelector("p").textContent=practiceData.speak.intro;
+ practiceData.speak.prompts.forEach(x=>speakPart.append(card(x)));
+ const rec=document.createElement("button");rec.className="btn";rec.textContent="● Записать для себя";let mr,chunks=[];
  rec.onclick=async()=>{if(mr?.state==="recording"){mr.stop();rec.textContent="● Записать ответ";return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];mr=new MediaRecorder(stream);mr.ondataavailable=e=>chunks.push(e.data);mr.onstop=()=>{const blob=new Blob(chunks,{type:mr.mimeType});const url=URL.createObjectURL(blob);let a=speakPart.querySelector("audio");if(!a){a=document.createElement("audio");a.controls=true;speakPart.append(a)}a.src=url;stream.getTracks().forEach(t=>t.stop())};mr.start();rec.textContent="■ Остановить запись"}catch{alert("Браузер не дал доступ к микрофону. Можно ответить вслух без записи.")}};speakPart.append(rec);parts.append(speakPart);
-
- const result=document.createElement("div");result.className="exam-part";result.dataset.part="result";result.innerHTML="<h3>Результат</h3><p id=\"examScore\"></p><div id=\"masteryGate\" class=\"notice\"></div><p class=\"note\">Аудирование и чтение считаются автоматически. Письмо и речь требуют содержательной проверки человеком или языковой моделью. Syolana не выдаёт длину текста или наличие записи за подтверждённое владение навыком.</p>";parts.append(result);
-
- document.querySelectorAll("[data-exam]").forEach(b=>b.onclick=()=>{
-  document.querySelectorAll("[data-exam]").forEach(x=>x.classList.remove("primary"));b.classList.add("primary");
-  document.querySelectorAll(".exam-part").forEach(x=>x.classList.toggle("active",x.dataset.part===b.dataset.exam));
-  if(b.dataset.exam==="result"){
-   let ok=0,total=0;examData.listen.items.forEach((x,i)=>{total++;if(state.exam["l"+i]===x.a)ok++});let ri=0;examData.read.passages.forEach(p=>p.items.forEach(x=>{const i=ri++;total++;if(state.exam["r"+i]===x.a)ok++}));
-   const pct=Math.round(ok/total*100),weak=dueWeak().length,daysDone=Object.values(state.days).filter(Boolean).length;
-   document.getElementById("examScore").textContent="Объективно проверяемая часть: "+ok+" из "+total+" ("+pct+"%).";
-   const gate=document.getElementById("masteryGate");
-   gate.textContent=pct>=90&&weak===0&&daysDone===28?"Listening + Reading подтверждены на уровне mastery. Осталось подтвердить Writing + Speaking.":"Для полного закрытия Syolana рекомендует ≥90% в Listening + Reading, пройти 28/28 дней и убрать все просроченные слабые места. Сейчас: "+daysDone+"/28 дней, "+weak+" слабых пунктов.";
-  }
+ document.querySelectorAll("[data-practice]").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("[data-practice]").forEach(x=>x.classList.remove("primary"));b.classList.add("primary");
+  document.querySelectorAll(".practice-part").forEach(x=>x.classList.toggle("active",x.dataset.part===b.dataset.practice))
  })
 }
 window.addEventListener("message",e=>{
@@ -564,7 +526,7 @@ window.addEventListener("message",e=>{
   if(e.data.anchor){const target=document.getElementById(e.data.anchor);target?.scrollIntoView()}
 });
 window.addEventListener("resize",()=>{redraw();requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,height:document.documentElement.scrollHeight},"*"))});
-renderDayGrid();renderDay();renderStats();renderWeak();renderCoverage();renderExam();redraw();syncInit();
+renderDayGrid();renderDay();renderStats();renderWeak();renderCoverage();renderPractice();redraw();
 requestAnimationFrame(()=>window.parent?.postMessage({syolanaLesson:true,ready:true,height:document.documentElement.scrollHeight},"*"));
 </script>
 </body>

@@ -10,7 +10,7 @@ FREE = {'a1-english.html':'en/a1/course','a1-spanish-rules.html':'es/a1/rules','
 PAID = {'a2-spanish-rules.html':'es/a2/rules','a2-spanish-words.html':'es/a2/words',
         'b1-spanish-rules.html':'es/b1/rules','b2-spanish-rules.html':'es/b2/rules'}
 FILES = ['index.html','app.js','api.js','catalog.js','content.js','player.js','studio.js','themes.js','utils.js',
-         'styles.css','config.json','feed.json','feed.js','discovery.js','flight.js','scene-audio.js','boot.js','legacy-bridge.js','legacy-embed.css','legacy-redirect.js']
+         'styles.css','config.json','feed.json','feed.js','discovery.js','flight.js','scene-audio.js','boot.js','partner-core.js','partner-core.css','legacy-bridge.js','legacy-embed.css','legacy-redirect.js']
 
 def redirect(route):
     return '<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Syolana</title><body><p><a href="/#/'+route+'">Открыть страницу Syolana</a></p><script src="/legacy-redirect.js" data-route="'+route+'"></script></body></html>'
@@ -42,6 +42,9 @@ def build():
     for name in FILES: shutil.copy2(ROOT/name, PUBLIC/name)
     for name in ['assets','themes','books','covers','español-songs','audio-library','partner-demo']:
         if (ROOT/name).exists(): shutil.copytree(ROOT/name,PUBLIC/name)
+    version = hashlib.sha256(b''.join((PUBLIC/name).read_bytes() for name in ['partner-core.js','themes.js','flight.js','styles.css'])).hexdigest()[:20]
+    (PUBLIC/'partners').mkdir(exist_ok=True)
+    (PUBLIC/'partners/core-version.json').write_text(json.dumps({'version': version},ensure_ascii=False))
     for name,route in FREE.items(): (PUBLIC/name).write_text(lesson(name,route))
     for name,route in PAID.items():
         destination=PRIVATE/(route+'.html');destination.parent.mkdir(parents=True,exist_ok=True)

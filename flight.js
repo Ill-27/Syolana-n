@@ -118,8 +118,9 @@ export function setupFlightLayer({
         pinch = next;
       } else {
         e.preventDefault();
-        const panScale =
-          Math.min(innerWidth, innerHeight) <= 700
+        const panScale = Number.isFinite(theme.theme?.gesturePanScale)
+          ? theme.theme.gesturePanScale
+          : Math.min(innerWidth, innerHeight) <= 700
             ? 175
             : Math.max(360, Math.min(innerWidth, innerHeight));
 
@@ -201,7 +202,9 @@ export function setupFlightLayer({
         if (touchLast) {
           const dx = t.clientX - touchLast.x;
           const dy = t.clientY - touchLast.y;
-          const scale = Math.min(innerWidth, innerHeight) <= 700 ? 74 : 180;
+          const scale = Number.isFinite(theme.theme?.gesturePanScale)
+            ? theme.theme.gesturePanScale
+            : Math.min(innerWidth, innerHeight) <= 700 ? 74 : 180;
 
           if (theme.theme?.pathDepthGestures) {
             theme.move(

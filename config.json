@@ -1,6 +1,5 @@
 {
   "brand": "Syolana",
-  "contactEmail": "syolana@yandex.ru",
   "banner": {
     "eyebrow": "SYOLANA · ЕДИНАЯ ИММЕРСИВНАЯ ПЛАТФОРМА",
     "title": "Ваш сайт — живой мир.",
@@ -1059,13 +1058,18 @@
   "contactChannels": {
     "website": {
       "type": "avito",
-      "url": ""
+      "url": "https://www.avito.ru/brands/i223140984"
     },
     "languages": {
-      "type": "email",
-      "url": ""
+      "type": "avito",
+      "url": "https://www.avito.ru/brands/i223140984"
+    },
+    "general": {
+      "type": "avito",
+      "url": "https://www.avito.ru/brands/i223140984"
     }
   },
-  "salesMode": "manual-inquiry",
-  "commercialReady": false
+  "salesMode": "external-inquiry",
+  "commercialReady": false,
+  "legalContactEmail": "syolana@yandex.ru"
 }

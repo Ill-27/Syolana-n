@@ -13,13 +13,13 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261005-sea8";
+import { ThemeEngine } from "./themes.js?v=20261005-sea9";
 import { Player } from "./player.js";
 import { API } from "./api.js";
 import { lessons } from "./content.js";
 import { Studio } from "./studio.js";
 import { renderFeed, feedEditor } from "./feed.js";
-import { setupDiscovery } from "./discovery.js";
+import { setupDiscovery } from "./discovery.js?v=20261005-sea9";
 import { SceneAudio } from "./scene-audio.js";
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
@@ -50,10 +50,10 @@ function businessContact(subject, kind = "website") {
     if (u.protocol === "https:" && !u.username && !u.password &&
         (u.hostname === "avito.ru" || u.hostname.endsWith(".avito.ru"))) return u.href;
   } catch {}
-  return "mailto:syolana@yandex.ru?subject=" + encodeURIComponent(subject);
+  return "https://www.avito.ru/brands/i223140984";
 }
 
-setupDiscovery({ theme, zen, player });
+setupDiscovery({ theme, zen, player, contactURL: businessContact() });
 let cleanup = () => {};
 let routeToken = 0;
 let siteTimer = 0;
@@ -322,9 +322,7 @@ function platformPromo(kind = "themes") {
 
     const actions = el("div", "promo-actions");
     const idea = el("a", "btn small", "Предложить идею темы");
-    idea.href =
-      "mailto:syolana@yandex.ru?subject=" +
-      encodeURIComponent("Идея новой темы Syolana");
+    idea.href = businessContact("Идея новой темы Syolana");
     actions.append(
       idea,
       link("Подключить Syolana", "#/join", "text-link"),
@@ -574,7 +572,7 @@ function languages(lang = "en") {
       })(),
       free
         ? link("Открыть английский A1", "#/lesson/en/a1/course", "btn primary")
-        : el("p", "fine", "Готовится к выпуску"),
+        : link("Уточнить выпуск на Авито", businessContact("Языковое пособие " + lang + " " + level, "languages"), "btn"),
     );
     levels.append(card);
   }
@@ -726,7 +724,7 @@ function join() {
       "",
       "После окончания подписки премиальные элементы Syolana перестают подключаться, а собственный домен, хостинг и опубликованный контент партнёра остаются у него.",
     ),
-    link("Обсудить настройку моего сайта", "#/contact", "btn"),
+    link("Обсудить настройку на Авито", businessContact(), "btn"),
     link("Посмотреть тестового партнёра", "partner-demo/", "btn"),
     link("Единые условия Syolana", "#/offer", "text-link"),
     link("Условия тест-драйва", "#/terms", "text-link"),
@@ -771,7 +769,7 @@ function join() {
     "p",
     "notice",
     "Мы не требуем переводов до создания сайта и завершения бесплатного тест-драйва. Сверяйте адрес сайта и контакт " +
-      config.contactEmail +
+      businessContact() +
       ". Оплачивайте только согласованный счёт; чек выдаётся после оплаты.",
   );
   $("page").append(security);
@@ -1276,39 +1274,17 @@ async function reader({ id, slug, chapter = 0 }, token) {
 }
 function contactPage() {
   $("page").append(
-    heading(
-      "СВЯЗАТЬСЯ С SYOLANA",
-      "Один адрес для всех вопросов",
-      "Партнёрство, поддержка, идеи, права и общие вопросы — всё приходит в один официальный ящик Syolana.",
-    ),
+    heading("СВЯЗАТЬСЯ С SYOLANA", "Давайте обсудим вашу идею", "Создание сайта, сотрудничество, поддержка и вопросы о материалах — в профиле Syolana на Авито."),
   );
-
   const card = el("section", "card stack contact-card contact-card-main");
   card.append(
-    el("span", "badge", "ОФИЦИАЛЬНАЯ ПОЧТА · YANDEX"),
-    el("h2", "", "Syolana"),
-    el(
-      "p",
-      "",
-      "Мы отвечаем именно с этого адреса, поэтому в переписке всегда видно один и тот же публичный контакт.",
-    ),
-    link("Yandex-почта · syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
-    link(
-      "Написать Syolana",
-      "mailto:syolana@yandex.ru?subject=" +
-        encodeURIComponent("Сообщение для Syolana"),
-      "btn primary",
-    ),
+    el("span", "badge", "SYOLANA · АВИТО"),
+    el("h2", "", "От идеи — к вашему сайту"),
+    el("p", "", "Расскажите, какой сайт вам нужен. Состав работы, стоимость, сроки и условия согласуем в личной переписке до оплаты."),
+    link("Открыть профиль Syolana", businessContact(), "text-link"),
+    link("Написать на Авито", businessContact(), "btn primary"),
   );
-
-  $("page").append(
-    card,
-    el(
-      "p",
-      "notice",
-      "Для сообщения о нарушении прав укажите ссылку на конкретную страницу и суть обращения. Личные адреса команды не публикуются.",
-    ),
-  );
+  $("page").append(card, el("p", "notice", "Переход открывает внешнюю площадку Авито. На этом сайте нет формы оплаты и автоматических списаний."));
 }
 
 function terms() {
@@ -1345,7 +1321,7 @@ function terms() {
       "Syolana стремится собирать только данные, необходимые для работы выбранных функций. В браузере сохраняются настройки темы, плеера и место чтения. Для редактора, чата и платных функций состав данных будет отдельно описан в политике обработки данных до их коммерческого запуска.",
     ),
     el("h3", "", "Контакт"),
-    link("syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
+    link("Написать на Авито", businessContact(), "text-link"),
   );
 
   $("page").append(box);
@@ -1370,7 +1346,7 @@ function offerPage() {
     el(
       "p",
       "",
-      "Домен, хостинг, репозиторий, тексты, изображения и иные материалы партнёра контролируются самим партнёром. Единственным источником его публикаций является настроенная публичная страница ВКонтакте: партнёр сам публикует, исправляет и удаляет записи, а сайт отображает их производную копию. Syolana не предоставляет редактор постов и не обязуется проводить предварительную юридическую экспертизу каждой записи.",
+      "Домен, хостинг, репозиторий, тексты, изображения и иные материалы партнёра контролируются самим партнёром. Публикации поступают из открытого сообщества VK партнёра либо из его собственного Partner Studio. В режиме VK записи изменяются во VK; в режиме Studio — в редакторе на инфраструктуре партнёра. Syolana не создаёт и не редактирует эти тексты и не проводит предварительную юридическую экспертизу каждой записи.",
     ),
     el("h3", "", "Стоимость и тест-драйв"),
     el(
@@ -1394,7 +1370,7 @@ function offerPage() {
     el(
       "p",
       "",
-      "Сообщения о нарушениях принимаются через форму обращения или по адресу syolana@yandex.ru. По обоснованной жалобе Syolana может временно отключить свой слой и передать обращение владельцу партнёрского сайта.",
+      "Обычные обращения принимаются на Авито. Адрес для юридически значимых заявлений о нарушении прав указан на странице правовой информации. По обоснованной жалобе Syolana может временно отключить свой слой и передать обращение владельцу партнёрского сайта.",
     ),
     el("h3", "", "Персональные данные"),
     el(
@@ -1403,7 +1379,7 @@ function offerPage() {
       "Syolana проектирует Partner Studio с минимизацией данных и первичной российской инфраструктурой. До запуска Studio и платных функций публичная политика будет приведена в полное соответствие с фактической архитектурой.",
     ),
     el("h3", "", "Контакт"),
-    link("syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
+    link("Написать на Авито", businessContact(), "text-link"),
   );
   $("page").append(box);
 }
@@ -1423,11 +1399,11 @@ function privacyPage() {
       "",
       "Основной публичный сайт не требует обязательной регистрации. В браузере сохраняются локальные настройки темы, плеера, место чтения и учебный прогресс. Очистка данных сайта удаляет эти настройки; они не являются облачной резервной копией. Тестовая страница размещена на GitHub Pages: её загрузка передаёт сетевые данные иностранному хостингу. Поэтому российская база сама по себе не означает отсутствия иностранных получателей или полной готовности к 152-ФЗ.",
     ),
-    el("h3", "", "Письма"),
+    el("h3", "", "Переписка на Авито"),
     el(
       "p",
       "",
-      "Если вы сами пишете на syolana@yandex.ru, содержание письма и указанные вами контактные данные используются для ответа на обращение.",
+      "При переходе на Авито вы используете внешнюю площадку по её правилам и политике данных. Информация, которую вы сообщаете в переписке, используется для ответа и согласования заказа. Эта страница не собирает текст обращения через собственную форму. Юридические заявления могут поступать по адресу, указанному в правовой информации.",
     ),
     el("h3", "", "Partner Studio и будущий Inbox"),
     el(
@@ -1436,7 +1412,7 @@ function privacyPage() {
       "До коммерческого запуска этих функций первичное хранение данных и аутентификация будут настроены в российской инфраструктуре, а публичная политика будет обновлена до начала такой обработки.",
     ),
     el("h3", "", "Контакт"),
-    link("syolana@yandex.ru", "mailto:syolana@yandex.ru", "text-link"),
+    link("Написать на Авито", businessContact(), "text-link"),
   );
   $("page").append(box);
 }
@@ -1455,7 +1431,9 @@ function legalInfo() {
     link("Условия тест-драйва", "#/terms", "text-link"),
     link("Конфиденциальность и данные", "#/privacy", "text-link"),
     link("Подать жалобу или сообщить о нарушении", "#/report", "text-link"),
-    link("Связаться с Syolana", "#/contact", "text-link"),
+    link("Связаться на Авито", businessContact(), "text-link"),
+    el("h3", "", "Юридические заявления о нарушении прав"),
+    el("p", "", "Адрес для заявлений, предусмотренных статьёй 15.7 149-ФЗ: syolana@yandex.ru. Для обсуждения услуг и обычной поддержки используйте Авито."),
     el("h3", "", "До включения оплаты"),
     el(
       "p",
@@ -1467,158 +1445,15 @@ function legalInfo() {
 }
 
 function report() {
-  const box = el("section", "auth card stack");
+  const box = el("section", "card stack");
   box.append(
-    el("h1", "", "Подать жалобу"),
-    el(
-      "p",
-      "muted",
-      "Укажите страницу, причину жалобы и способ связаться с вами. Для авторских прав приложите описание вашего права и конкретного материала.",
-    ),
+    el("h1", "", "Сообщить о публикации"),
+    el("p", "", "В сообщении укажите ссылку на страницу, конкретный материал и причину обращения. Для авторских прав добавьте сведения о правообладателе и основании заявления."),
+    link("Написать на Авито", businessContact(), "btn primary"),
+    link("Порядок юридических обращений", "#/legal", "text-link"),
   );
-  const form = el("form", "form");
-  for (const [name, label, type] of [
-    ["url", "Ссылка на страницу", "url"],
-    ["email", "Ваш email", "email"],
-    ["reason", "Описание обращения", "textarea"],
-  ]) {
-    const l = el("label", "field", label);
-    const input = el(type === "textarea" ? "textarea" : "input");
-    if (type !== "textarea") input.type = type;
-    input.name = name;
-    input.required = true;
-    input.maxLength = type === "textarea" ? 5000 : 500;
-    l.append(input);
-    form.append(l);
-  }
-  const serverReports = api.online && config.launch?.dataProcessingReady === true;
-  const submit = el("button", "btn primary", serverReports ? "Отправить обращение" : "Открыть письмо с обращением");
-  submit.type = "submit";
-  form.append(submit);
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    submit.disabled = true;
-    try {
-      const payload = Object.fromEntries(new FormData(form));
-      if (!serverReports) {
-        const subject = encodeURIComponent("Обращение о публикации / правах");
-        const body = encodeURIComponent(
-          "Ссылка: " +
-            payload.url +
-            "\nКонтакт: " +
-            payload.email +
-            "\n\nОписание:\n" +
-            payload.reason,
-        );
-        location.href =
-          "mailto:syolana@yandex.ru?subject=" + subject + "&body=" + body;
-        submit.disabled = false;
-        return;
-      }
-      await api.request("reports", {
-        method: "POST",
-        body: payload,
-      });
-      form.replaceChildren(
-        el(
-          "p",
-          "notice",
-          "Обращение зарегистрировано. Оно поступило в очередь администратора.",
-        ),
-      );
-    } catch (err) {
-      notify(err.message);
-      submit.disabled = false;
-    }
-  };
-  if (!serverReports) box.append(el("p", "fine", "Поля этой формы заполняются на вашем устройстве. Кнопка откроет почтовое приложение; письмо нужно отправить в нём самостоятельно. До отправки сайт не регистрирует обращение."));
-  box.append(form);
   $("page").append(box);
 }
-async function route() {
-  const token = ++routeToken;
-  const preserveAudio = /^#\/book\//.test(location.hash) || /^#\/s\/[^/]+\/book\//.test(location.hash);
-  cleanup({ preserveAudio });
-  if (!preserveAudio) sceneAudio.stop();
-  cleanup = () => {};
-  clearTimeout(siteTimer);
-  clearTimeout(accessTimer);
-  zen(false);
-  document.body.classList.remove("reading", "no-effects", "partner-site");
-  theme.setBlocked(false);
-  document.documentElement.style.setProperty("--prose", moodColors.neutral);
-  $("page").replaceChildren();
-  window.scrollTo({ top: 0, behavior: "instant" });
-  document.title = "Syolana · Иммерсивная платформа для творчества";
-  const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
-  const [view, a, b, c, d] = parts;
-  const informationTitles = {
-    legal: "Правовая информация", offer: "Предварительные условия",
-    privacy: "Конфиденциальность", terms: "Условия тест-драйва",
-    report: "Обращения о нарушениях", contact: "Контакты",
-  };
-  const informationView = Boolean(informationTitles[view]);
-  $("banner").hidden = informationView;
-  $("provider-notice").hidden = informationView;
-  document.body.classList.toggle("information-view", informationView);
-  if (informationView) document.title = informationTitles[view] + " · Syolana";
-  document
-    .querySelectorAll("[data-nav]")
-    .forEach((x) =>
-      x.setAttribute("aria-current", x.dataset.nav === view ? "page" : "false"),
-    );
-  try {
-    if (view === "home") await home(token);
-    else if (view === "library") await library(token);
-    else if (view === "languages") languages(a, b);
-    else if (view === "songs") songsPage();
-    else if (view === "lesson") {
-      const key = [a, b, c].join("/");
-      if (!lessonFiles[key]) throw Error("Этот урок пока не опубликован.");
-      $("page").append(
-        link("К уровням языка", "#/languages/" + a, "text-link"),
-      );
-      await openLesson(key, d ? decodeURIComponent(d) : "", token);
-    } else if (view === "join") join();
-    else if (view === "contact") contactPage();
-    else if ((view === "studio" || view === "editor") && config.legacyStudioEnabled !== true) {
-      $("page").append(
-        heading("КАБИНЕТ ПАРТНЁРА", "Настройки на вашем сайте", "Кабинет подключается отдельно на инфраструктуре владельца сайта. Ссылку на него вы получаете после настройки. В режиме VK записи создаются и исправляются во ВКонтакте."),
-        link("Связаться по настройке", "#/contact", "btn primary"),
-      );
-    } else if (view === "studio") {
-      await apiReady;
-      if (token === routeToken)
-        await studio.render($("page"), token, () => routeToken);
-    } else if (view === "admin") {
-      await apiReady;
-      if (token === routeToken) await studio.admin($("page"));
-    } else if (view === "editor") feedEditor($("page"));
-    else if (view === "book") await reader({ id: a, chapter: b }, token);
-    else if (view === "s" && b === "book")
-      await reader({ slug: a, id: c, chapter: d }, token);
-    else if (view === "s") await publicSite(a, token);
-    else if (view === "terms") terms();
-    else if (view === "offer") offerPage();
-    else if (view === "privacy") privacyPage();
-    else if (view === "legal") legalInfo();
-    else if (view === "report") report();
-    else
-      $("page").append(
-        el("p", "empty", "Эта страница не найдена."),
-        link("На главную", "#/"),
-      );
-  } catch (err) {
-    if (token !== routeToken) return;
-    sceneAudio.stop();
-    $("page").replaceChildren(
-      el("p", "notice error", err.message),
-      link("На главную", "#/"),
-    );
-  }
-}
-window.addEventListener("hashchange", route);
-await route();
 
 function lessonFrame(key, anchor = "") {
   const filename = lessonFiles[key];

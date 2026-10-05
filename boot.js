@@ -1,5 +1,5 @@
 // Show a recoverable error if an upload is incomplete; never leave an endless loader.
-const release = new URL(import.meta.url).searchParams.get("v") || "20261005-sea8";
+const release = new URL(import.meta.url).searchParams.get("v") || "20261005-sea9";
 const appURL = new URL("./app.js", import.meta.url);
 appURL.searchParams.set("v", release);
 import(appURL.href).catch((error) => {
@@ -9,7 +9,7 @@ import(appURL.href).catch((error) => {
   const text = document.createElement("p");
   text.className = "notice";
   text.textContent =
-    "Не удалось открыть сайт. Проверьте интернет и обновите страницу. Если ошибка повторяется, сообщите нам: syolana@yandex.ru.";
+    "Не удалось открыть сайт. Проверьте интернет и обновите страницу. Если ошибка повторяется, напишите Syolana на Авито.";
   const retry = document.createElement("button");
   retry.className = "btn";
   retry.textContent = "Попробовать снова";

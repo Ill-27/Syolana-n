@@ -90,7 +90,7 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261005-sea8";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261005-sea9";
     if (version) url.searchParams.set("v", version);
     const { default: theme } = await import(url.href);
     if (seq !== this.sequence) return;
@@ -691,58 +691,22 @@ export class ThemeEngine {
         c.fillStyle = g;
         c.fillRect(0, 0, w, h);
         if (id === "living-sea") {
-          const horizon=Math.round(h*.50);
-          const sky=c.createLinearGradient(0,0,0,horizon);
-          sky.addColorStop(0,"#06162b");sky.addColorStop(.56,"#174b63");sky.addColorStop(1,"#b07850");
-          c.fillStyle=sky;c.fillRect(0,0,w,horizon);
-
-          c.save();c.globalCompositeOperation="screen";
-          for(let i=0;i<44;i++){
-            const x=((Math.sin(i*12.9898)*43758.5453)%1+1)%1*w;
-            const y=(((Math.sin(i*7.173+1.2)*19341.77)%1+1)%1)*h*.38;
-            const r=.6+((i*17)%7)*.18;
-            c.globalAlpha=.18+((i*13)%9)*.035;c.fillStyle=i%11===0?"#f1d6a2":"#c7e4ef";
-            c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();
+          if (!this.seaPreview) {
+            this.seaPreview = new Image();
+            this.seaPreview.src = new URL("previews/living-sea.jpg?v=20261005-sea9", this.themeBase).href;
           }
-          c.restore();
-
-          const sea=c.createLinearGradient(0,horizon,0,h);
-          sea.addColorStop(0,"#0b4c61");sea.addColorStop(.48,"#073547");sea.addColorStop(1,"#031624");
-          c.fillStyle=sea;c.fillRect(0,horizon,w,h-horizon);
-
-          c.save();c.globalCompositeOperation="screen";
-          for(let j=0;j<22;j++){
-            const d=(j+1)/22,y=horizon+Math.pow(d,1.56)*(h-horizon)*.91;
-            c.strokeStyle="rgba(143,219,229,"+(.025+d*.09)+")";c.lineWidth=.55+d*.80;c.beginPath();
-            for(let x=-10;x<=w+10;x+=9){
-              const yy=y+Math.sin(x*(.026+d*.022)+t*(.42+.18*d)+j*.58)*(1+d*4.2)+Math.sin(x*.011-t*.24+j)*d*2;
-              x<0?c.moveTo(x,yy):c.lineTo(x,yy);
-            }
-            c.stroke();
+          const poster = this.seaPreview;
+          if (poster.complete && poster.naturalWidth) {
+            const zoom = this.reduced.matches ? 1 : 1.018 + Math.sin(t * .10) * .012;
+            const dw = w * zoom, dh = h * zoom;
+            c.drawImage(poster, (w - dw) / 2, (h - dh) / 2, dw, dh);
+            const shade = c.createLinearGradient(0, h * .68, 0, h);
+            shade.addColorStop(0, "rgba(4,16,25,0)");
+            shade.addColorStop(1, "rgba(4,16,25,.26)");
+            c.fillStyle = shade; c.fillRect(0, 0, w, h);
+          } else {
+            c.fillStyle = "#183b50"; c.fillRect(0, 0, w, h);
           }
-
-          const sx=w*.50,by=horizon+38,sc=Math.min(w/640,h/360);
-          c.translate(sx,by);c.scale(sc,sc);c.lineCap="round";c.lineJoin="round";
-          c.shadowColor="rgba(157,226,230,.45)";c.shadowBlur=8;
-          c.strokeStyle="rgba(192,236,235,.82)";c.lineWidth=2.2;
-          c.beginPath();c.moveTo(-88,0);c.lineTo(82,0);c.lineTo(58,31);c.lineTo(-62,31);c.closePath();c.stroke();
-          c.strokeStyle="rgba(229,193,132,.78)";c.lineWidth=1.7;
-          const mz=[-42,0,40];
-          for(let mm=0;mm<mz.length;mm++){
-            const x=mz[mm],top=mm===1?-118:-108;
-            c.beginPath();c.moveTo(x,0);c.lineTo(x,top);c.moveTo(x-33,-72);c.lineTo(x+33,-72);c.moveTo(x-24,-98);c.lineTo(x+24,-98);c.stroke();
-            c.strokeStyle="rgba(202,235,238,.55)";
-            c.beginPath();c.moveTo(x,top);c.lineTo(x-53,4);c.moveTo(x,top);c.lineTo(x+53,4);c.stroke();
-            c.strokeStyle="rgba(229,193,132,.78)";
-            c.beginPath();c.moveTo(x-29,-70);c.lineTo(x,-22);c.lineTo(x+29,-70);c.moveTo(x-21,-96);c.lineTo(x,-73);c.lineTo(x+21,-96);c.stroke();
-          }
-          c.strokeStyle="rgba(202,235,238,.45)";
-          c.beginPath();c.moveTo(-42,-108);c.lineTo(0,-118);c.lineTo(40,-108);c.moveTo(0,-118);c.lineTo(0,0);c.stroke();
-          c.restore();
-
-          const vignette=c.createRadialGradient(w*.5,h*.50,w*.14,w*.5,h*.50,w*.70);
-          vignette.addColorStop(0,"rgba(0,5,12,0)");vignette.addColorStop(1,"rgba(0,5,12,.40)");
-          c.fillStyle=vignette;c.fillRect(0,0,w,h);
           continue;
         }
         if (id === "amber-forest") {

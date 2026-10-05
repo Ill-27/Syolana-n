@@ -1,7 +1,7 @@
 import { el, link, button, getPref, setPref } from "./utils.js";
-import { setupFlightLayer, platformFlightOffers } from "./flight.js";
+import { setupFlightLayer, platformFlightOffers } from "./flight.js?v=20261005-sea9";
 
-export function setupDiscovery({ theme, zen, player }) {
+export function setupDiscovery({ theme, zen, player, contactURL = "#/contact" }) {
   setupFlightLayer({
     theme,
     offers: platformFlightOffers(document.baseURI),
@@ -23,9 +23,7 @@ export function setupDiscovery({ theme, zen, player }) {
       text:
         "Мы постоянно выпускаем новые живые темы и каждую делаем с душой. Расскажите нам об образе или атмосфере, которую хочется увидеть — возможно, следующая тема начнётся с вашей идеи.",
       label: "Предложить идею",
-      href:
-        "mailto:syolana@yandex.ru?subject=" +
-        encodeURIComponent("Идея новой темы Syolana"),
+      href: contactURL,
     },
     {
       eyebrow: "ИММЕРСИВНОЕ ЧТЕНИЕ",

@@ -3,6 +3,12 @@ const SESSION_KEY = "partner-studio.session.v2";
 
 const $ = (selector) => document.querySelector(selector);
 
+function displayDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" }).format(date) : "";
+}
+
 let cfg = {};
 let apiEndpoint = "";
 let token = "";
@@ -96,7 +102,7 @@ function renderPreview(post) {
   }
 
   $("#preview-heading").textContent = post.title || "Публикация";
-  $("#preview-meta").textContent = [post.category || "VK", post.publishedAt]
+  $("#preview-meta").textContent = [post.category || "VK", displayDate(post.publishedAt)]
     .filter(Boolean)
     .join(" · ");
   $("#preview-title").textContent = post.title || "Публикация";
@@ -149,7 +155,7 @@ function renderList() {
     title.textContent = post.title || "Публикация";
 
     const meta = document.createElement("small");
-    meta.textContent = [post.source?.type === "publisher" ? "Ваш сайт" : "VK", post.publishedAt].filter(Boolean).join(" · ");
+    meta.textContent = [post.source?.type === "publisher" ? "Ваш сайт" : "VK", displayDate(post.publishedAt)].filter(Boolean).join(" · ");
 
     button.append(title, meta);
     button.onclick = () => {

@@ -4,6 +4,12 @@ async function readJSON(path) {
   return response.json();
 }
 
+function displayDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" }).format(date) : "";
+}
+
 function setText(selector, value = "") {
   const node = document.querySelector(selector);
   if (node) node.textContent = String(value ?? "");
@@ -168,7 +174,7 @@ function renderFeed(posts, category = "Все") {
 
     const meta = document.createElement("div");
     meta.className = "meta";
-    meta.textContent = [post.category, post.publishedAt]
+    meta.textContent = [post.category, displayDate(post.publishedAt)]
       .filter(Boolean)
       .join(" · ");
 

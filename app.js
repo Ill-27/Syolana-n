@@ -13,7 +13,7 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js";
+import { ThemeEngine } from "./themes.js?v=20261005-sea8";
 import { Player } from "./player.js";
 import { API } from "./api.js";
 import { lessons } from "./content.js";
@@ -1765,4 +1765,3 @@ async function openLesson(key, anchor, token) {
   }
   lessonFrame(key, anchor);
 }
-

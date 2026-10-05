@@ -4,7 +4,9 @@ export class ThemeEngine {
     this.canvas = document.querySelector("#starCanvas");
     this.ctx = this.canvas.getContext("2d");
     this.reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    this.paused = getPref("motionPaused", false) === true;
+    // Retire the old manual pause preference. Device motion settings still apply.
+    this.paused = false;
+    setPref("motionPaused", false);
     this.blocked = false;
     this.frame = 0;
     this.last = 0;
@@ -67,8 +69,6 @@ export class ThemeEngine {
     dialog.addEventListener("close", () =>
       cancelAnimationFrame(this.previewFrame),
     );
-    const motionToggle = document.querySelector("#motion-toggle");
-    if (motionToggle) motionToggle.onclick = () => this.setPaused(!this.paused);
     this.reduced.addEventListener("change", () => this.sync());
     this.sync();
     document.addEventListener("visibilitychange", () => this.sync());
@@ -133,11 +133,6 @@ export class ThemeEngine {
       .forEach((b) =>
         b.setAttribute("aria-pressed", String(b.dataset.theme === this.id)),
       );
-  }
-  setPaused(paused) {
-    this.paused = Boolean(paused);
-    setPref("motionPaused", this.paused);
-    this.sync();
   }
   setBlocked(blocked) {
     this.blocked = blocked;
@@ -650,35 +645,23 @@ export class ThemeEngine {
         : "";
   }
   drawPlanets() {
-    const cam = this.camera,
-      wrap = (v, n) => ((v % n) + n) % n;
-    const drift=this.theme?.autoFlightCards?this.phase*.10:0,virtualZ=cam.z+drift;
-    const suppressForForwardFlight =
-      performance.now() < (this.forwardFlightUntil || 0) ||
-      (Number.isFinite(cam?.vz) && cam.vz > 0.055);
-    const scale = Math.min(this.w, this.h) * 0.9;
-    document.querySelectorAll(".flight-planet").forEach((node, i) => {
-      const z = wrap(i * 1.53 + 1.4 - virtualZ, 8) + 0.45;
-      const x = wrap((i % 2 ? 0.58 : -0.34) - cam.x + 2, 4) - 2;
-      const y = wrap(((i % 3) - 1) * 0.7 - cam.y + 2, 4) - 2;
-      const px = this.w / 2 + (x * scale) / z,
-        py = this.h * 0.48 + (y * scale) / z;
-      const visible =
-        (Math.abs(virtualZ) > 0.04 || this.theme?.autoFlightCards) &&
-        z > 0.85 &&
-        z < 2.8 &&
-        px > 95 &&
-        px < this.w - 95 &&
-        py > 140 &&
-        py < this.h - 140 &&
-        !suppressForForwardFlight;
-      node.style.opacity = visible
-        ? String(Math.min(1, (z - 0.85) * 2, (2.8 - z) * 2))
-        : "0";
+    const nodes = [...document.querySelectorAll(".flight-planet")];
+    if (!nodes.length) return;
+    const layer = document.getElementById("flight-layer");
+    const count = this.w >= 1000 ? Math.min(2, nodes.length) : 1;
+    // Keep the invitation still while someone reads, taps, hovers or focuses it.
+    if (!layer?.matches(":focus-within") && !layer?.dataset.cardEngaged)
+      this.flightOffer = (Number(layer?.dataset.offerIndex || 0) + Math.floor(this.phase / 18)) % nodes.length;
+    const start = this.flightOffer || 0;
+    nodes.forEach((node, i) => {
+      const position = (i - start + nodes.length) % nodes.length;
+      const visible = position < count;
+      node.style.opacity = visible ? "1" : "0";
       node.style.pointerEvents = visible ? "auto" : "none";
       node.tabIndex = visible ? 0 : -1;
       node.setAttribute("aria-hidden", String(!visible));
-      node.style.transform = `translate(-50%,-50%) translate(${px}px,${py}px) scale(${Math.min(1, 1.5 / z)})`;
+      const offset = count === 2 ? (position ? 210 : -210) : 0;
+      node.style.transform = `translateX(calc(-50% + ${offset}px))`;
     });
   }
   startPreviews() {
@@ -1016,16 +999,6 @@ export class ThemeEngine {
     const stopped =
       document.hidden || this.paused || this.reduced.matches || this.blocked;
     document.body.classList.toggle("paused", stopped);
-    const control = document.querySelector("#motion-toggle");
-    if (control) {
-      control.setAttribute("aria-pressed", String(this.paused || this.reduced.matches));
-      control.disabled = this.reduced.matches;
-      const label = this.reduced.matches ? "Движение отключено настройками устройства" :
-        this.paused ? "Включить движение фона" : "Остановить движение фона";
-      control.setAttribute("aria-label", label);
-      control.title = label;
-      control.textContent = this.paused || this.reduced.matches ? "▶" : "Ⅱ";
-    }
     document.querySelectorAll("video[data-motion]").forEach((v) => {
       if (stopped || v.dataset.manualPause === "true") v.pause();
       else v.play().catch(() => {});
@@ -1049,4 +1022,3 @@ export class ThemeEngine {
     this.frame = requestAnimationFrame(tick);
   }
 }
-

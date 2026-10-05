@@ -13,7 +13,8 @@
         "banner": true,
         "player": true,
         "zen": true,
-        "publishing": true
+        "publishing": false,
+        "marketing": true
       }
     }
   }

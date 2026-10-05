@@ -96,12 +96,7 @@ function buildTopBar(partner) {
   fullscreen.innerHTML =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg>';
 
-  const motionToggle = make("button", "icon-btn glass", "Ⅱ");
-  motionToggle.id = "motion-toggle";
-  motionToggle.type = "button";
-  motionToggle.setAttribute("aria-label", "Остановить движение фона");
-  motionToggle.setAttribute("aria-pressed", "false");
-  actions.append(themeToggle, motionToggle, zenToggle, fullscreen);
+  actions.append(themeToggle, zenToggle, fullscreen);
   header.append(brand, actions);
   document.body.prepend(header);
 
@@ -393,6 +388,7 @@ export async function mountPartnerCore(options = {}) {
   if (mounted) return mounted;
 
   const partner = options.partner || {};
+  const features = options.features || {};
   const version = String(options.version || Date.now());
 
   document.documentElement.classList.add("syolana-active");
@@ -510,4 +506,3 @@ export async function mountPartnerCore(options = {}) {
 
   return mounted;
 }
-

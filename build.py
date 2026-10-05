@@ -40,7 +40,7 @@ def build():
     PUBLIC.mkdir(parents=True); PRIVATE.mkdir(parents=True)
     (PUBLIC/'legacy-scripts').mkdir()
     for name in FILES: shutil.copy2(ROOT/name, PUBLIC/name)
-    for name in ['assets','themes','books','covers','español-songs','audio-library']:
+    for name in ['assets','themes','books','covers','español-songs','audio-library','partner-demo']:
         if (ROOT/name).exists(): shutil.copytree(ROOT/name,PUBLIC/name)
     for name,route in FREE.items(): (PUBLIC/name).write_text(lesson(name,route))
     for name,route in PAID.items():

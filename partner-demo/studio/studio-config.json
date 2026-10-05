@@ -1,0 +1,7 @@
+{
+  "mode": "demo",
+  "partnerId": "demo-partner",
+  "apiEndpoint": "",
+  "auth": "server-session",
+  "publishingSource": "publisher"
+}

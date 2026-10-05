@@ -4,11 +4,11 @@ export const FLIGHT_HINT =
   "Перемещайтесь в пространстве с помощью мыши или жестов";
 
 export const PLATFORM_FLIGHT_OFFERS = [
-  ["Подключить Syolana", "7 дней тест-драйва · без предоплаты", "#/join"],
-  ["Иммерсивные книги", "Читать внутри живой атмосферы", "#/library"],
-  ["Английский A1", "Бесплатно для всех", "#/languages/en"],
-  ["Песня для проекта", "Творчество может звучать", "#/songs"],
-  ["A1 языка партнёрам", "Один язык на выбор, кроме английского", "#/languages"],
+  ["Ваш сайт, ваша атмосфера", "Попробовать Syolana · 7 дней бесплатно", "#/join"],
+  ["Поживите внутри истории", "Открыть иммерсивную библиотеку", "#/library"],
+  ["Немного английского каждый день", "Открыть A1 · бесплатно для всех", "#/languages/en"],
+  ["Пусть ваша история зазвучит", "Послушать песни Syolana", "#/songs"],
+  ["Новый язык — в вашем ритме", "Слова, правила и самостоятельная практика", "#/languages"],
 ];
 
 export function platformFlightOffers(baseURL = document.baseURI) {
@@ -35,16 +35,36 @@ export function setupFlightLayer({
 
   for (const [title, subtitle, url] of offers) {
     const a = link("", url, "flight-planet");
-    a.append(
-      el("span", "planet-orb", "✧"),
-      el("strong", "", title),
-      el("small", "", subtitle),
-    );
+    const copy = el("span", "flight-copy");
+    copy.append(el("strong", "", title), el("small", "", subtitle));
+    const icon = el("span", "planet-orb", "✧");
+    icon.setAttribute("aria-hidden", "true");
+    const arrow = el("span", "flight-arrow", "↗");
+    arrow.setAttribute("aria-hidden", "true");
+    a.append(icon, copy, arrow);
     layer.append(a);
   }
 
   layer.append(el("p", "flight-hint", FLIGHT_HINT));
   document.body.append(layer);
+
+  const measurePlayer = () => {
+    const dock = document.getElementById("music-dock");
+    const box = dock?.getBoundingClientRect();
+    const space = box?.height ? innerHeight - box.top : 28;
+    layer.style.setProperty("--zen-player-space", Math.max(28, space) + "px");
+  };
+  if (typeof ResizeObserver !== "undefined") {
+    const dock = document.getElementById("music-dock");
+    if (dock) new ResizeObserver(measurePlayer).observe(dock);
+  }
+  window.addEventListener("resize", measurePlayer, { passive: true });
+  measurePlayer();
+  for (const node of layer.querySelectorAll(".flight-planet")) {
+    node.addEventListener("pointerenter", () => { layer.dataset.cardEngaged = "true"; });
+    node.addEventListener("pointerleave", () => { delete layer.dataset.cardEngaged; });
+    node.addEventListener("touchend", () => { delete layer.dataset.cardEngaged; }, { passive: true });
+  }
 
   const pointers = new Map();
   let pinch = 0;

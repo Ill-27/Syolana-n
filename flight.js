@@ -273,8 +273,8 @@ export function setupFlightLayer({
     const keys = {
       ArrowLeft: [-0.15, 0, 0],
       ArrowRight: [0.15, 0, 0],
-      ArrowUp: [0, -0.15, 0],
-      ArrowDown: [0, 0.15, 0],
+      ArrowUp: [0, 0.15, 0],
+      ArrowDown: [0, -0.15, 0],
       "+": [0, 0, 0.9],
       "=": [0, 0, 0.9],
       "-": [0, 0, -0.9],

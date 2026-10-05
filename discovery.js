@@ -1,5 +1,5 @@
 import { el, link, button, getPref, setPref } from "./utils.js";
-import { setupFlightLayer, platformFlightOffers } from "./flight.js?v=20261005-sea9";
+import { setupFlightLayer, platformFlightOffers } from "./flight.js?v=20261005-sea12";
 
 export function setupDiscovery({ theme, zen, player, contactURL = "#/contact" }) {
   setupFlightLayer({

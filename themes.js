@@ -90,7 +90,7 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261005-sea9";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261005-sea12";
     if (version) url.searchParams.set("v", version);
     const { default: theme } = await import(url.href);
     if (seq !== this.sequence) return;
@@ -625,10 +625,15 @@ export class ThemeEngine {
       : 2.8;
     cam.vz *= Math.exp(-d * depthDamping);
     if (Math.abs(cam.vz) < 0.002) cam.vz = 0;
+    const bounds=this.theme?.flightBounds;
+    if(bounds){
+      for(const [key,target] of [['x','tx'],['y','ty'],['z','tz']]){
+        if(Number.isFinite(bounds[key]))cam[target]=Math.max(-bounds[key],Math.min(bounds[key],cam[target]));
+      }
+    }
     cam.x += (cam.tx - cam.x) * blend;
     cam.y += (cam.ty - cam.y) * blend;
     cam.z += (cam.tz - cam.z) * blend;
-    const bounds=this.theme?.flightBounds;
     if(bounds){
       if(Number.isFinite(bounds.x))cam.x=Math.max(-bounds.x,Math.min(bounds.x,cam.x));
       if(Number.isFinite(bounds.y))cam.y=Math.max(-bounds.y,Math.min(bounds.y,cam.y));
@@ -693,7 +698,7 @@ export class ThemeEngine {
         if (id === "living-sea") {
           if (!this.seaPreview) {
             this.seaPreview = new Image();
-            this.seaPreview.src = new URL("previews/living-sea.jpg?v=20261005-sea9", this.themeBase).href;
+            this.seaPreview.src = new URL("previews/living-sea.jpg?v=20261005-sea12", this.themeBase).href;
           }
           const poster = this.seaPreview;
           if (poster.complete && poster.naturalWidth) {

@@ -15,17 +15,21 @@ export function createSeaMotion() {
       last = time;
       const blend = 1 - Math.exp(-dt * 3.0);
       for (const key of ['x', 'y', 'z']) {
-        const limit = key === 'x' ? 1.2 : key === 'y' ? .55 : 1.8;
+        const limit = key === 'y' ? 10 : 60;
         const value = camera ? clamp(Number(camera[key]) || 0, -limit, limit) : 0;
         input[key] += (value - input[key]) * blend;
       }
       speed += ((camera ? 1.8 : .8) - speed) * (1 - Math.exp(-dt * 1.1));
       travel += speed * dt;
-      const camZ = -travel - input.z * 14;
+      // The fleet follows the sailing route, not the user's dolly movement.
+      // Otherwise moving forward also moves every ship away by the same amount.
+      const routeZ = -travel;
+      const camZ = routeZ - input.z * 32;
       const ceiling = waveCrestBound(weather);
-      const eye = [input.x * 11, ceiling + 6.2 + input.y * 2.3, camZ + 18];
-      const target = [eye[0] + input.x * 1.5, eye[1] - 5.3 - input.y * .65, camZ - 130];
-      return { eye, target, camZ, input: { ...input }, clearance: eye[1] - ceiling };
+      const elevation = Math.max(0, input.y * 16);
+      const eye = [input.x * 30, ceiling + 6.2 + elevation, camZ + 18];
+      const target = [eye[0] + Math.tanh(input.x * .12) * 12, eye[1] - 5.3 - elevation * .28, camZ - 130];
+      return { eye, target, camZ, routeZ, input: { ...input }, clearance: eye[1] - ceiling };
     },
   };
 }

@@ -1,5 +1,5 @@
 // Show a recoverable error if an upload is incomplete; never leave an endless loader.
-const release = new URL(import.meta.url).searchParams.get("v") || "20261005-sea11";
+const release = new URL(import.meta.url).searchParams.get("v") || "20261005-sea12";
 const appURL = new URL("./app.js", import.meta.url);
 appURL.searchParams.set("v", release);
 import(appURL.href).catch((error) => {

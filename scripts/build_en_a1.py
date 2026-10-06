@@ -4,7 +4,6 @@ The phoneme dictionary is closed: unknown tokens fail the build, never guessed.
 """
 from pathlib import Path
 import json, re, collections
-from a1_russian import noun, plural_noun, case
 from a1_examples import examples as authored_examples
 ROOT=Path(__file__).resolve().parents[1]
 SRC=ROOT/'courses/en-a1'
@@ -29,10 +28,12 @@ def inflect(w,kind):
     elif kind=='s': out=REG_SPELL.get(head, head[:-1]+'ies' if head.endswith('y') and head[-2] not in 'aeiou' else head+'es' if head.endswith(('s','sh','ch','x','z','o')) else head+'s')
     elif kind=='past':
         out=head+'d' if head.endswith('e') else head[:-1]+'ied' if head.endswith('y') and head[-2] not in 'aeiou' else head+head[-1]+'ed' if head in {'stop','plan','drop','shop','fit','prefer','travel'} else head+'ed'
-    else: out=head[:-1]+'ing' if head.endswith('e') and not head.endswith(('ee','ye')) else head+head[-1]+'ing' if head in {'run','swim','sit','get','put','begin','stop','plan','win','shop','travel','prefer'} else head+'ing'
+    else: out=head[:-1]+'ing' if head.endswith('e') and not head.endswith(('ee','ye')) else head+head[-1]+'ing' if head in {'run','swim','sit','get','put','begin','stop','plan','win','shop','travel','prefer','forget','cut','let','fit','drop'} else head+'ing'
     return ' '.join([out]+tail)
 PLURALS={'person':'people','man':'men','woman':'women','child':'children','tooth':'teeth','foot':'feet','mouse':'mice','sheep':'sheep','fish':'fish','wife':'wives','life':'lives','knife':'knives','leaf':'leaves','shelf':'shelves','half':'halves','scarf':'scarves','potato':'potatoes','tomato':'tomatoes','penny':'pence','businessperson':'businesspeople'}
 PL_IP={'people':'ˈpiːpl','men':'men','women':'ˈwɪmɪn','children':'ˈtʃɪldrən','teeth':'tiːθ','feet':'fiːt','mice':'maɪs','wives':'waɪvz','lives':'laɪvz','knives':'naɪvz','leaves':'liːvz','shelves':'ʃelvz','halves':'hɑːvz','scarves':'skɑːvz','pence':'pens','businesspeople':'ˈbɪznəspiːpl'}
+PLURALS['stomach']='stomachs'
+PL_IP.update({'houses':'ˈhaʊzɪz','mouths':'maʊðz','baths':'bɑːðz','paths':'pɑːðz','T-shirts':'ˈtiːʃɜːts'})
 def plural(w):
     if w in PLURALS: return PLURALS[w]
     if w.endswith("'s"): return w
@@ -53,7 +54,7 @@ for line in (SRC/'functions.txt').read_text().splitlines():
     w,ip,ru,raw=line.split('|',3);addph(w,ip)
     records.append({'id':'function-'+str(len(records)+1),'word':w,'ipa':ip,'ru':ru,'group':'functions','kind':'function','rawExamples':[x.split('~',1) for x in raw.split('||')]})
 groups.append({'id':'functions','title':'Служебные слова и вежливые формулы','type':'function'})
-for line in (SRC/'phonemes.txt').read_text().splitlines():
+for line in ((SRC/'phonemes.txt').read_text()+'\n'+(SRC/'contextual-phonemes.txt').read_text()).splitlines():
     if line and not line.startswith('#'):
         en,ip=line.split('|');addph(en,ip)
 for p,ip in PL_IP.items():addph(p,ip)
@@ -70,9 +71,12 @@ for r in records:
         if p!=w and p not in PH:
             addph(p, PL_IP.get(p,suffix(ip,'s')))
 # Homographs and exceptional inflections, authored and checked explicitly.
-for line in (SRC/'phonemes.txt').read_text().splitlines():
+for line in ((SRC/'phonemes.txt').read_text()+'\n'+(SRC/'contextual-phonemes.txt').read_text()).splitlines():
     if line and not line.startswith('#'):
         en,ip=line.split('|');addph(en,ip)
+COMPARATIVES=json.loads((SRC/'comparatives.json').read_text())
+for forms in COMPARATIVES.values():
+    for en,ip,ru in forms:addph(en,ip)
 def ipa(en,overrides=None):
     toks=words(en);out=[];i=0; overrides=overrides or {}
     while i<len(toks):
@@ -82,12 +86,13 @@ def ipa(en,overrides=None):
             if key in PH:found=(key,n);break
         if found:
             key,n=found;ip=overrides.get(key,PH[key]);
-            if len(toks)>1 and n==1 and key in WEAK:ip=WEAK[key]
+            if len(toks)>1 and n==1 and key in WEAK and i+n<len(toks):ip=WEAK[key]
+            if key=='a' and toks[i]=='A' and i==len(toks)-1:ip='eɪ'
             if key=='the' and i+1<len(toks):
                 nxt=PH.get(toks[i+1].lower(),'').lstrip('ˈˌ')
                 if nxt and nxt[0] in 'æɑɒʌəɛeiɪɔuʊɜa':ip='ði'
             # Linking r: spelling-final r is sounded before a following vowel in this model.
-            if key.endswith('r') and not ip.endswith('r') and ip.endswith(('ə','ɜː','ɑː','ɔː','eə','ɪə','ʊə')) and i+n<len(toks):
+            if key.endswith(('r','re')) and not ip.endswith('r') and ip.endswith(('ə','ɜː','ɑː','ɔː','eə','ɪə','ʊə')) and i+n<len(toks):
                 nxt=PH.get(toks[i+n].lower(),'').lstrip('ˈˌ')
                 if nxt and nxt[0] in 'æɑɒʌəɛeiɪɔuʊɜa':ip+='r'
             out.append(ip);i+=n
@@ -108,18 +113,21 @@ OVERRIDES={}
 for line in (SRC/'special-examples.txt').read_text().splitlines():
     if line and not line.startswith('#'):
         key,raw=line.split('|',1);OVERRIDES[key]=[x.split('~',1) for x in raw.split('||')]
+for line in (SRC/'contextual-examples.txt').read_text().splitlines():
+    if line and not line.startswith('#'):
+        key,raw=line.split('|',1)
+        OVERRIDES[key]=[x.split('~',1) for x in raw.split('||')]
 PAST_RU={}
 for l in (SRC/'verb-russian.txt').read_text().splitlines():
     if l and not l.startswith('#'):w,past=l.split('|');PAST_RU[w]=past
-SUBJECTS=json.loads((SRC/'adjective-subjects.json').read_text())
-COUNTLESS={'time','cash','space','health','pain','energy','heat','ice','fire','internet','wifi','reception','laundry','stress','success','transport','population','skin','petrol','rubbish','blood','midday','midnight','toothache'}
-NON_GRADE={'same','different','real','dead','alive','asleep','awake','married','single','sure','perfect','public','private','online','offline','available','necessary','possible','impossible','international','local','daily','usual','own','other','another','each','every','both','all','enough','several','next','last'}
-COMPS={'good':('better','best'),'well':('better','best'),'bad':('worse','worst'),'far':('farther','farthest'),'little':('less','least'),'many':('more','most'),'much':('more','most')}
+COUNTLESS={'time','cash','space','health','pain','energy','heat','ice','fire','internet','wifi','reception','laundry','stress','success','transport','skin','petrol','rubbish','blood','toothache'}
+BARE_TIMES={'midday','midnight'}
+FIXED_PLACES={"dentist's","hairdresser's","butcher's","greengrocer's"}
+DIRECTIONS={'east','west','north','south'}
 NOTES=json.loads((SRC/'notes.json').read_text())
-RU_NOUNS={r['word']:noun(r['ru']) for r in records if r['kind'] not in {'verb','adjective','feeling','colour','function','adverb'}}
-RU_NOUNS.update({'pool':'бассейн','line':'линия','path':'тропа'})
+NOUN_PLURALS=json.loads((SRC/'noun-plurals.json').read_text())
 def examples(r):
-    return authored_examples(r, OVERRIDES, SUBJECTS, RU_NOUNS, PAST_RU, plural, article, inflect)
+    return authored_examples(r, OVERRIDES)
 
 for r in records:
     w,ip,k=r['word'],r['ipa'],r['kind']; meta=[]
@@ -138,29 +146,33 @@ for r in records:
             meta.append(pair(en,meaning+'; '+ru,ipa='/'+fip+'/' if fip else None))
     elif k in {'adjective','feeling','colour','adverb','function','country','nationality','activity','dayname','monthname'}:
         r['en']=w;r['note']='Без постоянного артикля: артикль относится к существительному, а не к этому слову.'
-        if w in COMPS:
-            c,s=COMPS[w];translations={'good':('лучше; более хороший','лучший; самый хороший'),'well':('лучше','лучше всего; лучший'),'bad':('хуже','худший'),'far':('дальше; более далёкий','самый далёкий'),'little':('меньше','меньше всего; наименьший'),'many':('больше','больше всего'),'much':('больше','больше всего')};cr,sr=translations[w];meta.extend([pair(c,cr),pair('the '+s,sr)])
-        elif k in {'adjective','feeling'} and w not in NON_GRADE:
-            if len(words(w))>1 or len(ip)>8 and not w.endswith('y') or w.endswith(('ful','ous','ing','ed','able','ant','ent','ive')) or w in {'afraid','ill','fun','polite','tired','worried','pleased'}:
-                c,s='more '+w,'most '+w
-            else:c,s=(w[:-1]+'ier',w[:-1]+'iest') if w.endswith('y') else (w+'r',w+'st') if w.endswith('e') else (w+w[-1]+'er',w+w[-1]+'est') if w in {'big','hot','wet','thin','sad','red'} else (w+'er',w+'est')
-            if c not in PH and not c.startswith('more '):addph(c,ip[:-1]+'iə' if w.endswith('y') else ip+'ə')
-            if s not in PH and not s.startswith('most '):addph(s,ip[:-1]+'iɪst' if w.endswith('y') else ip+'ɪst')
-            meaning=r['ru'].split(';')[0];meta.extend([pair(c,'более '+meaning),pair('the '+s,'самый '+meaning)])
+        if w in COMPARATIVES:
+            for i,(en,fip,ru) in enumerate(COMPARATIVES[w]):
+                meta.append(pair(('the ' if i==1 else '')+en,ru,ipa='/'+('ðə ' if i==1 else '')+fip+'/'))
     elif k=='plural':
         r['en']=w;r['note']='Грамматически множественное число.'
         if r['group']!='extraFood':r['note']+=' Для одной единицы используем слово «пара».';meta.append(pair('a pair of '+w,'одна пара'))
+    elif w in FIXED_PLACES:
+        r['en']='the '+w;r['note']='Так называют место по профессии владельца: клинику, салон или магазин. Конечное окончание здесь обозначает принадлежность; это не форма множественного числа. Обычно употребляем определённый артикль.'
+    elif w in DIRECTIONS:
+        r['en']='the '+w;r['note']='Название стороны света обычно употребляем с определённым артиклем. Когда это направление движения или определение перед существительным, артикль не нужен. См. разные конструкции в примерах.'
+    elif w=='earth':
+        r['en']='the Earth';r['note']='Для планеты используют имя с прописной буквы, с определённым артиклем или без него. Для почвы — обычное неисчисляемое существительное со строчной буквы.'
+    elif w in BARE_TIMES:
+        r['en']=w;r['note']='Полдень или полночь: обычный артикль не нужен. Для времени события употребляем предлог «в»; см. сочетание ниже.'
     elif uncount:
-        r['en']=w;r['note']='В этом значении неисчисляемое: неопределённый артикль и обычное множественное число не используются. Определённый артикль возможен, когда речь о конкретном количестве или объекте.';meta.append(pair('some '+w,'немного '+case(noun(r['ru']),'gen')))
+        r['en']='the internet' if w=='internet' else w;r['note']='В этом значении неисчисляемое: неопределённый артикль и обычное множественное число не используются. Определённый артикль возможен, когда речь о конкретном количестве или объекте.'
+        if w=='internet':r['note']='Интернет: обычно употребляем определённый артикль. В названии доступа к интернету и в определениях перед другим существительным артикль может отсутствовать.'
     else:
-        a=article(ip);r['en']=a+' '+w;r['note']='Исчисляемое. Артикль зависит от контекста: здесь показана форма «один из многих». Для конкретного, известного собеседнику предмета нужен определённый артикль.';meta.append(pair(plural(w),plural_noun(noun(r['ru']))+'; множественное число'))
+        a=article(ip);r['en']=a+' '+w;r['note']='В показанном значении исчисляемое. Артикль зависит от контекста: здесь показана форма «один из многих». Для конкретного, известного собеседнику предмета нужен определённый артикль.';meta.append(pair(plural(w),NOUN_PLURALS[r['group']+':'+w]+'; множественное число'))
         if w in PLURALS:r['note']+=' У формы множественного числа есть особенность; см. ниже.'
         if w=='sky':r['en']='the sky';r['note']='Когда говорим о небе над нами, обычно употребляем определённый артикль. В художественном описании возможны и другие формы.'
+        if w in {'sun','moon'}:r['en']='the '+w;r['note']='Когда речь о Солнце или Луне над нами, обычно нужен определённый артикль. Множественное число пригодится для звёзд или спутников других планет.'
     n=NOTES.get(w)
     if n:
         r['note']+=' '+n.get('ru','')
         meta.extend(pair(en,ru) for en,ru in n.get('pairs',[]))
-    r['head']=pair(r['en'],r['ru'],ipa='/'+ (('ə ' if r['en'].startswith('a ') else 'ən ' if r['en'].startswith('an ') else 'ðə ' if r['en'].startswith('the ') else '')+ip)+'/')
+    r['head']=pair(r['en'],r['ru'],ipa='/'+ (('ə ' if r['en'].startswith('a ') else 'ən ' if r['en'].startswith('an ') else ('ði ' if article(ip)=='an' else 'ðə ') if r['en'].startswith('the ') else '')+ip)+'/')
     meta=list({(p['en'],p['ru']):p for p in meta}.values())
     r['forms']=meta;r['examples']=[pair(en,ru,phoneticOverrides={'read':'red'} if re.search(r'\b(Yesterday|yesterday|read his email)\b',en) and 'read' in en else {}) for en,ru in examples(r)]
     for key in ['en','ipa','extra','rawExamples']:r.pop(key,None)
@@ -188,6 +200,6 @@ for r in records:
 if UNKNOWN:
     (SRC/'unknown-phonemes.json').write_text(json.dumps(UNKNOWN,ensure_ascii=False,indent=2))
     raise ValueError('Missing authored phonemes: '+', '.join(UNKNOWN.keys()))
-data={'version':'2026-10-06.1','title':'Английский A1 · Syolana','sources':[{'title':'CEFR: рамка и описания навыков','url':'https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-descriptors'},{'title':'Ориентиры содержания английского: British Council и Eaquals','url':'https://www.teachingenglish.org.uk/sites/teacheng/files/pub-british-council-eaquals-core-inventoryv2.pdf'}],'phonetics':phonetics,'alphabet':alphabet,'rules':rules,'groups':groups,'vocabulary':records,'variants':variants,'practice':practices,'phonemeDictionary':PH,'statistics':{'entries':len(records),'uniqueHeadwords':len(set(r['word'].lower() for r in records)),'examples':len(records)*4,'ruleSections':len(rules),'sounds':len(phonetics)}}
+data={'version':'2026-10-06.2','title':'Английский A1 · Syolana','sources':[{'title':'CEFR: рамка и описания навыков','url':'https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-descriptors'},{'title':'Ориентиры содержания английского: British Council и Eaquals','url':'https://www.teachingenglish.org.uk/sites/teacheng/files/pub-british-council-eaquals-core-inventoryv2.pdf'}],'phonetics':phonetics,'alphabet':alphabet,'rules':rules,'groups':groups,'vocabulary':records,'variants':variants,'practice':practices,'phonemeDictionary':PH,'statistics':{'entries':len(records),'uniqueHeadwords':len(set(r['word'].lower() for r in records)),'examples':len(records)*4,'ruleSections':len(rules),'sounds':len(phonetics)}}
 (SRC/'data.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
 print(json.dumps(data['statistics'],ensure_ascii=False));print('Compiled',counter,'bilingual units with IPA.')

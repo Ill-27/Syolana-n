@@ -1,7 +1,7 @@
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-3';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-3';
-import {trainerGroups} from './trainers.js?v=20261006-3';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-3';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-4';
+import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-4';
+import {trainerGroups} from './trainers.js?v=20261006-4';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-4';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
@@ -22,12 +22,12 @@ function applyTheme(theme){
 window.addEventListener('message',e=>{if(e.source===window.parent&&e.origin===location.origin&&e.data?.syolanaHost&&e.data.theme)applyTheme(e.data.theme);});
 
 async function init(){
-  const response=await fetch(new URL('./data.json?v=20261006-3',import.meta.url));
+  const response=await fetch(new URL('./data.json?v=20261006-4',import.meta.url));
   if(!response.ok)throw new Error('Не удалось загрузить материал курса.');
   const data=await response.json(), trainers=trainerGroups(data), saved=storage.read('settings',{});
   const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
   let curriculum=makeCurriculum(data,cfg),bulkLabel='Курс',activePair=null,lastQueue=null,clipSelected=false;
-  let voices=window.speechSynthesis?.getVoices()||[],voiceControls={},currentKey='',returnKey='days';
+  let voices=window.speechSynthesis?.getVoices()||[],voiceControls={},currentKey='',returnKey='days',pageOffset=0,overlay=null,overlayOffset=0;
   const learned=new Set(storage.read('learned',[]));
   const app=document.getElementById('app'),shell=el('div','shell');app.append(shell);
   const views=new Map(),scrollPositions=new Map();
@@ -45,7 +45,7 @@ async function init(){
   const breadcrumb=el('span','breadcrumb','Курс по дням'),headerActions=el('div','header-actions');
   const backButton=button('← К дням',()=>go(returnKey),'back-button');backButton.hidden=true;
   const tocButton=button('☰ Оглавление',()=>setTOC(toc.hidden));tocButton.setAttribute('aria-expanded','false');tocButton.setAttribute('aria-controls','course-toc');
-  headerActions.append(backButton,tocButton);header.append(home,breadcrumb,headerActions);
+  headerActions.append(tocButton);const trail=el('div','course-trail');trail.append(backButton);header.append(home,breadcrumb,headerActions,trail);
   const workspace=el('div','workspace'),scroll=el('main','course-scroll');scroll.id='course-content';
   const stage=el('div','stage');scroll.append(stage);workspace.append(scroll);
   const toc=el('aside','toc');toc.id='course-toc';toc.hidden=true;toc.setAttribute('aria-label','Оглавление курса');
@@ -97,12 +97,21 @@ async function init(){
   const settingsActions=el('div','actions');settingsActions.append(button('Обновить голоса',refreshVoices));
   settings.append(settingsGrid,loopLabel,settingsActions,el('p','muted','Выберите отдельные британский, американский и русский голоса. Если нужного голоса нет, место сохранится. Качество звучания зависит от голосов устройства; транскрипция и служебные значки не читаются.'));
   const currentNode=el('div','player-current');currentNode.hidden=true;
-  playerPanel.append(playerHeading,row,status,progressRow,error,settings,currentNode);shell.append(playerPanel);
-  function setPlayer(open){playerPanel.hidden=!open;audioPill.setAttribute('aria-expanded',String(open));if(!open&&playerPanel.contains(document.activeElement))audioPill.focus();}
-  function setTOC(open){toc.hidden=!open;tocButton.setAttribute('aria-expanded',String(open));if(open){setPlayer(false);tocNav.querySelector('button')?.focus();}else if(toc.contains(document.activeElement))tocButton.focus();}
+  playerPanel.append(playerHeading,row,status,progressRow,error,settings,currentNode);workspace.append(playerPanel);
+  function pageScroll(y){requestAnimationFrame(()=>{if(window.parent!==window)post({height:Math.ceil(shell.getBoundingClientRect().height),scroll:y});else window.scrollTo({top:y,behavior:'instant'});});}
+  function setOverlay(name,restore=true){
+    if(name===overlay)return;
+    if(name&&!overlay)overlayOffset=window.parent!==window?pageOffset:window.scrollY;
+    const wasOpen=!!overlay;overlay=name;stage.hidden=!!name;toc.hidden=name!=='toc';playerPanel.hidden=name!=='player';
+    audioPill.setAttribute('aria-expanded',String(name==='player'));tocButton.setAttribute('aria-expanded',String(name==='toc'));
+    post({courseOverlay:name});
+    if(name)pageScroll(0);else if(wasOpen&&restore)pageScroll(overlayOffset);
+  }
+  function setPlayer(open){if(open)setOverlay('player');else if(overlay==='player')setOverlay(null);}
+  function setTOC(open){if(open)setOverlay('toc');else if(overlay==='toc')setOverlay(null);}
   function selectedPlayer(){if(clipSelected&&clip.status==='ended')clipSelected=false;return clipSelected?clip:bulk;}
   function showCurrent(u,index,segment){
-    activePair?.classList.remove('active');activePair=stage.querySelector('[data-pair="'+u.pair.id+'"]');activePair?.classList.add('active');
+    activePair?.classList.remove('active');activePair=views.get(currentKey)?.querySelector('[data-pair="'+u.pair.id+'"]');activePair?.classList.add('active');
     currentNode.replaceChildren(pairNode(u.pair,{actions:false}));currentNode.hidden=false;currentNode.dataset.language=segment.lang;
   }
   const bulk=new SpeechPlayer({voices:()=>voices,settings:()=>cfg,onUnit:showCurrent,onChange:updatePlayer,onProgress:()=>{saveProgress();updatePlayer();}});
@@ -128,6 +137,7 @@ async function init(){
     timing.textContent=snap.total?`Прошло ${clock(snap.elapsed)} · осталось ≈ ${duration(remainingSeconds(p,cfg.rate))}`:'';
     pillLabel.textContent=snap.total?label:'Озвучка курса';pillStatus.textContent=snap.total?(labels[snap.status]||'')+' · '+Math.min(snap.unitIndex,snap.total)+' / '+snap.total:'Режим, скорость и голоса';
     audioPill.setAttribute('aria-label',pillLabel.textContent+'. '+pillStatus.textContent+'. Открыть панель озвучки');
+    post({courseAudio:{label:pillLabel.textContent,status:pillStatus.textContent,index:Math.min(snap.unitIndex,snap.total),total:snap.total}});
     error.textContent=snap.error;error.hidden=!snap.error;
     toggleButton.textContent=p.status==='playing'?'Ⅱ Пауза':p.units.length&&p.unitIndex<p.units.length?'▶ Продолжить':'▶ Начать';
     previous.disabled=!bulk.units.length;next.disabled=!bulk.units.length||bulk.unitIndex>=bulk.units.length;
@@ -138,10 +148,10 @@ async function init(){
     const s=el('section','view');s.dataset.view=id;s.hidden=true;const head=el('header','view-heading');head.append(el('p','eyebrow',eyebrow));
     const h=el('h1','',title);h.tabIndex=-1;head.append(h);if(text)head.append(el('p','view-intro',text));s.append(head);views.set(id,s);stage.append(s);return s;
   }
-  function go(key){if(currentKey===key){setTOC(false);return;}location.hash=key;show(key);}
+  function go(key){if(currentKey===key){setOverlay(null);return;}location.hash=key;show(key);}
   function show(raw){
     const view=resolveView(raw,data,curriculum,trainers),key=view.key;
-    if(currentKey&&currentKey!==key)scrollPositions.set(currentKey,scroll.scrollTop);
+    if(currentKey&&currentKey!==key)scrollPositions.set(currentKey,overlay?overlayOffset:(window.parent!==window?pageOffset:window.scrollY));
     if(!views.has(key))createDetail(view);
     for(const [id,node] of views)node.hidden=id!==key;
     const changed=currentKey!==key;currentKey=key;storage.write('view',key);shell.dataset.view=key;
@@ -150,12 +160,10 @@ async function init(){
     backButton.hidden=key==='days';backButton.textContent='← '+(COURSE_VIEWS.find(([id])=>id===returnKey)?.[1]||'К дням');
     breadcrumb.textContent=parent?(view.type==='day'?'День '+view.day.number:view.type==='rule'?topicTitle(view.rule):view.type==='trainer'?view.trainer.title:view.word.head.ru):COURSE_VIEWS.find(([id])=>id===key)?.[1]||'';
     for(const b of tocNav.querySelectorAll('button'))b.setAttribute('aria-current',String(b.textContent===COURSE_VIEWS.find(([id])=>id===(parent?returnKey:key))?.[1]));
-    setTOC(false);setPlayer(false);if(changed){scroll.scrollTop=scrollPositions.get(key)||0;views.get(key)?.querySelector('h1')?.focus({preventScroll:true});}
+    setOverlay(null,false);if(changed){pageScroll(scrollPositions.get(key)||0);views.get(key)?.querySelector('h1')?.focus({preventScroll:true});}
   }
   window.addEventListener('hashchange',()=>show(decodeURIComponent(location.hash.slice(1))));
-  scroll.addEventListener('scroll',()=>{if(!playerPanel.hidden)setPlayer(false);},{passive:true});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){setPlayer(false);setTOC(false);}});
-  workspace.addEventListener('click',e=>{if(!toc.hidden&&!toc.contains(e.target)&&!tocButton.contains(e.target))setTOC(false);});
 
   function ruleBody(s){
     const body=el('div','lesson-body');
@@ -246,7 +254,7 @@ async function init(){
       }
       if(day.words.length){node.append(el('h2','section-label','Затем — слова и четыре примера'));for(const gid of [...new Set(day.words.map(w=>w.group))]){const words=day.words.filter(w=>w.group===gid),group=el('details','word-group');group.append(el('summary','',(data.groups.find(g=>g.id===gid)?.title||'Слова')+' · '+words.length));let ready=false;group.addEventListener('toggle',()=>{if(group.open&&!ready){ready=true;const body=el('div','group-body');body.append(...words.map(w=>wordNode(w)));group.append(body);}});node.append(group);}}
       if(day.extras.length){node.append(el('h2','section-label','В конце — сравнение вариантов и бытовые фразы'));const extras=el('div','pairs');extras.append(...day.extras.map(u=>pairNode(u.pair)));node.append(extras);}
-      const turns=el('nav','page-turns');turns.setAttribute('aria-label','Переход между днями');if(day.number>1)turns.append(button('← День '+(day.number-1),()=>go('day-'+(day.number-1))));turns.append(button('Ко всем дням',()=>go('days')));if(day.number<curriculum.days.length)turns.append(button('День '+(day.number+1)+' →',()=>go('day-'+(day.number+1))));node.append(turns);
+      const turns=el('nav','page-turns');turns.setAttribute('aria-label','Переход между днями');if(day.number>1)turns.append(button('← День '+(day.number-1),()=>go('day-'+(day.number-1))));turns.append(button('Ко всем дням',()=>go('days')));if(day.number<curriculum.days.length)turns.append(button('День '+(day.number+1)+' →',()=>go('day-'+(day.number+1))));node.append(turns);if(day.number===curriculum.days.length)node.append(nextLevel());
     }else if(view.type==='trainer'){
       const group=view.trainer,node=screen(view.key,group.title,group.description,'ПОВТОРЕНИЕ ДО АВТОМАТИЗМА');const actions=el('div','actions');actions.append(button('▶ Слушать весь список',()=>start(unitsFor(group.pairs),group.title),'primary'));node.append(actions);if(group.note)node.append(el('p','explanation',group.note));
       if(group.entries){for(const w of group.entries){const c=el('article','verb-row');c.append(pairNode(w.head));const forms=el('div','forms');forms.append(pairNode(w.forms[2]));if(w.word==='be')forms.append(...w.forms.filter(p=>p.en==='were').map(p=>pairNode(p)));forms.append(pairNode(w.forms[3]));c.append(forms);node.append(c);}}
@@ -254,16 +262,14 @@ async function init(){
     }else if(view.type==='word'){const node=screen(view.key,'Словарная статья','');node.append(wordNode(view.word,{open:true}));}
   }
 
-  const practice=screen('practice','Говорите, читайте и пишите','Составьте свой ответ, прочитайте его вслух и сравните с образцом. Заметки и рукописная практика сохраняются на этом устройстве.');
+  const practice=screen('practice','Говорите, читайте и пишите','Составьте свой ответ, прочитайте его вслух и сравните с образцом. Ваши ответы и заметки сохраняются на этом устройстве.');
   for(const p of data.practice){const d=el('details','practice');d.append(el('summary','',p.title));const body=el('div','practice-body');body.append(el('p','',p.task));const pairs=el('div','pairs');pairs.append(...p.pairs.map(x=>pairNode(x)));body.append(pairs);
     const input=el('textarea');input.rows=3;input.placeholder='Ваш ответ или заметка';input.setAttribute('aria-label','Ваш ответ: '+p.title);input.value=storage.read('note.'+p.id,'');input.addEventListener('input',()=>storage.write('note.'+p.id,input.value));body.append(input);
     if(p.model){const model=el('details','model-answer');model.append(el('summary','','Посмотреть образец ответа'),pairNode(p.model));body.append(model);}const actions=el('div','actions');actions.append(button('▶ Слушать фразы ситуации',()=>start(unitsFor([...p.pairs,...(p.model?[p.model]:[])]),p.title)));body.append(actions);d.append(body);practice.append(d);
   }
-  const pad=el('details','lesson');pad.append(el('summary','','Рукописная практика: напишите слово или фразу'));const padBody=el('div','lesson-body');padBody.append(el('p','','Выберите короткую фразу из курса и перепишите её пальцем, стилусом или мышью.'));
-  const canvas=el('canvas','writing-pad');canvas.width=1000;canvas.height=320;canvas.setAttribute('aria-label','Поле для рукописной практики');padBody.append(canvas);const context=canvas.getContext('2d'),strokes=storage.read('drawing',[]);let stroke=null;
-  const redraw=()=>{if(!context)return;context.clearRect(0,0,1000,320);context.lineWidth=3;context.lineCap='round';context.strokeStyle='#244f43';for(const s of strokes){context.beginPath();s.forEach(([x,y],i)=>i?context.lineTo(x,y):context.moveTo(x,y));context.stroke();}};redraw();
-  canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);const r=canvas.getBoundingClientRect();stroke=[[(e.clientX-r.left)*1000/r.width,(e.clientY-r.top)*320/r.height]];strokes.push(stroke);});canvas.addEventListener('pointermove',e=>{if(!stroke)return;const r=canvas.getBoundingClientRect();stroke.push([(e.clientX-r.left)*1000/r.width,(e.clientY-r.top)*320/r.height]);redraw();});const finish=()=>{stroke=null;storage.write('drawing',strokes);};canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);
-  const padActions=el('div','actions');padActions.append(button('Убрать последний штрих',()=>{strokes.pop();redraw();storage.write('drawing',strokes);}),button('Очистить поле',()=>{strokes.length=0;redraw();storage.write('drawing',strokes);}));padBody.append(padActions);pad.append(padBody);practice.append(pad);
+  function authorAdvice(){const note=el('aside','author-advice');note.append(el('h2','','Совет от автора'),el('p','','Чтобы слова лучше запоминались, записывайте их от руки вместе с транскрипцией и коротким примером. Подойдёт тетрадь или планшет / смартфон со стилусом. Произносите слово, пока пишете, а потом закройте образец и попробуйте вспомнить его самостоятельно. Возвращайтесь к этим записям в следующие дни.'));return note;}
+  function nextLevel(){const note=el('aside','next-level');note.append(el('h2','','Продолжение — A2'),el('p','','A2 будет построен по тому же принципу: понятные правила, слова с разными примерами, повторение и озвучка в удобном темпе.'),el('p','','Сначала пройдите бесплатный A1 и попробуйте этот способ учиться. Приобретайте A2, только если метод вам подходит и вы хотите продолжить.'));return note;}
+  practice.append(authorAdvice(),nextLevel());days.append(authorAdvice(),nextLevel());
 
   const coverage=screen('coverage','Что вы отрабатываете на A1','Уровень описывает то, что человек умеет делать с языком. У CEFR нет единого обязательного списка английских слов; здесь собраны основные навыки и темы, а расширение к A2 отмечено отдельно.');
   const coverageGrid=el('div','coverage');for(const [title,text,ids] of [
@@ -280,11 +286,11 @@ async function init(){
 
   renderDays();refreshVoices();
   const savedQueue=storage.read('queue',null),savedProgress=storage.read('progress',null);
-  if(savedQueue&&savedProgress&&savedQueue.version===savedProgress.version){const units=savedQueue.ids.map(id=>curriculum.map.get(id));if(units.length&&units.every(Boolean)&&savedProgress.unitIndex<units.length){bulk.units=units;bulkLabel=savedProgress.label||savedQueue.label;lastQueue={...savedQueue,version:data.version};storage.write('queue',lastQueue);bulk.unitIndex=savedProgress.unitIndex;bulk.segmentIndex=savedProgress.segmentIndex||0;bulk.activeMs=(savedProgress.elapsed||0)*1000;bulk.mode=savedProgress.mode||cfg.mode;bulk.repeat=savedProgress.repeat||cfg.repeat;bulk.status='paused';}}
+  if(savedQueue&&savedProgress&&savedQueue.version===savedProgress.version&&savedQueue.version===data.version){const units=savedQueue.ids.map(id=>curriculum.map.get(id));if(units.length&&units.every(Boolean)&&savedProgress.unitIndex<units.length){bulk.units=units;bulkLabel=savedProgress.label||savedQueue.label;lastQueue={...savedQueue,version:data.version};storage.write('queue',lastQueue);bulk.unitIndex=savedProgress.unitIndex;bulk.segmentIndex=savedProgress.segmentIndex||0;bulk.activeMs=(savedProgress.elapsed||0)*1000;bulk.mode=savedProgress.mode||cfg.mode;bulk.repeat=savedProgress.repeat||cfg.repeat;bulk.status='paused';}}
   updatePlayer();show(decodeURIComponent(location.hash.slice(1))||storage.read('view','days'));
   window.speechSynthesis?.addEventListener?.('voiceschanged',refreshVoices);const tick=setInterval(()=>{if(bulk.status==='playing'||clip.status==='playing')updatePlayer();},1000);
   window.addEventListener('pagehide',()=>{bulk.pause();clip.dispose();saveProgress();clearInterval(tick);});
-  window.addEventListener('message',e=>{if(e.source!==window.parent||e.origin!==location.origin||!e.data?.syolanaHost)return;const x=e.data;if(x.pauseAudio){bulk.pause();clip.stop(false);clipSelected=false;updatePlayer();}if(x.anchor)go(x.anchor);});
-  app.hidden=false;document.getElementById('loading').hidden=true;post({ready:true,height:document.documentElement.scrollHeight});
+  window.addEventListener('message',e=>{if(e.source!==window.parent||e.origin!==location.origin||!e.data?.syolanaHost)return;const x=e.data;if(x.pauseAudio){bulk.pause();clip.stop(false);clipSelected=false;updatePlayer();}if(x.anchor)go(x.anchor);if(Number.isFinite(x.courseScroll))pageOffset=Math.max(0,x.courseScroll);if(x.openPlayer)setPlayer(overlay!=='player');if(x.openTOC)setTOC(overlay!=='toc');});
+  app.hidden=false;document.getElementById('loading').hidden=true;const resize=new ResizeObserver(()=>post({height:Math.ceil(shell.getBoundingClientRect().height)}));resize.observe(shell);post({ready:true,height:Math.ceil(shell.getBoundingClientRect().height)});
 }
 init().catch(e=>{const loading=document.getElementById('loading');loading.replaceChildren(el('strong','','Курс пока не загрузился'),el('p','',e.message),button('Попробовать снова',()=>location.reload()));post({ready:true,height:450});});

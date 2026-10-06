@@ -1096,7 +1096,7 @@ form|fɔːm|форма; бланк
 title|ˈtaɪtl|название; обращение
 first name|ˈfɜːst neɪm|личное имя
 last name|ˈlɑːst neɪm|фамилия
-nationality|ˌnæʃəˈnæləti|национальность
+nationality|ˌnæʃəˈnæləti|гражданство; национальная принадлежность
 marital status|ˈmærɪtl ˌsteɪtəs|семейное положение
 phone number|ˈfəʊn ˌnʌmbə|номер телефона
 email address|ˈiːmeɪl əˌdres|адрес электронной почты
@@ -1165,7 +1165,7 @@ south|saʊθ|юг
 sun|sʌn|солнце
 moon|muːn|луна
 sky|skaɪ|небо
-earth|ɜːθ|земля
+earth|ɜːθ|Земля; почва
 fire|ˈfaɪə|огонь
 ice|aɪs|лёд
 heat|hiːt|тепло
@@ -1180,7 +1180,7 @@ hairdresser's|ˈheədresəz|парикмахерская
 bakery|ˈbeɪkəri|пекарня
 butcher's|ˈbʊtʃəz|мясная лавка
 greengrocer's|ˈɡriːnɡrəʊsəz|овощной магазин
-laundry|ˈlɔːndri|прачечная; стирка
+laundry|ˈlɔːndri|бельё для стирки; стирка
 car park|ˈkɑː pɑːk|парковка
 petrol station|ˈpetrəl ˌsteɪʃən|заправка
 motorway|ˈməʊtəweɪ|автомагистраль

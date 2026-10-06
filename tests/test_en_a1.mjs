@@ -24,6 +24,8 @@ assert(data.statistics.uniqueHeadwords>=1300);
 assert.equal(data.alphabet.length,26);assert.equal(data.phonetics.length,44);
 assert.equal(data.rules.length,40);
 for(const w of data.vocabulary){assert.equal(w.examples.length,4,w.word);assert.equal(new Set(w.examples.map(x=>x.en)).size,4,'Repeated example: '+w.word);}
+const allExamples=data.vocabulary.flatMap(w=>w.examples.map(p=>p.en));
+assert.equal(new Set(allExamples).size,allExamples.length,'Examples repeat across dictionary entries');
 const word=(name,kind)=>data.vocabulary.find(w=>w.word===name&&(!kind||w.kind===kind));
 assert.equal(word('child').forms[0].en,'children');
 assert.equal(word('woman').forms[0].en,'women');
@@ -46,8 +48,25 @@ assert(word('travel','verb').forms.some(p=>p.en==='travelled'));
 assert(word('travel','verb').forms.some(p=>p.en==='travelling'));
 assert(word('information').examples.some(p=>p.ru.includes('об информации')));
 assert(word('grow','verb').examples[0].ru.includes('выращивать цветы'));
-assert(word('take off','verb').examples[0].ru.includes('снимать мои ботинки'));
+assert(word('take off','verb').examples[0].ru.includes('мокрые ботинки'));
 assert(word('come in','verb').examples.every(p=>!p.en.includes('Yesterday I came in now')));
+
+
+for(const [name,kind,expected] of [
+ ['flat','adjective','flatter'],['popular','adjective','more popular'],['special','adjective','more special'],
+ ['open','adjective','more open'],['ill','feeling','worse'],['forget','verb','forgetting'],['cut','verb','cutting'],['let','verb','letting'],['stomach',null,'stomachs']
+])assert(word(name,kind).forms.some(p=>p.en===expected),'Incorrect morphology: '+name);
+for(const name of ['alone','broken','lost'])assert(!word(name).forms.length,'Invented comparison: '+name);
+assert(word('house').forms.some(p=>p.en==='houses'&&p.ipa==='/ˈhaʊzɪz/'));
+assert(word('young').forms.some(p=>p.en==='younger'&&p.ipa==='/ˈjʌŋɡə/'));
+assert(word('dry').forms.some(p=>p.en==='drier'&&p.ipa==='/ˈdraɪə/'));
+for(const name of ['east','west','north','south','sun','moon','internet'])assert.equal(word(name).head.en,'the '+name);
+assert.equal(word('earth').head.ipa,'/ði ɜːθ/');
+assert(word('baby').forms.some(p=>p.ru==='младенцы; множественное число'));
+assert(word('clock').forms.some(p=>p.ru==='часы; множественное число'));
+assert(word('apple').forms.some(p=>p.ru==='яблоки; множественное число'));
+assert(word('grandparent').forms.some(p=>p.ru==='бабушки и дедушки; множественное число'));
+assert(!JSON.stringify(data).includes('Косые черты ограничивают фонемную запись'));
 
 for(const rate of [.6,1,1.5])for(const repeat of [1,3]){
   const c=makeCurriculum(data,{rate,repeat});

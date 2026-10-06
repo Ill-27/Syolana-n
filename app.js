@@ -1550,23 +1550,34 @@ function lessonFrame(key, anchor = "") {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a1-3" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a1-4" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);
   let active = true,
     anchored = false;
+  let courseBar = null, courseLabel = null, courseStatus = null, courseProgress = null, courseAudio = null, courseTOC = null;
   function fitCourse() {
     if (!englishCourse || !active) return;
-    const top = frame.getBoundingClientRect().top;
     const dock = $("music-dock")?.getBoundingClientRect();
-    const bottom = Math.min(window.innerHeight - 20, dock?.height ? dock.top - 20 : window.innerHeight - 20);
-    frame.style.height = Math.max(300, bottom - top) + "px";
+    if (courseBar) courseBar.style.bottom = (dock?.height ? Math.max(16, window.innerHeight - dock.top + 12) : 16) + "px";
+    send({courseScroll:Math.max(0, window.scrollY - (window.scrollY + frame.getBoundingClientRect().top - 110))});
   }
   const courseObserver = englishCourse && typeof ResizeObserver !== "undefined"
     ? new ResizeObserver(fitCourse) : null;
   if (englishCourse) {
+    courseBar = el("div", "course-controls");
+    courseTOC = el("button", "course-controls-toc", "☰");
+    courseTOC.type = "button"; courseTOC.setAttribute("aria-label", "Оглавление курса A1");
+    courseTOC.addEventListener("click", () => send({openTOC:true}));
+    courseAudio = el("button", "course-controls-audio"); courseAudio.type = "button";
+    const icon = el("span", "course-controls-icon", "♫"), copy = el("span", "course-controls-copy");
+    courseLabel = el("strong", "", "Озвучка курса");courseStatus = el("small", "", "Режим, скорость и голоса");copy.append(courseLabel,courseStatus);
+    courseProgress = el("progress");courseProgress.max=1;courseProgress.value=0;courseProgress.setAttribute("aria-label", "Прогресс прослушивания");
+    courseAudio.append(icon,copy,courseProgress);courseAudio.addEventListener("click", () => send({openPlayer:true}));
+    courseBar.append(courseTOC,courseAudio);document.body.append(courseBar);
     window.addEventListener("resize", fitCourse);
+    window.addEventListener("scroll", fitCourse, {passive:true});
     if ($("music-dock")) courseObserver?.observe($("music-dock"));
     requestAnimationFrame(fitCourse);
   }
@@ -1597,7 +1608,7 @@ function lessonFrame(key, anchor = "") {
       return;
     const data = event.data;
     if (Number.isFinite(data.height) && data.height > 0) {
-      if (!englishCourse) frame.style.height = Math.min(2000000, data.height) + "px";
+      frame.style.height = Math.min(2000000, data.height) + "px";
       status.hidden = true;
     }
     if (data.ready) {
@@ -1619,6 +1630,16 @@ function lessonFrame(key, anchor = "") {
       });
     }
     if (data.audio) player.pause();
+    if (englishCourse && data.courseAudio) {
+      const audio = data.courseAudio;
+      courseLabel.textContent=audio.label;courseStatus.textContent=audio.status;
+      courseProgress.max=Math.max(1,audio.total||0);courseProgress.value=audio.index||0;
+      courseAudio.setAttribute("aria-label", audio.label + ". " + audio.status + ". Открыть озвучку курса");
+    }
+    if (englishCourse && Object.hasOwn(data,"courseOverlay")) {
+      courseAudio.setAttribute("aria-expanded",String(data.courseOverlay==="player"));
+      courseTOC.setAttribute("aria-expanded",String(data.courseOverlay==="toc"));
+    }
     if (typeof data.navigate === "string") {
       const url = new URL(data.navigate, location.origin);
       const file = decodeURIComponent(url.pathname.split("/").pop());
@@ -1657,6 +1678,8 @@ function lessonFrame(key, anchor = "") {
     active = false;
     if (englishCourse) document.body.classList.remove("course-reading");
     window.removeEventListener("resize", fitCourse);
+    window.removeEventListener("scroll", fitCourse);
+    courseBar?.remove();
     courseObserver?.disconnect();
     clearTimeout(timer);
     pauseLesson();

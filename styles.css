@@ -3979,18 +3979,31 @@ html[data-theme="white-ocean-city"] .flight-planet *{
 .course-reading #banner,.course-reading #provider-notice,.course-reading .main-nav,
 .course-reading #discovery-tip {display:none!important}
 .course-reading .english-course-frame {
-  display:block;width:100%;height:max(560px,calc(100dvh - 238px));
+  display:block;width:100%;height:450px;
   background:transparent;border:0;border-radius:20px;
   backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
 }
 .course-reading #page>.text-link {margin:0 0 15px;display:inline-flex}
 .course-reading #content-shell {padding-top:108px}
 .course-reading .english-course-frame {margin-top:14px}
+.course-reading #page {padding-bottom:100px}
+.course-controls {position:fixed;z-index:80;right:max(16px,calc((100vw - 1100px)/2));display:flex;align-items:center;gap:10px;max-width:calc(100vw - 28px)}
+.course-controls button {border:1px solid var(--panel-border);background:rgb(var(--surface));color:var(--panel-text);box-shadow:0 8px 28px #0005;border-radius:23px;min-height:52px}
+.course-controls-toc {width:48px;padding:8px;font-size:1.3rem}
+.course-controls-audio {position:relative;display:flex;align-items:center;gap:12px;padding:10px 16px 12px;min-width:240px;overflow:hidden;text-align:left}
+.course-controls-icon {font-size:1.5rem;color:var(--accent)}
+.course-controls-copy {display:grid;gap:3px;min-width:0}
+.course-controls-copy strong {font-size:.8rem;font-weight:500}
+.course-controls-copy small {color:var(--panel-muted);font-size:.68rem}
+.course-controls-audio progress {position:absolute;left:0;bottom:0;width:100%;height:3px;border:0;accent-color:var(--accent)}
+.course-controls-audio progress::-webkit-progress-bar {background:rgba(255,255,255,.08)}
+.course-controls-audio progress::-webkit-progress-value {background:var(--accent)}
 .course-reading #page>.loading {
   padding:40px;border:1px solid #cab5ec26;border-radius:20px;
   background:rgba(var(--surface),.24);color:var(--panel-text);
   font:400 1.8rem/1.6 var(--heading);
 }
 @media(max-width:600px){
-  .course-reading .english-course-frame {height:max(440px,calc(100dvh - 210px))}
+  .course-controls {right:14px;gap:8px}
+  .course-controls-audio {min-width:220px}
 }

@@ -1,7 +1,7 @@
 # English A1 course for Syolana
 
 The course replaces the former `a1-english.html` in full. Its teaching text,
-lexicon, translations, example templates and pronunciation entries are newly
+lexicon, translations, contextual examples and pronunciation entries are newly
 authored for this project. The public route remains `#/lesson/en/a1/course`.
 
 CEFR describes language use and skills; it does not prescribe one exhaustive
@@ -13,11 +13,12 @@ maps the material to listening, interaction, production, reading and writing.
 
 - `lexicon.txt`: headwords, British phonemes, Russian senses and verb complements.
 - `functions.txt`: closed-class vocabulary with four authored examples each.
-- `special-examples.txt`: contextual examples overriding group templates.
+- `contextual-examples.txt`, `special-examples.txt`: four independently authored contexts per article. Compilation has no template fallback; all 5,420 dictionary examples differ.
 - `notes.json`: countability, collocations, exceptional forms and usage notes.
 - `rules.json`, `sounds.json`, `variants.txt`, `practice.json`: original lessons.
-- `irregular.txt`, `phonemes.txt`: explicit exceptional forms and a closed phoneme dictionary.
-- `adjective-subjects.json`, `verb-russian.txt`: suitable example contexts and Russian past forms.
+- `irregular.txt`, `phonemes.txt`, `contextual-phonemes.txt`: explicit exceptional forms and a closed phoneme dictionary.
+- `comparatives.json`, `noun-plurals.json`: reviewed comparison forms, UK IPA and Russian plural translations.
+- `verb-russian.txt`: Russian meanings for past verb forms.
 
 Run `python scripts/build_en_a1.py`, then `python build.py` and
 `node tests/test_en_a1.mjs`. Unknown English tokens fail compilation instead of
@@ -41,10 +42,12 @@ precede complete word cards in each queue. The final queue can be shorter.
 Estimates assume 145 words per minute plus short pauses; they are not measured
 recording lengths. Pauses are excluded from elapsed listening time.
 
-Progress, selected voices, personal notes and handwriting stay in local browser
+Progress, selected voices and personal notes stay in local browser
 storage. Listening never starts automatically after loading or restoring progress.
-The embedded page accepts theme, anchor and audio-pause messages only from its
-same-origin parent, using the existing `syolanaHost`/`syolanaLesson` protocol.
+The embedded page accepts theme, anchor, scrolling, navigation and audio-pause
+messages only from its same-origin parent, using the existing
+`syolanaHost`/`syolanaLesson` protocol. Saved audio queues require the current
+data version, so changed identifiers cannot resume a different sentence.
 
 ## Study views
 
@@ -57,7 +60,13 @@ Day one begins with reading foundations. Every day presents rules before words.
 The course inherits the host's handwritten heading font and palette. The host
 uses the book reader's exact background shade (64%, blur 7px), and the course
 sheet uses the book reader's 24% surface and 2px blur. Audio controls use an
-opaque, collapsible panel, accessed from the compact footer button.
+opaque, collapsible full-page panel, accessed from the host’s compact floating
+button above the music dock. Material, contents and audio settings use the
+outer page’s scrolling; the iframe reports its content height through a
+ResizeObserver. Collapsing audio restores the learner’s place in the material.
+The handwriting canvas is removed. Author advice recommends handwritten
+words, IPA and short examples, plus recall and spaced repetition. The A2
+invitation recommends finishing free A1 and assessing the method first.
 
 IPA is stored canonically and displayed inside square brackets throughout the
 interface. Repetition lists replace random/input trainers: complete 0–100 and

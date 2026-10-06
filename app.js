@@ -1,4 +1,4 @@
-import { loadCatalog, loadBook, lessonFiles } from "./catalog.js";
+import { loadCatalog, loadBook, lessonFiles } from "./catalog.js?v=20261006-a2-2";
 import {
   $,
   el,
@@ -1552,7 +1552,7 @@ function lessonFrame(key, anchor = "") {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a2-1" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a2-2" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);

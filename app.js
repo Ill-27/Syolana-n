@@ -1,4 +1,5 @@
-import { loadCatalog, loadBook, lessonFiles } from "./catalog.js?v=20261006-a2-2";
+import { loadCatalog, loadBook, lessonFiles } from "./catalog.js?v=20261006-language-1";
+import { mountCourseBranding } from "./course-branding.js?v=20261006-language-marks-1";
 import {
   $,
   el,
@@ -1497,10 +1498,14 @@ async function route() {
     else if (view === "lesson") {
       const key = [a, b, c].join("/");
       if (!lessonFiles[key]) throw Error("Этот урок пока не опубликован.");
+      const removeAttribution = await mountCourseBranding({course: `${a.toUpperCase()} ${b.toUpperCase()}`, cards:false});
+      if (token !== routeToken) { removeAttribution(); return; }
       $("page").append(
         link("К уровням языка", "#/languages/" + a, "text-link"),
       );
       await openLesson(key, d ? decodeURIComponent(d) : "", token);
+      const lessonCleanup = cleanup;
+      cleanup = (...args) => { lessonCleanup(...args); removeAttribution(); };
     } else if (view === "join") join();
     else if (view === "contact") contactPage();
     else if (["studio", "editor", "admin"].includes(view) && config.legacyStudioEnabled !== true) {
@@ -1552,7 +1557,7 @@ function lessonFrame(key, anchor = "") {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a2-2" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-language-1" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);

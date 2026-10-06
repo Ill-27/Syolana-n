@@ -1,3 +1,4 @@
+import {mountCourseBranding} from '../../course-branding.js?v=20261006-language-marks-1';
 import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-6';
 import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-6';
 import {trainerGroups} from './trainers.js?v=20261006-6';
@@ -25,6 +26,7 @@ async function init(){
   const response=await fetch(new URL('./data.json?v=20261006-6',import.meta.url));
   if(!response.ok)throw new Error('Не удалось загрузить материал курса.');
   const data=await response.json(), trainers=trainerGroups(data), saved=storage.read('settings',{});
+  mountCourseBranding({course:'Английский A1'});
   const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
   let curriculum=makeCurriculum(data,cfg),bulkLabel='Курс',activePair=null,lastQueue=null,clipSelected=false;
   let voices=window.speechSynthesis?.getVoices()||[],voiceControls={},currentKey='',returnKey='days',pageOffset=0,overlay=null,overlayOffset=0;

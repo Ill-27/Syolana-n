@@ -2,7 +2,7 @@
 if (/^#\/lesson\/en\/a[12]\/course(?:\/|$)/.test(location.hash)) {
   document.body.classList.add("course-reading");
 }
-const release = new URL(import.meta.url).searchParams.get("v") || "20261006-a2-2";
+const release = new URL(import.meta.url).searchParams.get("v") || "20261006-language-1";
 const appURL = new URL("./app.js", import.meta.url);
 appURL.searchParams.set("v", release);
 import(appURL.href).catch((error) => {

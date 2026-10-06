@@ -1,3 +1,4 @@
+import {mountCourseBranding} from '../../course-branding.js?v=20261006-language-marks-1';
 import {loadCourse,mountAccountPanel} from './access.js?v=20261006-a2-1';
 import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-a2-1';
 import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-a2-1';
@@ -24,6 +25,7 @@ window.addEventListener('message',e=>{if(e.source===window.parent&&e.origin===lo
 
 async function init(){
   const data=await loadCourse(), trainers=trainerGroups(data), saved=storage.read('settings',{});
+  mountCourseBranding({course:'Английский A2'});
   const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
   let curriculum=makeCurriculum(data,cfg),bulkLabel='Курс',activePair=null,lastQueue=null,clipSelected=false;
   let voices=window.speechSynthesis?.getVoices()||[],voiceControls={},currentKey='',returnKey='days',pageOffset=0,overlay=null,overlayOffset=0;

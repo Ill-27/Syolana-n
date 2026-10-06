@@ -18,6 +18,7 @@
     parent.postMessage({ syolanaLesson: true, ...value }, location.origin);
   // The parent owns the sole animated background; skip only the two old canvases.
   document.addEventListener("DOMContentLoaded", () => {
+    import("./course-branding.js?v=20261006-language-marks-1").then(({mountCourseBranding})=>mountCourseBranding({course:route,cards:true})).catch(()=>{});
     const main = document.querySelector("main");
     if (!main) return;
     let lastHeight = 0,
@@ -116,3 +117,4 @@
     send({ ready: true });
   });
 })();
+

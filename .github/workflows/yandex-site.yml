@@ -1,0 +1,37 @@
+name: Publish checked site to Yandex Cloud
+on:
+  workflow_run:
+    workflows: [Check Syolana]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: syolana-yandex-production
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: >-
+      vars.YC_SITE_SERVICE_ACCOUNT_ID != '' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build only the public site
+        run: python build.py
+      - name: Validate and publish changed files
+        env:
+          YC_SITE_SERVICE_ACCOUNT_ID: ${{ vars.YC_SITE_SERVICE_ACCOUNT_ID }}
+          SYOLANA_SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          SYOLANA_GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/deploy_yandex.py

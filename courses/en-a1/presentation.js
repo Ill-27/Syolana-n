@@ -15,6 +15,12 @@ export function displayText(value) {
 export function topicTitle(section) {
   return section.title.replace(/^\d+\.\s*/, '');
 }
+export function entriesLabel(count) {
+  const n = Math.abs(count), last = n % 10, teen = n % 100;
+  const noun = teen >= 11 && teen <= 14 ? 'словарных статей'
+    : last === 1 ? 'словарная статья' : last >= 2 && last <= 4 ? 'словарные статьи' : 'словарных статей';
+  return count + ' ' + noun;
+}
 export function dayDescription(day, groups) {
   const topics = [...new Set(day.rules.map(r => topicTitle(r.section)))];
   const ids = [...new Set(day.words.map(w => w.group))];

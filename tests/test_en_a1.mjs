@@ -3,7 +3,7 @@ import {readFile,access} from 'node:fs/promises';
 import {cleanSpeech,segmentsFor,voiceFor,SpeechPlayer,secondsFor} from '../courses/en-a1/audio.js';
 import {makeCurriculum} from '../courses/en-a1/curriculum.js';
 import {numberWords,ordinalWords,phonePair,spellingPair,timePair,pricePair,referencePairs,generatedPair,trainerGroups} from '../courses/en-a1/trainers.js';
-import {displayIPA,displayText,dayDescription,resolveView} from '../courses/en-a1/presentation.js';
+import {displayIPA,displayText,dayDescription,resolveView,entriesLabel} from '../courses/en-a1/presentation.js';
 
 const data=JSON.parse(await readFile('courses/en-a1/data.json','utf8'));
 const seen=new Set();let pairs=0;
@@ -115,6 +115,9 @@ assert(group('dates').pairs.some(p=>p.en==='the thirty-first of October'));
 assert(group('prices').pairs.some(p=>p.en==='one pound and one penny'));
 assert(group('contacts').pairs.some(p=>p.en==='alex@example.org'&&p.speak.includes('at')));
 assert(group('time').pairs.find(p=>p.en==='seven a.m.').speak==='seven A M');
+assert.equal(entriesLabel(1),'1 словарная статья');
+assert.equal(entriesLabel(22),'22 словарные статьи');
+assert.equal(entriesLabel(111),'111 словарных статей');
 assert.equal(displayIPA('/həˈləʊ/'),'[həˈləʊ]');
 assert.equal(displayIPA('[eɪ]'),'[eɪ]');
 assert.equal(displayText('Звуки /p/, /s/ и /ə/.'),'Звуки [p], [s] и [ə].');

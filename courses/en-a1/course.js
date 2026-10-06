@@ -1,7 +1,7 @@
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-2';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-2';
-import {trainerGroups} from './trainers.js?v=20261006-2';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView} from './presentation.js?v=20261006-2';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-3';
+import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-3';
+import {trainerGroups} from './trainers.js?v=20261006-3';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-3';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
@@ -22,7 +22,7 @@ function applyTheme(theme){
 window.addEventListener('message',e=>{if(e.source===window.parent&&e.origin===location.origin&&e.data?.syolanaHost&&e.data.theme)applyTheme(e.data.theme);});
 
 async function init(){
-  const response=await fetch(new URL('./data.json?v=20261006-2',import.meta.url));
+  const response=await fetch(new URL('./data.json?v=20261006-3',import.meta.url));
   if(!response.ok)throw new Error('Не удалось загрузить материал курса.');
   const data=await response.json(), trainers=trainerGroups(data), saved=storage.read('settings',{});
   const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
@@ -193,7 +193,7 @@ async function init(){
       const topics=el('ul','day-topics');for(const title of info.topics)topics.append(el('li','',title));if(!info.topics.length)topics.append(el('li','','Повторение знакомых правил в новых словах и фразах'));c.append(topics);
       if(info.vocabulary.length){c.append(el('span','card-label','Затем — слова с четырьмя примерами'));const chips=el('div','topic-chips');info.vocabulary.forEach(t=>chips.append(el('span','',t)));c.append(chips);}
       if(info.extras.length)c.append(el('p','day-extra','В конце — '+info.extras.join(' и ')+'.'));
-      c.append(el('p','day-count',day.words.length+' словарных статей'));
+      c.append(el('p','day-count',entriesLabel(day.words.length)));
       const actions=el('div','actions');actions.append(button('Открыть день →',()=>go(day.id),'primary'),button('▶ Слушать',()=>start(day.units,'День '+day.number)));c.append(actions);dayList.append(c);
       tocDayList.append(button('День '+day.number+' · '+info.title,()=>go(day.id),'toc-link'));
     }
@@ -217,7 +217,7 @@ async function init(){
     };d.addEventListener('toggle',()=>{if(d.open)fill();});if(open){fill();d.open=true;}return d;
   }
   function renderVocabulary(words){
-    vocabList.replaceChildren();searchCount.textContent=`${words.length} словарных статей`;learnedLabel.textContent=' · Запомнил(а) '+learned.size;
+    vocabList.replaceChildren();searchCount.textContent=entriesLabel(words.length);learnedLabel.textContent=' · Запомнил(а) '+learned.size;
     if(!words.length){vocabList.append(el('p','empty','Совпадений нет. Попробуйте другое слово или русский перевод.'));return;}
     for(const group of data.groups){const subset=words.filter(w=>w.group===group.id);if(!subset.length)continue;
       const details=el('details','word-group');details.append(el('summary','',group.title+' · '+subset.length));let ready=false;const body=el('div','group-body');details.append(body);const fill=()=>{if(!ready){ready=true;body.append(...subset.map(w=>wordNode(w)));}};

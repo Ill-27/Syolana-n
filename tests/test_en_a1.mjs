@@ -62,6 +62,14 @@ for(const rate of [.6,1,1.5])for(const repeat of [1,3]){
     for(const u of d.units)segmentsFor(u,'en-ru',repeat);
   }
   assert.equal(c.all.filter(u=>u.pair.lang==='en-US').length,data.variants.length);
+  for(const variant of data.variants){
+    const day=c.days.find(d=>d.units.some(u=>u.pair.id===variant.uk.id));
+    assert(day.units.some(u=>u.pair.id===variant.us.id),'A UK/US comparison was split between days');
+  }
+  for(const situation of data.practice){
+    const day=c.days.find(d=>d.units.some(u=>u.pair.id===situation.pairs[0].id));
+    for(const pair of [...situation.pairs,...(situation.model?[situation.model]:[])])assert(day.units.some(u=>u.pair.id===pair.id),'A conversation was split between days');
+  }
   assert(Math.abs(c.days.reduce((s,d)=>s+d.seconds,0)-c.totalSeconds)<.01);
 }
 const uk={lang:'en-GB',voiceURI:'uk',localService:true},us={lang:'en-US',voiceURI:'us',localService:true},ru={lang:'ru-RU',voiceURI:'ru',localService:true};

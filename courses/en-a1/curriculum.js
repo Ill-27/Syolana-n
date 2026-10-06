@@ -1,5 +1,5 @@
-import {secondsFor} from './audio.js?v=20261006-1';
-import {trainerGroups} from './trainers.js?v=20261006-1';
+import {secondsFor} from './audio.js?v=20261006-2';
+import {trainerGroups} from './trainers.js?v=20261006-2';
 
 export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={}) {
   const units=[],map=new Map(),rules=[],groups=trainerGroups(data);
@@ -29,8 +29,9 @@ export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={}) {
   }
   const words=data.vocabulary.map(w=>({word:w,units:[unit(w.head,'word','vocabulary',w.note,w.id),...w.forms.map(p=>unit(p,'word','vocabulary','',w.id)),...w.examples.map(p=>unit(p,'word','vocabulary','',w.id))]}));
   const extras=[];
-  for(const v of data.variants)extras.push(unit(v.uk,'comparison','variants',v.note),unit(v.us,'comparison','variants'));
-  for(const p of data.practice){for(const pair of p.pairs)extras.push(unit(pair,'practice','practice'));if(p.model)extras.push(unit(p.model,'practice','practice'));}
+  // Keep each UK/US comparison and each conversation together in one day.
+  for(const v of data.variants)extras.push([unit(v.uk,'comparison','variants',v.note),unit(v.us,'comparison','variants')]);
+  for(const p of data.practice)extras.push([...p.pairs,...(p.model?[p.model]:[])].map(pair=>unit(pair,'practice','practice')));
   const total=units.reduce((s,u)=>s+duration(u),0),count=Math.max(2,Math.ceil(total/target));
   const lessons=Array.from({length:count},(_,i)=>({id:'day-'+(i+1),number:i+1,rules:[],words:[],extras:[],units:[],seconds:0}));
   const foundation=rules.filter(r=>r.section.area==='reading'),later=rules.filter(r=>r.section.area!=='reading');
@@ -47,7 +48,7 @@ export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={}) {
       day.words.push(w.word);day.units.push(...w.units);day.seconds+=n;wi++;
     }
   }
-  for(const u of extras){const day=lessons.find(d=>d.seconds+duration(u)<=target)||lessons.at(-1);day.extras.push(u);day.units.push(u);day.seconds+=duration(u);}
+  for(const bundle of extras){const seconds=bundle.reduce((s,u)=>s+duration(u),0),day=lessons.find(d=>d.seconds+seconds<=target)||lessons.at(-1);day.extras.push(...bundle);day.units.push(...bundle);day.seconds+=seconds;}
   return {map,days:lessons,all:lessons.flatMap(d=>d.units),totalSeconds:total,rate,repeat};
 }
 export function remainingSeconds(player,rate=1){

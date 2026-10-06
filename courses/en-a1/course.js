@@ -1,7 +1,7 @@
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-1';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-1';
-import {trainerGroups} from './trainers.js?v=20261006-1';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView} from './presentation.js?v=20261006-1';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-2';
+import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-2';
+import {trainerGroups} from './trainers.js?v=20261006-2';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView} from './presentation.js?v=20261006-2';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
@@ -22,7 +22,7 @@ function applyTheme(theme){
 window.addEventListener('message',e=>{if(e.source===window.parent&&e.origin===location.origin&&e.data?.syolanaHost&&e.data.theme)applyTheme(e.data.theme);});
 
 async function init(){
-  const response=await fetch(new URL('./data.json?v=20261006-1',import.meta.url));
+  const response=await fetch(new URL('./data.json?v=20261006-2',import.meta.url));
   if(!response.ok)throw new Error('Не удалось загрузить материал курса.');
   const data=await response.json(), trainers=trainerGroups(data), saved=storage.read('settings',{});
   const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
@@ -179,20 +179,20 @@ async function init(){
     const list=el('div','topic-list');sections.forEach((s,i)=>{const b=button('',()=>go(s.id),'topic-link');const n=el('span','topic-number',String(i+1).padStart(2,'0')),copy=el('span','topic-copy');copy.append(el('strong','',topicTitle(s)));const day=curriculum.days.find(d=>d.rules.some(r=>r.section.id===s.id));const dayLabel=el('small','',day?'Входит в день '+day.number:'Правило курса');dayLabel.dataset.topicDay=s.id;copy.append(dayLabel);b.append(n,copy,el('span','topic-arrow','→'));list.append(b);});view.append(list);
   }
 
-  const days=screen('days','От первых звуков — к свободным первым фразам','Выберите день и изучайте материал по порядку. Можно открыть отдельную тему через оглавление; полное прослушивание продолжится при переходах.');
+  const days=screen('days','Английский с первого звука','Начните с дня 1 или выберите тему в оглавлении. В каждом дне сначала идут правила, затем — слова с примерами. Слушать можно весь курс, один день или отдельную фразу.');
   const introActions=el('div','actions welcome-actions');introActions.append(button('Начать с дня 1 →',()=>go('day-1'),'primary'),button('▶ Слушать весь A1',()=>start(curriculum.all,'Весь A1')));days.append(introActions);
   const stats=el('div','stats');for(const [n,label] of [[data.statistics.uniqueHeadwords,'разных слов'],[data.statistics.examples,'примеров'],[data.statistics.ruleSections,'тем правил']]){const s=el('div');s.append(el('strong','',n.toLocaleString('ru-RU')),el('span','',label));stats.append(s);}days.append(stats);
   const listeningSummary=el('p','listening-summary'),dayList=el('div','day-list');days.append(listeningSummary,dayList);
   function renderDays(){
     const bilingual=curriculum.all.reduce((sum,u)=>sum+secondsFor(u,cfg.rate,cfg.mode,cfg.repeat),0);
-    listeningSummary.textContent=`${curriculum.days.length} дней · весь английский ≈ ${duration(curriculum.totalSeconds)} · выбранный режим ≈ ${duration(bilingual)}. Каждый день — около 30 минут английской речи; последний может быть короче. Скорость и повторы учитываются. Время приблизительное: оно зависит от голоса и пауз.`;
+    listeningSummary.textContent=`${curriculum.days.length} дневных блоков · весь английский ≈ ${duration(curriculum.totalSeconds)}${cfg.mode!=="en"?" · с переводом ≈ "+duration(bilingual):""}. В блоке — около 30 минут английской речи. Оценка учитывает скорость и повторы; реальное время зависит от голоса.`;
     dayList.replaceChildren();tocDayList.replaceChildren();
     for(const label of stage.querySelectorAll('[data-topic-day]')){const day=curriculum.days.find(d=>d.rules.some(r=>r.section.id===label.dataset.topicDay));label.textContent=day?'Входит в день '+day.number:'Правило курса';}
     for(const day of curriculum.days){
       const info=dayDescription(day,data.groups),c=el('article','day-card');c.append(el('div','day-meta','День '+day.number+' · ≈ '+duration(day.seconds)),el('h2','',info.title));
       const topics=el('ul','day-topics');for(const title of info.topics)topics.append(el('li','',title));if(!info.topics.length)topics.append(el('li','','Повторение знакомых правил в новых словах и фразах'));c.append(topics);
       if(info.vocabulary.length){c.append(el('span','card-label','Затем — слова с четырьмя примерами'));const chips=el('div','topic-chips');info.vocabulary.forEach(t=>chips.append(el('span','',t)));c.append(chips);}
-      if(info.extras.length)c.append(el('p','day-extra','В конце: '+info.extras.join(' и ').toLowerCase()+'.'));
+      if(info.extras.length)c.append(el('p','day-extra','В конце — '+info.extras.join(' и ')+'.'));
       c.append(el('p','day-count',day.words.length+' словарных статей'));
       const actions=el('div','actions');actions.append(button('Открыть день →',()=>go(day.id),'primary'),button('▶ Слушать',()=>start(day.units,'День '+day.number)));c.append(actions);dayList.append(c);
       tocDayList.append(button('День '+day.number+' · '+info.title,()=>go(day.id),'toc-link'));
@@ -241,10 +241,10 @@ async function init(){
       const day=view.day,info=dayDescription(day,data.groups),node=screen(view.key,info.title,'Сначала разберите темы ниже. Затем переходите к словам и их примерам. Озвучка читает материал в том же порядке.','ДЕНЬ '+day.number+' · ≈ '+duration(day.seconds)+' АНГЛИЙСКОЙ РЕЧИ');
       const actions=el('div','actions');actions.append(button('▶ Слушать день '+day.number,()=>start(day.units,'День '+day.number),'primary'));node.append(actions);
       const outline=el('details','day-outline');outline.append(el('summary','','Что входит в этот день'));const contents=el('ul');info.topics.forEach(t=>contents.append(el('li','',t)));info.vocabulary.forEach(t=>contents.append(el('li','','Слова: '+t)));outline.append(contents);node.append(outline);
-      if(day.rules.length){node.append(el('h2','section-label',day.number===1?'Сначала — чтение и звуки':'Сначала — правила и повторение'));
+      if(day.rules.length){node.append(el('h2','section-label',day.number===1?'Правила чтения':'Сначала — правила и повторение'));
         day.rules.forEach((r,i)=>{if(r.section.area==='repetition'){const d=el('details','lesson');d.append(el('summary','',r.section.title));const body=el('div','lesson-body pairs');body.append(...r.units.map(u=>pairNode(u.pair)));d.append(body);node.append(d);}else node.append(ruleDisclosure(r.section,i===0));});
       }
-      if(day.words.length){node.append(el('h2','section-label','Затем — слова и четыре примера'));for(const gid of [...new Set(day.words.map(w=>w.group))]){node.append(el('h3','',data.groups.find(g=>g.id===gid)?.title||''));node.append(...day.words.filter(w=>w.group===gid).map(w=>wordNode(w)));}}
+      if(day.words.length){node.append(el('h2','section-label','Затем — слова и четыре примера'));for(const gid of [...new Set(day.words.map(w=>w.group))]){const words=day.words.filter(w=>w.group===gid),group=el('details','word-group');group.append(el('summary','',(data.groups.find(g=>g.id===gid)?.title||'Слова')+' · '+words.length));let ready=false;group.addEventListener('toggle',()=>{if(group.open&&!ready){ready=true;const body=el('div','group-body');body.append(...words.map(w=>wordNode(w)));group.append(body);}});node.append(group);}}
       if(day.extras.length){node.append(el('h2','section-label','В конце — сравнение вариантов и бытовые фразы'));const extras=el('div','pairs');extras.append(...day.extras.map(u=>pairNode(u.pair)));node.append(extras);}
       const turns=el('nav','page-turns');turns.setAttribute('aria-label','Переход между днями');if(day.number>1)turns.append(button('← День '+(day.number-1),()=>go('day-'+(day.number-1))));turns.append(button('Ко всем дням',()=>go('days')));if(day.number<curriculum.days.length)turns.append(button('День '+(day.number+1)+' →',()=>go('day-'+(day.number+1))));node.append(turns);
     }else if(view.type==='trainer'){

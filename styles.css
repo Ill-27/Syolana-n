@@ -3984,6 +3984,13 @@ html[data-theme="white-ocean-city"] .flight-planet *{
   backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
 }
 .course-reading #page>.text-link {margin:0 0 15px;display:inline-flex}
+.course-reading #content-shell {padding-top:108px}
+.course-reading .english-course-frame {margin-top:14px}
+.course-reading #page>.loading {
+  padding:40px;border:1px solid #cab5ec26;border-radius:20px;
+  background:rgba(var(--surface),.24);color:var(--panel-text);
+  font:400 1.8rem/1.6 var(--heading);
+}
 @media(max-width:600px){
   .course-reading .english-course-frame {height:max(440px,calc(100dvh - 210px))}
 }

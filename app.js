@@ -1550,11 +1550,26 @@ function lessonFrame(key, anchor = "") {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a1-1" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a1-2" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
+  if (englishCourse) status.hidden = true;
   $("page").append(status, frame);
   let active = true,
     anchored = false;
+  function fitCourse() {
+    if (!englishCourse || !active) return;
+    const top = frame.getBoundingClientRect().top;
+    const dock = $("music-dock")?.getBoundingClientRect();
+    const bottom = Math.min(window.innerHeight - 20, dock?.height ? dock.top - 20 : window.innerHeight - 20);
+    frame.style.height = Math.max(300, bottom - top) + "px";
+  }
+  const courseObserver = englishCourse && typeof ResizeObserver !== "undefined"
+    ? new ResizeObserver(fitCourse) : null;
+  if (englishCourse) {
+    window.addEventListener("resize", fitCourse);
+    if ($("music-dock")) courseObserver?.observe($("music-dock"));
+    requestAnimationFrame(fitCourse);
+  }
   function send(data) {
     frame.contentWindow?.postMessage(
       { syolanaHost: true, ...data },
@@ -1587,6 +1602,7 @@ function lessonFrame(key, anchor = "") {
     }
     if (data.ready) {
       palette();
+      fitCourse();
       if (anchor && !anchored) {
         anchored = true;
         send({ anchor });
@@ -1640,6 +1656,8 @@ function lessonFrame(key, anchor = "") {
   cleanup = () => {
     active = false;
     if (englishCourse) document.body.classList.remove("course-reading");
+    window.removeEventListener("resize", fitCourse);
+    courseObserver?.disconnect();
     clearTimeout(timer);
     pauseLesson();
     window.speechSynthesis?.cancel();

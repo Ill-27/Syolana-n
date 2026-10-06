@@ -22,7 +22,7 @@ export function dayDescription(day, groups) {
   return {
     title: day.number === 1 ? 'Сначала — чтение и звуки' : topics[0] || 'Закрепляем слова и фразы',
     topics, vocabulary,
-    extras: [...new Set(day.extras.map(u => u.kind === 'comparison' ? 'Британия и США' : 'Бытовые ситуации'))]
+    extras: [...new Set(day.extras.map(u => u.kind === 'comparison' ? 'сравнение британского и американского вариантов' : 'бытовые ситуации'))]
   };
 }
 

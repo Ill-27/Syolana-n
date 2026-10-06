@@ -1546,8 +1546,11 @@ function lessonFrame(key, anchor = "") {
   const frame = el("iframe", "lesson-frame");
   frame.title = "Учебный материал Syolana";
   const englishCourse = key === "en/a1/course";
-  if (englishCourse) frame.style.height = "max(640px, calc(100dvh - 125px))";
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261005-a1-6" : "");
+  if (englishCourse) {
+    document.body.classList.add("course-reading");
+    frame.classList.add("english-course-frame");
+  }
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a1-1" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   $("page").append(status, frame);
   let active = true,
@@ -1624,6 +1627,7 @@ function lessonFrame(key, anchor = "") {
       else location.hash = url.hash.startsWith("#/") ? url.hash : "#/";
     }
   }
+  frame.addEventListener("load", palette);
   const pauseLesson = () => send({ pauseAudio: true });
   window.addEventListener("message", message);
   window.addEventListener("syolana:theme", palette);
@@ -1635,6 +1639,7 @@ function lessonFrame(key, anchor = "") {
   }, 12000);
   cleanup = () => {
     active = false;
+    if (englishCourse) document.body.classList.remove("course-reading");
     clearTimeout(timer);
     pauseLesson();
     window.speechSynthesis?.cancel();

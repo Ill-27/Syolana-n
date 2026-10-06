@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {readFile,access} from 'node:fs/promises';
 import {cleanSpeech,segmentsFor,voiceFor,SpeechPlayer,secondsFor} from '../courses/en-a1/audio.js';
 import {makeCurriculum} from '../courses/en-a1/curriculum.js';
-import {numberWords,ordinalWords,phonePair,spellingPair,timePair,pricePair,referencePairs,generatedPair} from '../courses/en-a1/trainers.js';
+import {numberWords,ordinalWords,phonePair,spellingPair,timePair,pricePair,referencePairs,generatedPair,trainerGroups} from '../courses/en-a1/trainers.js';
+import {displayIPA,displayText,dayDescription,resolveView} from '../courses/en-a1/presentation.js';
 
 const data=JSON.parse(await readFile('courses/en-a1/data.json','utf8'));
 const seen=new Set();let pairs=0;
@@ -35,9 +36,24 @@ assert(word('be').forms.some(p=>p.en==='being'));
 assert(word('go','verb').forms.some(p=>p.en==='went'));
 assert.equal(word('midnight').head.en,'midnight');
 assert.equal(word('sky').head.en,'the sky');
+assert(word('singer').examples.some(p=>p.ru.includes('певцом')));
+assert(word('shop assistant').examples.some(p=>p.ru.includes('продавцом')));
+assert(word('firefighter').examples.some(p=>p.ru.includes('пожарным')));
+assert(word('study','verb').examples[0].ru.includes('изучать английский'));
+assert(word('wear','verb').forms.some(p=>p.en==='wearing'&&p.ipa==='/ˈweərɪŋ/'));
+assert(word('prefer','verb').forms.some(p=>p.en==='preferring'));
+assert(word('travel','verb').forms.some(p=>p.en==='travelled'));
+assert(word('travel','verb').forms.some(p=>p.en==='travelling'));
+assert(word('information').examples.some(p=>p.ru.includes('об информации')));
+assert(word('grow','verb').examples[0].ru.includes('выращивать цветы'));
+assert(word('take off','verb').examples[0].ru.includes('снимать мои ботинки'));
+assert(word('come in','verb').examples.every(p=>!p.en.includes('Yesterday I came in now')));
 
 for(const rate of [.6,1,1.5])for(const repeat of [1,3]){
   const c=makeCurriculum(data,{rate,repeat});
+  assert.equal(c.days[0].rules[0].section.id,'read-start');
+  assert(c.days[0].rules.every(r=>r.section.area==='reading'),'Day one mixes grammar into the reading foundation');
+  assert.equal(c.days[0].units[0].section,'read-start');
   assert.equal(c.all.length,c.map.size,'A day lost a unit');
   assert.equal(new Set(c.all.map(x=>x.pair.id)).size,c.map.size,'A day repeated a unit');
   assert.equal(c.all.filter(x=>x.owner).length,data.vocabulary.reduce((s,w)=>s+1+w.forms.length+4,0));
@@ -71,6 +87,35 @@ assert(spellingPair('z_test@example.org',data).ipa.startsWith('/zed'));
 assert.equal(timePair(8,45,data.phonemeDictionary).en,'quarter to nine');
 assert.equal(pricePair(1,1,data.phonemeDictionary).en,'one pound and one penny');
 for(const p of referencePairs(data))segmentsFor({pair:p},'en-ru');
+const repetition=trainerGroups(data),plan=makeCurriculum(data);
+const group=id=>repetition.find(g=>g.id===id);
+for(let n=0;n<=100;n++)assert(group('numbers').pairs.some(p=>p.id==='number-'+n),'Missing number '+n);
+for(let n=1;n<=31;n++)assert(group('ordinals').pairs.some(p=>p.en===ordinalWords(n)),'Missing ordinal '+n);
+for(let n=0;n<60;n++)assert(group('time').pairs.some(p=>p.id==='time-9-'+n),'Missing minute '+n);
+assert.equal(group('alphabet').pairs.length,26);
+assert.equal(group('irregular').entries.length,data.vocabulary.filter(w=>w.irregular).length);
+assert(group('irregular').entries.some(w=>w.word==='read'));
+assert(group('irregular').entries.some(w=>w.word==='get up'));
+for(const g of repetition)for(const pair of g.pairs){
+  assert(pair.ru&&pair.ipa&&pair.lang);
+  for(const m of ['en','en-ru','ru-en'])segmentsFor({pair},m);
+  assert(plan.map.has(pair.id),'Displayed repetition is absent from full-course listening: '+pair.id);
+  assert(/^\[[^\[\]]+\]$/.test(displayIPA(pair.ipa)));
+}
+assert(group('calendar').pairs.some(p=>p.en==='on Monday'&&p.ru==='в понедельник'));
+assert(group('dates').pairs.some(p=>p.en==='the thirty-first of October'));
+assert(group('prices').pairs.some(p=>p.en==='one pound and one penny'));
+assert(group('contacts').pairs.some(p=>p.en==='alex@example.org'&&p.speak.includes('at')));
+assert(group('time').pairs.find(p=>p.en==='seven a.m.').speak==='seven A M');
+assert.equal(displayIPA('/həˈləʊ/'),'[həˈləʊ]');
+assert.equal(displayIPA('[eɪ]'),'[eɪ]');
+assert.equal(displayText('Звуки /p/, /s/ и /ə/.'),'Звуки [p], [s] и [ə].');
+assert.equal(dayDescription(plan.days[0],data.groups).title,'Сначала — чтение и звуки');
+assert(!dayDescription(plan.days[0],data.groups).topics.some(t=>t.includes(';')));
+assert.equal(resolveView('day-1',data,plan,repetition).type,'day');
+assert.equal(resolveView('read-start',data,plan,repetition).type,'rule');
+assert.equal(resolveView('repeat-numbers',data,plan,repetition).type,'trainer');
+assert.equal(resolveView('missing',data,plan,repetition).key,'days');
 
 let ms=0,cancelCount=0,spoken=[];
 class Utterance{constructor(text){this.text=text;}}
@@ -79,6 +124,9 @@ const make=()=>new SpeechPlayer({synth,Utterance,now:()=>ms,settings:()=>({rate:
 const p=make();
 assert(p.start([example],{mode:'en-ru'}));assert.equal(spoken.at(-1).lang,'en-US');assert.equal(spoken.at(-1).voice,us);assert.equal(spoken.at(-1).rate,.75);
 const stale=spoken.at(-1);ms=2500;p.pause();const frozen=p.elapsed();ms=12000;assert.equal(p.elapsed(),frozen,'Pause counted as listening time');
+const beforeNavigation=p.snapshot();
+for(const view of ['day-1','read-start','vocabulary','repeat-numbers','days'])resolveView(view,data,plan,repetition);
+assert.deepEqual(p.snapshot(),beforeNavigation,'Navigation changed the listening queue');
 stale.onend();assert.equal(p.segmentIndex,0,'Cancelled callbacks advanced the queue');p.resume();assert.equal(spoken.at(-1).text,stale.text,'Resume must replay an unfinished phrase');
 spoken.at(-1).onend();await new Promise(r=>setTimeout(r,470));assert.equal(spoken.at(-1).lang,'ru-RU');
 spoken.at(-1).onend();await new Promise(r=>setTimeout(r,470));assert.equal(p.status,'ended');assert.equal(p.unitIndex,1,'Finite queue did not finish');
@@ -86,6 +134,6 @@ p.start([example],{mode:'en-ru'});spoken.at(-1).onerror({error:'network'});asser
 const missing=new SpeechPlayer({synth,Utterance,voices:()=>[uk,ru]});assert.equal(missing.start([example]),false);assert.equal(missing.status,'error');missing.dispose();
 assert(cancelCount>2);
 
-for(const f of ['course.js','audio.js','trainers.js','curriculum.js','course.css','data.json'])await access('dist/public/courses/en-a1/'+f);
+for(const f of ['course.js','audio.js','trainers.js','curriculum.js','presentation.js','course.css','data.json'])await access('dist/public/courses/en-a1/'+f);
 const html=await readFile('dist/public/a1-english.html','utf8');assert(html.includes('courses/en-a1/course.js'));assert(!html.includes('const LESSONS'),'Old course still embedded');
 console.log(`PASS: ${pairs} paired texts, ${data.statistics.entries} word articles, complete day partitions, three language modes, exact accents, pause/resume, failure recovery and course bundle.`);

@@ -3968,3 +3968,22 @@ html[data-theme="white-ocean-city"] .flight-planet *{
   #flight-layer .flight-planet{bottom:calc(var(--zen-player-space,85px) + 12px);min-height:56px;padding:9px 14px;}
   #flight-layer .flight-hint{display:none;}
 }
+
+
+/* A1 uses the same moving backdrop and reading sheet as books. */
+.course-reading #reading-shade {
+  background:rgba(3,3,10,.64);
+  backdrop-filter:blur(7px) saturate(.88);
+  -webkit-backdrop-filter:blur(7px) saturate(.88);
+}
+.course-reading #banner,.course-reading #provider-notice,.course-reading .main-nav,
+.course-reading #discovery-tip {display:none!important}
+.course-reading .english-course-frame {
+  display:block;width:100%;height:max(560px,calc(100dvh - 238px));
+  background:transparent;border:0;border-radius:20px;
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+}
+.course-reading #page>.text-link {margin:0 0 15px;display:inline-flex}
+@media(max-width:600px){
+  .course-reading .english-course-frame {height:max(440px,calc(100dvh - 210px))}
+}

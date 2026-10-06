@@ -4,7 +4,7 @@ The phoneme dictionary is closed: unknown tokens fail the build, never guessed.
 """
 from pathlib import Path
 import json, re, collections
-from a1_russian import noun, plural_noun
+from a1_russian import noun, plural_noun, case
 from a1_examples import examples as authored_examples
 ROOT=Path(__file__).resolve().parents[1]
 SRC=ROOT/'courses/en-a1'
@@ -28,8 +28,8 @@ def inflect(w,kind):
     if kind=='past' and head in IRREGULAR: out=IRREGULAR[head][0]
     elif kind=='s': out=REG_SPELL.get(head, head[:-1]+'ies' if head.endswith('y') and head[-2] not in 'aeiou' else head+'es' if head.endswith(('s','sh','ch','x','z','o')) else head+'s')
     elif kind=='past':
-        out=head+'d' if head.endswith('e') else head[:-1]+'ied' if head.endswith('y') and head[-2] not in 'aeiou' else head+head[-1]+'ed' if head in {'stop','plan','drop','shop','fit','prefer'} else head+'ed'
-    else: out=head[:-1]+'ing' if head.endswith('e') and not head.endswith(('ee','ye')) else head+head[-1]+'ing' if head in {'run','swim','sit','get','put','begin','stop','plan','win','shop'} else head+'ing'
+        out=head+'d' if head.endswith('e') else head[:-1]+'ied' if head.endswith('y') and head[-2] not in 'aeiou' else head+head[-1]+'ed' if head in {'stop','plan','drop','shop','fit','prefer','travel'} else head+'ed'
+    else: out=head[:-1]+'ing' if head.endswith('e') and not head.endswith(('ee','ye')) else head+head[-1]+'ing' if head in {'run','swim','sit','get','put','begin','stop','plan','win','shop','travel','prefer'} else head+'ing'
     return ' '.join([out]+tail)
 PLURALS={'person':'people','man':'men','woman':'women','child':'children','tooth':'teeth','foot':'feet','mouse':'mice','sheep':'sheep','fish':'fish','wife':'wives','life':'lives','knife':'knives','leaf':'leaves','shelf':'shelves','half':'halves','scarf':'scarves','potato':'potatoes','tomato':'tomatoes','penny':'pence','businessperson':'businesspeople'}
 PL_IP={'people':'ˈpiːpl','men':'men','women':'ˈwɪmɪn','children':'ˈtʃɪldrən','teeth':'tiːθ','feet':'fiːt','mice':'maɪs','wives':'waɪvz','lives':'laɪvz','knives':'naɪvz','leaves':'liːvz','shelves':'ʃelvz','halves':'hɑːvz','scarves':'skɑːvz','pence':'pens','businesspeople':'ˈbɪznəspiːpl'}
@@ -60,7 +60,10 @@ for p,ip in PL_IP.items():addph(p,ip)
 for r in records:
     w,ip=r['word'],r['ipa']
     if r['kind']=='verb':
-        base=w.split(' ')[0];bip=PH.get(base,ip.split(' ')[0]);addph(inflect(base,'s'),suffix(bip,'s'));addph(inflect(base,'ing'),suffix(bip,'ing'))
+        base=w.split(' ')[0];bip=PH.get(base,ip.split(' ')[0]);addph(inflect(base,'s'),suffix(bip,'s'))
+        ing_ip=bip+('r' if base.endswith(('r','re')) and bip.endswith(('ə','ɜː','ɑː','ɔː','eə','ɪə','ʊə')) else '')+'ɪŋ'
+        if 'ˈ' not in ing_ip and 'ˌ' not in ing_ip:ing_ip='ˈ'+ing_ip
+        addph(inflect(base,'ing'),ing_ip)
         if base not in IRREGULAR: addph(inflect(base,'past'),suffix(bip,'ed'))
     elif r['kind'] not in {'adjective','feeling','colour','adverb','function','country','nationality','activity','mass','massFood','plural','dayname','monthname'}:
         p=plural(w)
@@ -126,6 +129,7 @@ for r in records:
     uncount=k in {'massFood','mass'} or w in COUNTLESS
     r['level']='расширение A1 → A2' if w in {'already','yet','especially','probably','borrow','lend','download','upload','sell out','decide','should','must','if'} else 'база A1'
     if k=='verb':
+        r['irregular']=w.split(' ')[0] in IRREGULAR
         r['en']=w;r['note']='Глагол. В инфинитиве перед ним может стоять показатель инфинитива; после модального глагола он не нужен.'
         base=w.split(' ')[0];tail=' '.join(w.split(' ')[1:]);p,pp,pip,ppip=IRREGULAR.get(base,(inflect(base,'past'),inflect(base,'past'),PH[inflect(base,'past')],PH[inflect(base,'past')]))
         forms=[(w,'начальная форма',ip),(inflect(w,'s'),'форма для третьего лица настоящего времени',None),(p+(' '+tail if tail else ''),'прошедшее время',pip+(' '+PH.get(tail,ipa(tail).strip('/')) if tail else '')),(pp+(' '+tail if tail else ''),'причастие; понадобится также на следующем уровне',ppip+(' '+PH.get(tail,ipa(tail).strip('/')) if tail else '')),(inflect(w,'ing'),'форма с окончанием действия в процессе',None)]
@@ -147,7 +151,7 @@ for r in records:
         r['en']=w;r['note']='Грамматически множественное число.'
         if r['group']!='extraFood':r['note']+=' Для одной единицы используем слово «пара».';meta.append(pair('a pair of '+w,'одна пара'))
     elif uncount:
-        r['en']=w;r['note']='В этом значении неисчисляемое: неопределённый артикль и обычное множественное число не используются. Определённый артикль возможен, когда речь о конкретном количестве или объекте.';meta.append(pair('some '+w,'некоторое количество: '+r['ru']))
+        r['en']=w;r['note']='В этом значении неисчисляемое: неопределённый артикль и обычное множественное число не используются. Определённый артикль возможен, когда речь о конкретном количестве или объекте.';meta.append(pair('some '+w,'немного '+case(noun(r['ru']),'gen')))
     else:
         a=article(ip);r['en']=a+' '+w;r['note']='Исчисляемое. Артикль зависит от контекста: здесь показана форма «один из многих». Для конкретного, известного собеседнику предмета нужен определённый артикль.';meta.append(pair(plural(w),plural_noun(noun(r['ru']))+'; множественное число'))
         if w in PLURALS:r['note']+=' У формы множественного числа есть особенность; см. ниже.'
@@ -184,6 +188,6 @@ for r in records:
 if UNKNOWN:
     (SRC/'unknown-phonemes.json').write_text(json.dumps(UNKNOWN,ensure_ascii=False,indent=2))
     raise ValueError('Missing authored phonemes: '+', '.join(UNKNOWN.keys()))
-data={'version':'2026-10-05.4','title':'Английский A1 · Syolana','sources':[{'title':'CEFR: рамка и описания навыков','url':'https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-descriptors'},{'title':'Ориентиры содержания английского: British Council и Eaquals','url':'https://www.teachingenglish.org.uk/sites/teacheng/files/pub-british-council-eaquals-core-inventoryv2.pdf'}],'phonetics':phonetics,'alphabet':alphabet,'rules':rules,'groups':groups,'vocabulary':records,'variants':variants,'practice':practices,'phonemeDictionary':PH,'statistics':{'entries':len(records),'uniqueHeadwords':len(set(r['word'].lower() for r in records)),'examples':len(records)*4,'ruleSections':len(rules),'sounds':len(phonetics)}}
+data={'version':'2026-10-06.1','title':'Английский A1 · Syolana','sources':[{'title':'CEFR: рамка и описания навыков','url':'https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-descriptors'},{'title':'Ориентиры содержания английского: British Council и Eaquals','url':'https://www.teachingenglish.org.uk/sites/teacheng/files/pub-british-council-eaquals-core-inventoryv2.pdf'}],'phonetics':phonetics,'alphabet':alphabet,'rules':rules,'groups':groups,'vocabulary':records,'variants':variants,'practice':practices,'phonemeDictionary':PH,'statistics':{'entries':len(records),'uniqueHeadwords':len(set(r['word'].lower() for r in records)),'examples':len(records)*4,'ruleSections':len(rules),'sounds':len(phonetics)}}
 (SRC/'data.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
 print(json.dumps(data['statistics'],ensure_ascii=False));print('Compiled',counter,'bilingual units with IPA.')

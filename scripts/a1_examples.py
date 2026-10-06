@@ -9,6 +9,9 @@ def examples(r, overrides, subjects, russian, past, plural, article, inflect):
     if k=='function':return r['rawExamples']
     if k=='verb':
         comp,cru=r['extra'].split('~');p=inflect(w,'past');inf=ru.split(';')[0]
+        # A broad dictionary gloss is not always the sense used with this complement.
+        inf={'study':'изучать','ride':'ездить','wear':'носить','clean':'убирать','brush':'чистить','decide':'решить','move':'переезжать','take off':'снимать','give back':'возвращать','grow':'выращивать','print':'печатать','save':'копить'}.get(w,inf)
+        if w=='tell' and cru=='рассказ':cru='историю'
         return [(f'I can {w} {comp}.',f'Я могу {inf} {cru}.'),(f'Can you {w} {comp}?',f'Ты можешь {inf} {cru}?'),(f'Yesterday I {p} {comp}.',f'Вчера я {past[w]} {cru}.'),(f'I am going to {w} {comp}.',f'Я собираюсь {inf} {cru}.')]
     if k=='person':return [(f'This {w} is in the photo.',f'На фотографии — {rn}.'),(f'The {w} is in the garden.',f'В саду — {rn}.'),(f'Can you see the {w}?',f'Ты видишь {ac}?'),(f'I drew a picture of the {w}.',f'Я нарисовал(а) {ac}.')]
     if k=='job':return [(f'Alex is {aw}.',f'Алекс — {rn}.'),(f'Do you work as {aw}?',f'Ты работаешь {ins}?'),(f'I want to be {aw}.',f'Я хочу стать {ins}.'),(f'The {w} is busy today.',f'{rn.capitalize()} сегодня '+('занята' if g=='f' else 'занят')+'.')]
@@ -21,7 +24,10 @@ def examples(r, overrides, subjects, russian, past, plural, article, inflect):
     if k=='body':return [(f'My {w} hurts.',f'У меня болит {rn}.'),(f'The doctor checked my {w}.',f'Врач осмотрел {ac}.'),(f'This is a picture of {aw}.',f'На картинке изображена эта часть тела: {rn}.'),(f'Can you see the {w} in this picture?',f'Ты видишь {ac} на этой картинке?')]
     if k=='animal':return [(f'I saw {aw} yesterday.',f'Вчера я видел(а) {ac}.'),(f'Is that {aw}?',f'Это {rn}?'),(f'There is {aw} in the picture.',f'На картинке {rn}.'),(f'Look at the {w}.',f'Посмотри на {ac}.')]
     if k=='nature':return [(f'I can see {aw}.',f'Я вижу {ac}.'),(f'Is there {aw} near here?',f'Рядом есть {rn}?'),(f'We took a photo of the {w}.',f'Мы сфотографировали {ac}.'),(f'Look at this {w}.',f'Посмотри на {ac}.')]
-    if k=='mass':return [(f'The {w} is important.',f'{rn.capitalize()} '+adj('важный',g)+'.'),(f'There is not much {w} here.',f'Здесь мало {gn}.'),(f'We need some {w}.',f'Нам {needed(rn)} {rn}.'),(f'Can you tell me about the {w}?',f'Можешь рассказать мне о {pr}?')]
+    if k=='mass':
+        about='об ' if pr[0] in 'аеёиоуыэюя' else 'о '
+        important={'m':'важен','f':'важна','n':'важно','p':'важны'}[g]
+        return [(f'The {w} is important.',f'{rn.capitalize()} {important}.'),(f'There is not much {w} here.',f'Здесь мало {gn}.'),(f'We need some {w}.',f'Нам {needed(rn)} {rn}.'),(f'Can you tell me about the {w}?',f'Можешь рассказать мне {about}{pr}?')]
     if k=='transport':return [(f'This is {aw}.',f'Это {rn}.'),(f'Where is the {w}?',f'Где {rn}?'),(f'I can see {aw}.',f'Я вижу {ac}.'),(f'The {w} is late.',f'{rn.capitalize()} опаздывает.')]
     if k in {'leisure','concept','health'}:
         det='the '+w

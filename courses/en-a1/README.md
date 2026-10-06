@@ -45,3 +45,23 @@ Progress, selected voices, personal notes and handwriting stay in local browser
 storage. Listening never starts automatically after loading or restoring progress.
 The embedded page accepts theme, anchor and audio-pause messages only from its
 same-origin parent, using the existing `syolanaHost`/`syolanaLesson` protocol.
+
+## Study views
+
+The existing public URL opens a course overview. An expandable table of contents
+opens individual topics, day screens, ordered repetition lists and practice.
+Changing the iframe hash changes only the view. The speech players and their
+queues remain mounted; navigation never cancels or restarts course listening.
+Day one begins with reading foundations. Every day presents rules before words.
+
+The course inherits the host's handwritten heading font and palette. The host
+uses the book reader's exact background shade (64%, blur 7px), and the course
+sheet uses the book reader's 24% surface and 2px blur. Audio controls use an
+opaque, collapsible panel, accessed from the compact footer button.
+
+IPA is stored canonically and displayed inside square brackets throughout the
+interface. Repetition lists replace random/input trainers: complete 0–100 and
+1–31 sequences, a full hour by minute, other clock readings, calendars, dates,
+years, prices, contact dictation and all explicitly marked irregular verbs.
+These lists are part of full-course listening and the daily plan, without
+adding duplicates of original alphabet entries or dictionary forms.

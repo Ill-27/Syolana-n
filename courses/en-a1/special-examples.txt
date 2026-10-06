@@ -192,3 +192,8 @@ surprised|I am surprised.~Я удивлён / удивлена.||Are you surpris
 ready|I am ready.~Я готов / готова.||Are you ready?~Ты готов / готова?||She is not ready.~Она не готова.||We were ready yesterday.~Вчера мы были готовы.
 busy|I am busy.~Я занят / занята.||Are you busy?~Ты занят / занята?||She is not busy.~Она не занята.||We were busy yesterday.~Вчера мы были заняты.
 tired|I am tired.~Я устал(а).||Are you tired?~Ты устал(а)?||She is not tired.~Она не устала.||We were tired yesterday.~Вчера мы чувствовали усталость.
+
+verbs:come in|Come in, please.~Входи, пожалуйста.||Can I come in?~Можно войти?||She came in and sat down.~Она вошла и села.||Do not come in yet.~Пока не входи.
+verbs:come back|Please come back soon.~Пожалуйста, возвращайся скорее.||When did you come back?~Когда ты вернулся(-ась)?||We came back yesterday.~Мы вернулись вчера.||I am going to come back on Monday.~Я собираюсь вернуться в понедельник.
+verbs:hear|Can you hear me?~Ты меня слышишь?||I heard a strange noise.~Я услышал(а) странный шум.||She cannot hear the music.~Она не слышит музыку.||I can hear the birds outside.~Я слышу птиц снаружи.
+verbs:sell out|The tickets sold out in one hour.~Все билеты раскупили за час.||These tickets sell out quickly.~Эти билеты быстро раскупают.||Will the tickets sell out?~Все билеты раскупят?||The shop has sold out of bread.~В магазине весь хлеб распродан.

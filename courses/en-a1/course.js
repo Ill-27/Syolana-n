@@ -1,7 +1,7 @@
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-5';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-5';
-import {trainerGroups} from './trainers.js?v=20261006-5';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-5';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-6';
+import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-6';
+import {trainerGroups} from './trainers.js?v=20261006-6';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-6';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
@@ -22,7 +22,7 @@ function applyTheme(theme){
 window.addEventListener('message',e=>{if(e.source===window.parent&&e.origin===location.origin&&e.data?.syolanaHost&&e.data.theme)applyTheme(e.data.theme);});
 
 async function init(){
-  const response=await fetch(new URL('./data.json?v=20261006-5',import.meta.url));
+  const response=await fetch(new URL('./data.json?v=20261006-6',import.meta.url));
   if(!response.ok)throw new Error('Не удалось загрузить материал курса.');
   const data=await response.json(), trainers=trainerGroups(data), saved=storage.read('settings',{});
   const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};

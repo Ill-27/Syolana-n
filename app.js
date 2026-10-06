@@ -1550,7 +1550,7 @@ function lessonFrame(key, anchor = "") {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a1-5" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a1-6" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);

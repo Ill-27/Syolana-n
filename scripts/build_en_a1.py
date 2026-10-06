@@ -164,10 +164,11 @@ for r in records:
         r['en']='the internet' if w=='internet' else w;r['note']='В этом значении неисчисляемое: неопределённый артикль и обычное множественное число не используются. Определённый артикль возможен, когда речь о конкретном количестве или объекте.'
         if w=='internet':r['note']='Интернет: обычно употребляем определённый артикль. В названии доступа к интернету и в определениях перед другим существительным артикль может отсутствовать.'
     else:
-        a=article(ip);r['en']=a+' '+w;r['note']='В показанном значении исчисляемое. Артикль зависит от контекста: здесь показана форма «один из многих». Для конкретного, известного собеседнику предмета нужен определённый артикль.';meta.append(pair(plural(w),NOUN_PLURALS[r['group']+':'+w]+'; множественное число'))
+        a=article(ip);r['en']=a+' '+w;r['note']='В показанном значении исчисляемое. Артикль зависит от контекста: здесь показана форма «один из многих». Для конкретного, известного собеседнику предмета нужен определённый артикль.';p=plural(w);meta.append(pair(p,NOUN_PLURALS[r['group']+':'+w]+'; множественное число',ipa='/'+PL_IP[p]+'/' if p in PL_IP else None))
         if w in PLURALS:r['note']+=' У формы множественного числа есть особенность; см. ниже.'
         if w=='sky':r['en']='the sky';r['note']='Когда говорим о небе над нами, обычно употребляем определённый артикль. В художественном описании возможны и другие формы.'
         if w in {'sun','moon'}:r['en']='the '+w;r['note']='Когда речь о Солнце или Луне над нами, обычно нужен определённый артикль. Множественное число пригодится для звёзд или спутников других планет.'
+        if w in {'ground floor','first floor'}:r['en']='the '+w;r['note']='В здании обычно говорим о конкретном этаже с определённым артиклем. Здесь показан британский счёт этажей: уровень земли и следующий над ним. См. сравнение с американским вариантом.'
     n=NOTES.get(w)
     if n:
         r['note']+=' '+n.get('ru','')
@@ -200,6 +201,6 @@ for r in records:
 if UNKNOWN:
     (SRC/'unknown-phonemes.json').write_text(json.dumps(UNKNOWN,ensure_ascii=False,indent=2))
     raise ValueError('Missing authored phonemes: '+', '.join(UNKNOWN.keys()))
-data={'version':'2026-10-06.2','title':'Английский A1 · Syolana','sources':[{'title':'CEFR: рамка и описания навыков','url':'https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-descriptors'},{'title':'Ориентиры содержания английского: British Council и Eaquals','url':'https://www.teachingenglish.org.uk/sites/teacheng/files/pub-british-council-eaquals-core-inventoryv2.pdf'}],'phonetics':phonetics,'alphabet':alphabet,'rules':rules,'groups':groups,'vocabulary':records,'variants':variants,'practice':practices,'phonemeDictionary':PH,'statistics':{'entries':len(records),'uniqueHeadwords':len(set(r['word'].lower() for r in records)),'examples':len(records)*4,'ruleSections':len(rules),'sounds':len(phonetics)}}
+data={'version':'2026-10-06.3','title':'Английский A1 · Syolana','sources':[{'title':'CEFR: рамка и описания навыков','url':'https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-descriptors'},{'title':'Ориентиры содержания английского: British Council и Eaquals','url':'https://www.teachingenglish.org.uk/sites/teacheng/files/pub-british-council-eaquals-core-inventoryv2.pdf'}],'phonetics':phonetics,'alphabet':alphabet,'rules':rules,'groups':groups,'vocabulary':records,'variants':variants,'practice':practices,'phonemeDictionary':PH,'statistics':{'entries':len(records),'uniqueHeadwords':len(set(r['word'].lower() for r in records)),'examples':len(records)*4,'ruleSections':len(rules),'sounds':len(phonetics)}}
 (SRC/'data.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
 print(json.dumps(data['statistics'],ensure_ascii=False));print('Compiled',counter,'bilingual units with IPA.')

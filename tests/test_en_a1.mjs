@@ -57,6 +57,11 @@ for(const [name,kind,expected] of [
  ['open','adjective','more open'],['ill','feeling','worse'],['forget','verb','forgetting'],['cut','verb','cutting'],['let','verb','letting'],['stomach',null,'stomachs']
 ])assert(word(name,kind).forms.some(p=>p.en===expected),'Incorrect morphology: '+name);
 for(const name of ['alone','broken','lost'])assert(!word(name).forms.length,'Invented comparison: '+name);
+assert(word('life').forms.some(p=>p.en==='lives'&&p.ipa==='/laɪvz/'));
+assert(word('live','verb').forms.some(p=>p.en==='lives'&&p.ipa==='/lɪvz/'));
+assert(word('fish').forms.some(p=>p.en==='two fish'));
+assert.equal(word('first floor').head.en,'the first floor');
+assert(word('flat').examples.some(p=>p.en.includes('third floor')&&p.ru.includes('четвёртом по российскому')));
 assert(word('house').forms.some(p=>p.en==='houses'&&p.ipa==='/ˈhaʊzɪz/'));
 assert(word('young').forms.some(p=>p.en==='younger'&&p.ipa==='/ˈjʌŋɡə/'));
 assert(word('dry').forms.some(p=>p.en==='drier'&&p.ipa==='/ˈdraɪə/'));

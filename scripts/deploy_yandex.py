@@ -11,6 +11,7 @@ import mimetypes
 import os
 from pathlib import Path
 import re
+import subprocess
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -61,7 +62,7 @@ def iam_token():
     token=json.loads(http('https://auth.yandex.cloud/oauth/token',data=body,headers={'Content-Type':'application/x-www-form-urlencoded'},method='POST'))['access_token']
     return token
 
-def publish(*,check=False):
+def publish(*,check=False,cloud_shell=False):
     files=bundle();sha=os.environ.get('SYOLANA_SOURCE_SHA','')
     hashes={key:hashlib.sha256(path.read_bytes()).hexdigest() for key,path in files.items()}
     if check:
@@ -75,8 +76,17 @@ def publish(*,check=False):
     try:old=json.loads(http(ORIGIN+MANIFEST+'?current=1')).get('files',{})
     except urllib.error.HTTPError as e:
         if e.code!=404:raise
+    except json.JSONDecodeError:
+        # The existing website can return its HTML error page before its first manifest.
+        old={}
     changed=[key for key in files if old.get(key)!=hashes[key]]
-    token=iam_token()
+    if cloud_shell:
+        current=json.loads(subprocess.run(['yc','storage','bucket','get','--name',BUCKET,'--full','--format','json'],check=True,capture_output=True,text=True).stdout)
+        flags=current.get('anonymous_access_flags',{})
+        if current.get('folder_id')!='b1gmi3vca1csrl1o3om7' or not flags.get('read') or flags.get('list') or flags.get('config_read'):
+            raise RuntimeError('Unexpected existing bucket configuration')
+        token=subprocess.run(['yc','iam','create-token'],check=True,capture_output=True,text=True).stdout.strip()
+    else:token=iam_token()
     def upload(key,data,content_type,cache='no-cache'):
         url='https://storage.yandexcloud.net/'+BUCKET+'/'+urllib.parse.quote(key,safe='/')
         http(url,data=data,method='PUT',headers={'Authorization':'Bearer '+token,'Content-Type':content_type,'Cache-Control':cache})
@@ -99,8 +109,8 @@ def publish(*,check=False):
     print(json.dumps({'status':'verified','sourceCommit':sha,'uploadedFiles':len(changed),'url':ORIGIN}))
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('--check',action='store_true');args=parser.parse_args()
-    try:publish(check=args.check)
+    parser=argparse.ArgumentParser();parser.add_argument('--check',action='store_true');parser.add_argument('--cloud-shell',action='store_true');args=parser.parse_args()
+    try:publish(check=args.check,cloud_shell=args.cloud_shell)
     except Exception as exc:
         # HTTP errors contain only status and URL, never request headers/tokens.
         raise SystemExit(f'Publication failed: {type(exc).__name__}: {exc}')

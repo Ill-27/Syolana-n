@@ -1,8 +1,8 @@
 // Show a recoverable error if an upload is incomplete; never leave an endless loader.
-if (/^#\/lesson\/en\/a1\/course(?:\/|$)/.test(location.hash)) {
+if (/^#\/lesson\/en\/a[12]\/course(?:\/|$)/.test(location.hash)) {
   document.body.classList.add("course-reading");
 }
-const release = new URL(import.meta.url).searchParams.get("v") || "20261006-a1-6";
+const release = new URL(import.meta.url).searchParams.get("v") || "20261006-a2-1";
 const appURL = new URL("./app.js", import.meta.url);
 appURL.searchParams.set("v", release);
 import(appURL.href).catch((error) => {

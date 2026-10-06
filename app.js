@@ -543,7 +543,7 @@ function languages(lang = "en") {
     heading(
       "ВЫБЕРИТЕ СВОЙ ЯЗЫК",
       data.native,
-      "Английский A1 доступен бесплатно. Другие уровни готовятся: продажи ещё не открыты. Состав, окончательная цена и условия доступа появятся до покупки.",
+      "Английский A1 бесплатный. Английский A2 — 2 000 ₽; продажи откроются после подключения личного доступа. Оплата и общение только через Авито.",
     ),
     tabs,
   );
@@ -556,9 +556,10 @@ function languages(lang = "en") {
   })) {
     const card = el("article", "card stack language-level");
     const free = lang === "en" && level === "A1";
+    const englishA2 = lang === "en" && level === "A2";
     card.dataset.level = level;
     card.append(
-      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : "В ПОДГОТОВКЕ"),
+      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : englishA2 ? "ПРИВАТНЫЙ ПРОСМОТР" : "В ПОДГОТОВКЕ"),
       el("h3", "course-level", level),
       el("p", "", description),
       (() => {
@@ -567,11 +568,12 @@ function languages(lang = "en") {
           price.textContent = "Бесплатно";
           return price;
         }
-        price.textContent = "Продажи ещё не открыты";
+        price.textContent = englishA2 ? "2 000 ₽ · продажи пока закрыты" : "Продажи ещё не открыты";
         return price;
       })(),
       free
         ? link("Открыть английский A1", "#/lesson/en/a1/course", "btn primary")
+        : englishA2 ? link("Открыть английский A2", "#/lesson/en/a2/course", "btn primary")
         : link("Уточнить выпуск на Авито", businessContact("Языковое пособие " + lang + " " + level, "languages"), "btn"),
     );
     levels.append(card);
@@ -1545,12 +1547,12 @@ function lessonFrame(key, anchor = "") {
   if (!filename) return;
   const frame = el("iframe", "lesson-frame");
   frame.title = "Учебный материал Syolana";
-  const englishCourse = key === "en/a1/course";
+  const englishCourse = ["en/a1/course", "en/a2/course"].includes(key);
   if (englishCourse) {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a1-6" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-a2-1" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);
@@ -1567,8 +1569,9 @@ function lessonFrame(key, anchor = "") {
     ? new ResizeObserver(fitCourse) : null;
   if (englishCourse) {
     courseBar = el("div", "course-controls");
+    courseBar.hidden = key === "en/a2/course";
     courseTOC = el("button", "course-controls-toc", "☰");
-    courseTOC.type = "button"; courseTOC.setAttribute("aria-label", "Оглавление курса A1");
+    courseTOC.type = "button"; courseTOC.setAttribute("aria-label", "Оглавление курса");
     courseTOC.addEventListener("click", () => send({openTOC:true}));
     courseAudio = el("button", "course-controls-audio"); courseAudio.type = "button";
     const icon = el("span", "course-controls-icon", "♫"), copy = el("span", "course-controls-copy");
@@ -1631,6 +1634,7 @@ function lessonFrame(key, anchor = "") {
     }
     if (data.audio) player.pause();
     if (englishCourse && data.courseAudio) {
+      courseBar.hidden = false;
       const audio = data.courseAudio;
       courseLabel.textContent=audio.label;courseStatus.textContent=audio.status;
       courseProgress.max=Math.max(1,audio.total||0);courseProgress.value=audio.index||0;

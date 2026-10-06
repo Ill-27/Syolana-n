@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'dist'
 PUBLIC = OUT / 'public'
 PRIVATE = OUT / 'private_lessons'
-FREE = {'a1-english.html':'en/a1/course','a1-spanish-rules.html':'es/a1/rules','a1-spanish-words.html':'es/a1/words',
+FREE = {'a2-english.html':'en/a2/course','a1-english.html':'en/a1/course','a1-spanish-rules.html':'es/a1/rules','a1-spanish-words.html':'es/a1/words',
         'a1-spanish-practice.html':'es/a1/practice','a1-françes-rules.html':'fr/a1/rules','a1-françes-words.html':'fr/a1/words'}
 PAID = {'a2-spanish-rules.html':'es/a2/rules','a2-spanish-words.html':'es/a2/words',
         'b1-spanish-rules.html':'es/b1/rules','b2-spanish-rules.html':'es/b2/rules'}
@@ -42,6 +42,10 @@ def build():
     for name in FILES: shutil.copy2(ROOT/name, PUBLIC/name)
     for name in ['assets','themes','books','covers','español-songs','audio-library','partner-demo','courses']:
         if (ROOT/name).exists(): shutil.copytree(ROOT/name,PUBLIC/name)
+    allowed_a2={'course.js','course.css','audio.js','curriculum.js','presentation.js','trainers.js','access.js'}
+    a2=PUBLIC/'courses/en-a2'
+    if a2.exists() and any(p.is_dir() or p.name not in allowed_a2 for p in a2.iterdir()):
+        raise RuntimeError('Paid A2 data cannot be published as static files')
     version = hashlib.sha256(b''.join((PUBLIC/name).read_bytes() for name in ['partner-core.js','themes.js','flight.js','styles.css'])).hexdigest()[:20]
     (PUBLIC/'partners').mkdir(exist_ok=True)
     (PUBLIC/'partners/core-version.json').write_text(json.dumps({'version': version},ensure_ascii=False))
@@ -51,6 +55,6 @@ def build():
         destination.write_text(lesson(name,route));(PUBLIC/name).write_text(redirect('lesson/'+route))
     for name,route in [('español.html','languages/es'),('pexample.html','join'),('français.html','languages/fr')]:
         (PUBLIC/name).write_text(redirect(route))
-    print('Built public site +',len(FREE),'free lesson pages +',len(PAID),'private lesson pages.')
+    print('Built public site +',len(FREE),'public lesson entry pages +',len(PAID),'private lesson pages.')
 
 if __name__ == '__main__': build()

@@ -1007,7 +1007,13 @@
       "B2": 8000
     },
     "freeCourse": "en/A1",
-    "partnerGiftLanguages": 1
+    "partnerGiftLanguages": 1,
+    "englishA2": {
+      "priceRub": 2000,
+      "salesOpen": false,
+      "access": "individual-account-after-avito-payment",
+      "ownerPreview": "private-local-file"
+    }
   },
   "partnerBanner": {
     "eyebrow": "SYOLANA · ЕДИНАЯ ПЛАТФОРМА ДЛЯ ТВОРЧЕСКИХ САЙТОВ",

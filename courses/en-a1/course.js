@@ -1,7 +1,7 @@
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-4';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-4';
-import {trainerGroups} from './trainers.js?v=20261006-4';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-4';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-5';
+import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-5';
+import {trainerGroups} from './trainers.js?v=20261006-5';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-5';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
@@ -22,7 +22,7 @@ function applyTheme(theme){
 window.addEventListener('message',e=>{if(e.source===window.parent&&e.origin===location.origin&&e.data?.syolanaHost&&e.data.theme)applyTheme(e.data.theme);});
 
 async function init(){
-  const response=await fetch(new URL('./data.json?v=20261006-4',import.meta.url));
+  const response=await fetch(new URL('./data.json?v=20261006-5',import.meta.url));
   if(!response.ok)throw new Error('Не удалось загрузить материал курса.');
   const data=await response.json(), trainers=trainerGroups(data), saved=storage.read('settings',{});
   const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
@@ -80,11 +80,12 @@ async function init(){
   const rate=select([[.6,'0,6 × — очень медленно'],[.75,'0,75 × — медленно'],[.9,'0,9 ×'],[1,'1 × — обычно'],[1.15,'1,15 ×'],[1.3,'1,3 ×'],[1.5,'1,5 ×']]);rate.value=String(cfg.rate);if(!rate.value){cfg.rate=1;rate.value='1';}
   const repeat=select([[1,'Один раз'],[2,'Каждую пару дважды'],[3,'Каждую пару трижды']]);repeat.value=cfg.repeat;
   const change=()=>{
+    const openScreen=overlay,readingOffset=overlayOffset;
     bulk.pause();clip.stop(false);clipSelected=false;
     cfg.mode=mode.value;cfg.rate=+rate.value;cfg.repeat=+repeat.value;bulk.mode=cfg.mode;bulk.repeat=cfg.repeat;bulk.segmentIndex=0;
     storage.write('settings',cfg);curriculum=makeCurriculum(data,cfg);renderDays();
     for(const [key,node] of views)if(key.startsWith('day-')){node.remove();views.delete(key);scrollPositions.delete(key);}
-    if(currentKey.startsWith('day-')){const key=currentKey;currentKey='';show(key);}
+    if(currentKey.startsWith('day-')){const key=currentKey;currentKey='';show(key);if(openScreen){setOverlay(openScreen);overlayOffset=readingOffset;}}
     saveProgress();updatePlayer();
   };
   mode.addEventListener('change',change);rate.addEventListener('change',change);repeat.addEventListener('change',change);

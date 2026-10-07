@@ -4,6 +4,7 @@ No account, key, bucket, paid server, ACL or billing setting is created here.
 The IAM federation and bucket-scoped upload permission need one-time setup.
 """
 import argparse
+import base64
 import concurrent.futures
 import hashlib
 import json
@@ -55,11 +56,25 @@ def iam_token():
     u=urllib.parse.urlsplit(endpoint)
     if u.scheme!='https' or not (u.hostname or '').endswith('.actions.githubusercontent.com'):
         raise RuntimeError('Expected the GitHub OIDC endpoint')
-    query=urllib.parse.parse_qsl(u.query);query.append(('audience','https://github.com/Ill-27'))
+    audience='https://github.com/Ill-27'
+    query=[(key,value) for key,value in urllib.parse.parse_qsl(u.query) if key!='audience'];query.append(('audience',audience))
     oidc_url=urllib.parse.urlunsplit((u.scheme,u.netloc,u.path,urllib.parse.urlencode(query),''))
     oidc=json.loads(http(oidc_url,headers={'Authorization':'Bearer '+os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']}))['value']
+    payload=oidc.split('.')[1]
+    claims=json.loads(base64.urlsafe_b64decode(payload+'='*((-len(payload))%4)))
+    expected={'iss':'https://token.actions.githubusercontent.com','aud':audience,'sub':'repo:Ill-27/Syolana-n:ref:refs/heads/main'}
+    observed={key:claims.get(key) for key in expected}
+    if observed!=expected:raise RuntimeError('GitHub identity differs from existing federation: '+json.dumps(observed))
     body=urllib.parse.urlencode({'grant_type':'urn:ietf:params:oauth:grant-type:token-exchange','requested_token_type':'urn:ietf:params:oauth:token-type:access_token','audience':service,'subject_token':oidc,'subject_token_type':'urn:ietf:params:oauth:token-type:id_token'}).encode()
-    token=json.loads(http('https://auth.yandex.cloud/oauth/token',data=body,headers={'Content-Type':'application/x-www-form-urlencoded'},method='POST'))['access_token']
+    try:token=json.loads(http('https://auth.yandex.cloud/oauth/token',data=body,headers={'Content-Type':'application/x-www-form-urlencoded'},method='POST'))['access_token']
+    except urllib.error.HTTPError as exc:
+        try:error=json.loads(exc.read())
+        except (json.JSONDecodeError,UnicodeDecodeError):error={}
+        # Only OAuth's error fields are diagnostic; redact any token-looking substrings.
+        detail=' '.join(str(error.get(key,'')) for key in ('error','error_description'))
+        detail=re.sub(r'[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{15,}(?:\.[A-Za-z0-9_-]+)?','[redacted]',detail)
+        detail=re.sub(r'(?:Bearer\s+|t1\.)[^\s\"<>]+','[redacted]',detail)
+        raise RuntimeError(f'Existing Yandex federation rejected the verified GitHub identity (HTTP {exc.code}): '+detail[:400]) from None
     return token
 
 def publish(*,check=False,cloud_shell=False):

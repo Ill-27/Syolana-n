@@ -62,7 +62,7 @@ def iam_token():
     oidc=json.loads(http(oidc_url,headers={'Authorization':'Bearer '+os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']}))['value']
     payload=oidc.split('.')[1]
     claims=json.loads(base64.urlsafe_b64decode(payload+'='*((-len(payload))%4)))
-    expected={'iss':'https://token.actions.githubusercontent.com','aud':audience,'sub':'repo:Ill-27/Syolana-n:ref:refs/heads/main'}
+    expected={'iss':'https://token.actions.githubusercontent.com','aud':audience,'sub':'repo:Ill-27@126349149/Syolana-n@1397087754:ref:refs/heads/main'}
     observed={key:claims.get(key) for key in expected}
     if observed!=expected:raise RuntimeError('GitHub identity differs from existing federation: '+json.dumps(observed))
     body=urllib.parse.urlencode({'grant_type':'urn:ietf:params:oauth:grant-type:token-exchange','requested_token_type':'urn:ietf:params:oauth:token-type:access_token','audience':service,'subject_token':oidc,'subject_token_type':'urn:ietf:params:oauth:token-type:id_token'}).encode()

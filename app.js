@@ -1462,6 +1462,9 @@ function report() {
 
 async function route() {
   const token = ++routeToken;
+  const previousLanguageTabs = $("page").querySelector(".language-tabs");
+  const switchingLanguage = previousLanguageTabs && /^#\/languages\/[^/]+\/?$/.test(location.hash);
+  const languageTabsOffset = switchingLanguage ? previousLanguageTabs.getBoundingClientRect().top : null;
   const preserveAudio = /^#\/book\//.test(location.hash) || /^#\/s\/[^/]+\/book\//.test(location.hash);
   cleanup({ preserveAudio });
   if (!preserveAudio) sceneAudio.stop();
@@ -1473,7 +1476,7 @@ async function route() {
   theme.setBlocked(false);
   document.documentElement.style.setProperty("--prose", moodColors.neutral);
   $("page").replaceChildren();
-  window.scrollTo({ top: 0, behavior: "instant" });
+  if (!switchingLanguage) window.scrollTo({ top: 0, behavior: "instant" });
   document.title = "Syolana · Иммерсивная платформа для творчества";
   const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
   const [view, a, b, c, d] = parts;
@@ -1495,7 +1498,13 @@ async function route() {
   try {
     if (view === "home") await home(token);
     else if (view === "library") await library(token);
-    else if (view === "languages") languages(a, b);
+    else if (view === "languages") {
+      languages(a, b);
+      if (languageTabsOffset !== null) {
+        const tabs = $("page").querySelector(".language-tabs");
+        if (tabs) window.scrollBy({ top: tabs.getBoundingClientRect().top - languageTabsOffset, behavior: "instant" });
+      }
+    }
     else if (view === "songs") songsPage();
     else if (view === "lesson") {
       const key = [a, b, c].join("/");

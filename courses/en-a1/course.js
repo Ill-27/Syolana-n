@@ -1,4 +1,4 @@
-import {mountCourseBranding} from '../../course-branding.js?v=20261006-language-marks-1';
+import {mountCourseBranding} from '../../course-branding.js?v=20261007-language-marks-2';
 import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-6';
 import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-6';
 import {trainerGroups} from './trainers.js?v=20261006-6';
@@ -15,7 +15,7 @@ const select=options=>{const x=el('select');for(const [value,text] of options){c
 const normal=s=>s.toLowerCase().replace(/[’]/g,"'").replace(/[^\p{L}\p{N}' ]/gu,' ').replace(/\s+/g,' ').trim();
 document.documentElement.classList.toggle('embedded',window.parent!==window);
 function applyTheme(theme){
-  const mapping={heading:'--course-heading',body:'--course-font',accent:'--course-accent',dim:'--course-muted','panel-border':'--course-line','panel-text':'--course-ink','panel-muted':'--course-muted','button-radius':'--course-button-radius'};
+  const mapping={body:'--course-font',accent:'--course-accent',dim:'--course-muted','panel-border':'--course-line','panel-text':'--course-ink','panel-muted':'--course-muted','button-radius':'--course-button-radius'};
   for(const [k,v] of Object.entries(theme))if(mapping[k]&&String(v).trim())document.documentElement.style.setProperty(mapping[k],v);
   const surface=String(theme.surface||'').trim();
   if(/^\d+(?:\s*,\s*\d+){2}$/.test(surface))document.documentElement.style.setProperty('--course-surface',surface);

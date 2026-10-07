@@ -1,4 +1,7 @@
 /* Course attribution is visual only: never a speech or accessibility fragment. */
+body.syolana-course-protected,body.syolana-course-protected *{user-select:none;-webkit-user-select:none}
+body.syolana-course-protected .pair,body.syolana-course-protected .lesson-body,body.syolana-course-protected .word-body{-webkit-touch-callout:none}
+body.syolana-course-protected input,body.syolana-course-protected textarea,body.syolana-course-protected [contenteditable="true"],body.syolana-course-protected [data-copy-allowed],body.syolana-course-protected [data-copy-allowed] *{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
 .course-attribution-layer{position:fixed;inset:112px 2vw 156px;z-index:90;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:16px;pointer-events:none!important;user-select:none;overflow:hidden;contain:layout paint}
 .course-attribution-mark{position:relative;align-self:center;justify-self:center;max-width:100%;text-align:center;transform:rotate(-17deg);color:var(--panel-text,var(--course-ink,#eee8fa));opacity:.15;font:400 clamp(16px,1.6vw,23px)/1.3 "Syolana Script","Segoe Print",cursive;letter-spacing:.025em;white-space:nowrap;filter:drop-shadow(0 0 7px #b2a4d521);pointer-events:none!important}
 .course-attribution-mark:nth-child(2n){transform:rotate(-17deg) translateY(15px);opacity:.12}

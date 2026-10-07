@@ -1,5 +1,5 @@
-import { loadCatalog, loadBook, lessonFiles } from "./catalog.js?v=20261006-language-1";
-import { mountCourseBranding } from "./course-branding.js?v=20261006-language-marks-1";
+import { loadCatalog, loadBook, lessonFiles } from "./catalog.js?v=20261007-es-a1-1";
+import { mountCourseBranding } from "./course-branding.js?v=20261007-language-marks-3";
 import {
   $,
   el,
@@ -544,7 +544,7 @@ function languages(lang = "en") {
     heading(
       "ВЫБЕРИТЕ СВОЙ ЯЗЫК",
       data.native,
-      "Английский A1 бесплатный. Английский A2 — 2 000 ₽; продажи откроются после подключения личного доступа. Оплата и общение только через Авито.",
+      "Английский A1 — бесплатно. Английский A2 — 2 000 ₽. Испанский A1 — 1 000 ₽; платным партнёрам может предоставляться бесплатно по индивидуальному соглашению. Оплата и общение только через Авито.",
     ),
     tabs,
   );
@@ -558,9 +558,10 @@ function languages(lang = "en") {
     const card = el("article", "card stack language-level");
     const free = lang === "en" && level === "A1";
     const englishA2 = lang === "en" && level === "A2";
+    const spanishA1 = lang === "es" && level === "A1";
     card.dataset.level = level;
     card.append(
-      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : englishA2 ? "ПРИВАТНЫЙ ПРОСМОТР" : "В ПОДГОТОВКЕ"),
+      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : (englishA2 || spanishA1) ? "ЛИЧНЫЙ ДОСТУП" : "В ПОДГОТОВКЕ"),
       el("h3", "course-level", level),
       el("p", "", description),
       (() => {
@@ -569,12 +570,13 @@ function languages(lang = "en") {
           price.textContent = "Бесплатно";
           return price;
         }
-        price.textContent = englishA2 ? "2 000 ₽ · продажи пока закрыты" : "Продажи ещё не открыты";
+        price.textContent = englishA2 ? "2 000 ₽ · личный доступ" : spanishA1 ? "1 000 ₽ · личный доступ" : "Продажи ещё не открыты";
         return price;
       })(),
       free
         ? link("Открыть английский A1", "#/lesson/en/a1/course", "btn primary")
         : englishA2 ? link("Открыть английский A2", "#/lesson/en/a2/course", "btn primary")
+        : spanishA1 ? link("Открыть испанский A1", "#/lesson/es/a1/course", "btn primary")
         : link("Уточнить выпуск на Авито", businessContact("Языковое пособие " + lang + " " + level, "languages"), "btn"),
     );
     levels.append(card);
@@ -587,7 +589,7 @@ function languages(lang = "en") {
     el(
       "p",
       "",
-      "Планируем включить пособие A1 одного языка, кроме английского, в отдельные партнёрские предложения после выпуска материалов. До этого бонус не входит в оплачиваемую услугу. Доступный язык и срок будут указаны в конкретном заказе. Английский A1 бесплатен для всех.",
+      "Испанский A1 стоит 1 000 ₽. Платным партнёрам Syolana доступ может предоставляться бесплатно по индивидуальному соглашению. Условия и срок закрепляются в конкретном заказе на Авито. Английский A1 бесплатен для всех.",
     ),
     link("Подключить Syolana", "#/join", "btn primary"),
   );
@@ -1503,7 +1505,7 @@ async function route() {
       $("page").append(
         link("К уровням языка", "#/languages/" + a, "text-link"),
       );
-      await openLesson(key, d ? decodeURIComponent(d) : "", token);
+      try { await openLesson(key, d ? decodeURIComponent(d) : "", token); } catch (error) { removeAttribution(); throw error; }
       const lessonCleanup = cleanup;
       cleanup = (...args) => { lessonCleanup(...args); removeAttribution(); };
     } else if (view === "join") join();
@@ -1552,12 +1554,12 @@ function lessonFrame(key, anchor = "") {
   if (!filename) return;
   const frame = el("iframe", "lesson-frame");
   frame.title = "Учебный материал Syolana";
-  const englishCourse = ["en/a1/course", "en/a2/course"].includes(key);
+  const englishCourse = ["en/a1/course", "en/a2/course", "es/a1/course", "es/a1/rules", "es/a1/words", "es/a1/practice"].includes(key);
   if (englishCourse) {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261006-language-1" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261007-language-3" : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);
@@ -1574,7 +1576,7 @@ function lessonFrame(key, anchor = "") {
     ? new ResizeObserver(fitCourse) : null;
   if (englishCourse) {
     courseBar = el("div", "course-controls");
-    courseBar.hidden = key === "en/a2/course";
+    courseBar.hidden = key !== "en/a1/course";
     courseTOC = el("button", "course-controls-toc", "☰");
     courseTOC.type = "button"; courseTOC.setAttribute("aria-label", "Оглавление курса");
     courseTOC.addEventListener("click", () => send({openTOC:true}));

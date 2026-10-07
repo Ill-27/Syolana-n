@@ -5,12 +5,12 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'dist'
 PUBLIC = OUT / 'public'
 PRIVATE = OUT / 'private_lessons'
-FREE = {'a2-english.html':'en/a2/course','a1-english.html':'en/a1/course','a1-spanish-rules.html':'es/a1/rules','a1-spanish-words.html':'es/a1/words',
+FREE = {'a1-spanish.html':'es/a1/course','a2-english.html':'en/a2/course','a1-english.html':'en/a1/course','a1-spanish-rules.html':'es/a1/rules','a1-spanish-words.html':'es/a1/words',
         'a1-spanish-practice.html':'es/a1/practice','a1-françes-rules.html':'fr/a1/rules','a1-françes-words.html':'fr/a1/words'}
 PAID = {'a2-spanish-rules.html':'es/a2/rules','a2-spanish-words.html':'es/a2/words',
         'b1-spanish-rules.html':'es/b1/rules','b2-spanish-rules.html':'es/b2/rules'}
 FILES = ['index.html','app.js','api.js','catalog.js','content.js','player.js','studio.js','themes.js','utils.js',
-         'styles.css','course-branding.js','course-branding.css','course-branding.json','config.json','feed.json','feed.js','discovery.js','flight.js','scene-audio.js','boot.js','partner-core.js','partner-core.css','legacy-bridge.js','legacy-embed.css','legacy-redirect.js']
+         'styles.css','course-branding.js','course-branding.css','course-branding.json','course-protection.js','config.json','feed.json','feed.js','discovery.js','flight.js','scene-audio.js','boot.js','partner-core.js','partner-core.css','legacy-bridge.js','legacy-embed.css','legacy-redirect.js']
 
 def redirect(route):
     return '<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Syolana</title><body><p><a href="/#/'+route+'">Открыть страницу Syolana</a></p><script src="/legacy-redirect.js" data-route="'+route+'"></script></body></html>'
@@ -43,9 +43,10 @@ def build():
     for name in ['assets','themes','books','covers','español-songs','audio-library','partner-demo','courses']:
         if (ROOT/name).exists(): shutil.copytree(ROOT/name,PUBLIC/name)
     allowed_a2={'course.js','course.css','audio.js','curriculum.js','presentation.js','trainers.js','access.js'}
-    a2=PUBLIC/'courses/en-a2'
-    if a2.exists() and any(p.is_dir() or p.name not in allowed_a2 for p in a2.iterdir()):
-        raise RuntimeError('Paid A2 data cannot be published as static files')
+    for course in ('en-a2','es-a1'):
+        paid=PUBLIC/'courses'/course
+        if paid.exists() and any(p.is_dir() or p.name not in allowed_a2 for p in paid.iterdir()):
+            raise RuntimeError('Paid course data cannot be published as static files')
     version = hashlib.sha256(b''.join((PUBLIC/name).read_bytes() for name in ['partner-core.js','themes.js','flight.js','styles.css'])).hexdigest()[:20]
     (PUBLIC/'partners').mkdir(exist_ok=True)
     (PUBLIC/'partners/core-version.json').write_text(json.dumps({'version': version},ensure_ascii=False))

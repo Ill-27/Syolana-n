@@ -106,9 +106,10 @@ export function readingColor(value) {
 export const lessonFiles = {
   "en/a1/course": "a1-english.html",
   "en/a2/course": "a2-english.html",
-  "es/a1/rules": "a1-spanish-rules.html",
-  "es/a1/words": "a1-spanish-words.html",
-  "es/a1/practice": "a1-spanish-practice.html",
+  "es/a1/course": "a1-spanish.html",
+  "es/a1/rules": "a1-spanish.html",
+  "es/a1/words": "a1-spanish.html",
+  "es/a1/practice": "a1-spanish.html",
   "fr/a1/rules": "a1-françes-rules.html",
   "fr/a1/words": "a1-françes-words.html",
   "es/a2/rules": "api/lessons/es/a2/rules",

@@ -26,6 +26,7 @@ jobs:
           node tests/test_scene_audio.mjs
           node tests/test_build.mjs
           node tests/test_en_a1.mjs
+          node tests/test_paid_shells.mjs
       - name: Check JavaScript syntax
         run: |
-          for file in *.js themes/*.js courses/en-a1/*.js dist/public/legacy-scripts/*.js; do node --check "$file"; done
+          for file in *.js themes/*.js courses/en-a1/*.js courses/en-a2/*.js courses/es-a1/*.js dist/public/legacy-scripts/*.js; do node --check "$file"; done

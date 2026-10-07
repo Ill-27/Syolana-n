@@ -188,6 +188,14 @@ function renderFeed(posts, category = "Все") {
     for (const item of mediaItems.slice(0, 4)) {
       const entry =
         typeof item === "string" ? { type: "image", src: item } : item || {};
+      if(entry.type==='vk-video'){
+        const href=String(entry.src||'');if(!/^https:\/\/vk\.com\/video-?\d+_\d+$/.test(href))continue;
+        const link=document.createElement('a');link.href=href;link.target='_blank';link.rel='noopener noreferrer';link.className='button';link.textContent=entry.title?'Смотреть: '+entry.title:'Смотреть видео VK';article.append(link);continue;
+      }
+      if(entry.type==='video'){
+        const src=safeMedia(entry.src);if(!src)continue;
+        const video=document.createElement('video');video.src=src;video.controls=true;video.preload='metadata';video.playsInline=true;video.className='post-media';article.append(video);continue;
+      }
       if ((entry.type || "image") !== "image") continue;
 
       const src = safeMedia(entry.src);
@@ -274,7 +282,7 @@ async function boot() {
 
     renderPartner(partner);
 
-    const posts = [...feed].sort((a, b) =>
+    const posts = [...feed].filter(p=>!p.hidden).sort((a, b) =>
       String(b.publishedAt).localeCompare(String(a.publishedAt)),
     );
 

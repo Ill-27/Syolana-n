@@ -15,7 +15,7 @@ let token = "";
 let feed = [];
 let currentPostId = "";
 let editingPostId = "";
-const isPublisher = () => cfg.publishingSource === "publisher";
+const isPublisher = () => ['publisher','hybrid'].includes(cfg.publishingSource);
 const isDemo = () => cfg.mode === "demo" && !apiEndpoint;
 const demoFeedKey = () => "partner-demo.feed." + cfg.partnerId;
 
@@ -56,7 +56,8 @@ async function api(path, { method = "GET", body } = {}) {
     if (response.status === 403 && data?.error === "partner_disabled") {
       throw new Error("Доступ к настройкам Studio сейчас отключён.");
     }
-    throw new Error(data?.error || "Ошибка Studio API");
+    const messages={settings_changed_retry:'Запись уже обновилась. Обновите список и повторите изменение.',invalid_image:'Выберите фото из вашего хранилища.',invalid_video:'Выберите видео MP4 или WebM из вашего хранилища.',media_too_large:'Файл должен быть не больше 2 МБ.',invalid_media:'Выберите JPG, PNG, WebP, MP4 или WebM.',post_not_found:'Эта запись уже удалена. Обновите список.',storage_unavailable:'Хранилище временно недоступно. Повторите сохранение позже.',not_configured:'Редактор ещё не подключён. Обратитесь к Syolana.'};
+    throw new Error(messages[data?.error] || 'Не удалось сохранить. Обновите страницу и попробуйте ещё раз.');
   }
 
   return data;
@@ -124,6 +125,9 @@ function renderPreview(post) {
     image.alt = "";
     figure.hidden = true;
   }
+  document.querySelector('#preview-video')?.remove();
+  const clip=(post.media||[]).find(m=>m.type==='video');
+  if(clip){const video=document.createElement('video');video.id='preview-video';video.src=clip.src;video.controls=true;video.preload='metadata';video.playsInline=true;video.style.maxWidth='100%';$('#post-preview').append(video);}
 
   const vk = sourceUrl(post);
   const button = $("#open-vk-post");
@@ -155,7 +159,7 @@ function renderList() {
     title.textContent = post.title || "Публикация";
 
     const meta = document.createElement("small");
-    meta.textContent = [post.source?.type === "publisher" ? "Ваш сайт" : "VK", displayDate(post.publishedAt)].filter(Boolean).join(" · ");
+    meta.textContent = [post.source?.type === "publisher" ? "Ваш сайт" : "VK", post.hidden?'Скрыта':'',displayDate(post.publishedAt)].filter(Boolean).join(" · ");
 
     button.append(title, meta);
     button.onclick = () => {
@@ -170,10 +174,10 @@ async function loadFeed() {
   $("#feed-status").textContent = "Обновляем предпросмотр…";
 
   try {
-    const response = await fetch(apiEndpoint ? endpoint("/public/feed") : "../feed.json", {
+    const response = await fetch(apiEndpoint ? endpoint(token?'/posts':"/public/feed") : "../feed.json", {
       cache: "no-store",
     signal: AbortSignal.timeout(6000),
-      headers: { accept: "application/json" },
+      headers: { accept: "application/json",...(token?{authorization:'Bearer '+token}:{}) },
     });
 
     if (!response.ok) throw new Error("feed.json unavailable");
@@ -268,6 +272,7 @@ $("#login-form").addEventListener("submit", async (event) => {
     const state = await api("/status");
     cfg.publishingSource = state.publishingSource;
     configurePublisher();
+    await loadFeed();
     hideLogin();
     $("#contact-status").textContent =
       "Защищённые настройки подключены.";
@@ -318,9 +323,10 @@ function configurePublisher() {
   $("#publisher-panel").hidden = !isPublisher();
   if (!isPublisher()) return;
   $("#post-image").closest("label").hidden = isDemo();
+  $("#post-video").closest("label").hidden = isDemo();
   $("#studio-title").textContent = "Ваши публикации";
-  $("#studio-lead").textContent = "Напишите текст и нажмите «Опубликовать». Сайт читает ленту из вашего собственного хранилища.";
-  $("#source-instruction").textContent = "Создавайте и изменяйте записи в редакторе ниже. Контакты настраиваются отдельно.";
+  $("#studio-lead").textContent = "Напишите пост или получите его из VK. Фото и видео можно добавить вместе с текстом.";
+  $("#source-instruction").textContent = "Изменяйте любые записи здесь. Удаление записи VK скрывает только копию на сайте. Новая правка в VK заменяет местные изменения; скрытая копия остаётся скрытой.";
   $("#source-description").textContent = "Источник — ваше хранилище. Текст не проходит через сервер Syolana.";
   $("#publisher-help").textContent = isDemo()
     ? "Демонстрация: изменения видны только в этом браузере. Облачная публикация ещё не подключена."
@@ -331,26 +337,34 @@ function resetEditor() {
 }
 $("#new-post").onclick = resetEditor;
 $("#edit-post").onclick = () => {
-  const post = feed.find(p => p.id === currentPostId && p.source?.type === "publisher");
+  const post = feed.find(p => p.id === currentPostId);
   if (!post) { $("#publisher-status").textContent = "Выберите свою запись в списке.";return; }
   editingPostId = post.id;$("#post-title").value = post.title;$("#post-text").value = post.text;
-  $("#post-category").value = post.category || "Новости";$("#post-image").value = post.media?.[0]?.src || "";
+  $("#post-category").value = post.category || "Новости";$("#post-image").value = post.source?.type==='vk'?'':post.media?.find(m=>m.type==='image')?.src || "";
+  $("#post-video").value = post.source?.type==='vk'?'':post.media?.find(m=>m.type==='video')?.src || '';
   $("#publish-post").textContent = "Сохранить изменения";$("#post-title").focus();
 };
 $("#publisher-form").addEventListener("submit", async event => {
   event.preventDefault();if (!isPublisher()) return;
   if (!isDemo() && !token) { showLogin("Войдите, чтобы опубликовать запись.");return; }
   const body = { title: $("#post-title").value.trim(), text: $("#post-text").value.trim(),
-    category: $("#post-category").value.trim(), imageUrl: $("#post-image").value.trim() };
-  if (!body.title || !body.text) return;
+    category: $("#post-category").value.trim(), imageUrl: $("#post-image").value.trim(),videoUrl:$("#post-video").value.trim(),keepSourceMedia:true };
+  if (!body.title) return;
   $("#publish-post").disabled = true;$("#publisher-status").textContent = "Сохраняем…";
   try {
+    const file=$('#post-file').files[0];let demoMedia=[];
+    if(file){
+      if(file.size>2*1024*1024)throw Error('Файл должен быть не больше 2 МБ. Для длинного видео используйте публикацию VK.');
+      const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file)});
+      if(isDemo())demoMedia=[{type:file.type.startsWith('video/')?'video':'image',src:data,alt:''}];
+      else{const upload=await api('/media',{method:'POST',body:{contentType:file.type,data:data.split(',')[1]}});body[upload.type==='video'?'videoUrl':'imageUrl']=upload.url;}
+    }
     if (isDemo()) {
       // Demo never transmits drafts, contacts or tokens to a server.
       const old = feed.find(p => p.id === editingPostId);
       const post = { ...old, id: editingPostId || "post-" + crypto.randomUUID(), title: body.title,
-        text: body.text, category: body.category || "Новости", media: [], publishedAt: old?.publishedAt || new Date().toISOString(),
-        source: { type: "publisher", partnerId: cfg.partnerId } };
+        text: body.text, category: body.category || "Новости", media: demoMedia.length?demoMedia:old?.media||[], publishedAt: old?.publishedAt || new Date().toISOString(),
+        source: old?.source || { type: "publisher", partnerId: cfg.partnerId } };
       feed = [post, ...feed.filter(p => p.id !== post.id)].slice(0,100);
       localStorage.setItem(demoFeedKey(),JSON.stringify(feed));currentPostId = post.id;
     } else {
@@ -362,14 +376,18 @@ $("#publisher-form").addEventListener("submit", async event => {
   finally { $("#publish-post").disabled = false; }
 });
 $("#delete-post").onclick = async () => {
-  const post = feed.find(p => p.id === currentPostId && p.source?.type === "publisher");
+  const post = feed.find(p => p.id === currentPostId);
   if (!isPublisher() || !post) return;
   if (!confirm("Удалить выбранную публикацию с сайта?")) return;
   try {
-    if (isDemo()) { feed = feed.filter(p => p.id !== post.id);localStorage.setItem(demoFeedKey(),JSON.stringify(feed)); }
+    if (isDemo()) { feed = post.source?.type==='vk'?feed.map(p=>p.id===post.id?{...p,hidden:true}:p):feed.filter(p => p.id !== post.id);localStorage.setItem(demoFeedKey(),JSON.stringify(feed)); }
     else await api("/posts/" + post.id,{method:"DELETE"});
     resetEditor();currentPostId = "";await loadFeed();$("#publisher-status").textContent = "Запись удалена.";
   } catch(error) { $("#publisher-status").textContent = error.message; }
+};
+$('#restore-post').onclick=async()=>{
+  const post=feed.find(p=>p.id===currentPostId&&p.source?.type==='vk');if(!post)return;
+  try{if(isDemo()){post.hidden=false;localStorage.setItem(demoFeedKey(),JSON.stringify(feed));}else await api('/posts/'+post.id,{method:'PUT',body:{restore:true}});await loadFeed();$('#publisher-status').textContent='Запись снова видна на сайте.';}catch(error){$('#publisher-status').textContent=error.message;}
 };
 
 async function boot() {

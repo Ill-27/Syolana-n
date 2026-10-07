@@ -89,16 +89,19 @@
       <p id="publisher-help">Текст сохраняется в вашем российском облаке и появляется на вашем сайте.</p>
       <form id="publisher-form">
         <label><span>Заголовок</span><input id="post-title" maxlength="140" required /></label>
-        <label><span>Текст</span><textarea id="post-text" maxlength="10000" required placeholder="Расскажите о новой работе, событии или идее…"></textarea></label>
+        <label><span>Текст</span><textarea id="post-text" maxlength="10000" placeholder="Расскажите о новой работе, событии или идее…"></textarea></label>
         <div class="two">
           <label><span>Изображение из вашего хранилища · необязательно</span><input id="post-image" type="url" placeholder="https://storage.yandexcloud.net/…/image.jpg" /></label>
           <label><span>Категория</span><input id="post-category" maxlength="50" value="Новости" /></label>
         </div>
+        <label><span>Фото или короткое видео · до 2 МБ</span><input id="post-file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" /></label>
+        <label><span>Видео из вашего хранилища · необязательно</span><input id="post-video" type="url" placeholder="https://storage.yandexcloud.net/…/video.mp4" /></label>
         <div class="editor-actions">
           <button id="publish-post" class="button primary" type="submit">Опубликовать</button>
           <button id="edit-post" class="button secondary" type="button">Изменить выбранную запись</button>
           <button id="new-post" class="button secondary" type="button">Новая запись</button>
           <button id="delete-post" class="button danger" type="button">Удалить выбранную запись</button>
+          <button id="restore-post" class="button secondary" type="button">Вернуть скрытую запись VK</button>
         </div>
         <p id="publisher-status" class="status" role="status"></p>
       </form>

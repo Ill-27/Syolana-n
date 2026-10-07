@@ -1503,6 +1503,11 @@ async function route() {
       if (languageTabsOffset !== null) {
         const tabs = $("page").querySelector(".language-tabs");
         if (tabs) window.scrollBy({ top: tabs.getBoundingClientRect().top - languageTabsOffset, behavior: "instant" });
+        requestAnimationFrame(() => {
+          if (token !== routeToken) return;
+          const settledTabs = $("page").querySelector(".language-tabs");
+          if (settledTabs) window.scrollBy({ top: settledTabs.getBoundingClientRect().top - languageTabsOffset, behavior: "instant" });
+        });
       }
     }
     else if (view === "songs") songsPage();

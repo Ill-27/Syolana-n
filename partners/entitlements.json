@@ -6,7 +6,10 @@
       "allowedHosts": [
         "ill-27.github.io",
         "localhost",
-        "127.0.0.1"
+        "127.0.0.1",
+        "syolana.com",
+        "www.syolana.com",
+        "d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net"
       ],
       "features": {
         "themes": true,
@@ -14,7 +17,26 @@
         "player": true,
         "zen": true,
         "publishing": false,
-        "marketing": true
+        "marketing": false
+      }
+    },
+    "lana-test": {
+      "active": true,
+      "allowedHosts": [
+        "ill-27.github.io",
+        "localhost",
+        "127.0.0.1",
+        "syolana.com",
+        "www.syolana.com",
+        "d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net"
+      ],
+      "features": {
+        "themes": true,
+        "banner": true,
+        "player": true,
+        "zen": true,
+        "publishing": false,
+        "marketing": false
       }
     }
   }

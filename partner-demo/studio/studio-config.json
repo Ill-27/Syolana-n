@@ -1,7 +1,7 @@
 {
   "mode": "demo",
-  "partnerId": "demo-partner",
+  "partnerId": "lana-test",
   "apiEndpoint": "",
   "auth": "server-session",
-  "publishingSource": "publisher"
+  "publishingSource": "hybrid"
 }

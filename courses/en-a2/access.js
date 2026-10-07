@@ -1,3 +1,4 @@
+import {attachPaymentControls} from '../payment-ui.js';
 // Public access shell. Paid materials exist only in the private repository/server.
 const API='/api/course-access/',AVITO='https://www.avito.ru/brands/i223140984';
 let currentSession=null;
@@ -26,11 +27,12 @@ async function request(path,body,csrf=''){
 }
 export async function loadCourse(){
   const host=document.getElementById('loading');host.replaceChildren();host.classList.add('access-screen');
-  let salesOpen=false;
-  try{const s=await request('session');salesOpen=s.salesOpen===true;if(s.access){currentSession=s;host.dataset.access=s.owner?'owner':'buyer';return validateCourse(await request('data'));}}catch{}
+  let salesOpen=false,automaticPayments=false;
+  try{const s=await request('session');salesOpen=s.salesOpen===true;automaticPayments=s.automaticPayments===true;if(s.access){currentSession=s;host.dataset.access=s.owner?'owner':'buyer';return validateCourse(await request('data'));}}catch{}
   host.append(node('p','АНГЛИЙСКИЙ A2','eyebrow'),node('h1','Продолжайте в своём темпе'),node('p','Понятные правила, слова с четырьмя разными примерами, формы и сочетания, повторение и озвучка — по тому же принципу, что в бесплатном A1.','view-intro'));
   const intro=node('div','','access-intro');intro.append(node('strong','2 000 ₽','access-price'),node('p',salesOpen?'Оплата и общение — только в официальном профиле Syolana на Авито. После подтверждения оплаты вы получите персональный код для своего аккаунта.':'Продажи откроются после подключения личного доступа. Оплата и общение — только в официальном профиле Syolana на Авито.'),node('p','Сначала пройдите бесплатный A1. Приобретайте A2, если этот способ учиться вам подходит.'));host.append(intro);
   const links=node('div','','actions'),a=node('a','Официальный профиль на Авито','primary');a.href=AVITO;a.target='_blank';a.rel='noopener noreferrer';links.append(a);host.append(links);
+  if(automaticPayments)attachPaymentControls(host,'en-a2',request);
   function panel(title){const p=document.createElement('details');p.className='access-details';p.append(node('summary',title));host.append(p);return p;}
   const login=panel('У меня уже есть доступ'),form=document.createElement('form');form.className='access-form';const user=input(form,'Логин','text','username'),password=input(form,'Пароль','password','password'),submit=node('button','Войти','primary'),error=node('p','','notice');submit.type='submit';error.setAttribute('role','status');form.append(submit,error);login.append(form);
   const activation=panel('Активировать покупку'),claim=document.createElement('form');claim.className='access-form';const code=input(claim,'Персональный код из переписки на Авито','text','code');code.autocomplete='off';const handle=input(claim,'Придумайте логин','text','username');handle.minLength=3;handle.maxLength=40;const pass=input(claim,'Придумайте пароль — от 12 символов','password','password');pass.minLength=12;pass.autocomplete='new-password';const activate=node('button','Активировать доступ','primary'),claimError=node('p','','notice');activate.type='submit';claimError.setAttribute('role','status');claim.append(activate,claimError);activation.append(claim);
@@ -88,3 +90,4 @@ export function watchSession(beforeLeave){
  const timer=setInterval(verify,30000);window.addEventListener('focus',verify);document.addEventListener('visibilitychange',verify);window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
  return ()=>{closed=true;clearInterval(timer);window.removeEventListener('focus',verify);document.removeEventListener('visibilitychange',verify);};
 }
+

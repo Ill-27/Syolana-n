@@ -1,17 +1,17 @@
 {
-  "partnerId": "demo-partner",
+  "partnerId": "lana-test",
   "mode": "active",
   "environment": "demo",
   "assetMode": "public-demo",
-  "coreUrl": "https://ill-27.github.io/Syolana-n/partner-core.js",
-  "licenseEndpoint": "https://ill-27.github.io/Syolana-n/partners/entitlements.json",
+  "coreUrl": "https://d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net/partner-core.js",
+  "licenseEndpoint": "https://d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net/partners/entitlements.json",
   "features": {
     "immersiveTheme": true,
     "player": true,
     "reader": true,
     "publishing": false,
-    "marketing": true
+    "marketing": false
   },
-  "publishingSource": "publisher",
+  "publishingSource": "hybrid",
   "coreVersion": "live"
 }

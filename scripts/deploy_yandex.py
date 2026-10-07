@@ -112,5 +112,8 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--check',action='store_true');parser.add_argument('--cloud-shell',action='store_true');args=parser.parse_args()
     try:publish(check=args.check,cloud_shell=args.cloud_shell)
     except Exception as exc:
-        # HTTP errors contain only status and URL, never request headers/tokens.
-        raise SystemExit(f'Publication failed: {type(exc).__name__}: {exc}')
+        # Identify the failing service without logging query strings, bodies or credentials.
+        if isinstance(exc,urllib.error.HTTPError):
+            detail=f'{urllib.parse.urlsplit(exc.url).hostname} returned HTTP {exc.code}'
+        else:detail=str(exc)
+        raise SystemExit(f'Publication failed: {type(exc).__name__}: {detail}')

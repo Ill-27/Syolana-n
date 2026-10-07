@@ -14,7 +14,6 @@ concurrency:
 jobs:
   publish:
     if: >-
-      vars.YC_SITE_SERVICE_ACCOUNT_ID != '' &&
       (github.event_name == 'workflow_dispatch' ||
        (github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.head_repository.full_name == github.repository))
@@ -31,7 +30,7 @@ jobs:
         run: python build.py
       - name: Validate and publish changed files
         env:
-          YC_SITE_SERVICE_ACCOUNT_ID: ${{ vars.YC_SITE_SERVICE_ACCOUNT_ID }}
+          YC_SITE_SERVICE_ACCOUNT_ID: ${{ vars.YC_SITE_SERVICE_ACCOUNT_ID || 'aje58mq57469nmpsl877' }}
           SYOLANA_SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
           SYOLANA_GITHUB_REPOSITORY: ${{ github.repository }}
         run: python scripts/deploy_yandex.py

@@ -25,8 +25,11 @@ function safeLink(value) {
   }
 }
 
+let demoMediaAllowed = false;
+
 function safeMedia(value) {
   if (typeof value !== "string" || !value.trim()) return "";
+  if (demoMediaAllowed && /^data:(?:image\/(?:png|jpeg|webp)|video\/(?:mp4|webm));base64,[A-Za-z0-9+/=]+$/.test(value)) return value;
   try {
     const u = new URL(value, location.href);
     if (u.origin === location.origin) return u.href;
@@ -263,6 +266,7 @@ async function boot() {
       readJSON("./feed.json"),
     ]);
 
+    demoMediaAllowed = partner.demo === true;
     let feed = storedFeed;
     if (partner.feedEndpoint) {
       try {

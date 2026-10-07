@@ -88,6 +88,11 @@ function sourceUrl(post) {
   return "";
 }
 
+function previewMediaAllowed(value) {
+  const src = String(value || "");
+  return /^https:\/\//i.test(src) || (isDemo() && /^data:(?:image\/(?:png|jpeg|webp)|video\/(?:mp4|webm));base64,[A-Za-z0-9+/=]+$/.test(src));
+}
+
 function renderPreview(post) {
   currentPostId = String(post?.id || "");
 
@@ -110,7 +115,7 @@ function renderPreview(post) {
   $("#preview-text").textContent = String(post.text || "");
 
   const firstImage = (Array.isArray(post.media) ? post.media : []).find(
-    (item) => (item?.type || "image") === "image" && /^https:\/\//i.test(String(item?.src || "")),
+    (item) => (item?.type || "image") === "image" && previewMediaAllowed(item?.src),
   );
 
   const figure = $("#preview-media");
@@ -126,7 +131,7 @@ function renderPreview(post) {
     figure.hidden = true;
   }
   document.querySelector('#preview-video')?.remove();
-  const clip=(post.media||[]).find(m=>m.type==='video');
+  const clip=(post.media||[]).find(m=>m.type==='video' && previewMediaAllowed(m.src));
   if(clip){const video=document.createElement('video');video.id='preview-video';video.src=clip.src;video.controls=true;video.preload='metadata';video.playsInline=true;video.style.maxWidth='100%';$('#post-preview').append(video);}
 
   const vk = sourceUrl(post);
@@ -341,7 +346,7 @@ $("#edit-post").onclick = () => {
   if (!post) { $("#publisher-status").textContent = "Выберите свою запись в списке.";return; }
   editingPostId = post.id;$("#post-title").value = post.title;$("#post-text").value = post.text;
   $("#post-category").value = post.category || "Новости";$("#post-image").value = post.source?.type==='vk'?'':post.media?.find(m=>m.type==='image')?.src || "";
-  $("#post-video").value = post.source?.type==='vk'?'':post.media?.find(m=>m.type==='video')?.src || '';
+  $("#post-video").value = post.source?.type==='vk'?'':post.media?.find(m=>m.type==='video' && previewMediaAllowed(m.src))?.src || '';
   $("#publish-post").textContent = "Сохранить изменения";$("#post-title").focus();
 };
 $("#publisher-form").addEventListener("submit", async event => {

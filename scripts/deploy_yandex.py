@@ -20,6 +20,7 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 BUCKET = 'syolana-pilot-b1gugflkb4qcgf2vftor'
 ORIGIN = f'https://{BUCKET}.website.yandexcloud.net/'
+SITE_ORIGIN = 'https://d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net/'
 MANIFEST = '_deploy/site-version.json'
 RUNTIME = {'access.js','audio.js','course.js','course.css','curriculum.js','presentation.js','trainers.js'}
 
@@ -42,10 +43,12 @@ def bundle():
     # The demo must use the same Russian origin as the site.
     demo=public/'partner-demo/integration.json'
     if demo.is_file():
-        config=json.loads(demo.read_text());config.update(coreUrl=ORIGIN+'partner-core.js',licenseEndpoint=ORIGIN+'partners/entitlements.json')
+        config=json.loads(demo.read_text());config.update(coreUrl=SITE_ORIGIN+'partner-core.js',licenseEndpoint=SITE_ORIGIN+'partners/entitlements.json')
         demo.write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n')
         entitlements=public/'partners/entitlements.json'
-        entitlements.write_text(json.dumps({'version':1,'partners':{'demo-partner':{'active':True,'allowedHosts':[BUCKET+'.website.yandexcloud.net'],'features':config['features']}}},ensure_ascii=False,indent=2)+'\n')
+        hosts=[BUCKET+'.website.yandexcloud.net','d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net','syolana.com','www.syolana.com']
+        record={'active':True,'allowedHosts':hosts,'features':config['features']}
+        entitlements.write_text(json.dumps({'version':1,'partners':{'demo-partner':record,str(config.get('partnerId','lana-test')):record}},ensure_ascii=False,indent=2)+'\n')
         files[entitlements.relative_to(public).as_posix()]=entitlements
     return files
 
@@ -132,3 +135,4 @@ if __name__=='__main__':
             detail=f'{urllib.parse.urlsplit(exc.url).hostname} returned HTTP {exc.code}'
         else:detail=str(exc)
         raise SystemExit(f'Publication failed: {type(exc).__name__}: {detail}')
+

@@ -1,4 +1,4 @@
-import { loadCatalog, loadBook, lessonFiles } from "./catalog.js?v=20261007-es-a1-1";
+import { loadCatalog, loadBook, lessonFiles } from "./catalog.js?v=20261008-language-4";
 import { mountCourseBranding } from "./course-branding.js?v=20261007-language-marks-3";
 import {
   $,
@@ -496,7 +496,7 @@ function languages(lang = "en") {
   );
   const intro = el("section", "card stack language-intro");
   intro.append(
-    el("span", "badge", lang === "en" ? "АНГЛИЙСКИЙ A1 УЖЕ ОТКРЫТ" : "НОВЫЕ ПОСОБИЯ В РАЗРАБОТКЕ"),
+    el("span", "badge", lang === "en" ? "АНГЛИЙСКИЙ A1 УЖЕ ОТКРЫТ" : lang === "es" ? "ИСПАНСКИЙ A1 И A2" : "НОВЫЕ ПОСОБИЯ В РАЗРАБОТКЕ"),
     el("h2", "", "Пусть язык звучит в вашей жизни"),
     el(
       "p",
@@ -544,7 +544,7 @@ function languages(lang = "en") {
     heading(
       "ВЫБЕРИТЕ СВОЙ ЯЗЫК",
       data.native,
-      "Английский A1 — бесплатно. Английский A2 — 2 000 ₽. Испанский A1 — 1 000 ₽; платным партнёрам может предоставляться бесплатно по индивидуальному соглашению. Оплата и общение только через Авито.",
+      "Английский A1 — бесплатно. Английский A2 — 2 000 ₽. Испанский A1 и A2 — по 1 000 ₽; платным партнёрам может предоставляться бесплатно по индивидуальному соглашению. Оплата и общение только через Авито.",
     ),
     tabs,
   );
@@ -559,9 +559,10 @@ function languages(lang = "en") {
     const free = lang === "en" && level === "A1";
     const englishA2 = lang === "en" && level === "A2";
     const spanishA1 = lang === "es" && level === "A1";
+    const spanishA2 = lang === "es" && level === "A2";
     card.dataset.level = level;
     card.append(
-      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : (englishA2 || spanishA1) ? "ЛИЧНЫЙ ДОСТУП" : "В ПОДГОТОВКЕ"),
+      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : (englishA2 || spanishA1 || spanishA2) ? "ЛИЧНЫЙ ДОСТУП" : "В ПОДГОТОВКЕ"),
       el("h3", "course-level", level),
       el("p", "", description),
       (() => {
@@ -570,13 +571,14 @@ function languages(lang = "en") {
           price.textContent = "Бесплатно";
           return price;
         }
-        price.textContent = englishA2 ? "2 000 ₽ · личный доступ" : spanishA1 ? "1 000 ₽ · личный доступ" : "Продажи ещё не открыты";
+        price.textContent = englishA2 ? "2 000 ₽ · личный доступ" : (spanishA1 || spanishA2) ? "1 000 ₽ · личный доступ" : "Продажи ещё не открыты";
         return price;
       })(),
       free
         ? link("Открыть английский A1", "#/lesson/en/a1/course", "btn primary")
         : englishA2 ? link("Открыть английский A2", "#/lesson/en/a2/course", "btn primary")
         : spanishA1 ? link("Открыть испанский A1", "#/lesson/es/a1/course", "btn primary")
+        : spanishA2 ? link("Открыть испанский A2", "#/lesson/es/a2/course", "btn primary")
         : link("Уточнить выпуск на Авито", businessContact("Языковое пособие " + lang + " " + level, "languages"), "btn"),
     );
     levels.append(card);
@@ -1568,12 +1570,12 @@ function lessonFrame(key, anchor = "") {
   if (!filename) return;
   const frame = el("iframe", "lesson-frame");
   frame.title = "Учебный материал Syolana";
-  const englishCourse = ["en/a1/course", "en/a2/course", "es/a1/course", "es/a1/rules", "es/a1/words", "es/a1/practice"].includes(key);
+  const englishCourse = ["en/a1/course", "en/a2/course", "es/a1/course", "es/a1/rules", "es/a1/words", "es/a1/practice", "es/a2/course", "es/a2/rules", "es/a2/words", "es/a2/practice"].includes(key);
   if (englishCourse) {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261007-language-3" : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261008-language-4" : "") + (!anchor && /\/(rules|words|practice)$/.test(key) ? "#"+({rules:"grammar",words:"vocabulary",practice:"practice"}[key.split("/").at(-1)]) : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);
@@ -1668,12 +1670,7 @@ function lessonFrame(key, anchor = "") {
     if (typeof data.navigate === "string") {
       const url = new URL(data.navigate, location.origin);
       const file = decodeURIComponent(url.pathname.split("/").pop());
-      const aliases = {
-        "a2-spanish-rules.html": "es/a2/rules",
-        "a2-spanish-words.html": "es/a2/words",
-        "b1-spanish-rules.html": "es/b1/rules",
-        "b2-spanish-rules.html": "es/b2/rules",
-      };
+      const aliases = {};
       const entry = Object.entries(lessonFiles).find(
         ([key, name]) => name === file || key === aliases[file],
       );

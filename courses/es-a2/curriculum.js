@@ -1,5 +1,5 @@
-import {secondsFor} from './audio.js?v=20261008-es-a1-2';
-import {trainerGroups} from './trainers.js?v=20261008-es-a1-2';
+import {secondsFor} from './audio.js?v=20261008-es-a2-1';
+import {trainerGroups} from './trainers.js?v=20261008-es-a2-1';
 
 export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={}) {
   const units=[],map=new Map(),rules=[],groups=trainerGroups(data);

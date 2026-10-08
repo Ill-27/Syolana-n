@@ -110,11 +110,9 @@ export const lessonFiles = {
   "es/a1/rules": "a1-spanish.html",
   "es/a1/words": "a1-spanish.html",
   "es/a1/practice": "a1-spanish.html",
-  "fr/a1/rules": "a1-françes-rules.html",
-  "fr/a1/words": "a1-françes-words.html",
-  "es/a2/rules": "api/lessons/es/a2/rules",
-  "es/a2/words": "api/lessons/es/a2/words",
-  "es/b1/rules": "api/lessons/es/b1/rules",
-  "es/b2/rules": "api/lessons/es/b2/rules",
+  "es/a2/course": "a2-spanish.html",
+  "es/a2/rules": "a2-spanish.html",
+  "es/a2/words": "a2-spanish.html",
+  "es/a2/practice": "a2-spanish.html",
 };
 

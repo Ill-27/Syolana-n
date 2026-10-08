@@ -1,13 +1,13 @@
 import {mountCourseBranding} from '../../course-branding.js?v=20261007-language-marks-3';
-import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261008-es-a1-2';
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261008-es-a1-2';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261008-es-a1-2';
-import {trainerGroups} from './trainers.js?v=20261008-es-a1-2';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261008-es-a1-2';
+import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261008-es-a2-1';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261008-es-a2-1';
+import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261008-es-a2-1';
+import {trainerGroups} from './trainers.js?v=20261008-es-a2-1';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261008-es-a2-1';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
-const storage={read(k,fallback){try{return JSON.parse(localStorage.getItem('syolana.es.a1.'+k))??fallback;}catch{return fallback;}},write(k,v){try{localStorage.setItem('syolana.es.a1.'+k,JSON.stringify(v));}catch{}}};
+const storage={read(k,fallback){try{return JSON.parse(localStorage.getItem('syolana.es.a2.'+k))??fallback;}catch{return fallback;}},write(k,v){try{localStorage.setItem('syolana.es.a2.'+k,JSON.stringify(v));}catch{}}};
 const post=data=>{if(window.parent!==window)window.parent.postMessage({syolanaLesson:true,...data},location.origin);};
 const duration=s=>{const m=Math.round(s/60);return m<60?m+' мин':Math.floor(m/60)+' ч '+m%60+' мин';};
 const clock=s=>{s=Math.floor(s);return Math.floor(s/3600)+':'+String(Math.floor(s%3600/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
@@ -25,7 +25,7 @@ window.addEventListener('message',e=>{if(e.source===window.parent&&e.origin===lo
 
 async function init(){
   const data=await loadCourse(), trainers=trainerGroups(data), saved=storage.read('settings',{});
-  mountCourseBranding({course:'Испанский A1',personalMark:sessionMark()});
+  mountCourseBranding({course:'Испанский A2',personalMark:sessionMark()});
   post({courseAttribution:sessionMark()});
   const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
   let curriculum=makeCurriculum(data,cfg),bulkLabel='Курс',activePair=null,lastQueue=null,clipSelected=false;
@@ -43,7 +43,7 @@ async function init(){
     if(actions){const a=el('div','pair-actions');a.append(button('▶ Испанский',()=>playClip(p,'en'),'listen-small'),button('С переводом',()=>playClip(p,cfg.mode==='ru-en'?'ru-en':'en-ru'),'listen-small'));card.append(a);}
     return card;
   }
-  const header=el('header','course-header'),home=button('Испанский A1',()=>go('days'),'course-brand');
+  const header=el('header','course-header'),home=button('Испанский A2',()=>go('days'),'course-brand');
   const breadcrumb=el('span','breadcrumb','Курс по дням'),headerActions=el('div','header-actions');
   const backButton=button('← К дням',()=>go(returnKey),'back-button');backButton.hidden=true;
   const tocButton=button('☰ Оглавление',()=>setTOC(toc.hidden));tocButton.setAttribute('aria-expanded','false');tocButton.setAttribute('aria-controls','course-toc');
@@ -63,12 +63,12 @@ async function init(){
 
   const playerPanel=el('section','player-panel');playerPanel.id='course-player';playerPanel.hidden=true;playerPanel.setAttribute('aria-label','Озвучка курса');
   const playerHeading=el('div','drawer-heading');playerHeading.append(el('h2','','Слушайте в своём темпе'),button('Свернуть',()=>setPlayer(false),'quiet'));
-  const row=el('div','toolbar-row'),allButton=button('▶ Весь A1',()=>start(curriculum.all,'Весь A1'),'primary');
+  const row=el('div','toolbar-row'),allButton=button('▶ Весь A2',()=>start(curriculum.all,'Весь A2'),'primary');
   const toggleButton=button('Продолжить',()=>{
     const p=selectedPlayer();
     if(p.status==='playing'){p.pause();saveProgress();}
     else if(['paused','stopped','error'].includes(p.status)&&p.unitIndex<p.units.length){post({audio:true});p.resume();}
-    else start(curriculum.all,'Весь A1');
+    else start(curriculum.all,'Весь A2');
     updatePlayer();
   });
   const previous=button('←',()=>{clip.stop(false);clipSelected=false;bulk.seek(Math.max(0,bulk.unitIndex-1));});previous.setAttribute('aria-label','Предыдущая фраза');
@@ -149,7 +149,7 @@ async function init(){
     if(snap.error)setPlayer(true);
   }
 
-  function screen(id,title,text,eyebrow='ИСПАНСКИЙ · A1'){
+  function screen(id,title,text,eyebrow='ИСПАНСКИЙ · A2'){
     const s=el('section','view');s.dataset.view=id;s.hidden=true;const head=el('header','view-heading');head.append(el('p','eyebrow',eyebrow));
     const h=el('h1','',title);h.tabIndex=-1;head.append(h);if(text)head.append(el('p','view-intro',text));s.append(head);views.set(id,s);stage.append(s);return s;
   }
@@ -193,7 +193,7 @@ async function init(){
   }
 
   const days=screen('days','От знакомых слов к уверенной речи','Начните с дня 1 или выберите тему в оглавлении. В каждом дне сначала идут правила, затем — слова с примерами. Слушать можно весь курс, один день или отдельную фразу.');
-  const introActions=el('div','actions welcome-actions');introActions.append(button('Начать с дня 1 →',()=>go('day-1'),'primary'),button('▶ Слушать весь A1',()=>start(curriculum.all,'Весь A1')));days.append(introActions);
+  const introActions=el('div','actions welcome-actions');introActions.append(button('Начать с дня 1 →',()=>go('day-1'),'primary'),button('▶ Слушать весь A2',()=>start(curriculum.all,'Весь A2')));days.append(introActions);
   const stats=el('div','stats');for(const [n,label] of [[data.statistics.uniqueHeadwords,'разных слов'],[data.statistics.examples,'примеров'],[data.statistics.ruleSections,'тем правил']]){const s=el('div');s.append(el('strong','',n.toLocaleString('ru-RU')),el('span','',label));stats.append(s);}days.append(stats);
   const listeningSummary=el('p','listening-summary'),dayList=el('div','day-list');days.append(listeningSummary,dayList);
   function renderDays(){
@@ -273,10 +273,10 @@ async function init(){
     if(p.model){const model=el('details','model-answer');model.append(el('summary','','Посмотреть образец ответа'),pairNode(p.model));body.append(model);}const actions=el('div','actions');actions.append(button('▶ Слушать фразы ситуации',()=>start(unitsFor([...p.pairs,...(p.model?[p.model]:[])]),p.title)));body.append(actions);d.append(body);practice.append(d);
   }
   function authorAdvice(){const note=el('aside','author-advice');note.append(el('h2','','Совет от автора'),el('p','','Чтобы слова лучше запоминались, записывайте их от руки вместе с транскрипцией и коротким примером. Подойдёт тетрадь или планшет / смартфон со стилусом. Произносите слово, пока пишете, а потом закройте образец и попробуйте вспомнить его самостоятельно. Возвращайтесь к этим записям в следующие дни.'));return note;}
-  function nextLevel(){const note=el('aside','next-level');note.append(el('h2','','Проверяйте навык в живой речи'),el('p','','После каждого блока перескажите ситуацию своими словами, напишите короткое сообщение и поговорите с собеседником. Возвращайтесь к темам, где пока трудно понять или ответить.'),el('p','','Знание карточек помогает, а уверенный A1 появляется, когда вы используете язык в чтении, письме, разговоре и понимании на слух.'));return note;}
+  function nextLevel(){const note=el('aside','next-level');note.append(el('h2','','Проверяйте навык в живой речи'),el('p','','После каждого блока перескажите ситуацию своими словами, напишите короткое сообщение и поговорите с собеседником. Возвращайтесь к темам, где пока трудно понять или ответить.'),el('p','','Знание карточек помогает, а уверенный A2 появляется, когда вы используете язык в чтении, письме, разговоре и понимании на слух.'));return note;}
   practice.append(authorAdvice(),nextLevel());days.append(authorAdvice(),nextLevel());
 
-  const coverage=screen('coverage','Что вы отрабатываете на A1','Уровень описывает то, что человек умеет делать с языком. У CEFR нет единого обязательного списка испанских слов; здесь собраны основные навыки и темы, представлены чтение, лексика, настоящее время и бытовые ситуации. Ориентиры — CEFR, план обучения Института Сервантеса. Ближайшие конструкции сверх ядра обозначены как расширение.');
+  const coverage=screen('coverage','Что вы отрабатываете на A2','Уровень описывает то, что человек умеет делать с языком. У CEFR нет единого обязательного списка испанских слов; здесь собраны основные навыки и темы, представлены чтение, лексика, три прошедших времени, команды, сочетания и бытовые ситуации. Ориентиры — CEFR, план обучения Института Сервантеса. Ближайшие конструкции сверх ядра обозначены как расширение.');
   const coverageGrid=el('div','coverage');for(const [title,text,ids] of [
     ['Чтение и произношение','Буквы, диктовка, ударение, гласные, согласные, сочетания, окончания и частые исключения.',['reading']],
     ['Понимание на слух','Главная мысль и детали ясного объявления, короткого диалога и сообщения; числа, отрицания, причины и условия.',['trainers','practice']],
@@ -284,9 +284,10 @@ async function init(){
     ['Рассказ о себе','Семья, дом, город, работа, учёба, распорядок, предпочтения и планы.',['grammar','practice']],
     ['Чтение коротких текстов','Вывески, меню, адреса, сообщения и простые инструкции.',['practice']],
     ['Письмо','Личные данные, записка, открытка, приглашение и вежливое сообщение.',['practice']],
-    ['Грамматика','Настоящее время во всех лицах и числах, род и согласование, артикли, вопросы, отрицание, местоимения, количество, время и предлоги.',['grammar']],
+    ['Грамматика','Настоящее и три прошедших времени, утвердительные команды, планы, действие в процессе, местоимения-дополнения, согласование, относительные и простые сложные предложения, предлоги и устойчивые сочетания.',['grammar']],
     ['Лексика','Дом, люди, еда, одежда, здоровье, поездки, работа, досуг и календарь.',['vocabulary','trainers']]
   ]){const c=el('article','coverage-card');c.append(el('h2','',title),el('p','',text));const actions=el('div','actions');ids.forEach(id=>actions.append(button(COURSE_VIEWS.find(([key])=>key===id)[1],()=>go(id),'quiet')));c.append(actions);coverageGrid.append(c);}coverage.append(coverageGrid,el('p','muted','Транскрипции показывают учебное произношение. Темп, интонация и слабые формы могут меняться в живой речи.'));
+  if(data.coverage){coverage.append(el('h2','',data.coverage.title),el('p','explanation',data.coverage.note));const table=el('div','coverage');for(const area of data.coverage.areas){const card=el('article','coverage-card');card.append(el('h3','',area.title));const links=el('div','actions');for(const id of area.rules){const rule=data.rules.find(r=>r.id===id);if(rule)links.append(button(topicTitle(rule),()=>go(id),'quiet'));}if(area.groups.length){const names=area.groups.map(id=>data.groups.find(g=>g.id===id)?.title).filter(Boolean);card.append(el('p','',names.join(' · ')));links.append(button('Открыть словарь',()=>go('vocabulary'),'quiet'));}card.append(links);table.append(card);}coverage.append(table);}
   const sources=el('footer','sources');sources.append(el('h2','','Ориентиры содержания'));for(const source of data.sources){const p=el('p'),a=el('a','',source.title);a.href=source.url;a.target='_blank';a.rel='noopener';p.append(a);sources.append(p);}sources.append(el('p','muted','Версия '+data.version+'. Настройки, место прослушивания и заметки сохраняются в этом браузере.'));coverage.append(sources);
 
   renderDays();refreshVoices();

@@ -5,10 +5,8 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'dist'
 PUBLIC = OUT / 'public'
 PRIVATE = OUT / 'private_lessons'
-FREE = {'a1-spanish.html':'es/a1/course','a2-english.html':'en/a2/course','a1-english.html':'en/a1/course','a1-spanish-rules.html':'es/a1/rules','a1-spanish-words.html':'es/a1/words',
-        'a1-spanish-practice.html':'es/a1/practice','a1-françes-rules.html':'fr/a1/rules','a1-françes-words.html':'fr/a1/words'}
-PAID = {'a2-spanish-rules.html':'es/a2/rules','a2-spanish-words.html':'es/a2/words',
-        'b1-spanish-rules.html':'es/b1/rules','b2-spanish-rules.html':'es/b2/rules'}
+FREE = {'a1-english.html':'en/a1/course','a2-english.html':'en/a2/course','a1-spanish.html':'es/a1/course','a2-spanish.html':'es/a2/course'}
+PAID = {}
 FILES = ['index.html','app.js','api.js','catalog.js','content.js','player.js','studio.js','themes.js','utils.js',
          'styles.css','course-branding.js','course-branding.css','course-branding.json','course-protection.js','config.json','feed.json','feed.js','discovery.js','flight.js','scene-audio.js','boot.js','partner-core.js','partner-core.css','legacy-bridge.js','legacy-embed.css','legacy-redirect.js']
 
@@ -43,7 +41,7 @@ def build():
     for name in ['assets','themes','books','covers','español-songs','audio-library','partner-demo','courses']:
         if (ROOT/name).exists(): shutil.copytree(ROOT/name,PUBLIC/name)
     allowed_a2={'course.js','course.css','audio.js','curriculum.js','presentation.js','trainers.js','access.js'}
-    for course in ('en-a2','es-a1'):
+    for course in ('en-a2','es-a1','es-a2'):
         paid=PUBLIC/'courses'/course
         if paid.exists() and any(p.is_dir() or p.name not in allowed_a2 for p in paid.iterdir()):
             raise RuntimeError('Paid course data cannot be published as static files')
@@ -54,7 +52,7 @@ def build():
     for name,route in PAID.items():
         destination=PRIVATE/(route+'.html');destination.parent.mkdir(parents=True,exist_ok=True)
         destination.write_text(lesson(name,route));(PUBLIC/name).write_text(redirect('lesson/'+route))
-    for name,route in [('español.html','languages/es'),('pexample.html','join'),('français.html','languages/fr')]:
+    for name,route in [('pexample.html','join')]:
         (PUBLIC/name).write_text(redirect(route))
     print('Built public site +',len(FREE),'public lesson entry pages +',len(PAID),'private lesson pages.')
 

@@ -3,7 +3,7 @@ export const COURSE_VIEWS = [
   ['days', 'Курс по дням'], ['reading', 'Чтение и звуки'],
   ['grammar', 'Правила и конструкции'], ['vocabulary', 'Словарь'],
   ['variants', 'Испания и Америка'], ['trainers', 'Повторение до автоматизма'],
-  ['practice', 'Говорите, читайте и пишите'], ['coverage', 'Что входит в A1']
+  ['practice', 'Говорите, читайте и пишите'], ['coverage', 'Что входит в A2']
 ];
 
 export function displayIPA(value) {

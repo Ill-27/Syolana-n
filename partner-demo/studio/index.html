@@ -13,26 +13,26 @@
     <header class="studio-head glass">
       <div>
         <p class="eyebrow">PARTNER STUDIO</p>
-        <h1 id="studio-title">Публикации из вашего VK</h1>
-        <p class="lead" id="studio-lead">Публикуйте на своей публичной странице VK. После настройки сайт обновляет её ленту автоматически.</p>
+        <h1 id="studio-title">Ваши публикации</h1>
+        <p class="lead" id="studio-lead">Ваши записи и их предпросмотр на сайте.</p>
       </div>
       <a class="button secondary" href="../">Открыть сайт</a>
     </header>
 
     <section id="security-note" class="notice glass">
-      <strong id="security-title">VK — единственный источник</strong>
-      <span id="security-text">Платформа не получает право редактировать текст ваших публикаций. VK-токен хранится только в Secrets вашего репозитория.</span>
+      <strong id="security-title">Состояние редактора</strong>
+      <span id="security-text">Загружаем настройки…</span>
     </section>
 
     <section id="studio-login" class="login-card glass" hidden>
       <div>
         <p class="eyebrow">НАСТРОЙКИ ПАРТНЁРА</p>
         <h2>Вход в Studio</h2>
-        <p>Вход открывает настройки вашего сайта. В режиме без VK здесь также доступен редактор публикаций.</p>
+        <p>Войдите, чтобы управлять публикациями и контактами своего сайта.</p>
       </div>
       <form id="login-form" autocomplete="off">
         <label>
-          <span>Partner ID</span>
+          <span>Код сайта</span>
           <input id="login-partner-id" name="partnerId" autocomplete="username" required />
         </label>
         <label>
@@ -53,7 +53,7 @@
           </div>
           <button id="refresh-feed" class="icon-button" type="button" aria-label="Обновить предпросмотр">↻</button>
         </div>
-        <p id="source-instruction" class="studio-copy">Чтобы изменить публикацию, измените её во ВКонтакте. После следующей синхронизации сайт обновится автоматически.</p>
+        <p id="source-instruction" class="studio-copy">Выберите запись, чтобы посмотреть её на сайте.</p>
         <div id="post-list" class="post-list"></div>
       </aside>
 
@@ -72,12 +72,12 @@
             <img alt="" />
           </figure>
           <h2 id="preview-title">Выберите публикацию</h2>
-          <p id="preview-text">Здесь появится точный предпросмотр записи, уже опубликованной на странице партнёра.</p>
+          <p id="preview-text">Здесь появится предпросмотр выбранной записи.</p>
         </article>
 
         <div class="source-card">
           <p class="eyebrow">ИСТОЧНИК</p>
-          <p id="source-description">Лента сайта отображает публичные записи партнёра из VK.</p>
+          <p id="source-description">Проверяем источник публикаций…</p>
           <p id="feed-status" class="status" role="status"></p>
         </div>
       </section>
@@ -85,7 +85,7 @@
 
     <section id="publisher-panel" class="contacts glass" hidden>
       <p class="eyebrow">ВАШ РЕДАКТОР</p>
-      <h2>Новая публикация</h2>
+      <h2 id="editor-heading">Новая публикация</h2>
       <p id="publisher-help">Текст сохраняется в вашем российском облаке и появляется на вашем сайте.</p>
       <form id="publisher-form">
         <label><span>Заголовок</span><input id="post-title" maxlength="140" required /></label>

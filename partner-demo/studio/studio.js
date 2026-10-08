@@ -95,13 +95,18 @@ function previewMediaAllowed(value) {
 
 function renderPreview(post) {
   currentPostId = String(post?.id || "");
+  $("#edit-post").disabled = !post;
+  $("#delete-post").disabled = !post;
+  $("#restore-post").hidden = !(post?.source?.type === "vk" && post.hidden);
+  document.querySelector('#preview-video')?.remove();
+  document.querySelector('#preview-vk-video')?.remove();
 
   if (!post) {
     $("#preview-heading").textContent = "Публикация";
     $("#preview-meta").textContent = "";
     $("#preview-title").textContent = "Публикаций пока нет";
     $("#preview-text").textContent =
-      "После первой синхронизации публичные записи из VK появятся здесь.";
+      isPublisher() ? "Напишите первую запись в редакторе ниже. Подключённые записи VK появятся здесь после обновления." : "После первого обновления записи вашего публичного сообщества VK появятся здесь.";
     $("#preview-media").hidden = true;
     $("#open-vk-post").hidden = true;
     return;
@@ -133,6 +138,17 @@ function renderPreview(post) {
   document.querySelector('#preview-video')?.remove();
   const clip=(post.media||[]).find(m=>m.type==='video' && previewMediaAllowed(m.src));
   if(clip){const video=document.createElement('video');video.id='preview-video';video.src=clip.src;video.controls=true;video.preload='metadata';video.playsInline=true;video.style.maxWidth='100%';$('#post-preview').append(video);}
+  const vkClip = (post.media || []).find(item => item.type === 'vk-video' && /^https:\/\/vk\.com\/video-?\d+_\d+$/.test(item.src));
+  if (vkClip) {
+    const link = document.createElement('a');
+    link.id = 'preview-vk-video';
+    link.className = 'button secondary';
+    link.href = vkClip.src;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'Смотреть видео во ВКонтакте';
+    $('#post-preview').append(link);
+  }
 
   const vk = sourceUrl(post);
   const button = $("#open-vk-post");
@@ -148,7 +164,7 @@ function renderList() {
   if (!feed.length) {
     const empty = document.createElement("p");
     empty.className = "studio-copy";
-    empty.textContent = "Пока нет синхронизированных публичных записей.";
+    empty.textContent = "Публикаций пока нет.";
     root.append(empty);
     renderPreview(null);
     return;
@@ -202,14 +218,14 @@ async function loadFeed() {
     renderPreview(keep);
     renderList();
 
+    const hiddenCount = feed.filter(post => post.hidden).length;
     $("#feed-status").textContent = feed.length
-      ? "В предпросмотре: " + feed.length + " публичных записей."
-      : "Синхронизированных записей пока нет.";
+      ? "Записей в редакторе: " + feed.length + "." + (hiddenCount ? " Скрыто на сайте: " + hiddenCount + "." : "")
+      : "Публикаций пока нет.";
   } catch (error) {
-    feed = [];
     renderList();
     $("#feed-status").textContent =
-      "Не удалось загрузить предпросмотр. Публикации во VK не изменены.";
+      "Не удалось обновить список. Сохранённые публикации не изменены. Повторите обновление позже.";
   }
 }
 
@@ -339,12 +355,14 @@ function configurePublisher() {
 }
 function resetEditor() {
   editingPostId = "";$("#publisher-form").reset();$("#publish-post").textContent = "Опубликовать";
+  $("#editor-heading").textContent = "Новая публикация";
 }
 $("#new-post").onclick = resetEditor;
 $("#edit-post").onclick = () => {
   const post = feed.find(p => p.id === currentPostId);
   if (!post) { $("#publisher-status").textContent = "Выберите свою запись в списке.";return; }
   editingPostId = post.id;$("#post-title").value = post.title;$("#post-text").value = post.text;
+  $("#editor-heading").textContent = "Изменить публикацию";
   $("#post-category").value = post.category || "Новости";$("#post-image").value = post.source?.type==='vk'?'':post.media?.find(m=>m.type==='image')?.src || "";
   $("#post-video").value = post.source?.type==='vk'?'':post.media?.find(m=>m.type==='video' && previewMediaAllowed(m.src))?.src || '';
   $("#publish-post").textContent = "Сохранить изменения";$("#post-title").focus();

@@ -194,7 +194,7 @@ async function init(){
 
   const days=screen('days','От знакомых слов к уверенной речи','Начните с дня 1 или выберите тему в оглавлении. В каждом дне сначала идут правила, затем — слова с примерами. Слушать можно весь курс, один день или отдельную фразу.');
   const introActions=el('div','actions welcome-actions');introActions.append(button('Начать с дня 1 →',()=>go('day-1'),'primary'),button('▶ Слушать весь A2',()=>start(curriculum.all,'Весь A2')));days.append(introActions);
-  const stats=el('div','stats');for(const [n,label] of [[data.statistics.uniqueHeadwords,'разных слов'],[data.statistics.examples,'примеров'],[data.statistics.ruleSections,'тем правил']]){const s=el('div');s.append(el('strong','',n.toLocaleString('ru-RU')),el('span','',label));stats.append(s);}days.append(stats);
+  const stats=el('div','stats');for(const [n,labels] of [[data.statistics.uniqueHeadwords,['разное слово','разных слова','разных слов']],[data.statistics.examples,['пример','примера','примеров']],[data.statistics.ruleSections,['тема правил','темы правил','тем правил']]]){const tens=n%100,one=n%10,label=labels[tens>=11&&tens<=14?2:one===1?0:one>=2&&one<=4?1:2];const s=el('div');s.append(el('strong','',n.toLocaleString('ru-RU')),el('span','',label));stats.append(s);}days.append(stats);
   const listeningSummary=el('p','listening-summary'),dayList=el('div','day-list');days.append(listeningSummary,dayList);
   function renderDays(){
     const bilingual=curriculum.all.reduce((sum,u)=>sum+secondsFor(u,cfg.rate,cfg.mode,cfg.repeat),0);

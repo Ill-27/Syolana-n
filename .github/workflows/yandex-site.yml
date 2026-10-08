@@ -1,36 +1,14 @@
-name: Publish checked site to Yandex Cloud
+# The owner-authorized private publisher was verified on 2026-10-08.
+# Active workflow: Ill-27/Syolana-core-private/.github/workflows/yandex-site.yml
+# Retained for repository history; this public repository cannot publish the live bucket.
+name: Archived website publisher
 on:
-  workflow_run:
-    workflows: [Check Syolana]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
-  id-token: write
-concurrency:
-  group: syolana-yandex-production
-  cancel-in-progress: false
 jobs:
-  publish:
-    if: >-
-      (github.event_name == 'workflow_dispatch' ||
-       (github.event.workflow_run.conclusion == 'success' &&
-        github.event.workflow_run.head_repository.full_name == github.repository))
+  archived:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Build only the public site
-        run: python build.py
-      - name: Validate and publish changed files
-        env:
-          YC_SITE_SERVICE_ACCOUNT_ID: ${{ vars.YC_SITE_SERVICE_ACCOUNT_ID || 'aje58mq57469nmpsl877' }}
-          SYOLANA_SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-          SYOLANA_GITHUB_REPOSITORY: ${{ github.repository }}
-        run: python scripts/deploy_yandex.py
+      - run: echo 'Website publication moved to the private repository.'

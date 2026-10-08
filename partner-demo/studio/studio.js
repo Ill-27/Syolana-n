@@ -19,6 +19,35 @@ const isPublisher = () => ['publisher','hybrid'].includes(cfg.publishingSource);
 const isDemo = () => cfg.mode === "demo" && !apiEndpoint;
 const demoFeedKey = () => "partner-demo.feed." + cfg.partnerId;
 
+function readMediaFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    const timer = setTimeout(() => {
+      reject(new Error('Файл читается слишком долго. Сохраните его в память телефона и выберите заново.'));
+      reader.abort();
+    }, 10000);
+    reader.onload = () => {
+      clearTimeout(timer);
+      if (typeof reader.result === 'string') resolve(reader.result);
+      else reject(new Error('Не удалось прочитать файл. Выберите его заново.'));
+    };
+    reader.onerror = () => {
+      clearTimeout(timer);
+      console.warn('Media file could not be read:', reader.error?.name || 'ReadError');
+      reject(new Error('Не удалось прочитать файл. Сохраните его в память телефона и выберите заново.'));
+    };
+    reader.onabort = () => {
+      clearTimeout(timer);
+      reject(new Error('Чтение файла прервано. Выберите его заново.'));
+    };
+    try { reader.readAsDataURL(file); }
+    catch (error) {
+      clearTimeout(timer);
+      reject(new Error('Не удалось открыть файл. Выберите его заново из памяти телефона.'));
+    }
+  });
+}
+
 function endpoint(path) {
   return new URL(path.replace(/^\//, ""), apiEndpoint.replace(/\/?$/, "/")).href;
 }
@@ -382,7 +411,7 @@ $("#publisher-form").addEventListener("submit", async event => {
     for (const file of files) {
       if(file.size>2*1024*1024)throw Error('Файл должен быть не больше 2 МБ. Для длинного видео используйте публикацию VK.');
       if (!['image/jpeg','image/png','image/webp','video/mp4','video/webm'].includes(file.type)) throw Error('Выберите JPG, PNG, WebP, MP4 или WebM.');
-      const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file)});
+      const data = await readMediaFile(file);
       if(isDemo())demoMedia.push({type:file.type.startsWith('video/')?'video':'image',src:data,alt:''});
       else{const upload=await api('/media',{method:'POST',body:{contentType:file.type,data:data.split(',')[1]}});body[upload.type==='video'?'videoUrl':'imageUrl']=upload.url;}
     }

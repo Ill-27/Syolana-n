@@ -375,21 +375,27 @@ $("#publisher-form").addEventListener("submit", async event => {
   if (!body.title) return;
   $("#publish-post").disabled = true;$("#publisher-status").textContent = "Сохраняем…";
   try {
-    const file=$('#post-file').files[0];let demoMedia=[];
-    if(file){
+    const files = [...$('#post-file').files];
+    const types = files.map(file => file.type.startsWith('video/') ? 'video' : 'image');
+    if (files.length > 2 || new Set(types).size !== types.length) throw Error('Выберите одно фото и одно видео. Можно добавить только один файл каждого вида.');
+    let demoMedia=[];
+    for (const file of files) {
       if(file.size>2*1024*1024)throw Error('Файл должен быть не больше 2 МБ. Для длинного видео используйте публикацию VK.');
+      if (!['image/jpeg','image/png','image/webp','video/mp4','video/webm'].includes(file.type)) throw Error('Выберите JPG, PNG, WebP, MP4 или WebM.');
       const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file)});
-      if(isDemo())demoMedia=[{type:file.type.startsWith('video/')?'video':'image',src:data,alt:''}];
+      if(isDemo())demoMedia.push({type:file.type.startsWith('video/')?'video':'image',src:data,alt:''});
       else{const upload=await api('/media',{method:'POST',body:{contentType:file.type,data:data.split(',')[1]}});body[upload.type==='video'?'videoUrl':'imageUrl']=upload.url;}
     }
     if (isDemo()) {
       // Demo never transmits drafts, contacts or tokens to a server.
       const old = feed.find(p => p.id === editingPostId);
       const post = { ...old, id: editingPostId || "post-" + crypto.randomUUID(), title: body.title,
-        text: body.text, category: body.category || "Новости", media: demoMedia.length?demoMedia:old?.media||[], publishedAt: old?.publishedAt || new Date().toISOString(),
+        text: body.text, category: body.category || "Новости", media: [...(old?.media || []).filter(item => !demoMedia.some(added => added.type === item.type)), ...demoMedia], publishedAt: old?.publishedAt || new Date().toISOString(),
         source: old?.source || { type: "publisher", partnerId: cfg.partnerId } };
-      feed = [post, ...feed.filter(p => p.id !== post.id)].slice(0,100);
-      localStorage.setItem(demoFeedKey(),JSON.stringify(feed));currentPostId = post.id;
+      const updatedFeed = [post, ...feed.filter(p => p.id !== post.id)].slice(0,100);
+      try { localStorage.setItem(demoFeedKey(),JSON.stringify(updatedFeed)); }
+      catch (error) { if (error.name === 'QuotaExceededError') throw Error('В браузере мало места для демо. Выберите файлы поменьше или удалите прежние учебные записи.'); throw error; }
+      feed = updatedFeed; currentPostId = post.id;
     } else {
       const data = await api(editingPostId ? "/posts/" + editingPostId : "/posts", { method: editingPostId ? "PUT" : "POST", body });
       currentPostId = data.post?.id || currentPostId;

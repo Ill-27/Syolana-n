@@ -3,242 +3,69 @@
   <head>
     <meta charset="UTF-8" />
     <base href="./" />
-    <meta
-      name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#030309" />
-    <meta
-      name="description"
-      content="Syolana — общий шаблон для оформления сайтов и авторские языковые курсы. Темы и шаблоны сайтов; домен и хостинг по вашему выбору. Полный английский A1 бесплатно."
-    />
+    <meta name="description" content="Syolana — общий шаблон для оформления сайтов и авторские языковые курсы. Темы и шаблоны сайтов; домен и хостинг по вашему выбору. Полный английский A1 бесплатно." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Syolana" />
     <meta property="og:title" content="Syolana · Темы, сайты и языки" />
-    <meta
-      property="og:description"
-      content="Сайты с живыми темами и понятным редактором. Языковые курсы — отдельное направление; английский A1 бесплатно."
-    />
+    <meta property="og:description" content="Общий шаблон для оформления сайтов с живыми темами и понятным редактором. Языковые курсы — отдельное направление; английский A1 бесплатно." />
     <meta name="twitter:card" content="summary" />
-    <meta
-      name="twitter:title"
-      content="Syolana · Темы, сайты и языки"
-    />
-    <meta
-      name="twitter:description"
-      content="Сайты с живыми темами и понятным редактором. Языковые курсы — отдельное направление; английский A1 бесплатно."
-    />
+    <meta name="twitter:title" content="Syolana · Темы, сайты и языки" />
+    <meta name="twitter:description" content="Общий шаблон для оформления сайтов с живыми темами и понятным редактором. Языковые курсы — отдельное направление; английский A1 бесплатно." />
     <title>Syolana · Темы, сайты и языки</title>
     <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
-    <link
-      rel="preload"
-      href="assets/fonts/syolana-script.woff"
-      as="font"
-      type="font/woff"
-      crossorigin
-    />
-    <link rel="stylesheet" href="styles.css?v=20261011-poems-2" />
+    <link rel="preload" href="assets/fonts/syolana-script.woff" as="font" type="font/woff" crossorigin />
+    <link rel="stylesheet" href="styles.css?v=20261011-poems-3" />
     <link rel="stylesheet" href="assets/fonts/fonts.css" />
-    <link rel="stylesheet" href="workspace.css?v=20261011-poems-2" />
-    <link rel="stylesheet" href="managed-sites.css?v=20261011-poems-2" />
+    <link rel="stylesheet" href="workspace.css?v=20261011-poems-3" />
+    <link rel="stylesheet" href="managed-sites.css?v=20261011-poems-3" />
   </head>
   <body>
     <a class="skip-link" href="#page">К содержанию</a>
-    <div class="aurora-background" aria-hidden="true">
-      <div class="aurora-layer one"></div>
-      <div class="aurora-layer two"></div>
-      <div class="aurora-layer three"></div>
-    </div>
+    <div class="aurora-background" aria-hidden="true"><div class="aurora-layer one"></div><div class="aurora-layer two"></div><div class="aurora-layer three"></div></div>
     <canvas id="starCanvas" aria-hidden="true"></canvas>
     <div id="reading-shade" aria-hidden="true"></div>
     <header id="chrome" class="top-bar">
-      <a href="#/" class="brand glass" aria-label="Syolana — главная"
-        ><img src="assets/logo.svg" width="47" height="47" alt="" /><span
-          ><strong>Syolana</strong><small>САЙТЫ И ЯЗЫКИ</small></span
-        ></a
-      >
+      <a href="#/" class="brand glass" aria-label="Syolana — главная"><img src="assets/logo.svg" width="47" height="47" alt="" /><span><strong>Syolana</strong><small>САЙТЫ И ЯЗЫКИ</small></span></a>
       <div class="top-actions">
-        <button
-          id="theme-toggle"
-          class="icon-btn glass"
-          aria-label="Выбрать тему"
-          title="Выбрать тему"
-        >
-          ✧
-        </button>
-        <button
-          id="zen-toggle"
-          class="icon-btn glass"
-          aria-label="Режим созерцания"
-          aria-pressed="false"
-          title="Скрыть интерфейс"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-        </button>
-        <button
-          id="fullscreen"
-          class="icon-btn glass"
-          aria-label="На весь экран"
-          aria-pressed="false"
-          title="На весь экран"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5" />
-          </svg>
-        </button>
+        <button id="theme-toggle" class="icon-btn glass" aria-label="Выбрать тему" title="Выбрать тему">✧</button>
+        <button id="zen-toggle" class="icon-btn glass" aria-label="Режим созерцания" aria-pressed="false" title="Скрыть интерфейс"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg></button>
+        <button id="fullscreen" class="icon-btn glass" aria-label="На весь экран" aria-pressed="false" title="На весь экран"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5" /></svg></button>
       </div>
     </header>
     <div id="content-shell" class="shell">
       <aside id="banner" class="banner glass" aria-label="О Syolana"></aside>
-      <details id="provider-notice" class="provider-notice">
-        <summary>Как устроены сайты партнёров</summary>
-        <p>
-          Домен, хостинг и материалы принадлежат владельцу партнёрского сайта.
-          Syolana предоставляет темы, шаблоны и редактор. Домен, хостинг и размещение — по вашему выбору.
-          Вопросы по правам и публикациям можно направить через
-          <a href="#/report">страницу обращений</a>.
-        </p>
-      </details>
-      <nav id="main-nav" class="main-nav" aria-label="Разделы Syolana">
-        <a href="#/" data-nav="home">Лента</a
-        ><a href="#/join" data-nav="join">Сайты</a
-        ><a href="#/languages" data-nav="languages">Языки</a
-        ><a href="#/create-site">Мастерская</a>
-      </nav>
-      <main id="page" tabindex="-1">
-        <p class="loading">Открываем пространство…</p>
-      </main>
+      <details id="provider-notice" class="provider-notice"><summary>Как устроены сайты партнёров</summary><p>Домен, хостинг и материалы принадлежат владельцу партнёрского сайта. Syolana предоставляет темы, шаблоны и редактор. Домен, хостинг и размещение — по вашему выбору. Вопросы по правам и публикациям можно направить через <a href="#/report">страницу обращений</a>.</p></details>
+      <nav id="main-nav" class="main-nav" aria-label="Разделы Syolana"><a href="#/" data-nav="home">Лента</a><a href="#/join" data-nav="join">Сайты</a><a href="#/languages" data-nav="languages">Языки</a><a href="#/create-site">Мастерская</a></nav>
+      <main id="page" tabindex="-1"><p class="loading">Открываем пространство…</p></main>
       <footer id="footer">
         <a href="#/">Syolana</a><span>© Syolana. Все права защищены.</span>
-        <p class="notice">
-          Заказы, общение и согласование оплаты — только через
-          <a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">официальный профиль Syolana на Авито</a>.
-          Продление языкового доступа — по вашему решению. Автоматических списаний нет.
-        </p>
-        <div>
-          <a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">Написать на Авито</a
-          ><a href="#/offer">Единые условия</a><a href="#/legal">Правовая информация</a
-          ><a href="#/privacy">Конфиденциальность</a
-          ><a href="#/terms">Как заказать сайт</a
-          ><a href="#/report">Подать жалобу</a
-          ><a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">Обсудить проект на Авито</a>
-        </div>
-        <details class="network-note">
-          <summary>Если мобильный интернет ограничен</summary>
-          <p>Сохраните запасной адрес Syolana: <a href="https://syolana.website.yandexcloud.net/">syolana.website.yandexcloud.net</a>.
-          На нём открываются те же публичные страницы и курсы. При мобильных белых списках доступ к отдельным серверным функциям может зависеть от оператора.</p>
-        </details>
+        <p class="notice">Заказы, общение и согласование оплаты — только через <a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">официальный профиль Syolana на Авито</a>. Продление языкового доступа — по вашему решению. Автоматических списаний нет.</p>
+        <div><a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">Написать на Авито</a><a href="#/offer">Единые условия</a><a href="#/legal">Правовая информация</a><a href="#/privacy">Конфиденциальность</a><a href="#/terms">Как заказать сайт</a><a href="#/report">Подать жалобу</a><a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">Обсудить проект на Авито</a></div>
       </footer>
     </div>
-    <aside
-      id="music-dock"
-      class="music-dock glass"
-      aria-label="Музыкальный плеер"
-    >
-      <button
-        id="player-expand"
-        class="track-summary"
-        aria-expanded="false"
-        aria-controls="player-dialog"
-      >
-        <span class="track-art" aria-hidden="true">♫</span
-        ><span
-          ><strong id="dock-title">Музыка Syolana</strong
-          ><small id="dock-subtitle"
-            >Откройте музыкальную библиотеку</small
-          ></span
-        >
-      </button>
-      <div class="dock-transport">
-        <button id="dock-prev" class="icon-btn" aria-label="Предыдущая песня">
-          ‹</button
-        ><button id="dock-play" class="icon-btn play" aria-label="Слушать">
-          ▶</button
-        ><button id="dock-next" class="icon-btn" aria-label="Следующая песня">
-          ›
-        </button>
-      </div>
+    <aside id="music-dock" class="music-dock glass" aria-label="Музыкальный плеер">
+      <button id="player-expand" class="track-summary" aria-expanded="false" aria-controls="player-dialog"><span class="track-art" aria-hidden="true">♫</span><span><strong id="dock-title">Музыка Syolana</strong><small id="dock-subtitle">Откройте музыкальную библиотеку</small></span></button>
+      <div class="dock-transport"><button id="dock-prev" class="icon-btn" aria-label="Предыдущая песня">‹</button><button id="dock-play" class="icon-btn play" aria-label="Слушать">▶</button><button id="dock-next" class="icon-btn" aria-label="Следующая песня">›</button></div>
       <span id="theme-name" class="dock-theme">Сияние звёзд</span>
     </aside>
     <audio id="audio" preload="none"></audio>
-    <dialog id="theme-dialog">
-      <div class="dialog-head">
-        <div>
-          <p class="eyebrow">АТМОСФЕРА</p>
-          <h2>Выберите свой мир</h2>
-        </div>
-        <button class="icon-btn" data-close aria-label="Закрыть">×</button>
-      </div>
-      <div id="theme-list" class="theme-list"></div>
-      <p class="muted">
-        При обновлении страницы откроется другая тема. Во время переходов по
-        сайту выбранная атмосфера сохраняется.
-      </p>
-    </dialog>
+    <dialog id="theme-dialog"><div class="dialog-head"><div><p class="eyebrow">АТМОСФЕРА</p><h2>Выберите свой мир</h2></div><button class="icon-btn" data-close aria-label="Закрыть">×</button></div><div id="theme-list" class="theme-list"></div><p class="muted">При обновлении страницы откроется другая тема. Во время переходов по сайту выбранная атмосфера сохраняется.</p></dialog>
     <dialog id="player-dialog">
-      <div class="dialog-head">
-        <div>
-          <p class="eyebrow">МУЗЫКАЛЬНАЯ БИБЛИОТЕКА</p>
-          <h2>Истории, ставшие песнями</h2>
-        </div>
-        <button class="icon-btn" data-close aria-label="Свернуть плеер">
-          ×
-        </button>
-      </div>
-      <p id="player-name" class="player-name"></p>
-      <a id="source-link" class="text-link" hidden
-        >Открыть источник вдохновения</a
-      >
-      <p id="player-status" class="muted" role="status"></p>
-      <label class="sr-only" for="seek">Позиция воспроизведения</label
-      ><input id="seek" type="range" min="0" max="1000" value="0" disabled />
-      <div class="time-row">
-        <span id="elapsed">0:00</span><span id="duration">0:00</span>
-      </div>
-      <div class="player-transport">
-        <button id="prev" class="icon-btn" aria-label="Предыдущая песня">
-          ‹</button
-        ><button id="play" class="btn primary">Слушать</button
-        ><button id="next" class="icon-btn" aria-label="Следующая песня">
-          ›
-        </button>
-      </div>
-      <div class="player-modes">
-        <button id="shuffle" class="btn" aria-pressed="false">Вперемешку</button
-        ><button id="repeat" class="btn">Повтор: выключен</button>
-      </div>
-      <label class="volume-row"
-        >Громкость<input
-          id="volume"
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value="0.65"
-      /></label>
-      <ol id="playlist" class="playlist"></ol>
-      <p class="muted fine">
-        Музыка запускается по нажатию и продолжается при переходах внутри сайта.
-      </p>
+      <div class="dialog-head"><div><p class="eyebrow">МУЗЫКАЛЬНАЯ БИБЛИОТЕКА</p><h2>Истории, ставшие песнями</h2></div><button class="icon-btn" data-close aria-label="Свернуть плеер">×</button></div>
+      <p id="player-name" class="player-name"></p><a id="source-link" class="text-link" hidden>Открыть источник вдохновения</a><p id="player-status" class="muted" role="status"></p>
+      <label class="sr-only" for="seek">Позиция воспроизведения</label><input id="seek" type="range" min="0" max="1000" value="0" disabled />
+      <div class="time-row"><span id="elapsed">0:00</span><span id="duration">0:00</span></div>
+      <div class="player-transport"><button id="prev" class="icon-btn" aria-label="Предыдущая песня">‹</button><button id="play" class="btn primary">Слушать</button><button id="next" class="icon-btn" aria-label="Следующая песня">›</button></div>
+      <div class="player-modes"><button id="shuffle" class="btn" aria-pressed="false">Вперемешку</button><button id="repeat" class="btn">Повтор: выключен</button></div>
+      <label class="volume-row">Громкость<input id="volume" type="range" min="0" max="1" step="0.01" value="0.65" /></label><ol id="playlist" class="playlist"></ol>
+      <p class="muted fine">Музыка запускается по нажатию и продолжается при переходах внутри сайта.</p>
     </dialog>
-    <dialog id="toc-dialog">
-      <div class="dialog-head">
-        <h2>Оглавление</h2>
-        <button class="icon-btn" data-close aria-label="Закрыть">×</button>
-      </div>
-      <div id="toc-list"></div>
-    </dialog>
+    <dialog id="toc-dialog"><div class="dialog-head"><h2>Оглавление</h2><button class="icon-btn" data-close aria-label="Закрыть">×</button></div><div id="toc-list"></div></dialog>
     <div id="toast" class="toast glass" role="status" hidden></div>
-    <noscript
-      ><p class="noscript">
-        Для курсов, тем и редактора включите JavaScript.
-        <a href="https://www.avito.ru/brands/i223140984">Связаться с Syolana на Авито</a>.
-      </p></noscript
-    >
-    <script type="module" src="boot.js?v=20261011-poems-2"></script>
+    <noscript><p class="noscript">Для курсов, тем и редактора включите JavaScript. <a href="https://www.avito.ru/brands/i223140984">Связаться с Syolana на Авито</a>.</p></noscript>
+    <script type="module" src="boot.js?v=20261011-poems-3"></script>
   </body>
 </html>

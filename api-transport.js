@@ -38,7 +38,6 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
     const token = storedToken(storage);
     if (/^[A-Za-z0-9_-]{43}$/.test(token)) headers.set('Authorization', 'Bearer ' + token);
     const order = bridged ? [preferred, ...origins.map((_, i) => i).filter(i => i !== preferred)] : [-1];
-    // Materialise a Request body once; the normal application uses a JSON string.
     const body = init.body !== undefined ? init.body : original && !read ? await original.clone().arrayBuffer() : undefined;
     let decodedBody={};if(typeof body==='string')try{decodedBody=JSON.parse(body);}catch{}
     const localReply=async()=>{
@@ -53,9 +52,13 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
       return null;
     };
     if(callerSignal?.aborted)throw callerSignal.reason||new DOMException('Aborted','AbortError');
-    if(!preferService()||reserveMode){
-      const local=await localReply();if(local)return local;
-    }
+
+    // Owner recovery must never wait for a remote provider. Always try the
+    // encrypted owner vault first for owner login, an already-open reserve
+    // session and the local Workshop. Customer access still uses the servers.
+    const ownerFirst = url.pathname.endsWith('/key-login') || reserveMode || vault?.isOwner() || !preferService();
+    if(ownerFirst){const local=await localReply();if(local)return local;}
+
     let lastResponse;
     for (const index of read ? order : order.slice(0, 1)) {
       if (callerSignal?.aborted) throw callerSignal.reason || new DOMException('Aborted', 'AbortError');
@@ -82,8 +85,6 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
       } catch (error) {
         if (callerSignal?.aborted) throw callerSignal.reason || error;
         if (!read) {
-          // An ambiguous publication must remain on its original server.
-          // Authentication may safely open a separate local owner reserve.
           if(url.pathname.endsWith('/key-login')){const local=await localReply();if(local)return local;}
           throw new Error(NETWORK_MESSAGE, { cause: error });
         }

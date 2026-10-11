@@ -22,23 +22,37 @@
   },
   {
     "id": "aurora",
-    "name": "Сияние звёзд",
-    "description": "Ваша первая тема · разноцветные звёзды и северное сияние",
+    "name": "Северное сияние",
+    "description": "Световые завесы с глубиной · изумрудные лучи, сапфировые и фиолетовые переливы",
     "module": "./aurora.js",
-    "preview": "linear-gradient(135deg,#101b4b,#45264d,#101922)"
+    "preview": "linear-gradient(135deg,#031127,#147e78,#692c92)"
   },
   {
     "id": "golden",
-    "name": "Золотая волна",
-    "description": "Тёплое золото, плавные волны и световая пыль",
+    "name": "Золотые струны",
+    "description": "Объёмные спирали золотых нитей · мягкие блики, изгибы и полёт сквозь свет",
     "module": "./golden.js",
     "preview": "linear-gradient(135deg,#21192b,#70502f,#181626)"
   },
   {
     "id": "moon",
     "name": "Лунный сад",
-    "description": "Холодный свет, воздушные лепестки и глубокий индиго",
+    "description": "Луна с рельефом · серебристые цветы, объёмные лепестки и ночные бабочки",
     "module": "./moon.js",
     "preview": "linear-gradient(135deg,#122a38,#40517b,#1b193e)"
+  },
+  {
+    "id": "violet-bloom",
+    "name": "Фиолетовое цветение",
+    "description": "Светлый цветочный мир · объёмные лепестки, мягкие тени и переливчатые бабочки",
+    "module": "./violet-bloom.js",
+    "preview": "linear-gradient(135deg,#faf7ff,#9758d5,#d987bf)"
+  },
+  {
+    "id": "lunar-muse",
+    "name": "Лунная муза",
+    "description": "Сапфировая муза · лунный свет, звёзды, цветы и полёт синих бабочек",
+    "module": "./lunar-muse.js",
+    "preview": "linear-gradient(135deg,#03091d,#2458a9,#8a56b1)"
   }
 ]

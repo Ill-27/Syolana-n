@@ -1,6 +1,6 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'autonomous-device-20261011-2';
+const CACHE=PREFIX+'worlds-20261011-2';
 const BASE=new URL('./',self.location.href);
 const assets=['index.html','boot.js','styles.css','config.json'].map(path=>new URL(path,BASE).href);
 function publicRequest(request){

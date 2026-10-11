@@ -14,7 +14,9 @@ const scenes={
   'white-ocean-city':'ocean,night',
   'aurora':'night,glow',
   'golden':'warm',
-  'moon':'night,glow'
+  'moon':'night,glow',
+  'violet-bloom':'forest',
+  'lunar-muse':'night,glow'
 };
 const silentPlayer={pause(){}};
 const audio=new SceneAudio(library,silentPlayer);

@@ -1,10 +1,15 @@
-import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261011-luminous-1';
+import {createCelestialRenderer} from './celestial-world.mjs?v=20261011-worlds-2';
 export default {
-  createRenderer:ctx=>createLuminousRenderer(ctx,"golden"),
+  createRenderer:ctx=>createCelestialRenderer(ctx,"golden"),
   id: "golden",
   marks: true,
   cameraSmoothing: 4.2,
-  renderer: "waves",
+  renderer: "webgl-golden-filaments",
+  particles: false,
+  continuousDepth: true,
+  depthDirectScale: .45,
+  depthGain: .6,
+  depthCap: 1.5,
   accent: "#efd39e",
   dim: "#d8cfbf",
   surface: "24,20,20",

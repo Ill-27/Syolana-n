@@ -1,4 +1,5 @@
-import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-atmosphere-1';
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-worlds-2';
+import {sceneResolution} from './scene-quality.mjs?v=20261011-worlds-2';
 import {createSceneMotion} from './scene-motion.mjs';
 import {createFallingLeafField,sampleLeafFall} from './leaf-motion.mjs?v=20261011-fall-1';
 const TAU=Math.PI*2;
@@ -925,7 +926,7 @@ function createRenderer(ctx){
 
   function resize({width,height,ratio=1}){
     cssWidth=Math.max(1,width);cssHeight=Math.max(1,height);
-    const q=Math.min(ratio,cssWidth<=760?1.45:1.85),w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
+    const{width:w,height:h}=sceneResolution({width:cssWidth,height:cssHeight,ratio});
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}
   }
 
@@ -979,6 +980,7 @@ function createRenderer(ctx){
   }
 
   return {
+    canvas,
     resize,
     draw({time,width,height,camera}){
       if(disposed)return;if(width!==cssWidth||height!==cssHeight)resize({width,height,ratio:window.devicePixelRatio||1});
@@ -1000,7 +1002,7 @@ function createRenderer(ctx){
     },
     dispose(){
       disposed=true;canvas.remove();style.remove();sound.dispose();
-      try{for(const p of [skyProgram,trunkProgram,leafProgram,groundProgram])gl.deleteProgram(p);for(const r of resources){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}
+      try{for(const p of [skyProgram,trunkProgram,leafProgram,groundProgram])gl.deleteProgram(p);for(const r of resources){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}gl.getExtension('WEBGL_lose_context')?.loseContext();}catch{}
     }
   };
 }

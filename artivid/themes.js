@@ -6,6 +6,7 @@ body #starCanvas{z-index:-1!important}
 body.reading #reading-shade,body.course-reading #reading-shade{backdrop-filter:blur(1.1px)!important;-webkit-backdrop-filter:blur(1.1px)!important}
 body.zen #starCanvas,body.zen .theme-world-canvas{filter:none!important;opacity:1!important;transform:translateZ(0)!important}
 .builder-theme-swatch,.theme-swatch{aspect-ratio:16/9;object-fit:cover}
+body:has(.theme-world-canvas) .aurora-layer{animation:none!important;opacity:0!important}
 `;
 const FALLBACK_THEMES=[
   {
@@ -31,27 +32,40 @@ const FALLBACK_THEMES=[
   },
   {
     "id": "aurora",
-    "name": "Сияние звёзд",
-    "description": "Ваша первая тема · разноцветные звёзды и северное сияние",
+    "name": "Северное сияние",
+    "description": "Световые завесы с глубиной · изумрудные лучи, сапфировые и фиолетовые переливы",
     "module": "./aurora.js",
-    "preview": "linear-gradient(135deg,#101b4b,#45264d,#101922)"
+    "preview": "linear-gradient(135deg,#031127,#147e78,#692c92)"
   },
   {
     "id": "golden",
-    "name": "Золотая волна",
-    "description": "Тёплое золото, плавные волны и световая пыль",
+    "name": "Золотые струны",
+    "description": "Объёмные спирали золотых нитей · мягкие блики, изгибы и полёт сквозь свет",
     "module": "./golden.js",
     "preview": "linear-gradient(135deg,#21192b,#70502f,#181626)"
   },
   {
     "id": "moon",
     "name": "Лунный сад",
-    "description": "Холодный свет, воздушные лепестки и глубокий индиго",
+    "description": "Луна с рельефом · серебристые цветы, объёмные лепестки и ночные бабочки",
     "module": "./moon.js",
     "preview": "linear-gradient(135deg,#122a38,#40517b,#1b193e)"
+  },
+  {
+    "id": "violet-bloom",
+    "name": "Фиолетовое цветение",
+    "description": "Светлый цветочный мир · объёмные лепестки, мягкие тени и переливчатые бабочки",
+    "module": "./violet-bloom.js",
+    "preview": "linear-gradient(135deg,#faf7ff,#9758d5,#d987bf)"
+  },
+  {
+    "id": "lunar-muse",
+    "name": "Лунная муза",
+    "description": "Сапфировая муза · лунный свет, звёзды, цветы и полёт синих бабочек",
+    "module": "./lunar-muse.js",
+    "preview": "linear-gradient(135deg,#03091d,#2458a9,#8a56b1)"
   }
-]
-;
+];
 export class ThemeEngine {
   async init() {
     if(!document.getElementById('syolana-scene-softness')){const style=document.createElement('style');style.id='syolana-scene-softness';style.textContent=SOFT_SCENE_CSS;document.head.append(style);}
@@ -125,6 +139,7 @@ export class ThemeEngine {
       cancelAnimationFrame(this.previewFrame),
     );
     this.reduced.addEventListener("change", () => this.sync());
+    window.addEventListener('syolana:scene-ready',()=>this.draw(0));
     this.sync();
     document.addEventListener("visibilitychange", () => this.sync());
     this.resizeTimer = 0;
@@ -146,16 +161,23 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261011-independent-1";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261011-worlds-2";
     if (version) url.searchParams.set("v", version);
     let module;try{module=await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
     if (seq !== this.sequence) return;
+    this.sceneEvents?.abort();
     this.custom?.dispose?.();
+    this.sceneLost = false;
+    this.qualityScale = 1;
     this.custom =
       this.ctx && theme.createRenderer ? theme.createRenderer(this.ctx) : null;
     this.theme = theme;
-    this.canvas.previousElementSibling?.addEventListener?.('webglcontextlost',e=>{e.preventDefault();});
-    this.canvas.previousElementSibling?.addEventListener?.('webglcontextrestored',()=>{if(this.id===id)this.select(id,{force:true}).catch(()=>{});});
+    const sceneCanvas=this.custom?.canvas||this.canvas.previousElementSibling;
+    if(sceneCanvas?.classList?.contains('theme-world-canvas')){
+      this.sceneEvents=new AbortController();
+      sceneCanvas.addEventListener('webglcontextlost',e=>{e.preventDefault();this.sceneLost=true;},{signal:this.sceneEvents.signal});
+      sceneCanvas.addEventListener('webglcontextrestored',()=>{if(this.id===id)this.select(id,{force:true}).catch(()=>{});},{signal:this.sceneEvents.signal});
+    }
     this.id = id;
     const s = document.documentElement.style;
     for (const [k, v] of Object.entries({
@@ -420,7 +442,7 @@ export class ThemeEngine {
     ctx.clearRect(0, 0, this.w, this.h);
     this.phase += d;
     if (this.zen) this.advanceCamera(d);
-    this.custom?.draw?.({
+    if(!this.sceneLost)this.custom?.draw?.({
       delta: d,
       time: this.phase,
       width: this.w,
@@ -455,9 +477,10 @@ export class ThemeEngine {
         point.x + tw / 2,
         point.y,
       );
-      g.addColorStop(0, `hsl(${hue},76%,75%)`);
-      g.addColorStop(0.48, `hsl(${(hue + 58) % 360},82%,80%)`);
-      g.addColorStop(1, `hsl(${(hue + 116) % 360},76%,73%)`);
+      const light=this.theme.markDark?35:75;
+      g.addColorStop(0, `hsl(${hue},76%,${light}%)`);
+      g.addColorStop(0.48, `hsl(${(hue + 58) % 360},82%,${light+5}%)`);
+      g.addColorStop(1, `hsl(${(hue + 116) % 360},76%,${light-2}%)`);
       ctx.globalAlpha = m.opacity * fade * point.alpha;
       ctx.fillStyle = g;
       ctx.shadowColor = `hsla(${hue},84%,74%,.42)`;
@@ -671,7 +694,7 @@ export class ThemeEngine {
     const cameraSmoothing=Number.isFinite(this.theme?.cameraSmoothing)
       ? this.theme.cameraSmoothing
       : 8;
-    const blend = d ? 1 - Math.exp(-d * cameraSmoothing) : 1;
+    const blend = d ? 1 - Math.exp(-d * cameraSmoothing) : this.reduced?.matches?1:0;
     cam.tz += cam.vz * d;
     if (
       d &&
@@ -739,7 +762,7 @@ export class ThemeEngine {
         if(!rect.width||!rect.height||rect.bottom<0||rect.top>innerHeight||rect.right<0||rect.left>innerWidth)continue;
         const id=canvas.dataset.preview,c=canvas.getContext('2d');if(!c)continue;
         let poster=this.previewImages.get(id);
-        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261011-independent-1',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
+        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261011-worlds-2',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
         if(!poster.complete||!poster.naturalWidth)continue;
         const w=canvas.width,h=canvas.height,zoom=this.reduced.matches?1:1.035+Math.sin(time/1000*.14)*.012;
         const base=Math.max(w/poster.naturalWidth,h/poster.naturalHeight),dw=poster.naturalWidth*base*zoom,dh=poster.naturalHeight*base*zoom;

@@ -1,4 +1,5 @@
-import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-atmosphere-1';
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-worlds-2';
+import {sceneResolution} from './scene-quality.mjs?v=20261011-worlds-2';
 import {createSceneMotion} from './scene-motion.mjs';
 const TAU = Math.PI * 2;
 const MODULE_ORIGIN = new URL(import.meta.url).origin;
@@ -735,9 +736,8 @@ function createRenderer(ctx){
     cssWidth=Math.max(1,width);
     cssHeight=Math.max(1,height);
     const mobile=cssWidth<=760;
-    quality=Math.min(ratio,mobile?1.45:1.85);
-    const w=Math.max(1,Math.round(cssWidth*quality));
-    const h=Math.max(1,Math.round(cssHeight*quality));
+    const size=sceneResolution({width:cssWidth,height:cssHeight,ratio});quality=size.pixelRatio;
+    const w=size.width,h=size.height;
     if(canvas.width!==w||canvas.height!==h){
       canvas.width=w; canvas.height=h;
       gl.viewport(0,0,w,h);
@@ -822,6 +822,7 @@ function createRenderer(ctx){
   }
 
   return {
+    canvas,
     resize,
     draw({time,width,height,camera}){
       if(disposed)return;
@@ -849,6 +850,7 @@ function createRenderer(ctx){
           if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);
           else gl.deleteBuffer(r);
         }
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
       }catch{}
     },
   };

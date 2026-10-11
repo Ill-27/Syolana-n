@@ -1,0 +1,185 @@
+import {createGLWorld,FULLSCREEN_VS,LIGHT_GLSL,perspective,orthographic,lookAt,multiply} from './world-gl.mjs?v=20261011-worlds-2';
+import {SKY_FS,drawSky} from './celestial-world.mjs?v=20261011-worlds-2';
+import {createSceneMotion} from './scene-motion.mjs';
+import {createLuminousRenderer} from './luminous-atmosphere.js';
+
+const TAU=Math.PI*2;
+const fract=x=>x-Math.floor(x),random=i=>fract(Math.sin(i*127.1+19.7)*43758.5453);
+function surface(rows,columns,sample){
+ const positions=[],normals=[],uvs=[],indices=[];
+ for(let i=0;i<=rows;i++)for(let j=0;j<=columns;j++){
+  const u=i/rows,v=j/columns,p=sample(u,v),e=.0005,p1=sample(Math.min(1,u+e),v),p0=sample(Math.max(0,u-e),v),q1=sample(u,Math.min(1,v+e)),q0=sample(u,Math.max(0,v-e));
+  const a=p1.map((x,k)=>x-p0[k]),b=q1.map((x,k)=>x-q0[k]),n=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],l=Math.hypot(...n)||1;
+  positions.push(...p);normals.push(...n.map(x=>x/l));uvs.push(u,v);
+ }
+ for(let i=0;i<rows;i++)for(let j=0;j<columns;j++){const a=i*(columns+1)+j,b=a+columns+1;indices.push(a,b,a+1,a+1,b,b+1);}return{positions,normals,uvs,indices};
+}
+export function petalGeometry(){return surface(24,14,(t,v)=>{const s=v*2-1,w=.10+.52*Math.sin(Math.PI*t*.86);return[s*w,t*1.13-.24*Math.pow(t,5)*s*s,(.18-.12*s*s)*Math.sin(t*Math.PI)+.03*t*t];});}
+export function leafGeometry(){return surface(18,8,(t,v)=>{const s=v*2-1;return[s*Math.sin(Math.PI*t)*.28,t*1.55,.15*Math.sin(t*Math.PI)+.08*s*s];});}
+export function stemGeometry(){return surface(18,8,(t,v)=>{const a=v*TAU;return[Math.cos(a)*.034+Math.sin(t*2.6)*.16,-t*3.6,Math.sin(a)*.034-.25];});}
+function mergeGeometry(items){const positions=[],normals=[],uvs=[],indices=[];for(const g of items){const offset=positions.length/3;positions.push(...g.positions);normals.push(...g.normals);uvs.push(...g.uvs);indices.push(...g.indices.map(i=>i+offset));}return{positions,normals,uvs,indices};}
+export function butterflyGeometry(){
+ const shapes=[];for(const side of [-1,1])for(const upper of [true,false])shapes.push(surface(15,20,(r,v)=>{
+  const a=v*TAU;const cx=upper?.63:.36,cy=upper?.25:-.40,rx=upper?.69:.41,ry=upper?.72:.48;
+  const scallop=1.0-.035*Math.pow(.5+.5*Math.sin(a*9),3);const x=(cx+Math.cos(a)*rx)*r*side,y=(cy+Math.sin(a)*ry)*r;
+  return[x*scallop,y*scallop,.048*Math.sin(r*Math.PI)];
+ }));return mergeGeometry(shapes);
+}
+export function butterflyBodyGeometry(){
+ const body=surface(14,12,(u,v)=>{const a=u*Math.PI,b=v*TAU;return[Math.sin(a)*Math.cos(b)*.065,Math.cos(a)*.43,Math.sin(a)*Math.sin(b)*.065];});
+ const antenna=[];for(const side of [-1,1])antenna.push(surface(12,4,(u,v)=>{const a=v*TAU;return[side*(.025+u*.18)+Math.cos(a)*.007,.34+u*.48,Math.sin(a)*.007-.03];}));return mergeGeometry([body,...antenna]);
+}
+export function botanicalInstances(kind='bloom'){
+ const flowers=[],petals={a:[],b:[]},leaves={a:[],b:[]},stems={a:[],b:[]},loose={a:[],b:[]},butterflies={a:[],b:[]};
+ const count=kind==='moon'?10:kind==='lunar'?16:22;
+ for(let i=0;i<count;i++){
+  const f=i===0?[6,2,-9,1.2,3.7]:i===1?[-6,-4,-19,3.6,3.0]:[(random(i+11)-.5)*47,(random(i+83)-.5)*25,-69+random(i+91)*81,random(i+19)*TAU,1.35+random(i+73)*2.1];
+  if(kind==='lunar'){f[0]=(i%2?1:-1)*(9+random(i+214)*12);f[1]=-3+random(i+255)*16;f[2]=-46-random(i+219)*24;f[4]*=.66;if(i<2){f[0]=i===0?8:-9;f[1]=-9;f[2]=-13;f[4]=1.8;}}
+  flowers.push(f);
+  for(let ring=0;ring<7;ring++){const n=5+ring*3;for(let p=0;p<n;p++){petals.a.push(...f.slice(0,4));petals.b.push(p/n*TAU+ring*2.399,.18+ring*.145,(random(i*103+p+ring*19)-.5)*.13,f[4]);}}
+  for(let j=0;j<3;j++){leaves.a.push(...f.slice(0,4));leaves.b.push(j*2.28+.4,1.0+j*.11,j,f[4]);}
+  stems.a.push(...f.slice(0,4));stems.b.push(0,1,0,f[4]);
+ }
+ for(let i=0;i<(kind==='moon'?74:38);i++){loose.a.push((random(i+277)-.5)*48,(random(i+381)-.5)*28,-78+random(i+331)*90,random(i+271)*TAU);loose.b.push(random(i+779)*TAU,.6,random(i+777)*.12,.13+random(i+743)*.20);}
+ for(let i=0;i<(kind==='moon'?6:16);i++){butterflies.a.push(i<2?(i===0?-3:4):(random(i+477)-.5)*35,i<2?4:(random(i+411)-.5)*18,i<2?-4-i*8:-64+random(i+451)*76,random(i+431)*TAU);butterflies.b.push(i<2?.70:.22+random(i+432)*.48,random(i+763),0,0);}
+ return{flowers,petals,leaves,stems,loose,butterflies};
+}
+export const PLANT_VS=`#version 300 es
+precision highp float;precision highp int;
+layout(location=0)in vec3 aPosition;layout(location=1)in vec3 aNormal;layout(location=2)in vec2 aUv;
+layout(location=3)in vec4 aInstance;layout(location=4)in vec4 aDetail;
+uniform mat4 uViewProj,uLightMatrix;uniform float uTime,uTravel;uniform vec3 uEye;uniform int uPart;
+out vec3 vWorld,vNormal;out vec2 vUv;out vec4 vShadow;out float vSeed,vLayer;
+mat3 rx(float a){float c=cos(a),s=sin(a);return mat3(1,0,0,0,c,s,0,-s,c);}
+mat3 ry(float a){float c=cos(a),s=sin(a);return mat3(c,0,-s,0,1,0,s,0,c);}
+mat3 rz(float a){float c=cos(a),s=sin(a);return mat3(c,s,0,-s,c,0,0,0,1);}
+void main(){
+ float seed=aInstance.w,scale=aDetail.w;vec3 p=aPosition,N=aNormal;
+ float breeze=sin(uTime*.59+seed)*.027+sin(uTime*.97+seed*2.0)*.011;
+ mat3 flower=rz(sin(seed)*.35+breeze)*ry(sin(seed*1.71)*.58)*rx(cos(seed*1.23)*.49);
+ mat3 part=rz(aDetail.x);
+ if(uPart==0){p*=aDetail.y;p.y+=(aDetail.y-.18)*.23;p.z+=.28*(1.10-aDetail.y)+.18*dot(p.xy,p.xy)+aPosition.x*aDetail.y*.05;p.z+=sin(uTime*.81+seed+aDetail.x)*.012*p.y*p.y;
+  N=normalize(vec3(N.x-(.36*p.x+.05)*N.z,N.y-.36*p.y*N.z,N.z));p=part*p;N=part*N;}
+ else if(uPart==1){part=rz(aDetail.x)*rx(.4+aDetail.z*.25);p*=aDetail.y;p.y+=.60;p.z-=.38;p=part*p;N=part*N;}
+ else if(uPart==3){flower=rz(seed+uTime*.13)*rx(seed*.7+uTime*.26)*ry(seed+uTime*.11);p*=aDetail.y;}
+ vec3 center=aInstance.xyz;center.x=mod(center.x-uEye.x+26.0,52.0)-26.0+uEye.x;
+ center.z=mod(center.z-uTravel+80.0,108.0)-80.0;
+ if(uPart==3){center.y+=sin(uTime*.38+seed)*1.2;center.x+=sin(uTime*.27+seed)*.8;center.z+=sin(uTime*.31+seed)*.7;}
+ vWorld=center+flower*p*scale;vNormal=normalize(flower*N);vUv=aUv;vSeed=seed+aDetail.z;vLayer=aDetail.y;vShadow=uLightMatrix*vec4(vWorld,1.0);gl_Position=uViewProj*vec4(vWorld,1.0);
+}`;
+export const PLANT_FS=`#version 300 es
+precision highp float;precision highp int;
+in vec3 vWorld,vNormal;in vec2 vUv;in vec4 vShadow;in float vSeed,vLayer;out vec4 outColor;
+uniform vec3 uEye;uniform float uTime;uniform int uKind,uPart;uniform sampler2D uShadowMap;
+${LIGHT_GLSL}
+float shadow(){vec3 p=vShadow.xyz/vShadow.w*.5+.5;if(any(lessThan(p,vec3(0)))||any(greaterThan(p,vec3(1))))return 1.0;
+ float s=0.0;vec2 texel=1.0/vec2(textureSize(uShadowMap,0));float bias=.0012;
+ for(int y=-2;y<=2;y++)for(int x=-2;x<=2;x++)s+=step(p.z-bias,texture(uShadowMap,p.xy+vec2(x,y)*texel).r);
+ return .40+s/25.0*.60;
+}
+void main(){
+ vec3 N=normalize(vNormal);if(!gl_FrontFacing)N=-N;vec3 V=normalize(uEye-vWorld),L=normalize(vec3(-.45,.8,.6));
+ float phase=.5+.5*sin(uTime*.053+vSeed*.58);vec3 base;
+ if(uKind==3)base=mix(vec3(.28,.024,.54),vec3(.67,.045,.31),phase*.44);
+ else if(uKind==4)base=mix(vec3(.015,.072,.36),vec3(.21,.09,.54),phase*.45);
+ else base=mix(vec3(.36,.58,.74),vec3(.49,.37,.72),phase*.52);
+ if(uPart==1)base=uKind==3?vec3(.09,.17,.09):vec3(.035,.10,.12);
+ if(uPart==2)base=uKind==3?vec3(.04,.10,.048):vec3(.035,.070,.10);
+ float veins=sin(vUv.x*85.0+sin(vUv.y*26.0)*2.0)*sin(vUv.x*213.0-vUv.y*17.0);
+ base*=.85+vUv.x*.17+veins*.021;
+ if(uPart==1){float rib=exp(-abs(vUv.y-.5)*110.0);base+=rib*vec3(.055,.07,.035);base*=.90+.10*sin(vUv.x*65.0+abs(vUv.y-.5)*42.0);}
+ float ao=uPart==0?mix(.62,1.0,smoothstep(.05,.68,vUv.x)):.91;
+ vec3 c=shadeSurface(base,N,V,L,uPart==0?.39:.54,0.0,ao);
+ float rim=pow(1.0-max(0.0,dot(N,V)),3.5);
+ c+=base*rim*.31+base*pow(max(0.0,dot(-N,L)),2.0)*.24;
+ c*=shadow();if(uKind!=3)c+=vec3(.065,.14,.28)*pow(max(0.0,dot(N,normalize(vec3(.4,.6,-.7)))),3.0);
+ float distance=length(uEye-vWorld),near=smoothstep(2.3,7.5,distance),fog=exp(-max(0.0,distance-(uKind==3?55.0:22.0))*(uKind==3?.0045:.020));
+ vec3 haze=uKind==3?vec3(.94,.88,1.02):vec3(.005,.010,.031);c=mix(haze,c,fog*near);outColor=vec4(c,1);
+}`;
+export const SHADOW_FS=`#version 300 es
+precision highp float;precision highp int;void main(){}`;
+export const BUTTERFLY_VS=`#version 300 es
+precision highp float;precision highp int;
+layout(location=0)in vec3 aPosition;layout(location=1)in vec3 aNormal;layout(location=2)in vec2 aUv;
+layout(location=3)in vec4 aInstance;layout(location=4)in vec4 aDetail;
+uniform mat4 uViewProj;uniform vec3 uEye;uniform float uTime,uTravel;uniform int uPart;
+out vec3 vWorld,vNormal;out vec2 vUv;out float vSeed;
+vec3 path(float t){float s=aInstance.w;return aInstance.xyz+vec3(sin(t*.24+s)*3.3+sin(t*.57+s*.71)*1.1,sin(t*.33+s*1.6)*1.75+sin(t*.71+s)*.34,sin(t*.18+s)*4.0);}
+void main(){
+ float seed=aInstance.w;vec3 center=path(uTime),vel=path(uTime+.02)-path(uTime-.02);
+ center.x=mod(center.x-uEye.x+26.0,52.0)-26.0+uEye.x;center.z=mod(center.z-uTravel+80.0,108.0)-80.0;
+ vec3 p=aPosition,N=aNormal;float side=sign(p.x),beat=sin(uTime*(25.0+sin(seed)*3.0)+seed)+sin(uTime*50.0+seed)*.12;
+ float a=beat*.91+sin(uTime*.47+seed)*.1,c=cos(a),s=sin(a);
+ if(uPart==0){p=vec3(p.x*c,p.y,p.z+abs(p.x)*s);N=normalize(vec3(-side*s,N.y*.15,c));}
+ float heading=atan(vel.y,vel.x)-1.570796,bank=clamp(vel.z*8.0,-.35,.35),hc=cos(heading),hs=sin(heading);
+ mat3 turn=mat3(hc,hs,0,-hs,hc,0,0,0,1)*mat3(cos(bank),0,-sin(bank),0,1,0,sin(bank),0,cos(bank));
+ vWorld=center+turn*p*aDetail.x;vNormal=normalize(turn*N);vUv=aUv;vSeed=seed;gl_Position=uViewProj*vec4(vWorld,1.0);
+}`;
+export const BUTTERFLY_FS=`#version 300 es
+precision highp float;precision highp int;in vec3 vWorld,vNormal;in vec2 vUv;in float vSeed;out vec4 outColor;
+uniform vec3 uEye;uniform float uTime;uniform int uKind,uPart;
+${LIGHT_GLSL}
+void main(){
+ vec3 N=normalize(vNormal);if(!gl_FrontFacing)N=-N;vec3 V=normalize(uEye-vWorld);float angle=1.0-abs(dot(N,V));
+ vec3 base=uKind==3?mix(vec3(.23,.02,.45),vec3(.78,.13,.51),angle):mix(vec3(.014,.18,.52),vec3(.18,.64,.84),angle);
+ float veins=pow(abs(sin(vUv.y*31.416+vUv.x*2.1)),38.0);base*=1.0-veins*.52;
+ float edge=smoothstep(.79,.98,vUv.x);base=mix(base,vec3(.030,.021,.040),edge*.85);
+ float spots=pow(max(0.0,sin(vUv.y*62.832)),20.0)*smoothstep(.81,.88,vUv.x)*(1.0-smoothstep(.93,1.0,vUv.x));base+=spots*vec3(.7,.52,.24);
+ if(uPart==1)base=vec3(.025,.019,.03);
+ vec3 c=shadeSurface(base,N,V,normalize(vec3(-.4,.8,.6)),.31,.14,1.0)+base*.16+vec3(.08,.16,.25)*pow(angle,4.0);
+ float d=length(uEye-vWorld),fog=exp(-max(0.0,d-24.0)*.018)*smoothstep(2.0,6.0,d);
+ vec3 haze=uKind==3?vec3(2.9,2.75,3.15):vec3(.005,.010,.031);outColor=vec4(mix(haze,c,fog),1);
+}`;
+export const PORTRAIT_VS=`#version 300 es
+precision highp float;precision highp int;layout(location=0)in vec3 aPosition;layout(location=2)in vec2 aUv;
+uniform mat4 uViewProj;uniform vec3 uEye;uniform float uTime,uAspect;out vec2 vUv;
+void main(){vec3 p=aPosition;float hair=(1.0-smoothstep(.16,.36,aUv.x))+smoothstep(.68,.92,aUv.x);
+ p.x+=sin(uTime*.61+aUv.y*5.0)*.085*hair;p.y+=sin(uTime*.46)*.030;p.z+=sin(aUv.x*3.14159)*sin(aUv.y*3.14159)*.9;
+ p+=vec3(uAspect<.8?uEye.x*.85:uEye.x*.85+5.0,2.0+uEye.y*.16,-17.0);vUv=aUv;gl_Position=uViewProj*vec4(p,1.0);}`;
+export const PORTRAIT_FS=`#version 300 es
+precision highp float;precision highp int;in vec2 vUv;out vec4 outColor;uniform sampler2D uPortrait;
+void main(){vec4 c=texture(uPortrait,vUv);c.a*=smoothstep(0.0,.13,vUv.y);if(c.a<.025)discard;outColor=vec4(pow(c.rgb,vec3(2.2))*.95,c.a);}`;
+export function portraitGeometry(){const g=surface(90,60,(u,v)=>[(v-.5)*24,(u-.5)*36,0]);for(let i=0;i<g.uvs.length;i+=2){const u=g.uvs[i];g.uvs[i]=g.uvs[i+1];g.uvs[i+1]=u;}return g;}
+
+function createShadow(world){
+ const{gl,keep}=world,texture=keep(gl.createTexture(),gl.deleteTexture),fbo=keep(gl.createFramebuffer(),gl.deleteFramebuffer),size=1024;
+ gl.bindTexture(gl.TEXTURE_2D,texture);gl.texImage2D(gl.TEXTURE_2D,0,gl.DEPTH_COMPONENT24,size,size,0,gl.DEPTH_COMPONENT,gl.UNSIGNED_INT,null);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.TEXTURE_2D,texture,0);gl.drawBuffers([gl.NONE]);gl.readBuffer(gl.NONE);const valid=gl.checkFramebufferStatus(gl.FRAMEBUFFER)===gl.FRAMEBUFFER_COMPLETE;gl.bindFramebuffer(gl.FRAMEBUFFER,null);return{texture,fbo,size,valid};
+}
+function botanicalFallback(ctx,kind){
+ const base=createLuminousRenderer(ctx,'moon');return{resize:base.resize,draw(data){base.draw(data);const{width:w,height:h,time}=data;ctx.save();
+  const palette=kind==='bloom'?['#8642bd','#bf499b','#562b95']:['#356cc1','#7464bf','#64aaca'];
+  for(let f=0;f<6;f++){const x=w*(.12+random(f+4)*.86),y=h*(.12+random(f+9)*.80),r=Math.min(w,h)*(.08+random(f+6)*.08);ctx.save();ctx.translate(x,y);ctx.rotate(Math.sin(time*.3+f)*.04);
+   for(let ring=4;ring>=0;ring--)for(let i=0;i<9;i++){const a=i/9*TAU+ring*.9,rr=r*(.18+ring*.19);ctx.save();ctx.rotate(a);const g=ctx.createRadialGradient(0,rr,0,0,rr,rr);g.addColorStop(0,palette[ring%3]);g.addColorStop(1,'#20172c');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,rr*.5,rr*.46,rr*.69,0,0,TAU);ctx.fill();ctx.restore();}ctx.restore();}ctx.restore();},dispose:base.dispose};
+}
+export function createBotanicalRenderer(ctx,kind='bloom'){
+ const mode=kind==='bloom'?3:kind==='lunar'?4:2,world=createGLWorld(ctx,kind,{exposure:kind==='bloom'?1.16:1.12,bloom:kind==='bloom'?.16:.36,vignette:kind==='bloom'?0:.13});
+ if(!world)return botanicalFallback(ctx,kind);
+ const{gl,loc}=world,instances=botanicalInstances(kind);let sky,plant,shadowProgram,fly,portrait,portraitMesh,portraitTexture,image,loaded=false,dead=false;
+ let petals,leaves,stems,loose,wings,bodies,shadow;
+ try{
+  sky=world.program(FULLSCREEN_VS,SKY_FS);plant=world.program(PLANT_VS,PLANT_FS);shadowProgram=world.program(PLANT_VS,SHADOW_FS);fly=world.program(BUTTERFLY_VS,BUTTERFLY_FS);
+  petals=world.mesh(petalGeometry(),instances.petals);leaves=world.mesh(leafGeometry(),instances.leaves);stems=world.mesh(stemGeometry(),instances.stems);loose=world.mesh(petalGeometry(),instances.loose);wings=world.mesh(butterflyGeometry(),instances.butterflies);bodies=world.mesh(butterflyBodyGeometry(),instances.butterflies);shadow=createShadow(world);
+  if(kind==='lunar'){
+   portrait=world.program(PORTRAIT_VS,PORTRAIT_FS);portraitMesh=world.mesh(portraitGeometry());portraitTexture=world.keep(gl.createTexture(),gl.deleteTexture);image=new Image();image.decoding='async';
+   image.onload=()=>{if(dead)return;gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,portraitTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.generateMipmap(gl.TEXTURE_2D);loaded=true;if(matchMedia('(prefers-reduced-motion: reduce)').matches)window.dispatchEvent(new Event('syolana:scene-ready'));};
+   image.src=new URL('./assets/lunar-muse.webp',import.meta.url).href;
+  }
+ }catch(e){world.dispose();return botanicalFallback(ctx,kind);}
+ const projection=new Float32Array(16),view=new Float32Array(16),vp=new Float32Array(16),lightP=new Float32Array(16),lightV=new Float32Array(16),lightVP=new Float32Array(16);
+ const motion=createSceneMotion({rest:kind==='bloom'?.20:.12,flight:.70,xLimit:1e6,yLimit:1e6});
+ const plantDraw=(p,m,part,eye,time,travel,matrix)=>{gl.useProgram(p);gl.uniformMatrix4fv(loc(p,'uViewProj'),false,matrix);gl.uniformMatrix4fv(loc(p,'uLightMatrix'),false,lightVP);gl.uniform3fv(loc(p,'uEye'),eye);gl.uniform1f(loc(p,'uTime'),time);gl.uniform1f(loc(p,'uTravel'),travel);gl.uniform1i(loc(p,'uKind'),mode);gl.uniform1i(loc(p,'uPart'),part);gl.uniform1i(loc(p,'uShadowMap'),1);world.draw(m);};
+ return{canvas:world.canvas,resize:world.resize,draw({time,width,height,camera}){
+  if(width!==world.width||height!==world.height)world.resize({width,height,ratio:devicePixelRatio||1});if(dead||!world.begin())return;
+  const{travel,input}=motion.step(time,camera),depth=travel+input.z*3,eye=[input.x*3,2.5+input.y*2,24];
+  lookAt(view,eye,[eye[0]+Math.sin(time*.019)*.24,eye[1]-.7,-20]);perspective(projection,1.0,width/height);multiply(vp,projection,view);
+  lookAt(lightV,[eye[0]-18,eye[1]+30,35],[eye[0],0,-15]);orthographic(lightP,-32,32,-32,32,1,140);multiply(lightVP,lightP,lightV);
+  if(shadow.valid){gl.bindFramebuffer(gl.FRAMEBUFFER,shadow.fbo);gl.viewport(0,0,shadow.size,shadow.size);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.clear(gl.DEPTH_BUFFER_BIT);gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1.5,2);
+   plantDraw(shadowProgram,petals,0,eye,time,depth,lightVP);plantDraw(shadowProgram,leaves,1,eye,time,depth,lightVP);gl.disable(gl.POLYGON_OFFSET_FILL);world.begin();}
+  drawSky(world,sky,time,mode,eye,view);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,shadow.texture);
+  if(kind==='moon')plantDraw(plant,stems,2,eye,time,depth,vp);plantDraw(plant,leaves,1,eye,time,depth,vp);plantDraw(plant,petals,0,eye,time,depth,vp);plantDraw(plant,loose,3,eye,time,depth,vp);
+  if(loaded){gl.useProgram(portrait);gl.uniformMatrix4fv(loc(portrait,'uViewProj'),false,vp);gl.uniform3fv(loc(portrait,'uEye'),eye);gl.uniform1f(loc(portrait,'uTime'),time);gl.uniform1f(loc(portrait,'uAspect'),width/height);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,portraitTexture);gl.uniform1i(loc(portrait,'uPortrait'),0);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);world.draw(portraitMesh);gl.disable(gl.BLEND);}
+  gl.useProgram(fly);gl.uniformMatrix4fv(loc(fly,'uViewProj'),false,vp);gl.uniform3fv(loc(fly,'uEye'),eye);gl.uniform1f(loc(fly,'uTime'),time);gl.uniform1f(loc(fly,'uTravel'),depth);gl.uniform1i(loc(fly,'uKind'),mode);gl.uniform1i(loc(fly,'uPart'),0);world.draw(wings);gl.uniform1i(loc(fly,'uPart'),1);world.draw(bodies);world.finish();
+ },dispose(){if(dead)return;dead=true;if(image){image.onload=null;image.src='';}world.dispose();}};
+}

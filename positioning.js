@@ -1,4 +1,4 @@
-import {mountSketchBuilder} from './sketch-builder.js?v=20261011-autonomous-sites-2';
+import {mountSketchBuilder} from './sketch-builder.js?v=20261011-worlds-2';
 const AVITO='https://www.avito.ru/brands/i223140984';
 const page=()=>document.getElementById('page');
 const node=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=text;return n;};

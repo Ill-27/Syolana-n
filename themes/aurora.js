@@ -1,11 +1,15 @@
-import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261011-luminous-1';
-// Первая тема: палитра, свечение, звёзды и водяные знаки из вашего образца.
+import {createCelestialRenderer} from './celestial-world.mjs?v=20261011-worlds-2';
 export default {
-  createRenderer:ctx=>createLuminousRenderer(ctx,"aurora"),
+  createRenderer:ctx=>createCelestialRenderer(ctx,"aurora"),
   id: "aurora",
   marks: true,
   cameraSmoothing: 4.2,
-  renderer: "stars",
+  renderer: "webgl-volumetric-aurora",
+  particles: false,
+  continuousDepth: true,
+  depthDirectScale: .45,
+  depthGain: .6,
+  depthCap: 1.5,
   accent: "#d0b4ff",
   dim: "#d0cadf",
   surface: "12,12,25",

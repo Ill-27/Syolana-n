@@ -1,4 +1,4 @@
-import {installAPITransport} from "./api-transport.js?v=20261011-poems-3";
+import {installAPITransport} from "./api-transport.js?v=20261011-owner-failover-1";
 const oldStudioPath = /^\/partner\/?$/.test(location.pathname);
 if (oldStudioPath) {
   location.replace(new URL("./partner-demo/studio/", import.meta.url).href);
@@ -34,14 +34,13 @@ window.addEventListener("hashchange", () => {
 if (/^#\/lesson\/(?:en\/a[12]\/course|es\/a[12]\/(?:course|rules|words|practice))(?:\/|$)/.test(location.hash)) {
   document.body.classList.add("course-reading");
 }
-const release = new URL(import.meta.url).searchParams.get("v") || "20261011-poems-3";
-const appURL = new URL("./app.js?v=20261011-poems-3", import.meta.url);
+const release = new URL(import.meta.url).searchParams.get("v") || "20261011-owner-failover-1";
+const appURL = new URL("./app.js?v=20261011-owner-failover-1", import.meta.url);
 appURL.searchParams.set("v", release);
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function importWithRetry(url, attempts=2){let error;for(let i=0;i<attempts;i++){try{const attemptURL=new URL(url,location.href);if(i)attemptURL.searchParams.set("retry",String(i));return await import(attemptURL.href);}catch(e){error=e;if(i+1<attempts)await wait(450*(i+1));}}throw error;}
 
 importWithRetry(appURL.href,2).then(async () => {
-  // Let the visible page load before updating its small offline shell.
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     const register=()=>navigator.serviceWorker.register(new URL('./sw.js',import.meta.url), {scope:new URL('./',import.meta.url).pathname, updateViaCache:"none"}).catch(()=>{});
     if ("requestIdleCallback" in window) requestIdleCallback(register,{timeout:5000});

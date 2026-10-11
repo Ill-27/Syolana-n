@@ -1,6 +1,6 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'e70b6d0690a63f37';
+const CACHE=PREFIX+'dc055acaf775753a';
 const BASE=new URL('./',self.location.href);
 // Cache other public resources as they are visited. A first visit must not
 // launch dozens of theme, preview and editor downloads beside the login screen.
@@ -14,7 +14,7 @@ function publicRequest(request){
  if(url.pathname.endsWith('.json'))return /\/(config|feed|partner|studio-config|site-settings|manifest|song-details)\.json$/.test(url.pathname)||url.pathname.includes('/owner-vault/');
  return request.mode==='navigate'||/\.(?:html|js|mjs|css|woff2?|svg|png|jpg|jpeg|webp)$/.test(url.pathname);
 }
-function keyFor(request){const url=new URL(request.url);url.search='';url.hash='';return url.href;}
+function keyFor(request){const url=new URL(request.url),version=url.searchParams.get('v');url.search='';if(version)url.searchParams.set('v',version);url.hash='';return url.href;}
 self.addEventListener('install',event=>event.waitUntil((async()=>{
  const cache=await caches.open(CACHE);
  for (const path of assets) {

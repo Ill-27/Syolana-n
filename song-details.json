@@ -16,7 +16,7 @@
       "publication": "Первое книжное издание сборника Rimas — в составе Obras, Мадрид, 1871. Рукопись Libro de los gorriones датируется 1868 годом.",
       "originalLanguage": "es",
       "original": "¿Qué es poesía?, dices mientras clavas\nen mi pupila tu pupila azul.\n¡Qué es poesía! ¿Y tú me lo preguntas?\nPoesía... eres tú.",
-      "translationRu": "«Что есть поэзия?» — ты спрашиваешь,\nСвой голубой взгляд устремив в мои глаза.\n«Что есть поэзия?» И ты меня об этом спрашиваешь?\nПоэзия… это ты.",
+      "translationRu": "«Что есть поэзия?» — звучит твой вопрос,\nИ голубой твой взгляд впивается в мой.\n«Что есть поэзия?» И ты меня об этом спрашиваешь?\nПоэзия… это ты.",
       "translationLabel": "Новый перевод на русский для Syolana",
       "translationNote": "Литературный перевод свободным стихом: сохранены смысл, обращение и заключительный образ; рифма оригинала не воспроизводится.",
       "about": "Короткий диалог о том, что делает поэзию живой: лирический герой находит ответ в той, к кому обращается.",
@@ -34,7 +34,21 @@
         ],
         "lawUrl": "https://rospatent.gov.ru/ru/documents/grazhdanskiy-kodeks-rossiyskoy-federacii-chast-chetvertaya",
         "scopeNote": "Этот статус относится к историческому тексту Беккера. Новые музыкальные произведения, исполнения, звукозаписи и переводы рассматриваются отдельно."
-      }
+      },
+      "sources": [
+        {
+          "label": "Instituto Cervantes: текст Rima XXI и ссылка на рукопись",
+          "url": "https://cvc.cervantes.es/obref/rimas/rimas/rima21.htm"
+        },
+        {
+          "label": "Biblioteca Virtual Miguel de Cervantes: полный испанский текст",
+          "url": "https://www.cervantesvirtual.com/portales/gustavo_adolfo_becquer/249368_libro_de_los_gorriones_21/"
+        },
+        {
+          "label": "Biblioteca Nacional de España: Libro de los gorriones, 1868; издание Rimas, 1871; годы жизни",
+          "url": "https://www.bne.es/es/obras/libro-gorriones"
+        }
+      ]
     },
     {
       "id": "marti",
@@ -49,9 +63,9 @@
       "publication": "Versos sencillos, Нью-Йорк, Louis Weiss & Co., 1891. Стихотворение XXXIX на странице 66 первого издания.",
       "originalLanguage": "es",
       "original": "Cultivo una rosa blanca,\nen julio como en enero,\npara el amigo sincero\nque me da su mano franca.\n\nY para el cruel que me arranca\nel corazón con que vivo,\ncardo ni oruga cultivo:\ncultivo la rosa blanca.",
-      "translationRu": "Я выращиваю белую розу\nВ июле, как и в январе,\nДля искреннего друга,\nЧто руку мне открыто подаёт.\n\nИ для жестокого, что вырывает\nМне сердце, с которым я живу,\nНе сею ни чертополоха, ни рукколы:\nЯ выращиваю белую розу.",
+      "translationRu": "Я выращиваю белую розу\nИ в июле, и в январе —\nДля друга с открытой душою,\nЧья рука протянута мне.\n\nИ для того, кто жестоко\nВырывает сердце, которым живу,\nНе взращиваю ни чертополоха, ни рукколы:\nЯ выращиваю белую розу.",
       "translationLabel": "Новый перевод на русский для Syolana",
-      "translationNote": "Литературный перевод свободным стихом: сохранены все восемь строк и образы оригинала; рифма оригинала не воспроизводится.",
+      "translationNote": "Литературный перевод: сохранены все восемь строк и образы оригинала. Рифма и размер не подменяют смысл.",
       "about": "Белая роза выражает дружбу и великодушие: поэт не выращивает в себе ненависть даже к тому, кто причиняет ему боль.",
       "notes": [
         "Текст сверен по скану первого издания 1891 года: в нём julio, oruga и в последней строке la rosa blanca. Встречающиеся варианты junio, ortiga или una в заключительной строке не подменяют здесь оригинал.",
@@ -68,7 +82,25 @@
         ],
         "lawUrl": "https://rospatent.gov.ru/ru/documents/grazhdanskiy-kodeks-rossiyskoy-federacii-chast-chetvertaya",
         "scopeNote": "Этот статус относится к историческому тексту Марти. Новые музыкальные произведения, исполнения, звукозаписи и переводы рассматриваются отдельно."
-      }
+      },
+      "sources": [
+        {
+          "label": "Первое издание, 1891: факсимиле страницы 66 (экземпляр Digital Library of the Caribbean)",
+          "url": "https://www.poesi.as/JoseMartiVersosSencillos-72foto.htm"
+        },
+        {
+          "label": "University of Florida Digital Collections: Versos sencillos, Нью-Йорк, 1891",
+          "url": "https://ufdc.ufl.edu/UF00047617/00001"
+        },
+        {
+          "label": "Biblioteca Nacional de España: Хосе Марти, 1853–1895",
+          "url": "https://datos.bne.es/persona/XX887485.html"
+        },
+        {
+          "label": "Real Academia Española: значение слова oruga",
+          "url": "https://dle.rae.es/oruga"
+        }
+      ]
     },
     {
       "id": "samaniego",
@@ -83,7 +115,7 @@
       "publication": "Басни первых пяти книг впервые изданы в Валенсии, Benito Monfort, 1781. Текст басни IV.12 сверен также по историческому изданию: Мадрид, Imprenta de Vega y Compañía, 1804, том II, страницы 29–30.",
       "originalLanguage": "es",
       "original": "Estaba un ratoncillo aprisionado\nen las garras de un león; el desdichado\nen la tal ratonera no fue preso\npor ladrón de tocino ni de queso,\nsino porque con otros molestaba\nal león, que en su retiro descansaba.\nPide perdón, llorando su insolencia;\nal oír implorar la real clemencia,\nresponde el rey en majestuoso tono\n(no dijera más Tito): «Te perdono».\nPoco después, cazando, el león tropieza\nen una red oculta en la maleza.\nQuiere salir; mas queda prisionero.\nAtronando la selva ruge fiero.\nEl libre ratoncillo, que lo siente,\ncorriendo llega, roe diligente\nlos nudos de la red de tal manera,\nque al fin rompió los grillos de la fiera.\n\nConviene al poderoso\npara los infelices ser piadoso;\ntal vez se puede ver necesitado\ndel auxilio de aquel más desdichado.",
-      "translationRu": "Мышонок очутился в заточенье —\nВ когтях у льва; бедняга в мышеловку\nПопал не потому, что был воришкой\nИ утащил кусочек сала или сыра:\nОн с прочими лишь помешал покою\nЛьва, отдыхавшего в уединенье.\nОн просит, плача, дерзость ту простить.\nНа зов о царском милосердье\nВеличественный царь ему ответил\n— сам Тит не мог бы больше — «Я прощаю!»\nСпустя немного лев, охотясь, угодил\nВ сеть, что таилась в зарослях густых.\nОн рвётся прочь, но сеть его держит;\nОт грозного рычанья лес грохочет.\nМышонок, снова вольный, услыхав,\nСпешит на зов и, не жалея сил,\nУзлы на сети грызёт так усердно,\nЧто рвёт в конце концов оковы зверя.\n\nПусть сильный будет милосерден\nК несчастным: может статься,\nЕму придётся самому просить\nО помощи того, кому ещё труднее.",
+      "translationRu": "Мышонок был зажат в когтях у льва.\nБедняга угодил в такую мышеловку\nНе потому, что воровал\nКусочки сала или сыра:\nОн лишь с другими нарушал покой\nЛьва, отдыхавшего в уединенье.\nОн плакал, умоляя дерзость ту простить.\nУслышав просьбу о монаршей милости,\nЛев величаво произнёс: «Прощаю».\nНе больше слов сказал бы даже Тит.\nВскоре на охоте лев попался\nВ сеть, что была укрыта в зарослях.\nОн рвётся прочь, но остаётся в плену;\nОт яростного рёва лес гремит.\nСвободный вновь мышонок слышит льва,\nБежит к нему и, не жалея сил,\nГрызёт узлы на сети — до тех пор,\nПока не разорвёт оковы зверя.\n\nПусть сильный будет милостив к несчастным:\nБыть может, сам он будет вынужден\nИскать спасенья и просить о помощи\nУ самого обездоленного.",
       "translationLabel": "Новый перевод на русский для Syolana",
       "translationNote": "Литературный перевод свободным стихом: сохранены сюжет, отсылка к Титу и четыре строки нравственного вывода; парные рифмы оригинала не воспроизводятся.",
       "about": "Басня о милосердии и взаимной помощи: даже могущественный лев может нуждаться в том, кого легко счесть незначительным.",
@@ -102,7 +134,25 @@
         ],
         "lawUrl": "https://rospatent.gov.ru/ru/documents/grazhdanskiy-kodeks-rossiyskoy-federacii-chast-chetvertaya",
         "scopeNote": "Этот статус относится к историческому тексту Саманьего. Новые музыкальные произведения, исполнения, звукозаписи и переводы рассматриваются отдельно."
-      }
+      },
+      "sources": [
+        {
+          "label": "Biblioteca Virtual Miguel de Cervantes: историческое издание 1804, страница 29",
+          "url": "https://www.cervantesvirtual.com/obra-visor/fabulas-en-verso-para-el-uso-del-real-seminario-bascongado-tomo-ii--0/html/ffced7da-82b1-11df-acc7-002185ce6064_55.html"
+        },
+        {
+          "label": "Biblioteca Virtual Miguel de Cervantes: историческое издание 1804, страница 30",
+          "url": "https://www.cervantesvirtual.com/obra-visor/fabulas-en-verso-para-el-uso-del-real-seminario-bascongado-tomo-ii--0/html/ffced7da-82b1-11df-acc7-002185ce6064_56.html"
+        },
+        {
+          "label": "Biblioteca Virtual Miguel de Cervantes: электронный текст басни IV.12",
+          "url": "https://www.cervantesvirtual.com/obra-visor/fabulas-en-verso-castellano-para-uso-del-real-seminario-vascongado--0/html/ff18576c-82b1-11df-acc7-002185ce6064_3.html"
+        },
+        {
+          "label": "Biblioteca Nacional de España: Саманьего и год его смерти",
+          "url": "https://www.bne.es/es/blog/blog-bne/moralejas-de-un-ilustrado-felix-ma-de-samaniego"
+        }
+      ]
     }
   ],
   "rightsNote": "Общественное достояние исторического стихотворения позволяет использовать именно этот текст. Оно не даёт автоматически разрешения на чужую современную мелодию, аранжировку, перевод, исполнение или MP3. У новых переводов и переработок есть отдельные правила (статья 1260 ГК РФ), у исполнений и фонограмм — отдельные смежные права (статья 1303 ГК РФ). Представленные русские переводы подготовлены заново для Syolana; чужие современные переводы не воспроизводятся. Правомерность размещения существующих аудиозаписей проверяется по происхождению записи и условиям её создания."

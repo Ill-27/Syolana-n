@@ -148,13 +148,13 @@ function buildBanner(config) {
 
   copy.append(
     badge,
-    make("p", "eyebrow", c.eyebrow || "САЙТЫ В РОССИИ · ЯЗЫКИ"),
+    make("p", "eyebrow", c.eyebrow || "ТЕМЫ И ШАБЛОНЫ · ЯЗЫКИ"),
     make("h2", "", c.title || "Ваш сайт — живой мир."),
     make(
       "p",
       "banner-description",
       c.description ||
-        "Готовый шаблон сайта с живыми темами и размещением в России. Языки — по одной подписке.",
+        "Готовый шаблон сайта с живыми темами. Языки — по одной подписке.",
     ),
   );
 

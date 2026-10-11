@@ -1,4 +1,4 @@
-import {loadPublicJSON} from "./public-data.js";
+import {loadPublicJSON} from "./public-data.js?v=20261011-poems-2";
 import { lessonFiles } from "./catalog.js?v=20261009-platform-fr-a1-1";
 import { mountCourseBranding } from "./course-branding.js?v=20261007-language-marks-3";
 import {
@@ -211,7 +211,7 @@ function renderBanner() {
       "p",
       "banner-description",
       c.description ||
-        "Готовый шаблон сайтов с живыми темами и размещением в России. Языковые курсы — по одной подписке.",
+        "Готовый шаблон сайтов с живыми темами. Языковые курсы — по одной подписке.",
     ),
   );
 
@@ -320,7 +320,7 @@ async function home(token) {
     heading(
       "САЙТЫ · ДИЗАЙН · ЯЗЫКИ",
       "Место для вашего проекта",
-      "Сайты на общем шаблоне с размещением в России и языковые курсы по подписке. Новое в Syolana — здесь.",
+      "Сайты на общем шаблоне с живыми темами и языковые курсы по подписке. Новое в Syolana — здесь.",
     ),
   );
   const tabs = el("div", "feed-filters");
@@ -463,7 +463,7 @@ function songsPage() {
   $("page").append(list);
 }
 async function songPage(id, token) {
-  const data=await loadPublicJSON('song-details.json');
+  const data=await loadPublicJSON('song-details.json?v=20261011-poems-2');
   if(token!==routeToken)return;
   const song=data.songs.find(s=>s.id===id);
   if(!song)throw Error('Эта песня пока не опубликована.');
@@ -479,7 +479,7 @@ async function songPage(id, token) {
     const card=el('section','card stack song-poem');card.append(el('h2','',title));const poem=el('p','poem-text',text);poem.lang=language;card.append(poem);if(language==='ru')card.append(el('p','fine',song.translationNote));poems.append(card);
   }
   const rights=el('section','card stack song-rights');rights.append(el('p','eyebrow','АВТОР И ПРАВА'),el('h2','','Исторический текст — общественное достояние'),el('p','',song.publicDomain.explanation),el('p','fine',song.publicDomain.scopeNote),link('ГК РФ: статьи 1281 и 1282',song.publicDomain.lawUrl,'text-link'));
-  const notes=el('details','card stack song-notes');notes.append(el('summary','','Примечания к тексту и переводу'));for(const text of song.notes)notes.append(el('p','',text));
+  const notes=el('details','card stack song-notes');notes.append(el('summary','','Примечания и проверенные источники'));for(const text of song.notes)notes.append(el('p','',text));for(const source of song.sources||[])notes.append(link(source.label,source.url,'text-link'));
   $('page').append(introduction,poems,rights,notes,link('К списку песен','#/songs','btn'));
 }
 function join() {

@@ -2,8 +2,8 @@
 // Private APIs, access keys and paid course data must never enter this store.
 export async function loadPublicJSON(path, { timeout=5000 }={}) {
   const url=new URL(path,location.href);
-  if(url.origin!==location.origin||url.pathname.startsWith('/api/'))throw Error('Invalid public snapshot');
-  const allowed=/(?:^|\/)(?:config|feed|partner|studio-config|site-settings|manifest)\.json$/;
+  if(url.origin!==location.origin||url.pathname.includes('/api/'))throw Error('Invalid public snapshot');
+  const allowed=/(?:^|\/)(?:config|feed|partner|studio-config|site-settings|manifest|song-details)\.json$/;
   if(!allowed.test(url.pathname))throw Error('Invalid public snapshot');
   const key='syolana.public.'+url.pathname;
   try{

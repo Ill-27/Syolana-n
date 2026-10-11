@@ -47,7 +47,7 @@ importWithRetry(appURL.href,2).then(async () => {
     if ("requestIdleCallback" in window) requestIdleCallback(register,{timeout:5000});
     else setTimeout(register,1500);
   }
-  const extras = ["polish.js","refinements.js","theme-sound.js","positioning.js"].map(name =>
+  const extras = ["polish.js","refinements.js","theme-sound.js","positioning.js","copy-polish.js"].map(name =>
     importWithRetry("./"+name+"?v="+encodeURIComponent(release),2)
   );
   const results = await Promise.allSettled(extras);

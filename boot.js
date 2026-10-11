@@ -34,8 +34,8 @@ window.addEventListener("hashchange", () => {
 if (/^#\/lesson\/(?:en\/a[12]\/course|es\/a[12]\/(?:course|rules|words|practice))(?:\/|$)/.test(location.hash)) {
   document.body.classList.add("course-reading");
 }
-const release = new URL(import.meta.url).searchParams.get("v") || "20261011-owner-failover-1";
-const appURL = new URL("./app.js?v=20261011-owner-failover-1", import.meta.url);
+const release = new URL(import.meta.url).searchParams.get("v") || "20261011-autonomous-sites-1";
+const appURL = new URL("./app.js?v=20261011-autonomous-sites-1", import.meta.url);
 appURL.searchParams.set("v", release);
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function importWithRetry(url, attempts=2){let error;for(let i=0;i<attempts;i++){try{const attemptURL=new URL(url,location.href);if(i)attemptURL.searchParams.set("retry",String(i));return await import(attemptURL.href);}catch(e){error=e;if(i+1<attempts)await wait(450*(i+1));}}throw error;}
@@ -46,7 +46,7 @@ importWithRetry(appURL.href,2).then(async () => {
     if ("requestIdleCallback" in window) requestIdleCallback(register,{timeout:5000});
     else setTimeout(register,1500);
   }
-  const extras = ["polish.js","refinements.js","theme-sound.js"].map(name =>
+  const extras = ["polish.js","refinements.js","theme-sound.js","positioning.js"].map(name =>
     importWithRetry("./"+name+"?v="+encodeURIComponent(release),2)
   );
   const results = await Promise.allSettled(extras);

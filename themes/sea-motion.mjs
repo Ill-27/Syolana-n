@@ -3,7 +3,7 @@ const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 // The Gerstner surface cannot exceed the sum of its vertical amplitudes.
 export function waveCrestBound(weather) {
   const storm = clamp(Number(weather.storm) || 0, 0, 1);
-  return Math.max(0, Number(weather.wave) || 0) * (1.775 + 3.16 * storm);
+  return Math.max(0, Number(weather.wave) || 0) * (1.777 + 3.16 * storm);
 }
 
 export function createSeaMotion() {
@@ -26,8 +26,9 @@ export function createSeaMotion() {
       const routeZ = -travel;
       const camZ = routeZ - input.z * 32;
       const ceiling = waveCrestBound(weather);
-      const elevation = Math.max(0, input.y * 16);
-      const eye = [input.x * 30, ceiling + 6.2 + elevation, camZ + 18];
+      const heightAboveCrest = Math.max(1.45, 6.2 + input.y * 16);
+      const elevation = Math.max(0, heightAboveCrest - 6.2);
+      const eye = [input.x * 30, ceiling + heightAboveCrest, camZ + 18];
       const target = [eye[0] + Math.tanh(input.x * .12) * 12, eye[1] - 5.3 - elevation * .28, camZ - 130];
       return { eye, target, camZ, routeZ, input: { ...input }, clearance: eye[1] - ceiling };
     },

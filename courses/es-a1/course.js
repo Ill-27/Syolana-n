@@ -1,5 +1,5 @@
 import {mountCourseBranding} from '../../course-branding.js?v=20261007-language-marks-3';
-import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261008-es-a1-2';
+import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261009-platform-1';
 import {SpeechPlayer,secondsFor} from './audio.js?v=20261008-es-a1-2';
 import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261008-es-a1-2';
 import {trainerGroups} from './trainers.js?v=20261008-es-a1-2';

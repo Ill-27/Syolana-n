@@ -1,0 +1,4 @@
+Literata: OFL, subset with Latin and Cyrillic.
+Syolana Display: subset of Playfair Display, renamed in compliance with the reserved font name. Original license: playfairdisplay-OFL.txt.
+Syolana Script: WOFF conversion of Marck Script, renamed in compliance with the reserved font name. Original source: https://github.com/google/fonts/tree/main/ofl/marckscript ; license: marckscript-OFL.txt. Latin and Cyrillic supported; 38,684 bytes. Converted with fontTools; original outlines preserved.
+The shared interface and reading text use system-ui, the same family as the canvas watermarks. The old font files remain for compatibility but are not requested by the current interface.

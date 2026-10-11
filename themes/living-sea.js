@@ -1,4 +1,5 @@
-import { createSeaMotion, shipHullGeometry, shipDeckGeometry, shipRailGeometry } from "./sea-motion.mjs?v=20261005-sea12";
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-atmosphere-1';
+import { createSeaMotion, shipHullGeometry, shipDeckGeometry, shipRailGeometry } from "./sea-motion.mjs?v=20261011-sea13";
 
 const TAU=Math.PI*2;
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
@@ -33,28 +34,11 @@ layout(location=0)in vec2 aPosition;out highp vec2 vUv;void main(){vUv=aPosition
 const SKY_FS=`#version 300 es
 precision highp float;
 in highp vec2 vUv;out vec4 outColor;
-uniform float uTime,uAspect,uDay,uSunset,uNight,uStorm,uFog,uLightning,uPitch,uYaw;
-// Continuous smoke puffs: no tessellated cloud mesh, hash cells or projected grid.
-// Analytic soft density also avoids mobile GPU noise precision artefacts.
-vec2 smoke(vec2 p){
-  p+=vec2(sin(p.y*11.+uTime*.017),cos(p.x*9.-uTime*.012))*.024;
-  float density=0.,shade=0.;
-  for(int i=0;i<22;i++){
-    float s=float(i)+1.;
-    vec2 center=vec2(sin(s*2.19)*.78,.13+(sin(s*.91)*.5+.5)*.31);
-    center.x+=sin(uTime*.014+s*.7)*.11;
-    center.y+=sin(uTime*.009+s)*.012;
-    vec2 radius=vec2(.07+(sin(s*.47)*.5+.5)*.12,.025+(cos(s*1.31)*.5+.5)*.050);
-    radius*=1.+uStorm*.48;
-    vec2 d=(p-center)/radius;
-    density+=exp(-dot(d,d)*1.6)*(.70+.26*sin(s*.73));
-    vec2 under=(p-center+vec2(.009,.035))/radius;
-    shade+=exp(-dot(under,under)*1.7)*.30;
-  }
-  return vec2(1.-exp(-density*(1.4+uStorm*1.8)),clamp(shade,0.,1.));
-}
+uniform float uTime,uAspect,uDay,uSunset,uNight,uStorm,uFog,uLightning;
+${SKY_CAMERA_GLSL}
+${SMOKE_FIELD_GLSL}
 void main(){
-  vec3 rd=normalize(vec3((vUv.x-.5)*uAspect+uYaw,(vUv.y-.5)+uPitch,-1.));
+  vec3 rd=skyRay(vUv,uAspect);
   float h=max(rd.y,0.),sunHeight=mix(.28,.045,uSunset);
   vec3 sunDir=normalize(vec3(.40,sunHeight,-1.));
   float sunDot=max(dot(rd,sunDir),0.);
@@ -68,7 +52,7 @@ void main(){
   col+=vec3(1.,.65,.31)*pow(sunDot,22.)*(.16+.32*uSunset)*(1.-uNight)*(1.-uStorm);
   col+=vec3(1.,.90,.69)*smoothstep(.9995,.99985,sunDot)*(1.-uNight)*(1.-uStorm)*.66;
 
-  vec2 vapour=smoke(vec2(atan(rd.x,-rd.z),rd.y));
+  vec2 vapour=smokeField(vec2(atan(rd.x,-rd.z),rd.y),uTime,uStorm);
   vec3 shade=mix(vec3(.50,.60,.67),vec3(.12,.16,.19),uStorm);
   vec3 lit=mix(vec3(.96,.97,.95),vec3(.49,.54,.56),uStorm);
   lit=mix(lit,vec3(1.,.69,.43),uSunset*.65);
@@ -78,6 +62,7 @@ void main(){
   col=mix(col,cloud,vapour.x*aerial*mix(.78,.94,uStorm));
   col=mix(col,horizon,exp(-h*28.)*(.13+.52*uFog));
   col+=vec3(.82,.91,1.)*uLightning*.16;
+  col=mix(horizon,col,smoothstep(0.,.009,h));
   outColor=vec4(col,1.);
 }
 `;
@@ -144,11 +129,13 @@ void main(){
   float glint=pow(max(dot(reflect(-L,n),V),0.),180.);
   col+=vec3(.92,.64,.31)*glint*.32*(1.-uStorm)*(1.-uNight);
   // There is no height-threshold foam: it painted whole wave faces white.
-  vec3 haze=mix(vec3(.68,.80,.84),vec3(.24,.30,.32),uStorm);
-  haze=mix(haze,vec3(.073,.11,.16),uNight);
-  col=mix(col,haze,smoothstep(240.,1250.,dist)*(.48+.38*uFog));
+  vec3 haze=mix(vec3(.68,.82,.87),vec3(.95,.49,.22),uSunset);
+  haze=mix(haze,vec3(.075,.12,.18),uNight);
+  haze=mix(haze,vec3(.27,.31,.32),uStorm*.91);
+  float horizonFog=smoothstep(240.,1120.,dist);
+  col=mix(col,haze,horizonFog);
   col=mix(col,vec3(.055,.28,.32)*(1.-uNight*.65),below*.52);
-  col+=vec3(.16,.22,.24)*uLightning*.09;
+  col+=vec3(.16,.22,.24)*uLightning*.09*(1.-horizonFog);
   outColor=vec4(col,1.);
 }
 `;
@@ -445,6 +432,7 @@ function makeCloudSprites(){
 }
 
 function atmosphere(){
+  let lastTime=null,windTravel=0;
   const stars=Array.from({length:138},(_,i)=>({
     x:.025+hash1(i*13.71+1.2)*.95,
     y:.025+Math.pow(hash1(i*7.91+4.3),1.28)*.40,
@@ -463,6 +451,8 @@ function atmosphere(){
 
   return{draw(ctx,time,w,h,c){
     const horizon=h*(c.horizon??.435);
+    const dt=lastTime===null?0:clamp(time-lastTime,0,.1);lastTime=time;
+    windTravel+=(.06+.18*c.wind)*dt;
 
     // Layered smoky clouds travel from the horizon toward the viewer.
     ctx.save();
@@ -478,9 +468,22 @@ function atmosphere(){
     }
     ctx.restore();
 
+    // A single gull crosses the sky occasionally, then leaves the frame.
+    // Wings alternate gentle flaps and glides; there is no hovering flock.
+    const flightTime=time%48,flightCycle=Math.floor(time/48);
+    if(flightTime>9&&flightTime<23&&c.storm<.72&&c.night<.6){
+      const p=(flightTime-9)/14,side=hash1(flightCycle*3.71+2.4)>.5?1:-1;
+      const gx=w*(side>0?-.15+p*1.30:1.15-p*1.30),gy=horizon*(.33+.15*Math.sin(p*Math.PI));
+      const size=4.2+Math.sin(p*Math.PI)*2.4,flap=Math.sin(time*5.8)*.46;
+      ctx.save();ctx.translate(gx,gy);ctx.scale(side*size,size);ctx.globalAlpha=Math.sin(p*Math.PI)*(.80-c.night*.45);
+      ctx.fillStyle='rgba(247,249,244,.95)';ctx.strokeStyle='rgba(233,241,242,.90)';ctx.lineWidth=.18;ctx.lineCap='round';
+      ctx.beginPath();ctx.ellipse(0,0,.32,.13,.10,0,TAU);ctx.fill();
+      ctx.beginPath();ctx.moveTo(-.15,-.01);ctx.bezierCurveTo(-.56,-.27+flap,-.94,-.10+flap,-1.30,.04+flap*.44);ctx.moveTo(.05,0);ctx.bezierCurveTo(.48,-.30+flap,.90,-.10+flap,1.26,.07+flap*.44);ctx.stroke();ctx.restore();
+    }
+
     if(c.night>.08&&c.storm<.88){
       const a=c.night*(1-c.storm*.92)*(1-c.fog*.55);
-      ctx.save();ctx.globalCompositeOperation="screen";
+      ctx.save();ctx.beginPath();ctx.rect(0,0,w,horizon);ctx.clip();ctx.globalCompositeOperation="screen";
       for(let i=0;i<stars.length;i++){
         const st=stars[i],tw=.84+.16*Math.sin(time*(.28+hash1(i*.91)*.48)+st.phase);
         const r=st.r*(.68+Math.min(w,h)/900);
@@ -492,15 +495,13 @@ function atmosphere(){
           ctx.beginPath();ctx.moveTo(st.x*w-r*2.0,st.y*h);ctx.lineTo(st.x*w+r*2.0,st.y*h);ctx.moveTo(st.x*w,st.y*h-r*2.0);ctx.lineTo(st.x*w,st.y*h+r*2.0);ctx.strokeStyle=ctx.fillStyle;ctx.stroke();
         }
       }
-      ctx.restore();
-
       const mx=w*.72,my=h*.20,mr=Math.max(7,Math.min(w,h)*.022);
       ctx.save();ctx.globalCompositeOperation="screen";
       const halo=ctx.createRadialGradient(mx,my,mr*.2,mx,my,mr*4.2);halo.addColorStop(0,"rgba(214,229,255,"+(.17*a)+")");halo.addColorStop(1,"rgba(180,210,255,0)");
       ctx.fillStyle=halo;ctx.beginPath();ctx.arc(mx,my,mr*4.2,0,TAU);ctx.fill();
       const moon=ctx.createRadialGradient(mx-mr*.25,my-mr*.30,mr*.12,mx,my,mr);
       moon.addColorStop(0,"rgba(250,249,237,.96)");moon.addColorStop(.66,"rgba(210,220,228,.92)");moon.addColorStop(1,"rgba(145,164,184,.82)");
-      ctx.globalAlpha=a*.92;ctx.fillStyle=moon;ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.fill();ctx.restore();
+      ctx.globalAlpha=a*.92;ctx.fillStyle=moon;ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.fill();ctx.restore();ctx.restore();
     }
 
     if(c.rain>.035){
@@ -513,15 +514,18 @@ function atmosphere(){
       for(let L=0;L<layers.length;L++){
         const q=layers[L],count=Math.round(q.n*(.28+.95*c.rain));
         for(let i=0;i<count;i++){
-          const seed=hash1(i*17.7+L*93.1),xx=((seed*w*1.8+time*q.s)%(w+160))-80,yy=((hash1(i*41.3+L)*h*1.7+time*q.s*.80)%(h+120))-60;
+          const seed=hash1(i*17.7+L*93.1),span=w+160;
+          const xx=((seed*w*1.8-windTravel*q.s)%span+span)%span-80;
+          const yy=((hash1(i*41.3+L)*h*1.7+time*q.s)%(h+120))-60;
           ctx.globalAlpha=q.a*c.rain;ctx.strokeStyle="rgba(202,220,226,.90)";ctx.lineWidth=q.w;
           ctx.beginPath();ctx.moveTo(xx,yy);ctx.lineTo(xx-q.drift*c.wind,yy+q.l);ctx.stroke();
         }
       }
       ctx.strokeStyle="rgba(222,239,239,.52)";
       for(let i=0;i<Math.round(18*c.rain);i++){
-        const px=hash1(i*31.7+Math.floor(time*2.0))*w,depth=.18+hash1(i*5.27)*.76,py=horizon+depth*(h-horizon),r=.55+depth*2.7;
-        ctx.globalAlpha=.055+.11*c.rain;ctx.lineWidth=.38+depth*.25;ctx.beginPath();ctx.ellipse(px,py,r,r*.20,0,0,TAU);ctx.stroke();
+        const age=time*(.55+hash1(i*2.31)*.35)+hash1(i*7.13),cycle=Math.floor(age),p=age-cycle;
+        const px=hash1(i*31.7+cycle*3.17)*w,depth=.18+hash1(i*5.27+cycle*.73)*.76,py=horizon+depth*(h-horizon),r=.35+depth*3.1*p;
+        ctx.globalAlpha=Math.sin(p*Math.PI)*(.035+.065*c.rain);ctx.lineWidth=.32+depth*.22;ctx.beginPath();ctx.ellipse(px,py,r,r*.20,0,0,TAU);ctx.stroke();
       }
       ctx.restore();
     }
@@ -530,15 +534,18 @@ function atmosphere(){
       ctx.save();ctx.fillStyle="rgba(224,238,236,.72)";
       const spray=Math.round(18*c.storm);
       for(let i=0;i<spray;i++){
-        const d=.35+hash1(i*4.7+Math.floor(time*.7))*.60,x=hash1(i*9.9+3)*w,y=horizon+d*(h-horizon)*.72;
-        ctx.globalAlpha=.025+.08*c.storm;ctx.beginPath();ctx.ellipse(x,y,1+d*2.9,.35+d*.8,-.25,0,TAU);ctx.fill();
+        const p=(hash1(i*2.17)+time*(.24+hash1(i*6.37)*.12))%1;
+        const d=.35+hash1(i*4.7)*.60,x=hash1(i*9.9+3)*w-p*12*c.wind,y=horizon+d*(h-horizon)*.72-18*p*(1-p);
+        ctx.globalAlpha=Math.sin(p*Math.PI)*(.015+.045*c.storm);ctx.beginPath();ctx.ellipse(x,y,.6+d*1.6,.25+d*.45,-.25,0,TAU);ctx.fill();
       }
       ctx.restore();
     }
 
     if(c.fog>.05){
-      const g=ctx.createLinearGradient(0,h*.28,0,h*.64);g.addColorStop(0,"rgba(211,223,221,0)");g.addColorStop(.46,"rgba(211,223,221,"+(.045+.24*c.fog)+")");g.addColorStop(1,"rgba(211,223,221,0)");
-      ctx.fillStyle=g;ctx.fillRect(0,h*.26,w,h*.42);
+      const fogColor=[mix(211,38,c.night),mix(223,55,c.night),mix(221,68,c.night)].map(Math.round).join(',');
+      const top=horizon-h*.11,bottom=horizon+h*.16;
+      const g=ctx.createLinearGradient(0,top,0,bottom);g.addColorStop(0,`rgba(${fogColor},0)`);g.addColorStop(.46,`rgba(${fogColor},${.02+.10*c.fog})`);g.addColorStop(1,`rgba(${fogColor},0)`);
+      ctx.fillStyle=g;ctx.fillRect(0,top,w,bottom-top);
     }
   }}
 }
@@ -636,13 +643,13 @@ function createRenderer(ctx){
   const railMesh=wireVao(shipRailGeometry());
   gl.bindVertexArray(null);
   const P=new Float32Array(16),V=new Float32Array(16),VP=new Float32Array(16);let W=1,H=1,dead=false;
-  const su={time:gl.getUniformLocation(skyP,"uTime"),aspect:gl.getUniformLocation(skyP,"uAspect"),day:gl.getUniformLocation(skyP,"uDay"),sunset:gl.getUniformLocation(skyP,"uSunset"),night:gl.getUniformLocation(skyP,"uNight"),storm:gl.getUniformLocation(skyP,"uStorm"),fog:gl.getUniformLocation(skyP,"uFog"),lightning:gl.getUniformLocation(skyP,"uLightning"),pitch:gl.getUniformLocation(skyP,"uPitch"),yaw:gl.getUniformLocation(skyP,"uYaw")};
+  const su={time:gl.getUniformLocation(skyP,"uTime"),aspect:gl.getUniformLocation(skyP,"uAspect"),day:gl.getUniformLocation(skyP,"uDay"),sunset:gl.getUniformLocation(skyP,"uSunset"),night:gl.getUniformLocation(skyP,"uNight"),storm:gl.getUniformLocation(skyP,"uStorm"),fog:gl.getUniformLocation(skyP,"uFog"),lightning:gl.getUniformLocation(skyP,"uLightning")};
   const uu=Object.fromEntries(["time","aspect","depth","night","storm"].map(k=>[k,gl.getUniformLocation(underP,"u"+k[0].toUpperCase()+k.slice(1))]));
   const ou={vp:gl.getUniformLocation(oceanP,"uViewProj"),time:gl.getUniformLocation(oceanP,"uTime"),cameraX:gl.getUniformLocation(oceanP,"uCameraX"),cameraZ:gl.getUniformLocation(oceanP,"uCameraZ"),wave:gl.getUniformLocation(oceanP,"uWave"),camera:gl.getUniformLocation(oceanP,"uCamera"),day:gl.getUniformLocation(oceanP,"uDay"),sunset:gl.getUniformLocation(oceanP,"uSunset"),night:gl.getUniformLocation(oceanP,"uNight"),storm:gl.getUniformLocation(oceanP,"uStorm"),fog:gl.getUniformLocation(oceanP,"uFog"),lightning:gl.getUniformLocation(oceanP,"uLightning")};
   const ju={vp:gl.getUniformLocation(objP,"uViewProj"),offset:gl.getUniformLocation(objP,"uOffset"),scale:gl.getUniformLocation(objP,"uScale"),rotation:gl.getUniformLocation(objP,"uRotation"),color:gl.getUniformLocation(objP,"uColor"),camera:gl.getUniformLocation(objP,"uCamera"),fogColor:gl.getUniformLocation(objP,"uFogColor"),night:gl.getUniformLocation(objP,"uNight"),storm:gl.getUniformLocation(objP,"uStorm"),fog:gl.getUniformLocation(objP,"uFog")};
   const au={vp:gl.getUniformLocation(sailP,"uViewProj"),offset:gl.getUniformLocation(sailP,"uOffset"),scale:gl.getUniformLocation(sailP,"uScale"),rotation:gl.getUniformLocation(sailP,"uRotation"),color:gl.getUniformLocation(sailP,"uColor"),camera:gl.getUniformLocation(sailP,"uCamera"),fogColor:gl.getUniformLocation(sailP,"uFogColor"),night:gl.getUniformLocation(sailP,"uNight"),storm:gl.getUniformLocation(sailP,"uStorm"),fog:gl.getUniformLocation(sailP,"uFog"),time:gl.getUniformLocation(sailP,"uTime"),wind:gl.getUniformLocation(sailP,"uWind"),phase:gl.getUniformLocation(sailP,"uPhase")};
   const lu={vp:gl.getUniformLocation(threadP,"uViewProj"),offset:gl.getUniformLocation(threadP,"uOffset"),scale:gl.getUniformLocation(threadP,"uScale"),rotation:gl.getUniformLocation(threadP,"uRotation"),color:gl.getUniformLocation(threadP,"uColor"),alpha:gl.getUniformLocation(threadP,"uAlpha"),night:gl.getUniformLocation(threadP,"uNight"),storm:gl.getUniformLocation(threadP,"uStorm"),fog:gl.getUniformLocation(threadP,"uFog"),time:gl.getUniformLocation(threadP,"uTime"),wind:gl.getUniformLocation(threadP,"uWind"),phase:gl.getUniformLocation(threadP,"uPhase"),flutter:gl.getUniformLocation(threadP,"uFlutter")};
-  function resize({width,height,ratio=1}){W=Math.max(1,width);H=Math.max(1,height);const q=Math.min(ratio,W<=760?1.18:1.55),w=Math.round(W*q),h=Math.round(H*q);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}}
+  function resize({width,height,ratio=1}){W=Math.max(1,width);H=Math.max(1,height);const q=Math.min(ratio,W<=760?1.45:1.85),w=Math.round(W*q),h=Math.round(H*q);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}}
   const setC=(u,c)=>{gl.uniform1f(u.day,c.day);gl.uniform1f(u.sunset,c.sunset);gl.uniform1f(u.night,c.night);gl.uniform1f(u.storm,c.storm);gl.uniform1f(u.fog,c.fog);gl.uniform1f(u.lightning,c.lightning)};
   function obj(mesh,o,s,r,col,eye,fog,c){gl.useProgram(objP);gl.bindVertexArray(mesh.vao);gl.uniformMatrix4fv(ju.vp,false,VP);gl.uniform3f(ju.offset,...o);gl.uniform3f(ju.scale,...s);gl.uniform3f(ju.rotation,...r);gl.uniform3f(ju.color,...col);gl.uniform3f(ju.camera,...eye);gl.uniform3f(ju.fogColor,...fog);gl.uniform1f(ju.night,c.night);gl.uniform1f(ju.storm,c.storm);gl.uniform1f(ju.fog,c.fog);gl.drawArrays(gl.TRIANGLES,0,mesh.count)}
   function sail(o,s,r,col,eye,fog,c,t,ph,triangular=false){const mesh=triangular?M.jib:M.sail;gl.disable(gl.CULL_FACE);gl.useProgram(sailP);gl.bindVertexArray(mesh.vao);gl.uniformMatrix4fv(au.vp,false,VP);gl.uniform3f(au.offset,...o);gl.uniform3f(au.scale,...s);gl.uniform3f(au.rotation,...r);gl.uniform3f(au.color,...col);gl.uniform3f(au.camera,...eye);gl.uniform3f(au.fogColor,...fog);gl.uniform1f(au.night,c.night);gl.uniform1f(au.storm,c.storm);gl.uniform1f(au.fog,c.fog);gl.uniform1f(au.time,t);gl.uniform1f(au.wind,c.wind);gl.uniform1f(au.phase,ph);gl.drawArrays(gl.TRIANGLES,0,mesh.count);gl.enable(gl.CULL_FACE)}
@@ -745,17 +752,19 @@ function createRenderer(ctx){
     wirePart(g.accent,[x,y,z],bs,rot,blackShip?[.30,.20,.12]:[.70,.50,.20],.44,c,t,phase,0);
   }
 
+  const skyView=skyCameraUniforms(gl,skyP);
   const motion=createSeaMotion();
   function render(t,camera,c){
     const pose=motion.step(t,camera,c),{eye,target,camZ,routeZ}=pose;
     const cx=pose.input.x;
     perspective(P,.94,W/H,.35,1700);lookAt(V,eye,target,[0,1,0]);multiply(VP,P,V);
-    gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);gl.useProgram(skyP);gl.bindVertexArray(skyVao);gl.uniform1f(su.time,t);gl.uniform1f(su.aspect,W/H);setC(su,c);gl.uniform1f(su.pitch,(eye[1]-target[1])/Math.max(1,eye[2]-target[2]));gl.uniform1f(su.yaw,(target[0]-eye[0])/148);gl.drawArrays(gl.TRIANGLES,0,3);
+    gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);gl.useProgram(skyP);gl.bindVertexArray(skyVao);gl.uniform1f(su.time,t);gl.uniform1f(su.aspect,W/H);setC(su,c);setSkyCamera(gl,skyView,V,.94);gl.drawArrays(gl.TRIANGLES,0,3);
     gl.enable(gl.DEPTH_TEST);gl.clearDepth(1);gl.clear(gl.DEPTH_BUFFER_BIT);gl.useProgram(oceanP);gl.bindVertexArray(oceanVao);gl.uniformMatrix4fv(ou.vp,false,VP);gl.uniform1f(ou.time,t);gl.uniform1f(ou.cameraX,eye[0]);gl.uniform1f(ou.cameraZ,camZ);gl.uniform1f(ou.wave,c.wave);gl.uniform3f(ou.camera,...eye);setC(ou,c);gl.drawElements(gl.TRIANGLES,ocean.indices.length,gl.UNSIGNED_INT,0);
     const fog=[mix(.73,.22,c.storm),mix(.81,.27,c.storm),mix(.82,.28,c.storm)];fog[0]=mix(fog[0],.09,c.night);fog[1]=mix(fog[1],.13,c.night);fog[2]=mix(fog[2],.19,c.night);gl.enable(gl.CULL_FACE);ship(0,t,routeZ,eye,fog,c);ship(1,t,routeZ,eye,fog,c);ship(2,t,routeZ,eye,fog,c);gl.disable(gl.CULL_FACE);
     gl.bindVertexArray(null);
+    return {horizon:clamp(.5-V[6]/(2*Math.tan(.94/2)*V[5]),.04,.9)};
   }
-  return{resize,draw({time,width,height,camera}){if(dead)return;if(width!==W||height!==H)resize({width,height,ratio:devicePixelRatio||1});const c=stateAt(time);render(time,camera,c);fx.draw(ctx,time,width,height,{...c,proceduralSky:true});sound.setWeather(c,time)},dispose(){dead=true;canvas.remove();style.remove();sound.dispose();try{for(const p of[skyP,oceanP,objP,sailP,threadP,underP])gl.deleteProgram(p);for(const r of R){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}}}
+  return{resize,draw({time,width,height,camera}){if(dead)return;if(width!==W||height!==H)resize({width,height,ratio:devicePixelRatio||1});const c=stateAt(time),sky=render(time,camera,c);fx.draw(ctx,time,width,height,{...c,...sky,proceduralSky:true});sound.setWeather(c,time)},dispose(){dead=true;canvas.remove();style.remove();sound.dispose();try{for(const p of[skyP,oceanP,objP,sailP,threadP,underP])gl.deleteProgram(p);for(const r of R){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}}catch{}}}
 }
 
-export default{id:"living-sea",renderer:"webgl-living-sea-v12",particles:false,marks:true,flightCards:true,autoFlightCards:true,continuousDepth:true,cameraSmoothing:4.2,gesturePanScale:360,depthDirectScale:.65,depthGain:.44,depthCap:1.5,depthDamping:4,flightBounds:{x:60,y:10,z:60},accent:"#bcdde5",dim:"#c7d9dd",surface:"12,27,38",panel:{bg:"rgba(14,35,47,.54)",border:"rgba(190,224,230,.26)",glow:"rgba(83,174,194,.17)",text:"#f2fbfc",muted:"#c6dce0"},radius:"28px",buttonRadius:"28px",heading:'"Cormorant Garamond", Georgia, serif',body:'"Nunito", system-ui, sans-serif',colors:["#d9eff2","#8fc1ce","#f1c48d","#9eb6c6"],backgrounds:["radial-gradient(ellipse at 72% 18%,rgba(180,220,228,.24),transparent 45%),radial-gradient(ellipse at 28% 8%,rgba(73,124,153,.26),transparent 58%)","radial-gradient(ellipse at 60% 35%,rgba(134,182,193,.12),transparent 55%)","linear-gradient(to bottom,rgba(41,83,105,.14),rgba(6,19,28,.44))"],soundscape:SOUND,createRenderer};
+export default{id:"living-sea",renderer:"webgl-living-sea-v13",particles:false,marks:true,flightCards:true,autoFlightCards:true,continuousDepth:true,cameraSmoothing:4.2,gesturePanScale:360,depthDirectScale:.65,depthGain:.44,depthCap:1.5,depthDamping:4,flightBounds:{x:60,y:10,z:60},accent:"#bcdde5",dim:"#c7d9dd",surface:"12,27,38",panel:{bg:"rgba(14,35,47,.54)",border:"rgba(190,224,230,.26)",glow:"rgba(83,174,194,.17)",text:"#f2fbfc",muted:"#c6dce0"},radius:"28px",buttonRadius:"28px",heading:'"Cormorant Garamond", Georgia, serif',body:'"Nunito", system-ui, sans-serif',colors:["#d9eff2","#8fc1ce","#f1c48d","#9eb6c6"],backgrounds:["radial-gradient(ellipse at 72% 18%,rgba(180,220,228,.24),transparent 45%),radial-gradient(ellipse at 28% 8%,rgba(73,124,153,.26),transparent 58%)","radial-gradient(ellipse at 60% 35%,rgba(134,182,193,.12),transparent 55%)","linear-gradient(to bottom,rgba(41,83,105,.14),rgba(6,19,28,.44))"],soundscape:SOUND,createRenderer};

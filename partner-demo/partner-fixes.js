@@ -1,0 +1,5 @@
+function addWatermarks(){if(document.querySelector('.partner-watermarks'))return;const layer=document.createElement('div');layer.className='partner-watermarks';layer.setAttribute('aria-hidden','true');for(let i=0;i<6;i++){const s=document.createElement('span');s.textContent='syolana.com';layer.append(s);}document.body.append(layer);}
+function wireThemeDialog(){if(document.documentElement.dataset.partnerThemeCloseWired)return;document.documentElement.dataset.partnerThemeCloseWired='1';document.addEventListener('click',event=>{const option=event.target.closest?.('#theme-dialog .theme-option');if(!option)return;const dialog=option.closest('dialog');setTimeout(()=>{if(dialog?.open)dialog.close();},80);});}
+function normalizeDemoName(){document.querySelectorAll('#partner-name,#brand-name').forEach(n=>{if(n.textContent.trim()==='Тестовый сайт Ланы')n.textContent='Тестовый сайт';});if(document.title.includes('Тестовый сайт Ланы'))document.title=document.title.replace('Тестовый сайт Ланы','Тестовый сайт');}
+function run(){addWatermarks();wireThemeDialog();normalizeDemoName();}
+run();new MutationObserver(run).observe(document.body,{childList:true,subtree:true});

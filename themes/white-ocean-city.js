@@ -1,3 +1,5 @@
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-atmosphere-1';
+import {createSceneMotion} from './scene-motion.mjs';
 const TAU = Math.PI * 2;
 const MODULE_ORIGIN = new URL(import.meta.url).origin;
 const centralAsset = (path) => new URL("../" + path, import.meta.url).href;
@@ -113,65 +115,22 @@ uniform float uTime;
 uniform float uAspect;
 uniform float uZen;
 
-float cloudWave(vec2 p){
-  float v=0.0;
-  v+=sin(p.x*1.05+sin(p.y*.83)*1.35);
-  v+=sin(p.y*1.27-cos(p.x*.71)*1.12)*.72;
-  v+=sin((p.x+p.y)*1.91)*.34;
-  v+=sin((p.x*.63-p.y*1.48)+sin(p.x*.41)*.9)*.22;
-  return .5+.5*(v/2.28);
-}
-float cloudField(vec2 p){
-  float a=cloudWave(p*1.00);
-  float b=cloudWave(vec2(p.x*.82-p.y*.57,p.x*.57+p.y*.82)*1.83+vec2(1.7,4.2));
-  float c=cloudWave(vec2(p.x*.93+p.y*.36,-p.x*.36+p.y*.93)*3.10+vec2(5.1,-2.8));
-  return a*.58+b*.29+c*.13;
-}
+${SKY_CAMERA_GLSL}
+${SMOKE_FIELD_GLSL}
 void main(){
-  vec2 uv=vUv;
-  float horizon=.455;
-  vec3 zenith=vec3(.17,.32,.41);
-  vec3 upper=vec3(.39,.57,.66);
-  vec3 haze=vec3(.83,.88,.86);
+  vec3 rd=skyRay(vUv,uAspect);
+  float h=max(0.0,rd.y);
+  vec3 zenith=vec3(.17,.32,.41),upper=vec3(.39,.57,.66),haze=vec3(.83,.88,.86);
   vec3 dawn=vec3(.98,.82,.64);
-
-  float vertical=smoothstep(horizon,1.0,uv.y);
-  vec3 col=mix(haze,mix(upper,zenith,smoothstep(.60,1.0,uv.y)),vertical);
-
-  float sun=exp(-pow((uv.x-.73)*4.5,2.0)-pow((uv.y-.468)*18.5,2.0));
-  col+=dawn*sun*.38;
-
-  vec2 p=vec2((uv.x-.5)*uAspect*3.5,uv.y*3.5);
-  p+=vec2(uTime*.010,-uTime*.0028);
-
-  float lowMask=smoothstep(.39,.46,uv.y)*(1.0-smoothstep(.67,.77,uv.y));
-  float midMask=smoothstep(.50,.57,uv.y)*(1.0-smoothstep(.80,.91,uv.y));
-  float highMask=smoothstep(.65,.72,uv.y)*(1.0-smoothstep(.95,1.0,uv.y));
-
-  float low=cloudField(p);
-  float mid=cloudField(p*.61+vec2(2.7,-1.4));
-  float high=cloudField(p*1.23+vec2(-4.1,3.6));
-
-  float lowDensity=smoothstep(.47,.67,low)*lowMask;
-  float lowCore=smoothstep(.57,.73,low)*lowMask;
-  float midDensity=smoothstep(.49,.67,mid)*midMask;
-  float highDensity=smoothstep(.52,.69,high)*highMask;
-
-  vec3 shadow=vec3(.31,.43,.49);
-  vec3 body=vec3(.73,.80,.81);
-  vec3 light=vec3(.95,.94,.90);
-  vec3 cloud=mix(shadow,body,smoothstep(.47,.66,low));
-  cloud=mix(cloud,light,lowCore*.76+sun*.18);
-  col=mix(col,cloud,lowDensity*.90);
-
-  vec3 midCol=mix(vec3(.50,.61,.65),vec3(.88,.90,.88),smoothstep(.48,.67,mid));
-  col=mix(col,midCol,midDensity*.42);
-  col=mix(col,vec3(.81,.86,.86),highDensity*.15);
-
-  float distant=exp(-pow((uv.y-horizon)*29.0,2.0));
-  col=mix(col,vec3(.87,.90,.87),distant*(.49+.07*uZen));
-  col*=1.0-.12*pow(length((uv-.5)*vec2(.84,1.0)),1.72);
-  col*=mix(.93,1.0,uZen);
+  vec3 col=mix(haze,mix(upper,zenith,smoothstep(.12,.70,h)),1.0-exp(-h*3.0));
+  vec3 sunDir=normalize(vec3(.36,.09,-1.0));
+  float sunDot=max(dot(rd,sunDir),0.0);
+  col+=dawn*pow(sunDot,96.0)*.24;
+  vec2 vapour=smokeField(vec2(atan(rd.x,-rd.z),rd.y),uTime,0.0);
+  vec3 cloud=mix(vec3(.95,.94,.90),vec3(.50,.62,.67),vapour.y*.74);
+  col=mix(col,cloud,vapour.x*smoothstep(.012,.09,h)*.78);
+  col=mix(col,haze,exp(-h*29.0)*(.38+.05*uZen));
+  col=mix(haze,col,smoothstep(0.0,.009,h));
   outColor=vec4(col,1.0);
 }`;
 
@@ -202,7 +161,9 @@ void main(){
     local.xz*=taper;
   }
   vec3 world=vec3(iOffset.x,iOffset.y,z)+local*iScale;
-  vWorld=world;vNormal=aNormal;vTone=iTone;vShape=iShape;vDistance=distance(world,uCamera);vLocal=local;
+  vWorld=world;
+  vNormal=normalize(aNormal+vec3(0.0,(abs(aNormal.x)*iScale.x+abs(aNormal.z)*iScale.z)*.491/iScale.y*iShape,0.0));
+  vTone=iTone;vShape=iShape;vDistance=distance(world,uCamera);vLocal=local;
   gl_Position=uViewProj*vec4(world,1.0);
 }`;
 
@@ -262,7 +223,8 @@ void main(){
   col+=vec3(.92,.73,.48)*glint*.72+vec3(.34,.31,.24)*ribbon*.11;
   col+=vec3(.05,.09,.10)*(.5+.5*sin(vWorld.x*.62+sin(vWorld.z*.27+uTime*.8)))*.08;
   float fog=smoothstep(105.0,380.0,distance(vWorld,uCamera));
-  col=mix(col,vec3(.73,.81,.81),fog*.95);col*=mix(.88,1.0,uZen);
+  col*=mix(.94,1.0,uZen);
+  col=mix(col,vec3(.83,.88,.86),fog);
   outColor=vec4(col,1.0);
 }`;
 
@@ -300,13 +262,13 @@ out vec4 outColor;
 uniform float uTime;
 void main(){
   vec2 q=abs(vLocal);
-  float edge=max(q.x,q.y);
+  float edge=pow(pow(q.x,6.0)+pow(q.y,6.0),1.0/6.0);
   float inner=smoothstep(.57,.70,edge);
   float outer=1.0-smoothstep(.84,1.0,edge);
   float ring=inner*outer;
   float broken=.55+.45*sin((vLocal.x*13.0+vLocal.y*17.0)+uTime*3.1+vPhase);
   float crest=.60+.40*sin(edge*28.0-uTime*4.2+vPhase*1.7);
-  float alpha=ring*(.20+.46*broken*crest);
+  float alpha=ring*(.13+.29*broken*crest);
   alpha*=1.0-smoothstep(250.0,440.0,vDistance);
   vec3 col=mix(vec3(.72,.86,.87),vec3(.98,.99,.96),.55+.45*crest);
   outColor=vec4(col,alpha);
@@ -420,13 +382,13 @@ function buildFoam(city){
 function buildOcean(cols=96, rows=116) {
   const vertices=[];
   const indices=[];
-  const x0=-190, x1=190, z0=34, z1=-560;
+  const z0=34, z1=-1900;
   for(let r=0;r<=rows;r++){
     const v=r/rows;
-    const z=z0+(z1-z0)*v;
+    const z=z0+(z1-z0)*Math.pow(v,1.65),reach=190+(z0-z)*1.9;
     for(let c=0;c<=cols;c++){
       const u=c/cols;
-      vertices.push(x0+(x1-x0)*u,z);
+      vertices.push(-reach+reach*2*u,z);
     }
   }
   for(let r=0;r<rows;r++){
@@ -521,7 +483,7 @@ function createBirdTraffic(){
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
-      if(time>=nextAt&&flights.length<2)spawn(time,zen);
+      if(time>=nextAt&&flights.length===0)spawn(time,zen);
       for(let i=flights.length-1;i>=0;i--){
         const b=flights[i],p=(time-b.born)/b.duration;
         if(p<0)continue;
@@ -767,11 +729,13 @@ function createRenderer(ctx){
     },
   };
 
+  const skyView=skyCameraUniforms(gl,skyProgram);
+
   function resize({width,height,ratio=1}){
     cssWidth=Math.max(1,width);
     cssHeight=Math.max(1,height);
     const mobile=cssWidth<=760;
-    quality=Math.min(ratio,mobile?1.22:1.6);
+    quality=Math.min(ratio,mobile?1.45:1.85);
     const w=Math.max(1,Math.round(cssWidth*quality));
     const h=Math.max(1,Math.round(cssHeight*quality));
     if(canvas.width!==w||canvas.height!==h){
@@ -780,12 +744,12 @@ function createRenderer(ctx){
     }
   }
 
+  const motion=createSceneMotion({rest:0.4,flight:2.45,xLimit:1.45,yLimit:1.0});
   function renderWorld(time,camera){
     const zen=Boolean(camera);
-    const cx=Math.max(-1.45,Math.min(1.45,camera?.x||0));
-    const cy=Math.max(-1.0,Math.min(1.0,camera?.y||0));
-    const cz=camera?.z||0;
-    const travel=time*(zen?2.45:.40)+cz*24;
+    const pose=motion.step(time,camera);
+    const {x:cx,y:cy,z:cz}=pose.input;
+    const travel=pose.travel+cz*24;
     const autoX=Math.sin(time*.043)*2.8+Math.sin(time*.017+1.4)*1.3;
 
     // Real camera translation in all directions, inside a deliberately wide empty corridor.
@@ -797,7 +761,8 @@ function createRenderer(ctx){
       eyeY-4.35+cy*.58+Math.sin(time*.023)*.40,
       -55
     ];
-    perspective(projection,zen?0.91:1.00,cssWidth/cssHeight,.12,590);
+    const fov=zen ? .91 : 1.00;
+    perspective(projection,fov,cssWidth/cssHeight,.12,1800);
     lookAt(view,eye,target,[0,1,0]);
     multiply(vp,projection,view);
 
@@ -809,6 +774,7 @@ function createRenderer(ctx){
     gl.uniform1f(uniforms.sky.time,time);
     gl.uniform1f(uniforms.sky.aspect,cssWidth/cssHeight);
     gl.uniform1f(uniforms.sky.zen,zen?1:0);
+    setSkyCamera(gl,skyView,view,fov);
     gl.drawArrays(gl.TRIANGLES,0,3);
 
     gl.enable(gl.DEPTH_TEST);

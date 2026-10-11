@@ -495,3 +495,4 @@ footer{
   .contact-action{flex:1 1 140px;justify-content:flex-start}
 }
 
+.syolana-attribution{max-width:1060px;margin:28px auto;padding:24px;border-radius:24px}.syolana-attribution>a:first-child{display:flex;align-items:center;gap:12px;font-weight:600}.syolana-attribution p{line-height:1.6}.custom-site-block p{white-space:pre-wrap}.custom-site-block img{max-width:100%;border-radius:20px}@media(max-width:600px){.syolana-attribution{margin:24px 16px;padding:20px}}

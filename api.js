@@ -28,7 +28,7 @@ export class API {
     return data;
   }
   async init() {
-    // GitHub Pages has no application server. Do not wait for a nonexistent API.
+    // Static hosting has no application server. Do not wait for a nonexistent API.
     if (location.hostname.endsWith(".github.io")) return this;
     try {
       const s = await this.request("status");

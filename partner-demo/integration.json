@@ -10,7 +10,7 @@
     "player": true,
     "reader": true,
     "publishing": false,
-    "marketing": false
+    "marketing": true
   },
   "publishingSource": "hybrid",
   "coreVersion": "live"

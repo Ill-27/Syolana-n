@@ -1,3 +1,6 @@
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-atmosphere-1';
+import {createSceneMotion} from './scene-motion.mjs';
+import {createFallingLeafField,sampleLeafFall} from './leaf-motion.mjs?v=20261011-fall-1';
 const TAU=Math.PI*2;
 
 function seeded(seed=48127){
@@ -78,42 +81,21 @@ uniform float uTime;
 uniform float uAspect;
 uniform float uZen;
 
-float waves(vec2 p){
-  float v=0.0;
-  v+=sin(p.x*.86+sin(p.y*.68)*1.08);
-  v+=sin(p.y*1.11-cos(p.x*.59)*1.02)*.64;
-  v+=sin((p.x+p.y)*1.66)*.28;
-  return .5+.5*(v/1.92);
-}
-float cloud(vec2 p){
-  float a=waves(p),b=waves(vec2(p.x*.84-p.y*.54,p.x*.54+p.y*.84)*1.72+vec2(2.6,4.7));
-  return a*.67+b*.33;
-}
+${SKY_CAMERA_GLSL}
+${SMOKE_FIELD_GLSL}
 void main(){
-  vec2 uv=vUv;
-  float horizon=.43;
-  vec3 top=vec3(.24,.52,.72);
-  vec3 mid=vec3(.54,.72,.82);
-  vec3 haze=vec3(.88,.84,.70);
-  vec3 col=mix(haze,mix(mid,top,smoothstep(.58,1.0,uv.y)),smoothstep(horizon,1.0,uv.y));
-
-  // Bright autumn sun.
-  float sun=exp(-pow((uv.x-.72)*5.2,2.0)-pow((uv.y-.66)*13.0,2.0));
-  float halo=exp(-pow((uv.x-.72)*2.0,2.0)-pow((uv.y-.66)*5.0,2.0));
-  col+=vec3(1.0,.82,.50)*sun*.92+vec3(1.0,.72,.35)*halo*.15;
-
-  vec2 p=vec2((uv.x-.5)*uAspect*3.0,uv.y*3.0)+vec2(uTime*.0045,-uTime*.0012);
-  float low=cloud(p),high=cloud(p*.62+vec2(-2.4,3.2));
-  float lowMask=smoothstep(.47,.54,uv.y)*(1.0-smoothstep(.78,.88,uv.y));
-  float highMask=smoothstep(.64,.71,uv.y)*(1.0-smoothstep(.95,1.0,uv.y));
-  float d1=smoothstep(.54,.70,low)*lowMask;
-  float d2=smoothstep(.57,.72,high)*highMask;
-  col=mix(col,vec3(.91,.92,.87),d1*.28);
-  col=mix(col,vec3(.84,.88,.87),d2*.11);
-
-  float mist=exp(-pow((uv.y-horizon)*28.0,2.0));
-  col=mix(col,vec3(.91,.82,.65),mist*(.22+.04*uZen));
-  col*=1.0-.09*pow(length((uv-.5)*vec2(.82,1.0)),1.7);
+  vec3 rd=skyRay(vUv,uAspect);
+  float h=max(0.0,rd.y);
+  vec3 top=vec3(.24,.52,.72),mid=vec3(.54,.72,.82),haze=vec3(.80,.75,.64);
+  vec3 col=mix(haze,mix(mid,top,smoothstep(.10,.72,h)),1.0-exp(-h*3.0));
+  vec3 sunDir=normalize(vec3(.43,.31,-1.0));
+  float sunDot=max(dot(rd,sunDir),0.0);
+  col+=vec3(.65,.46,.22)*pow(sunDot,160.0)*.34+vec3(.54,.34,.13)*pow(sunDot,24.0)*.12;
+  vec2 vapour=smokeField(vec2(atan(rd.x,-rd.z),rd.y),uTime,0.0);
+  vec3 cloud=mix(vec3(.95,.94,.87),vec3(.64,.73,.76),vapour.y*.58);
+  col=mix(col,cloud,vapour.x*smoothstep(.012,.10,h)*.40);
+  col=mix(col,haze,exp(-h*28.0)*(.22+.04*uZen));
+  col=mix(haze,col,smoothstep(0.0,.009,h));
   outColor=vec4(col,1.0);
 }`;
 
@@ -244,6 +226,7 @@ uniform float uSpanZ;
 uniform float uSpanX;
 uniform float uTime;
 uniform vec3 uCamera;
+uniform float uFalling;
 out vec2 vLeaf;
 out float vTone;
 out float vType;
@@ -251,15 +234,26 @@ out float vPhase;
 out float vSun;
 out float vBacklight;
 out float vDistance;
+out float vFade;
 void main(){
   float x=mod(iOffset.x-uCamera.x+uSpanX*.5,uSpanX)-uSpanX*.5+uCamera.x;
   float z=mod(iOffset.z+uTravel+56.0,uSpanZ)-uSpanZ+56.0;
   float phase=iMeta.z;
-  float size=iMeta.w;
+  float size=iMeta.w*2.45;
   vec3 center=vec3(x,iOffset.y,z);
+  vFade=1.0;
+  if(uFalling>.5){
+    float range=iOffset.y+.52;
+    float rate=.38+.42*(.5+.5*sin(phase*2.173));
+    float progress=fract(phase/6.2831853+uTime*rate/range);
+    center.y=iOffset.y-progress*range;
+    center.x+=sin(uTime*.42+phase)*.82+sin(uTime*.19+phase*1.71)*.26;
+    center.z+=sin(uTime*.24+phase*.93)*.28;
+    vFade=smoothstep(0.0,.055,progress)*(1.0-smoothstep(.93,1.0,progress));
+  }
 
-  float az=iAngle+phase*.19;
-  float tilt=.28+1.05*(.5+.5*sin(phase*1.37+2.1));
+  float az=iAngle+phase*.19+uTime*.27*uFalling;
+  float tilt=mix(.28+1.05*(.5+.5*sin(phase*1.37+2.1)),1.06+sin(uTime*.69+phase)*.36,uFalling);
   vec3 normal=normalize(vec3(cos(az)*sin(tilt),cos(tilt),sin(az)*sin(tilt)));
   vec3 ref=abs(normal.y)<.90?vec3(0.0,1.0,0.0):vec3(1.0,0.0,0.0);
   vec3 axisX=normalize(cross(ref,normal));
@@ -296,6 +290,7 @@ in float vPhase;
 in float vSun;
 in float vBacklight;
 in float vDistance;
+in float vFade;
 out vec4 outColor;
 
 float mapleMask(vec2 p){
@@ -354,7 +349,7 @@ void main(){
 
   float fog=smoothstep(110.0,405.0,vDistance);
   col=mix(col,vec3(.79,.70,.57),fog*.91);
-  float alpha=mask*(1.0-smoothstep(320.0,450.0,vDistance));
+  float alpha=mask*vFade*(1.0-smoothstep(320.0,450.0,vDistance));
   outColor=vec4(col,alpha);
 }
 `;
@@ -522,6 +517,18 @@ function buildForest(){
   };
 }
 
+function buildFallingLeaves(spanZ){
+  const rnd=seeded(77329),data=[];
+  for(let i=0;i<1280;i++){
+    data.push(
+      (rnd()-.5)*128,16+rnd()*15,rnd()*spanZ,
+      .18+rnd()*.68,Math.floor(rnd()*4),rnd()*TAU,
+      .066+rnd()*.060,rnd()*TAU
+    );
+  }
+  return {data:new Float32Array(data),count:data.length/8};
+}
+
 function makeAirLeafSprites(){
   const make=(kind,top,bottom)=>{
     const c=document.createElement("canvas");c.width=128;c.height=128;
@@ -555,52 +562,27 @@ function makeAirLeafSprites(){
 
 function createAirLeaves(){
   const rnd=seeded(22771),sprites=makeAirLeafSprites();
-  const count=176;
-  const leaves=Array.from({length:count},(_,i)=>{
-    const layer=i%5;
-    return {
-      offset:rnd(),
-      speed:[.028,.036,.046,.058,.070][layer]*(.82+rnd()*.36),
-      originX:.28+rnd()*.44,
-      originY:.34+rnd()*.20,
-      targetX:-.08+rnd()*1.16,
-      targetY:-.02+rnd()*1.08,
-      curve:(rnd()-.5)*(.10+layer*.035),
-      roll:(rnd()-.5)*1.15,
-      wobble:.25+rnd()*.55,
-      phase:rnd()*TAU,
-      sprite:Math.floor(rnd()*4),
-      layer
-    };
-  });
+  const leaves=createFallingLeafField(128,rnd);
   return {
     draw(ctx,time,width,height,zen){
       if(!ctx||!width||!height)return;
-      const visible=zen?leaves.length:112;
+      const visible=width<=760?88:leaves.length;
       const sunX=width*.72,sunY=height*.20;
       for(let i=0;i<visible;i++){
         const l=leaves[i];
-        const p=(l.offset+time*l.speed*(zen?1.0:.72))%1;
-        const depth=Math.pow(p,1.58);
-        const ox=l.originX*width,oy=l.originY*height;
-        const tx=l.targetX*width,ty=l.targetY*height;
-        const arc=Math.sin(p*Math.PI);
-        const px=ox+(tx-ox)*depth+arc*l.curve*width;
-        const py=oy+(ty-oy)*depth-arc*height*(.018+.010*l.layer);
-        const base=[2.2,3.0,4.2,5.8,7.6][l.layer];
-        const growth=[12,18,26,36,52][l.layer];
-        const size=base+growth*Math.pow(depth,1.43);
-        const fade=Math.min(1,p/.075)*Math.min(1,(1-p)/.115);
-        const alpha=fade*(.18+.72*depth);
+        const {x:px,y:py,size,fade}=sampleLeafFall(l,time,width,height);
+        const depth=.2+l.layer*.2;
+        const alpha=fade*(.22+.44*depth);
         const sunProximity=Math.max(0,1-Math.hypot(px-sunX,py-sunY)/Math.max(width,height)*1.8);
         const shimmer=sunProximity*(.28+.72*(.5+.5*Math.sin(time*1.35+l.phase)));
 
         ctx.save();
         ctx.translate(px,py);
-        ctx.rotate(l.roll*p*.85+Math.sin(time*.62+l.phase)*l.wobble);
+        ctx.rotate(Math.sin(time*.62+l.phase)*l.roll+time*.16);
+        ctx.scale(.38+.62*Math.abs(Math.cos(time*.72+l.phase)),1);
         ctx.globalAlpha=alpha;
         ctx.shadowColor=`rgba(255,202,96,${.05+.25*shimmer})`;
-        ctx.shadowBlur=1.5+9*shimmer;
+        ctx.shadowBlur=.5+2.5*shimmer;
         ctx.drawImage(sprites[l.sprite],-size/2,-size/2,size,size);
         if(shimmer>.34&&depth>.28){
           ctx.globalCompositeOperation="screen";
@@ -833,12 +815,10 @@ function createRenderer(ctx){
   uniform vec3 uCamera;
   uniform float uTravel;
 
+  float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
   float field(vec2 p){
-    float v=0.0;
-    v+=sin(p.x+sin(p.y*.71)*1.25);
-    v+=sin(p.y*1.27-cos(p.x*.63)*1.05)*.62;
-    v+=sin((p.x+p.y)*1.91)*.29;
-    return .5+.5*(v/1.91);
+    vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
+    return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
   }
   void main(){
     vec2 p=vec2(vWorld.x,vLogicalZ);
@@ -861,12 +841,13 @@ function createRenderer(ctx){
     col=mix(col,pale,smoothstep(.86,.96,n3)*.06);
 
     float shadow=field(p*.025+vec2(1.2,4.1));
-    col*=.72+.25*shadow;
+    col*=.78+.22*shadow;
     float sunPatch=smoothstep(.78,.91,field(p*.031+vec2(.7,2.8)));
     col+=vec3(.115,.080,.026)*sunPatch;
 
     // Fine fallen-leaf speckle without geometric tiles.
-    float speck=smoothstep(.90,.965,.5+.5*sin(p.x*1.73+sin(p.y*.81)*2.2));
+    vec2 cell=floor(p*2.2),local=fract(p*2.2)-.5;
+    float speck=smoothstep(.69,.91,hash(cell))*(1.0-smoothstep(.09,.28,length(local*vec2(1.,1.8))));
     col=mix(col,mix(ochre,copper,n2),speck*.16);
 
     float dist=distance(vWorld,uCamera);
@@ -917,6 +898,15 @@ function createRenderer(ctx){
   gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,4,gl.FLOAT,false,ls,3*4);gl.vertexAttribDivisor(2,1);
   gl.enableVertexAttribArray(3);gl.vertexAttribPointer(3,1,gl.FLOAT,false,ls,7*4);gl.vertexAttribDivisor(3,1);
 
+  const falling=buildFallingLeaves(forest.spanZ),fallVao=keep(gl.createVertexArray());
+  gl.bindVertexArray(fallVao);gl.bindBuffer(gl.ARRAY_BUFFER,leafQuad);
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  const fallBuffer=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,fallBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER,falling.data,gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,ls,0);gl.vertexAttribDivisor(1,1);
+  gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,4,gl.FLOAT,false,ls,3*4);gl.vertexAttribDivisor(2,1);
+  gl.enableVertexAttribArray(3);gl.vertexAttribPointer(3,1,gl.FLOAT,false,ls,7*4);gl.vertexAttribDivisor(3,1);
+
   const terrain=terrainGeometry(84,188);
   const groundVao=keep(gl.createVertexArray());gl.bindVertexArray(groundVao);
   const gp=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,gp);gl.bufferData(gl.ARRAY_BUFFER,terrain.vertices,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
@@ -924,28 +914,29 @@ function createRenderer(ctx){
 
   const projection=new Float32Array(16),view=new Float32Array(16),vp=new Float32Array(16);
   let cssWidth=1,cssHeight=1,disposed=false;
-  const airLeaves=createAirLeaves();
   const uniforms={
     sky:{time:gl.getUniformLocation(skyProgram,"uTime"),aspect:gl.getUniformLocation(skyProgram,"uAspect"),zen:gl.getUniformLocation(skyProgram,"uZen")},
     trunk:{vp:gl.getUniformLocation(trunkProgram,"uViewProj"),travel:gl.getUniformLocation(trunkProgram,"uTravel"),spanZ:gl.getUniformLocation(trunkProgram,"uSpanZ"),spanX:gl.getUniformLocation(trunkProgram,"uSpanX"),time:gl.getUniformLocation(trunkProgram,"uTime"),camera:gl.getUniformLocation(trunkProgram,"uCamera")},
-    leaf:{vp:gl.getUniformLocation(leafProgram,"uViewProj"),travel:gl.getUniformLocation(leafProgram,"uTravel"),spanZ:gl.getUniformLocation(leafProgram,"uSpanZ"),spanX:gl.getUniformLocation(leafProgram,"uSpanX"),time:gl.getUniformLocation(leafProgram,"uTime"),camera:gl.getUniformLocation(leafProgram,"uCamera")},
+    leaf:{vp:gl.getUniformLocation(leafProgram,"uViewProj"),travel:gl.getUniformLocation(leafProgram,"uTravel"),spanZ:gl.getUniformLocation(leafProgram,"uSpanZ"),spanX:gl.getUniformLocation(leafProgram,"uSpanX"),time:gl.getUniformLocation(leafProgram,"uTime"),camera:gl.getUniformLocation(leafProgram,"uCamera"),falling:gl.getUniformLocation(leafProgram,"uFalling")},
     ground:{vp:gl.getUniformLocation(groundProgram,"uViewProj"),camera:gl.getUniformLocation(groundProgram,"uCamera"),travel:gl.getUniformLocation(groundProgram,"uTravel")}
   };
 
+  const skyView=skyCameraUniforms(gl,skyProgram);
+
   function resize({width,height,ratio=1}){
     cssWidth=Math.max(1,width);cssHeight=Math.max(1,height);
-    const q=Math.min(ratio,cssWidth<=760?1.08:1.50),w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
+    const q=Math.min(ratio,cssWidth<=760?1.45:1.85),w=Math.max(1,Math.round(cssWidth*q)),h=Math.max(1,Math.round(cssHeight*q));
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}
   }
 
+  const motion=createSceneMotion({rest:0.34,flight:5.8,xLimit:1.12,yLimit:1.08});
   function renderWorld(time,camera){
     const zen=Boolean(camera);
-    const cx=Math.max(-1.12,Math.min(1.12,camera?.x||0));
-    const cy=Math.max(-1.08,Math.min(1.08,camera?.y||0));
-    const cz=camera?.z||0;
+    const pose=motion.step(time,camera);
+    const {x:cx,y:cy,z:cz}=pose.input;
 
     // The world itself advances smoothly; manual depth only adds/subtracts travel.
-    const travel=time*(zen?5.8:.34)+cz*64.0;
+    const travel=pose.travel+cz*64.0;
     const autoX=Math.sin(time*.075)*1.45+Math.sin(time*.031+1.2)*.85;
     const autoY=Math.sin(time*.052+.5)*.22;
     const eyeX=autoX+cx*8.2;
@@ -956,12 +947,14 @@ function createRenderer(ctx){
       eyeY-1.55+cy*.12,
       -94
     ];
-    perspective(projection,zen ? .90 : .98,cssWidth/cssHeight,.12,980);
+    const fov=zen ? .90 : .98;
+    perspective(projection,fov,cssWidth/cssHeight,.12,980);
     lookAt(view,eye,target,[0,1,0]);multiply(vp,projection,view);
 
     gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.disable(gl.DEPTH_TEST);
     gl.useProgram(skyProgram);gl.bindVertexArray(skyVao);
     gl.uniform1f(uniforms.sky.time,time);gl.uniform1f(uniforms.sky.aspect,cssWidth/cssHeight);gl.uniform1f(uniforms.sky.zen,zen?1:0);
+    setSkyCamera(gl,skyView,view,fov);
     gl.drawArrays(gl.TRIANGLES,0,3);
 
     gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);gl.clear(gl.DEPTH_BUFFER_BIT);
@@ -978,7 +971,10 @@ function createRenderer(ctx){
     gl.disable(gl.CULL_FACE);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);
     gl.useProgram(leafProgram);gl.bindVertexArray(leafVao);
     gl.uniformMatrix4fv(uniforms.leaf.vp,false,vp);gl.uniform1f(uniforms.leaf.travel,travel);gl.uniform1f(uniforms.leaf.spanZ,forest.spanZ);gl.uniform1f(uniforms.leaf.spanX,forest.spanX);gl.uniform1f(uniforms.leaf.time,time);gl.uniform3f(uniforms.leaf.camera,...eye);
+    gl.uniform1f(uniforms.leaf.falling,0);
     gl.drawArraysInstanced(gl.TRIANGLES,0,6,forest.leafCount);
+    gl.bindVertexArray(fallVao);gl.uniform1f(uniforms.leaf.falling,1);
+    gl.drawArraysInstanced(gl.TRIANGLES,0,6,falling.count);
     gl.depthMask(true);gl.disable(gl.BLEND);gl.bindVertexArray(null);
   }
 
@@ -986,7 +982,7 @@ function createRenderer(ctx){
     resize,
     draw({time,width,height,camera}){
       if(disposed)return;if(width!==cssWidth||height!==cssHeight)resize({width,height,ratio:window.devicePixelRatio||1});
-      renderWorld(time,camera);airLeaves.draw(ctx,time,width,height,Boolean(camera));
+      renderWorld(time,camera);
 
       // Horizon haze hides all geometric limits and makes the forest read as endless.
       const horizonMist=ctx.createLinearGradient(0,height*.31,0,height*.62);
@@ -1013,7 +1009,7 @@ export default {
   id:"amber-forest",
   renderer:"webgl-infinite-autumn-forest",
   particles:false,
-  marks:false,
+  marks:true,
   flightCards:true,
   autoFlightCards:true,
   continuousDepth:true,

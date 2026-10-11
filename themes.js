@@ -1,6 +1,60 @@
 import { getPref, setPref, notify } from "./utils.js";
+const SOFT_SCENE_CSS=`
+body #starCanvas,body .theme-world-canvas{filter:none!important;transition:filter .45s ease,opacity .45s ease;transform:translateZ(0)!important}
+body:not(.zen):is(.reading,.course-reading,.managed-editor-view) #starCanvas,body:not(.zen):is(.reading,.course-reading,.managed-editor-view) .theme-world-canvas,body:not(.zen):has(.editor,.builder-editor,#site-builder) #starCanvas,body:not(.zen):has(.editor,.builder-editor,#site-builder) .theme-world-canvas{filter:blur(1.35px) saturate(.96) brightness(.96)!important;transform:translateZ(0) scale(1.012)!important}
+body #starCanvas{z-index:-1!important}
+body.reading #reading-shade,body.course-reading #reading-shade{backdrop-filter:blur(1.1px)!important;-webkit-backdrop-filter:blur(1.1px)!important}
+body.zen #starCanvas,body.zen .theme-world-canvas{filter:none!important;opacity:1!important;transform:translateZ(0)!important}
+.builder-theme-swatch,.theme-swatch{aspect-ratio:16/9;object-fit:cover}
+`;
+const FALLBACK_THEMES=[
+  {
+    "id": "living-sea",
+    "name": "Море странствий",
+    "description": "Живой штормовой океан · крупные парусники, объёмные волны, дымные облака и смена суток",
+    "module": "./living-sea.js",
+    "preview": "linear-gradient(145deg,#1c5d88,#9fc3cc 38%,#f0d49b 56%,#052238)"
+  },
+  {
+    "id": "amber-forest",
+    "name": "Янтарный лес",
+    "description": "Солнечный осенний лес · шелестящие кроны, многослойные листья и свободный полёт",
+    "module": "./amber-forest.js",
+    "preview": "linear-gradient(135deg,#5f92a3,#f1c76a 38%,#df7d2f 62%,#4d2a18)"
+  },
+  {
+    "id": "white-ocean-city",
+    "name": "Белый город над океаном",
+    "description": "Живой океан · низкие облака, белая архитектура, птицы и кинематографический полёт",
+    "module": "./white-ocean-city.js",
+    "preview": "linear-gradient(135deg,#3f6574,#cbd8d5 44%,#e6d9c9 58%,#17404c)"
+  },
+  {
+    "id": "aurora",
+    "name": "Сияние звёзд",
+    "description": "Ваша первая тема · разноцветные звёзды и северное сияние",
+    "module": "./aurora.js",
+    "preview": "linear-gradient(135deg,#101b4b,#45264d,#101922)"
+  },
+  {
+    "id": "golden",
+    "name": "Золотая волна",
+    "description": "Тёплое золото, плавные волны и световая пыль",
+    "module": "./golden.js",
+    "preview": "linear-gradient(135deg,#21192b,#70502f,#181626)"
+  },
+  {
+    "id": "moon",
+    "name": "Лунный сад",
+    "description": "Холодный свет, воздушные лепестки и глубокий индиго",
+    "module": "./moon.js",
+    "preview": "linear-gradient(135deg,#122a38,#40517b,#1b193e)"
+  }
+]
+;
 export class ThemeEngine {
   async init() {
+    if(!document.getElementById('syolana-scene-softness')){const style=document.createElement('style');style.id='syolana-scene-softness';style.textContent=SOFT_SCENE_CSS;document.head.append(style);}
     this.canvas = document.querySelector("#starCanvas");
     this.ctx = this.canvas.getContext("2d");
     this.reduced = matchMedia("(prefers-reduced-motion: reduce)");
@@ -16,11 +70,12 @@ export class ThemeEngine {
     const themeBase = new URL("./themes/", import.meta.url);
     this.themeBase = themeBase;
     this.manifest = await fetch(new URL("manifest.json", themeBase), {
-      cache: "no-store",
+      cache: "no-store", signal:AbortSignal.timeout(5000),
     }).then((r) => {
       if (!r.ok) throw Error("Темы недоступны");
       return r.json();
-    });
+    }).catch(()=>FALLBACK_THEMES);
+    if(!Array.isArray(this.manifest)||!this.manifest.length)this.manifest=FALLBACK_THEMES;
     const requested = new URLSearchParams(location.search).get("theme");
     const old = getPref("theme", "");
     if (requested && this.manifest.some((t) => t.id === requested)) {
@@ -84,20 +139,23 @@ export class ThemeEngine {
     window.addEventListener("pagehide", () => cancelAnimationFrame(this.frame));
     document.fonts?.ready.then(() => this.draw(0));
   }
-  async select(id) {
+  async select(id,{force=false}={}) {
+    if(!force&&this.id===id&&this.theme)return;
     const seq = ++this.sequence;
     const item = this.manifest.find((t) => t.id === id);
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261005-sea12";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261011-independent-1";
     if (version) url.searchParams.set("v", version);
-    const { default: theme } = await import(url.href);
+    let module;try{module=await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
     if (seq !== this.sequence) return;
     this.custom?.dispose?.();
     this.custom =
       this.ctx && theme.createRenderer ? theme.createRenderer(this.ctx) : null;
     this.theme = theme;
+    this.canvas.previousElementSibling?.addEventListener?.('webglcontextlost',e=>{e.preventDefault();});
+    this.canvas.previousElementSibling?.addEventListener?.('webglcontextrestored',()=>{if(this.id===id)this.select(id,{force:true}).catch(()=>{});});
     this.id = id;
     const s = document.documentElement.style;
     for (const [k, v] of Object.entries({
@@ -161,7 +219,7 @@ export class ThemeEngine {
     const bounds = this.canvas.getBoundingClientRect();
     const w = Math.max(1, bounds.width),
       h = Math.max(1, bounds.height),
-      ratio = Math.min(devicePixelRatio || 1, w <= 700 ? 1.5 : 2);
+      ratio = Math.min(devicePixelRatio || 1, w <= 700 ? 1.75 : 2);
     const addressBarOnly =
       !force &&
       this.w &&
@@ -224,7 +282,7 @@ export class ThemeEngine {
           hueSpeed: this.rand(3.5, 9.5),
           depth: this.rand(1.2, 3.1),
         });
-    this.custom?.resize?.({ width: w, height: h, ratio });
+    this.custom?.resize?.({ width: w, height: h, ratio:ratio*(this.qualityScale||1) });
     this.draw(0);
   }
   rand(a, b) {
@@ -560,10 +618,11 @@ export class ThemeEngine {
   }
   setZen(active) {
     this.zen = active;
+    this.custom?.resize?.({width:this.w,height:this.h,ratio:this.ratio*(this.qualityScale||1)});
     this.forwardFlightUntil = 0;
     // Enter the exact current theme, without replacing or restarting its animation.
     this.camera = { x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0, vz: 0 };
-    document.querySelector(".aurora-background").style.transform = "";
+    const background=document.querySelector(".aurora-background");if(background)background.style.transform = "";
     document.getElementById("flight-layer")?.toggleAttribute("hidden", !active);
     this.sync();
   }
@@ -671,296 +730,25 @@ export class ThemeEngine {
   }
   startPreviews() {
     cancelAnimationFrame(this.previewFrame);
-    const canvases = [...document.querySelectorAll("canvas[data-preview]")];
-    const draw = (time) => {
-      if (!document.getElementById("theme-dialog").open || document.hidden)
-        return;
-      for (const canvas of canvases) {
-        const c = canvas.getContext("2d");
-        if (!c) continue;
-        const id = canvas.dataset.preview,
-          w = canvas.width,
-          h = canvas.height,
-          t = this.reduced.matches ? 0 : time / 1000;
-        c.clearRect(0, 0, w, h);
-        const g = c.createLinearGradient(0, 0, w, h);
-        g.addColorStop(
-          0,
-          id === "golden" ? "#512912" : id === "moon" ? "#193759" : "#1d3370",
-        );
-        g.addColorStop(
-          0.5,
-          id === "golden" ? "#180d21" : id === "moon" ? "#191237" : "#3b124b",
-        );
-        g.addColorStop(1, "#04050e");
-        c.fillStyle = g;
-        c.fillRect(0, 0, w, h);
-        if (id === "living-sea") {
-          if (!this.seaPreview) {
-            this.seaPreview = new Image();
-            this.seaPreview.src = new URL("previews/living-sea.jpg?v=20261005-sea12", this.themeBase).href;
-          }
-          const poster = this.seaPreview;
-          if (poster.complete && poster.naturalWidth) {
-            const zoom = this.reduced.matches ? 1 : 1.018 + Math.sin(t * .10) * .012;
-            const dw = w * zoom, dh = h * zoom;
-            c.drawImage(poster, (w - dw) / 2, (h - dh) / 2, dw, dh);
-            const shade = c.createLinearGradient(0, h * .68, 0, h);
-            shade.addColorStop(0, "rgba(4,16,25,0)");
-            shade.addColorStop(1, "rgba(4,16,25,.26)");
-            c.fillStyle = shade; c.fillRect(0, 0, w, h);
-          } else {
-            c.fillStyle = "#183b50"; c.fillRect(0, 0, w, h);
-          }
-          continue;
-        }
-        if (id === "amber-forest") {
-          const horizon=Math.round(h*.54),vanX=w*.50;
-          const sky=c.createLinearGradient(0,0,0,horizon);
-          sky.addColorStop(0,"#6395aa");sky.addColorStop(.55,"#b9c7b0");sky.addColorStop(1,"#efc477");
-          c.fillStyle=sky;c.fillRect(0,0,w,horizon);
-
-          const sun=c.createRadialGradient(w*.73,h*.26,4,w*.73,h*.26,w*.28);
-          sun.addColorStop(0,"rgba(255,236,172,.78)");sun.addColorStop(.28,"rgba(255,193,84,.25)");sun.addColorStop(1,"rgba(255,193,84,0)");
-          c.fillStyle=sun;c.fillRect(w*.42,0,w*.58,h*.58);
-
-          const ground=c.createLinearGradient(0,horizon,0,h);
-          ground.addColorStop(0,"#76552e");ground.addColorStop(.52,"#432a17");ground.addColorStop(1,"#1a120c");
-          c.fillStyle=ground;c.fillRect(0,horizon,w,h-horizon);
-
-          // Natural sunlit forest floor — no geometric road.
-          const clearing=c.createRadialGradient(vanX,h*.72,8,vanX,h*.72,w*.33);
-          clearing.addColorStop(0,"rgba(186,126,54,.22)");
-          clearing.addColorStop(.46,"rgba(116,82,38,.12)");
-          clearing.addColorStop(1,"rgba(39,29,18,0)");
-          c.fillStyle=clearing;c.fillRect(0,horizon,w,h-horizon);
-
-          const tree=(side,depth,species)=>{
-            const sc=.20+depth*.98,x=vanX+side*(56+depth*w*.44),base=horizon+depth*(h-horizon)*.16;
-            const trunkH=74*sc,trunkW=7*sc;
-            c.fillStyle=species===1?"#8a704e":"#5b3219";c.fillRect(x-trunkW/2,base-trunkH,trunkW,trunkH);
-            const palettes=[
-              ["#ffd45b","#e36d2d","#b83e22"],
-              ["#f1d65c","#c2a12e","#8c7f26"],
-              ["#e3a13b","#ae4c24","#74301b"],
-              ["#e88a35","#bd5727","#82361e"]
-            ][species];
-            for(let k=0;k<7;k++){
-              const a=k/7*Math.PI*2,rx=(24+((k*7)%9))*sc,ry=(18+((k*5)%7))*sc;
-              const cx=x+Math.cos(a)*18*sc,cy=base-trunkH-(k%3)*12*sc;
-              const g=c.createRadialGradient(cx-rx*.25,cy-ry*.30,2,cx,cy,rx);
-              g.addColorStop(0,palettes[0]);g.addColorStop(.52,palettes[1]);g.addColorStop(1,palettes[2]);
-              c.fillStyle=g;c.beginPath();c.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);c.fill();
-            }
-          };
-          const rows=[[.14,1],[.25,0],[.38,3],[.55,2],[.73,0],[.93,2]];
-          rows.forEach((r,i)=>{tree(-1,r[0],r[1]);tree(1,r[0],(r[1]+2)%4);});
-
-          // Leaves flying toward the viewer.
-          for(let i=0;i<16;i++){
-            const p=((t*.16+i/16)%1),d=Math.pow(p,1.55);
-            const x=vanX+((i%2)?1:-1)*d*w*(.06+(i%5)*.035);
-            const y=h*.43+d*h*(.10+(i%4)*.055);
-            const size=2+d*13;
-            c.fillStyle=["#f4c44e","#df7a2d","#c64b24","#d5b93c"][i%4];
-            c.save();c.translate(x,y);c.rotate(t+i*.7);
-            c.beginPath();c.ellipse(0,0,size*.58,size,0,0,Math.PI*2);c.fill();c.restore();
-          }
-
-          const mist=c.createLinearGradient(0,horizon-25,0,horizon+65);
-          mist.addColorStop(0,"rgba(247,220,176,0)");mist.addColorStop(.48,"rgba(247,220,176,.14)");mist.addColorStop(1,"rgba(247,220,176,0)");
-          c.fillStyle=mist;c.fillRect(0,horizon-25,w,95);
-          continue;
-        }
-        if (id === "white-ocean-city") {
-          const horizon=Math.round(h*.56);
-          const vanX=w*.50;
-
-          // Early morning sky.
-          const sky=c.createLinearGradient(0,0,0,horizon);
-          sky.addColorStop(0,"#355a6b");
-          sky.addColorStop(.48,"#7696a0");
-          sky.addColorStop(.83,"#c8d4d2");
-          sky.addColorStop(1,"#eee3d7");
-          c.fillStyle=sky;c.fillRect(0,0,w,horizon);
-
-          // Low cloud banks: broad, soft and layered.
-          c.save();
-          c.filter="blur(18px)";
-          for(let i=0;i<9;i++){
-            const cx=(i*137+t*5.0)%(w+260)-130;
-            const cy=44+(i%4)*27;
-            const rw=112+(i%3)*38;
-            const rh=20+(i%2)*10;
-            c.globalAlpha=.085+(i%3)*.035;
-            c.fillStyle=i%2?"#f5f5ef":"#9fb5b9";
-            c.beginPath();c.ellipse(cx,cy,rw,rh,0,0,Math.PI*2);c.fill();
-          }
-          c.restore();
-          c.globalAlpha=1;c.filter="none";
-
-          // Warm horizon light.
-          const dawn=c.createRadialGradient(w*.72,horizon-16,4,w*.72,horizon-16,w*.25);
-          dawn.addColorStop(0,"rgba(248,214,174,.42)");
-          dawn.addColorStop(.45,"rgba(245,207,166,.15)");
-          dawn.addColorStop(1,"rgba(245,207,166,0)");
-          c.fillStyle=dawn;c.fillRect(w*.43,h*.18,w*.56,h*.55);
-
-          // Ocean.
-          const sea=c.createLinearGradient(0,horizon,0,h);
-          sea.addColorStop(0,"#7f9c9f");
-          sea.addColorStop(.30,"#557b80");
-          sea.addColorStop(.68,"#315d66");
-          sea.addColorStop(1,"#153a47");
-          c.fillStyle=sea;c.fillRect(0,horizon,w,h-horizon);
-
-          // Perspective wave ribbons become wider toward the viewer.
-          for(let j=0;j<13;j++){
-            const depth=(j+1)/13;
-            const y=horizon+Math.pow(depth,1.55)*(h-horizon)*.90;
-            const half=42+depth*w*.54;
-            c.strokeStyle=`rgba(235,246,242,${.08+depth*.12})`;
-            c.lineWidth=.8+depth*1.35;
-            c.beginPath();
-            for(let x=vanX-half;x<=vanX+half;x+=10){
-              const yy=y+Math.sin(x*.035+t*.42+j*.63)*(1.0+depth*2.1);
-              x===vanX-half?c.moveTo(x,yy):c.lineTo(x,yy);
-            }
-            c.stroke();
-          }
-
-          // 3D-ish architectural volumes placed along both sides of the corridor.
-          const tower=(side,depth,offset,w0,h0,pointed)=>{
-            const scale=.24+depth*.96;
-            const center=vanX+side*(44+depth*w*.43+offset*scale);
-            const base=horizon+depth*(h-horizon)*.18;
-            const bw=w0*scale;
-            const bh=h0*scale;
-            const sideW=Math.max(4,bw*.22);
-            const topY=base-bh;
-            const bodyTop=pointed?topY+bh*.25:topY;
-
-            // shadow face
-            c.fillStyle="rgba(105,137,144,.72)";
-            c.beginPath();
-            c.moveTo(center+bw/2,base);
-            c.lineTo(center+bw/2+sideW,base-sideW*.18);
-            c.lineTo(center+bw/2+sideW,bodyTop-sideW*.15);
-            c.lineTo(center+bw/2,bodyTop);
-            c.closePath();c.fill();
-
-            // front face
-            const fg=c.createLinearGradient(center-bw/2,0,center+bw/2,0);
-            fg.addColorStop(0,"#b9c8c7");
-            fg.addColorStop(.42,"#f7f5ec");
-            fg.addColorStop(1,"#d6dfdc");
-            c.fillStyle=fg;
-            c.beginPath();
-            c.moveTo(center-bw/2,base);
-            c.lineTo(center-bw/2,bodyTop);
-            if(pointed){
-              c.lineTo(center,topY);
-              c.lineTo(center+bw/2,bodyTop);
-            }else{
-              c.lineTo(center+bw/2,bodyTop);
-            }
-            c.lineTo(center+bw/2,base);
-            c.closePath();c.fill();
-
-            // water contact / foam
-            c.strokeStyle=`rgba(250,253,248,${.24+depth*.42})`;
-            c.lineWidth=.8+depth*1.7;
-            c.beginPath();
-            c.ellipse(center,base+2,bw*.58,2+depth*4.2,0,0,Math.PI*2);
-            c.stroke();
-          };
-
-          const rows=[
-            [.18,0,38,92,true],
-            [.31,8,42,118,false],
-            [.47,-4,44,142,true],
-            [.66,8,50,160,false],
-            [.88,0,58,188,true]
-          ];
-          for(const row of rows){
-            const [depth,offset,bw,bh,pointed]=row;
-            tower(-1,depth,offset,bw,bh,pointed);
-            tower(1,depth,-offset,bw,bh,!pointed);
-          }
-
-          // Mist softens the far city and deepens the corridor.
-          const mist=c.createLinearGradient(0,horizon-28,0,horizon+58);
-          mist.addColorStop(0,"rgba(231,237,233,0)");
-          mist.addColorStop(.48,"rgba(231,237,233,.24)");
-          mist.addColorStop(1,"rgba(231,237,233,0)");
-          c.fillStyle=mist;c.fillRect(0,horizon-28,w,90);
-
-          // Single white bird receding into the open centre.
-          const p=(t*.16)%1;
-          const bx=vanX+Math.sin(t*.31)*8;
-          const by=h*.42-p*h*.10;
-          const bs=11-p*4;
-          c.strokeStyle="rgba(255,255,252,.92)";
-          c.lineWidth=2.4;
-          c.beginPath();
-          c.moveTo(bx-bs,by+2);
-          c.quadraticCurveTo(bx-bs*.45,by-bs*.60,bx,by);
-          c.quadraticCurveTo(bx+bs*.45,by-bs*.60,bx+bs,by+2);
-          c.stroke();
-
-          // Subtle cinematic vignette.
-          const vignette=c.createRadialGradient(vanX,h*.46,w*.16,vanX,h*.46,w*.67);
-          vignette.addColorStop(0,"rgba(4,18,24,0)");
-          vignette.addColorStop(1,"rgba(4,18,24,.23)");
-          c.fillStyle=vignette;c.fillRect(0,0,w,h);
-
-          continue;
-        }
-        if (id === "golden") {
-          c.strokeStyle = "#eac59080";
-          for (let j = 0; j < 9; j++) {
-            c.beginPath();
-            for (let x = 0; x < w; x += 5) {
-              const y = 70 + Math.sin(x / 45 + t * 0.5 + j * 0.1) * 25 + j * 5;
-              x ? c.lineTo(x, y) : c.moveTo(x, y);
-            }
-            c.stroke();
-          }
-        }
-        for (let i = 0; i < 38; i++) {
-          const x =
-              (i * 61.7 + Math.sin(i) * 8 + t * ((i % 3) - 1) * 5 + w) % w,
-            y = (((i * 31.3 - t * (15 + (i % 20))) % h) + h) % h;
-          c.globalAlpha = 0.4 + (Math.sin(t + i) + 1) * 0.25;
-          c.fillStyle =
-            id === "golden"
-              ? "#f2d6a4"
-              : id === "moon"
-                ? "#d3e8ff"
-                : `hsl(${(i * 51) % 360} 90% 72%)`;
-          c.beginPath();
-          c.ellipse(
-            x,
-            y,
-            id === "moon" && i % 4 === 0 ? 3 : 1.5,
-            id === "moon" && i % 4 === 0 ? 1 : 1.5,
-            t * 0.2,
-            0,
-            Math.PI * 2,
-          );
-          c.fill();
-        }
-        c.globalAlpha = 0.4;
-        c.font = "11px system-ui";
-        c.fillStyle = "#eee";
-        c.fillText("syolana.com", 11, 125);
-        c.globalAlpha = 1;
+    this.previewImages ||= new Map();let painted=-1000;
+    const draw=time=>{
+      if(document.hidden)return;
+      if(time-painted<1000/12){this.previewFrame=requestAnimationFrame(draw);return;}painted=time;
+      for(const canvas of document.querySelectorAll('canvas[data-preview]')){
+        const rect=canvas.getBoundingClientRect();
+        if(!rect.width||!rect.height||rect.bottom<0||rect.top>innerHeight||rect.right<0||rect.left>innerWidth)continue;
+        const id=canvas.dataset.preview,c=canvas.getContext('2d');if(!c)continue;
+        let poster=this.previewImages.get(id);
+        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261011-independent-1',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
+        if(!poster.complete||!poster.naturalWidth)continue;
+        const w=canvas.width,h=canvas.height,zoom=this.reduced.matches?1:1.035+Math.sin(time/1000*.14)*.012;
+        const base=Math.max(w/poster.naturalWidth,h/poster.naturalHeight),dw=poster.naturalWidth*base*zoom,dh=poster.naturalHeight*base*zoom;
+        c.clearRect(0,0,w,h);c.drawImage(poster,(w-dw)/2,(h-dh)/2,dw,dh);
       }
-      if (!this.reduced.matches)
-        this.previewFrame = requestAnimationFrame(draw);
-    };
-    draw(0);
+      if(!this.reduced.matches)this.previewFrame=requestAnimationFrame(draw);
+    };draw(0);
   }
+
   sync() {
     if (!this.reduced) return;
     cancelAnimationFrame(this.frame);
@@ -976,17 +764,19 @@ export class ThemeEngine {
       if (!document.hidden) this.draw(0);
       return;
     }
-    let painted = 0;
-    const tick = (t) => {
-      if (t - painted < (this.w <= 700 ? 1000 / 30 : 1000 / 45)) {
-        this.frame = requestAnimationFrame(tick);
-        return;
+    let sampleFrames=0,sampleStart=0;
+    const tick = t => {
+      const elapsed=this.last?(t-this.last)/1000:1/60;
+      this.last=t;this.draw(Math.min(elapsed,.1));
+      if(!sampleStart)sampleStart=t;sampleFrames++;
+      if(t-sampleStart>2400){
+        const fps=sampleFrames*1000/(t-sampleStart),previous=this.qualityScale||1;
+        if(this.custom&&fps<36)this.qualityScale=Math.max(.62,previous-.12);
+        else if(this.custom&&fps>56)this.qualityScale=Math.min(1,previous+.04);
+        if((this.qualityScale||1)!==previous)this.custom?.resize?.({width:this.w,height:this.h,ratio:this.ratio*this.qualityScale});
+        sampleFrames=0;sampleStart=t;
       }
-      painted = t;
-      const delta = this.last ? Math.min((t - this.last) / 1000, 0.05) : 1 / 60;
-      this.last = t;
-      this.draw(delta);
-      this.frame = requestAnimationFrame(tick);
+      this.frame=requestAnimationFrame(tick);
     };
     this.frame = requestAnimationFrame(tick);
   }

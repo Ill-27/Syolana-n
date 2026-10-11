@@ -1,4 +1,5 @@
-import { loadCatalog, loadBook, lessonFiles } from "./catalog.js?v=20261008-language-4";
+import {loadPublicJSON} from "./public-data.js";
+import { lessonFiles } from "./catalog.js?v=20261009-platform-fr-a1-1";
 import { mountCourseBranding } from "./course-branding.js?v=20261007-language-marks-3";
 import {
   $,
@@ -14,14 +15,14 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261005-sea12";
+import { ThemeEngine } from "./themes.js?v=20261011-independent-1";
 import { Player } from "./player.js";
 import { API } from "./api.js";
 import { lessons } from "./content.js";
 import { Studio } from "./studio.js";
 import { renderFeed, feedEditor } from "./feed.js";
-import { setupDiscovery } from "./discovery.js?v=20261005-sea12";
-import { SceneAudio } from "./scene-audio.js";
+import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
+import {mountSiteCreator,mountManagedEditor,mountManagedSite} from './managed-sites.js?v=20261011-independent-1';
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
   $("page").focus();
@@ -31,11 +32,9 @@ const api = new API();
 const apiReady = api.init();
 let config;
 try {
-  config = await fetch("config.json", {
-    signal: AbortSignal.timeout(6000),
-  }).then((r) => r.json());
+  config = await loadPublicJSON("config.json");
 } catch {
-  config = { songs: [], banner: {}, plan: { pricing: "custom", priceRub: null, trialDays: 7 } };
+  config = { songs: [], banner: {}, plan: { pricing: "custom", priceRub: null } };
 }
 const player = new Player(config.songs || []);
 const theme = new ThemeEngine();
@@ -43,7 +42,7 @@ theme
   .init()
   .catch(() => notify("Фон временно недоступен. Содержимое сайта доступно."));
 const studio = new Studio(api, route);
-const sceneAudio = new SceneAudio(config.sceneAudio || {}, player);
+const sceneAudio = { stop() {} };
 function businessContact(subject, kind = "website") {
   const raw = String(config.contactChannels?.[kind]?.url || "").trim();
   try {
@@ -212,12 +211,12 @@ function renderBanner() {
       "p",
       "banner-description",
       c.description ||
-        "Живые темы, музыка, иммерсивные книги, языки и публикации — в одной системе.",
+        "Готовый шаблон сайтов с живыми темами и размещением в России. Языковые курсы — по одной подписке.",
     ),
   );
 
   const features = el("div", "banner-features");
-  (c.features || ["Живые темы", "Иммерсивные книги", "Музыка", "Языки"]).forEach(
+  (c.features || ["Готовые блоки", "Размещение по вашему выбору", "Живые темы", "Языки"]).forEach(
     (label) => {
       const item = el("span", "banner-feature");
       item.append(el("i", "", "✦"), document.createTextNode(label));
@@ -240,7 +239,7 @@ function renderBanner() {
     el(
       "p",
       "banner-invitation",
-      c.invitation || "7 дней тест-драйва · без предоплаты",
+      c.invitation || "Посмотрите демо до заказа",
     ),
   );
 
@@ -252,50 +251,6 @@ function heading(kicker, title, text) {
   h.append(el("p", "eyebrow", kicker), el("h1", "", title));
   if (text) h.append(el("p", "muted", text));
   return h;
-}
-function card(book, slug) {
-  const c = el("article", "card");
-  if (book.cover && safeURL(book.cover, { media: true })) {
-    const video = /\.mp4(?:[?#]|$)/i.test(book.cover);
-    const img = el(video ? "video" : "img", "card-cover");
-    img.src = safeURL(book.cover, { media: true });
-    if (video) {
-      img.muted = true;
-      img.playsInline = true;
-      motionVideo(img);
-      img.setAttribute("aria-label", "Буктрейлер: " + book.title);
-    } else {
-      img.alt = "Обложка: " + book.title;
-      img.loading = "lazy";
-    }
-    img.addEventListener("error", () => img.replaceWith(art(book)));
-    c.append(img);
-  } else c.append(art(book));
-  c.append(
-    el("p", "meta", book.author || "Автор Syolana"),
-    el("h3", "", book.title),
-    el("p", "description", book.description || ""),
-  );
-  c.append(
-    link(
-      book.external
-        ? "На сайте автора ↗"
-        : book.kind === "book"
-          ? "Читать историю"
-          : "Открыть",
-      book.external ||
-        (slug
-          ? "#/s/" + slug + "/book/" + book.id + "/0"
-          : "#/book/" + book.id + "/0"),
-    ),
-  );
-  return c;
-}
-function art(book) {
-  const a = el("div", "card-art");
-  a.dataset.art = book.art || "stars";
-  a.append(el("strong", "", book.title), el("small", "", "SYOLANA"));
-  return a;
 }
 function platformPromo(kind = "themes") {
   const article = el("article", "feed-post glass platform-promo");
@@ -334,19 +289,19 @@ function platformPromo(kind = "themes") {
 
   article.append(
     el("p", "promo-kicker", "SYOLANA · БОЛЬШЕ, ЧЕМ ОФОРМЛЕНИЕ"),
-    el("h2", "", "Один сайт — несколько способов погрузиться"),
+    el("h2", "", "Ваш проект — на красивом и понятном сайте"),
   );
   const body = el("div", "feed-body");
   body.append(
     el(
       "p",
       "",
-      "Живые темы и режим созерцания, иммерсивное чтение со звуком, музыкальный плеер, языки и публикации работают как одна система — от личного творческого сайта до партнёрского проекта.",
+      "Выберите готовую основу сайта и наполните её своими материалами. Syolana предоставляет темы, шаблон и редактор; домен, хостинг и размещение выбираете вы.",
     ),
     el(
       "p",
       "",
-      "Партнёрам мы сначала показываем готовый результат и даём 7 дней тест-драйва — без предоплаты за знакомство.",
+      "Сначала посмотрите демо-сайт и редактор. Состав, стоимость и размещение вашего проекта согласуются до оплаты.",
     ),
   );
   article.append(body);
@@ -354,7 +309,7 @@ function platformPromo(kind = "themes") {
   const actions = el("div", "promo-actions");
   actions.append(
     link("Посмотреть возможности", "#/join", "btn small"),
-    link("Открыть книги", "#/library", "text-link"),
+    link("Изучать языки", "#/languages", "text-link"),
   );
   article.append(actions);
   return article;
@@ -363,9 +318,9 @@ function platformPromo(kind = "themes") {
 async function home(token) {
   $("page").append(
     heading(
-      "САЙТЫ · КНИГИ · ЯЗЫКИ · МУЗЫКА",
-      "Лента вселенной",
-      "Новые темы, истории, песни и творческие знакомства. Всё, чем живёт Syolana.",
+      "САЙТЫ · ДИЗАЙН · ЯЗЫКИ",
+      "Место для вашего проекта",
+      "Сайты на общем шаблоне с размещением в России и языковые курсы по подписке. Новое в Syolana — здесь.",
     ),
   );
   const tabs = el("div", "feed-filters");
@@ -390,7 +345,7 @@ async function home(token) {
       list.append(platformPromo("features"));
     }
   }
-  ["Все", "Дизайн", "Книги", "Языки", "Песни"].forEach((name) => {
+  ["Все", "Дизайн", "Языки", "Песни"].forEach((name) => {
     const b = button(
       name,
       () => {
@@ -407,10 +362,9 @@ async function home(token) {
   });
   $("page").append(tabs, list);
   try {
-    const response = await fetch(config.feed?.file || "feed.json");
-    if (!response.ok) throw Error();
-    items = await response.json();
+    items = await loadPublicJSON(config.feed?.file || "feed.json");
     if (!Array.isArray(items)) items = [];
+    items = items.filter(p => p.category !== "Книги");
   } catch {
     items = [];
   }
@@ -421,7 +375,7 @@ async function home(token) {
     try {
       const data = await api.request("feed");
       if (token === routeToken && data.posts.length) {
-        items = data.posts;
+        items = data.posts.filter(p => p.category !== "Книги" && p.kind !== "book");
         draw();
       }
     } catch {}
@@ -433,184 +387,28 @@ async function home(token) {
   );
   $("page").append(explore);
 }
-async function library(token) {
-  $("page").append(
-    heading(
-      "БИБЛИОТЕКА",
-      "Найдите свою историю",
-      "Начните с короткого текста и настройте чтение под себя.",
-    ),
-  );
-  const rights = el("details", "notice legal-note");
-  rights.append(
-    el("summary", "", "О правах и источниках"),
-    el(
-      "p",
-      "",
-      "В библиотеке используются собственные произведения и тексты с проверенными правами на использование, в том числе из общественного достояния. Права на переводы, иллюстрации и записи проверяются отдельно. Материалы по внешним ссылкам размещают владельцы соответствующих сайтов. Если вы заметили нарушение, отправьте обращение — мы его рассмотрим.",
-    ),
-  );
-  $("page").append(rights);
-  const search = el("input", "search-input");
-  search.type = "search";
-  search.placeholder = "Название или автор";
-  search.setAttribute("aria-label", "Поиск книги");
-  const grid = el("div", "grid two");
-  $("page").append(search, grid);
-  let entries = (await loadCatalog()).map((book) => ({ book, slug: null }));
-  if (token !== routeToken) return;
-  function draw() {
-    const q = search.value.toLocaleLowerCase();
-    const found = entries.filter((x) =>
-      (x.book.title + " " + x.book.author).toLocaleLowerCase().includes(q),
-    );
-    grid.replaceChildren(...found.map((x) => card(x.book, x.slug)));
-    if (!found.length)
-      grid.append(
-        el("p", "empty", "Ничего не найдено. Попробуйте другое название."),
-      );
-  }
-  search.oninput = draw;
-  draw();
-  if (api.online) {
-    try {
-      const { books } = await api.request("catalog");
-      if (token !== routeToken) return;
-      entries = entries.concat(
-        books.map((book) => ({ book, slug: book.slug })),
-      );
-      draw();
-    } catch {}
-  }
-  
-}
 function languages(lang = "en") {
   if (!lessons[lang]) lang = "en";
   const data = lessons[lang];
-  $("page").append(
-    heading(
-      "ЯЗЫКИ · АВТОРСКИЕ ПОСОБИЯ",
-      "Другой язык. Больше вашего мира.",
-      "От первых слов к самостоятельному общению: слушать, понимать, говорить и возвращаться к выученному.",
-    ),
-  );
+  $("page").append(heading("ЯЗЫКИ · АВТОРСКАЯ МЕТОДИКА", "Слушайте. Пишите. Двигайтесь по уровням.", "Понятные правила, слова в контексте и ежедневная практика — в одном последовательном курсе."));
   const intro = el("section", "card stack language-intro");
-  intro.append(
-    el("span", "badge", lang === "en" ? "АНГЛИЙСКИЙ A1 УЖЕ ОТКРЫТ" : lang === "es" ? "ИСПАНСКИЙ A1 И A2" : "НОВЫЕ ПОСОБИЯ В РАЗРАБОТКЕ"),
-    el("h2", "", "Пусть язык звучит в вашей жизни"),
-    el(
-      "p",
-      "",
-      "Авторские онлайн-пособия на основе личного опыта изучения языков: правила, слова и выражения, упражнения, браузерная озвучка и повторения. Материалы предназначены для самостоятельного использования, без преподавателя, экзаменов и проверки уровня.",
-    ),
-    el(
-      "p",
-      "",
-      "Новый английский A1 открыт бесплатно: чтение и звуки, 40 разделов правил, больше 1300 слов с четырьмя примерами, британский и американский варианты, три режима озвучки и дневные блоки примерно по 30 минут. Есть тренажёры, бытовая и рукописная практика. Обозначение A1 — ориентир сложности материалов, а не подтверждение уровня или обещание результата.",
-    ),
-  );
+  intro.append(el("h2", "", "Язык, для которого найдётся время"),
+    el("p", "", "С детства меня увлекали языки и способы их изучения. Я пробовал сотни методик и изучал больше 20 языков на разных уровнях. Из этого опыта выросла собственная система: идти по порядку, соединять правила со словами и не теряться в разрозненных знаниях."),
+    el("p", "", "Каждый курс собран по уровням и дневным блокам. У слов — четыре разных примера, у правил — объяснения и практика. Материал можно читать и слушать с переводом, в том числе во время привычных дел. А затем вернуться к экрану, произнести фразы и закрепить их письменно."),
+    el("p", "", "Моя рекомендация — слушать каждый день: новую часть или повторение предыдущей. И каждый день немного писать от руки: в тетради или стилусом на телефоне и планшете. В моём опыте такая запись помогает вниманию и памяти. Вы сами выбираете темп."),
+    link("Попробовать английский A1 бесплатно", "#/lesson/en/a1/course", "btn primary"));
   $("page").append(intro);
-  const methods = el("div", "grid two language-methods");
-  for (const [title, text] of [
-    [
-      "Слушайте и понимайте",
-      "В английском A1 есть браузерная озвучка с русским переводом и объяснениями. Голос, доступность и длительность зависят от браузера и устройства. Текст следует за текущей репликой.",
-    ],
-    [
-      "Возвращайтесь к важному",
-      "Новые слова и конструкции встречаются снова в разных ситуациях. В упражнениях можно свериться с ответами и выбрать, к каким материалам вернуться. Уровень владения языком не оценивается.",
-    ],
-    [
-      "Пробуйте сами",
-      "Отвечайте вслух, читайте и записывайте фразы от руки. Автор советует вести бумажную тетрадь: рукописная практика помогает внимательнее замечать слова и конструкции.",
-    ],
-    [
-      "Замечайте свой прогресс",
-      "На устройстве сохраняются место прослушивания и настройки озвучки. Можно слушать, читать и произносить фразы в своём темпе, возвращаться к темам и писать от руки. Экзаменов, проверки преподавателем, оценки уровня и выдачи документов об образовании нет.",
-    ],
-  ]) {
-    const card = el("article", "card stack");
-    card.append(el("h3", "", title), el("p", "", text));
-    methods.append(card);
-  }
-  $("page").append(methods);
   const tabs = el("div", "pill-tabs language-tabs");
-  for (const [key, value] of Object.entries(lessons)) {
-    const a = link(value.name, "#/languages/" + key, "btn");
-    a.setAttribute("aria-current", key === lang ? "page" : "false");
-    tabs.append(a);
-  }
-  $("page").append(
-    heading(
-      "ВЫБЕРИТЕ СВОЙ ЯЗЫК",
-      data.native,
-      "Английский A1 — бесплатно. Английский A2 — 2 000 ₽. Испанский A1 и A2 — по 1 000 ₽; платным партнёрам может предоставляться бесплатно по индивидуальному соглашению. Оплата и общение только через Авито.",
-    ),
-    tabs,
-  );
-  const levels = el("div", "grid two language-levels");
-  for (const [level, description] of Object.entries({
-    A1: "Первое знакомство с языком",
-    A2: "Больше уверенности в повседневном общении",
-    B1: "Самостоятельность и новые темы",
-    B2: "Развёрнутая речь и сложные тексты",
-  })) {
-    const card = el("article", "card stack language-level");
-    const free = lang === "en" && level === "A1";
-    const englishA2 = lang === "en" && level === "A2";
-    const spanishA1 = lang === "es" && level === "A1";
-    const spanishA2 = lang === "es" && level === "A2";
-    card.dataset.level = level;
-    card.append(
-      el("span", "badge", free ? "БЕСПЛАТНО ДЛЯ ВСЕХ" : (englishA2 || spanishA1 || spanishA2) ? "ЛИЧНЫЙ ДОСТУП" : "В ПОДГОТОВКЕ"),
-      el("h3", "course-level", level),
-      el("p", "", description),
-      (() => {
-        const price = el("p", "course-price");
-        if (free) {
-          price.textContent = "Бесплатно";
-          return price;
-        }
-        price.textContent = englishA2 ? "2 000 ₽ · личный доступ" : (spanishA1 || spanishA2) ? "1 000 ₽ · личный доступ" : "Продажи ещё не открыты";
-        return price;
-      })(),
-      free
-        ? link("Открыть английский A1", "#/lesson/en/a1/course", "btn primary")
-        : englishA2 ? link("Открыть английский A2", "#/lesson/en/a2/course", "btn primary")
-        : spanishA1 ? link("Открыть испанский A1", "#/lesson/es/a1/course", "btn primary")
-        : spanishA2 ? link("Открыть испанский A2", "#/lesson/es/a2/course", "btn primary")
-        : link("Уточнить выпуск на Авито", businessContact("Языковое пособие " + lang + " " + level, "languages"), "btn"),
-    );
-    levels.append(card);
+  for (const [key, value] of Object.entries(lessons)) { const item=link(value.name, "#/languages/"+key,"btn");item.setAttribute("aria-current",key===lang?"page":"false");tabs.append(item); }
+  $("page").append(tabs);
+  const levels=el("div","grid two language-levels");
+  for (const [level,description] of Object.entries({A1:"Основы языка и первые повседневные разговоры",A2:"Больше слов, времен и уверенности в обычных ситуациях"})) {
+    const key=lang+"/"+level.toLowerCase()+"/course",published=Boolean(lessonFiles[key]),free=lang==="en"&&level==="A1";
+    const item=el("article","card stack language-level");item.dataset.level=level;
+    item.append(el("span","badge",free?"БЕСПЛАТНО ДЛЯ ВСЕХ":published?"В ОБЩЕЙ ПОДПИСКЕ":"ГОТОВИТСЯ"),el("h3","course-level",data.name+" "+level),el("p","",description),el("p","course-price",free?"Бесплатно":published?"690 ₽ / 30 дней · все платные курсы":"Дата появится после подготовки"),published?link(free?"Начать бесплатно":"Открыть курс", "#/lesson/"+key,"btn primary"):link("Предложить следующий язык",businessContact("Хочу изучать "+data.name+" "+level,"languages"),"text-link"));levels.append(item);
   }
   $("page").append(levels);
-  const gift = el("section", "strip glass stack language-gift");
-  gift.append(
-    el("span", "badge", "ПОДАРОК ПАРТНЁРАМ"),
-    el("h2", "", "Ваш сайт. И A1 нового языка в подарок."),
-    el(
-      "p",
-      "",
-      "Испанский A1 стоит 1 000 ₽. Платным партнёрам Syolana доступ может предоставляться бесплатно по индивидуальному соглашению. Условия и срок закрепляются в конкретном заказе на Авито. Английский A1 бесплатен для всех.",
-    ),
-    link("Подключить Syolana", "#/join", "btn primary"),
-  );
-  $("page").append(gift);
-  const author = el("section", "card stack language-author");
-  author.append(
-    el("h3", "", "Личный опыт и самостоятельная практика"),
-    el(
-      "p",
-      "",
-      "Материалы составлены на основе личного опыта автора: понятные объяснения, слова в контексте, слушание и повторение. Это самостоятельные цифровые пособия и тренажёры; автор не проводит занятия и не проверяет ответы пользователей.",
-    ),
-    el(
-      "p",
-      "fine",
-      "Английское пособие A1 уже открыто бесплатно. Другие материалы готовятся и публикуются после проверки содержания. Обозначения A1–B2 помогают ориентироваться в сложности; полное освоение уровня не гарантируется.",
-    ),
-  );
-  $("page").append(author);
+  const details=el("details","card stack language-details");details.append(el("summary","","Подписка, новые уровни и авторские права"),el("p","","Одна подписка за 690 ₽ открывает все опубликованные платные языковые курсы на 30 дней. Продление — только по вашему решению, без автоматических списаний. Английский A1 доступен без подписки. Партнёрам с оплаченным обслуживанием сайта языковой доступ включён на оплаченный период."),el("p","","План — готовить примерно один новый уровень в месяц. Язык выбирается с учётом ваших пожеланий, а срок зависит от подготовки и проверки материалов. Подписка открывает то, что уже опубликовано; будущий выпуск не гарантируется к определённой дате."),el("p","fine","Это материалы для самостоятельной практики: без занятий с преподавателем, экзаменов и выдачи документов об образовании. Название уровня обозначает сложность материала. Озвучка зависит от голосов браузера и устройства; прогресс хранится в этом браузере."),el("p","fine","© Syolana. Материалы предназначены для личного использования. Публикация, копирование и распространение требуют разрешения правообладателя, кроме случаев, разрешённых законом."),link("Условия доступа", "#/offer","text-link"));$("page").append(details);
 }
 function songsPage() {
   $("page").append(
@@ -636,9 +434,9 @@ function songsPage() {
     el(
       "p",
       "",
-      "Каждому партнёру с подпиской на сайт — одна песня по его творчеству в подарок после первой оплаты. Тему и срок согласуем вместе; песня появится в общем плеере со ссылкой на проект.",
+      "Иногда проект партнёра вдохновляет нас на песню или новую тему. Мы можем предложить такой подарок по отдельной договорённости. Это творческая возможность, а не обязательная часть подписки.",
     ),
-    link("Получить сайт и песню", "#/join", "btn primary"),
+    link("Создать свой сайт", "#/join", "btn primary"),
   );
   $("page").append(
     intro,
@@ -664,122 +462,32 @@ function songsPage() {
   });
   $("page").append(list);
 }
+async function songPage(id, token) {
+  const data=await loadPublicJSON('song-details.json');
+  if(token!==routeToken)return;
+  const song=data.songs.find(s=>s.id===id);
+  if(!song)throw Error('Эта песня пока не опубликована.');
+  document.title=song.titleRu+' · Syolana';
+  const index=player.songs.findIndex(s=>s.id===id);
+  $('page').append(link('Все песни','#/songs','text-link'),heading('МУЗЫКА И ПОЭЗИЯ',song.title,song.titleRu));
+  const introduction=el('section','card stack song-introduction');
+  introduction.append(el('p','eyebrow',song.author+' · '+song.authorYears),el('h2','',song.sourceTitle),el('p','',song.about),el('p','muted',song.publication));
+  if(index>=0)introduction.append(button('Слушать песню',()=>player.select(index,true),'btn primary'));
+  introduction.append(el('p','fine','Ниже — полный литературный первоисточник песни. Повторы и изменения в музыкальной версии не приписываются автору оригинала.'));
+  const poems=el('div','song-poems grid two');
+  for(const [title,text,language]of [['Полный текст первоисточника',song.original,'es'],[song.translationLabel,song.translationRu,'ru']]){
+    const card=el('section','card stack song-poem');card.append(el('h2','',title));const poem=el('p','poem-text',text);poem.lang=language;card.append(poem);if(language==='ru')card.append(el('p','fine',song.translationNote));poems.append(card);
+  }
+  const rights=el('section','card stack song-rights');rights.append(el('p','eyebrow','АВТОР И ПРАВА'),el('h2','','Исторический текст — общественное достояние'),el('p','',song.publicDomain.explanation),el('p','fine',song.publicDomain.scopeNote),link('ГК РФ: статьи 1281 и 1282',song.publicDomain.lawUrl,'text-link'));
+  const notes=el('details','card stack song-notes');notes.append(el('summary','','Примечания к тексту и переводу'));for(const text of song.notes)notes.append(el('p','',text));
+  $('page').append(introduction,poems,rights,notes,link('К списку песен','#/songs','btn'));
+}
 function join() {
-  $("page").append(
-    heading(
-      "ПАРТНЁРСТВО · 7 ДНЕЙ ТЕСТ-ДРАЙВА",
-      "Ваш контент. Живой мир вокруг него.",
-      "Для авторов, творческих проектов, студий, издательств и площадок. Ваш домен и контент остаются у вас; Syolana подключает иммерсивный слой и обновления.",
-    ),
-  );
-  const grid = el("div", "grid two");
-  const offer = el("section", "card stack");
-  offer.append(
-    el("span", "badge", "ТЕСТ-ДРАЙВ · ПЕРВЫЕ ПАРТНЁРЫ"),
-    el("h2", "", "Сначала попробуйте."),
-  );
-  const price = el("p", "price", "Индивидуальная стоимость");
-  price.append(
-    el(
-      "small",
-      "",
-      " · зависит от объёма, функций и формата сотрудничества",
-    ),
-  );
-  offer.append(
-    price,
-    el(
-      "p",
-      "",
-      "Готовим ваш сайт, открываем 7 дней бесплатного тест-драйва. Предоплата и банковская карта для знакомства не нужны. Решение о продолжении вы принимаете после тест-драйва.",
-    ),
-  );
-  const ul = el("ul", "feature-list");
-  [
-    "Живые темы, плеер, иммерсивные блоки и обновления Syolana — поверх вашего собственного бренда",
-    "Ваш домен, хостинг и контент остаются у вас; Syolana подключает оформление, темы, плеер и обновления",
-    "Обновления оформления для всех подключённых сайтов",
-    "Стоимость согласуем после тест-драйва; для пилотных и взаимовыгодных проектов возможны специальные условия, включая бесплатный пилот",
-    "Одна песня по вашему творчеству в подарок после первой оплаты: тему и срок согласуем заранее",
-    "После запуска платного партнёрства при активном доступе — A1 одного языка на выбор в подарок, кроме английского. Английский A1 бесплатен для всех; остальные уровни приобретаются отдельно",
-  ].forEach((s) => ul.append(el("li", "", s)));
-  const contact = el("a", "btn primary", "Обсудить мой сайт");
-  contact.href = businessContact("Хочу сайт Syolana · 7 дней тест-драйва");
-  if (contact.href.startsWith("https:")) { contact.target = "_blank";contact.rel = "noopener noreferrer"; }
-  offer.append(ul, contact);
-  grid.append(offer);
-  const details = el("section", "card stack");
-  details.append(
-    el("h3", "", "Общий дизайн. Ваш характер."),
-    el(
-      "p",
-      "",
-      "Вы получаете сайт на основе единого оформления Syolana. Вместе подбираем структуру, разделы и первые материалы под ваше дело. Не нужно заново программировать каждую кнопку: общая система обновляется для всех.",
-    ),
-    el(
-      "p",
-      "",
-      "В режиме VK вы публикуете и исправляете записи на своей публичной странице ВКонтакте. Ваш сайт автоматически получает её публичную ленту после настройки синхронизации. Syolana не создаёт и не редактирует эти записи. Вы отвечаете за свои материалы; обращения о нарушениях направляются владельцу сайта и рассматриваются также в пределах возможностей Syolana.",
-    ),
-    el(
-      "p",
-      "",
-      "Ваш сайт работает на вашем домене и в вашем аккаунте хостинга. Вы управляете публикациями и медиа; Syolana подключает темы, плеер и инструменты погружения. При подключении выбираем источник записей: ваше публичное сообщество VK либо редактор Partner Studio на вашей инфраструктуре. Объём настройки, цена, сроки и контакты для ваших клиентов согласуются в заказе на Авито. Демонстрационный сайт и редактор можно попробовать бесплатно.",
-    ),
-    el(
-      "p",
-      "",
-      "После окончания подписки премиальные элементы Syolana перестают подключаться, а собственный домен, хостинг и опубликованный контент партнёра остаются у него.",
-    ),
-    link("Обсудить настройку на Авито", businessContact(), "btn"),
-    link("Посмотреть тестового партнёра", "partner-demo/", "btn"),
-    link("Единые условия Syolana", "#/offer", "text-link"),
-    link("Условия тест-драйва", "#/terms", "text-link"),
-  );
-  grid.append(details);
+  $("page").append(heading("ТЕМЫ И ШАБЛОНЫ · 7 ДНЕЙ ЗНАКОМСТВА", "Ваш сайт. Ваши материалы. Общая забота о дизайне.", "Готовый шаблон с живыми темами и понятным редактором. Домен, хостинг и размещение — по вашему выбору. Для авторов, мастеров, студий и небольших проектов."));
+  const grid=el("div","grid two");
+  for(const [title,paragraphs] of [["Начните с готовой основы",["Выберите блоки, расставьте их по порядку и заполните своими текстами. Добавьте фотографии, контакты и публикации, выберите тему — без написания кода. Редактор подсказывает следующий шаг и показывает результат до публикации.","Вы выбираете домен, хостинг и место размещения. Помощь с первоначальной настройкой можно согласовать отдельно. Содержание, домен и материалы остаются вашими."]],["Попробуйте спокойно",["Демо-сайт и редактор доступны для знакомства до заказа. Цена настройки и дальнейшего обслуживания зависит от объёма проекта; вы узнаете её до оплаты.","В оплаченный период обслуживания включён доступ ко всем опубликованным платным языковым курсам Syolana. Для изучения языков без сайта есть отдельная подписка — 690 ₽ за 30 дней."]]]){const card=el("section","card stack");card.append(el("h2","",title),...paragraphs.map(t=>el("p","",t)));grid.append(card);}
   $("page").append(grid);
-  const scale = el("section", "card stack partner-scale");
-  scale.style.marginTop = "24px";
-  scale.append(
-    el("span", "badge", "ДЛЯ ИЗДАТЕЛЬСТВ И ПЛОЩАДОК"),
-    el("h3", "", "Иммерсия может подключаться к уже существующей экосистеме"),
-    el(
-      "p",
-      "",
-      "Для каталогов, издательств и книжных площадок интеграцию проектируем отдельно: доступы, права, закрытые книги, API и правила публикации согласуются под инфраструктуру партнёра. Syolana может оставаться отдельным иммерсивным слоем, не забирая у площадки её домен и контент.",
-    ),
-    link(
-      "Обсудить интеграцию",
-      businessContact("Интеграция Syolana для площадки или издательства"),
-      "btn primary",
-    ),
-  );
-  $("page").append(scale);
-
-  const books = el("section", "card stack");
-  books.style.marginTop = "24px";
-  books.append(
-    el("h3", "", "Для книг — отдельная работа с атмосферой"),
-    el(
-      "p",
-      "",
-      "Обложку, главы, смену цвета и звуковые сцены готовим и проверяем отдельно. Перед началом согласуем права, объём, стоимость и сроки. Это не обещание безошибочной автоматической обработки всей книги.",
-    ),
-    el(
-      "p",
-      "",
-      "Индивидуальные закрытые книги обсуждаются отдельно: размещение возможно только при наличии прав и с учётом договоров автора с издательствами и книжными площадками.",
-    ),
-  );
-  $("page").append(books);
-  const security = el(
-    "p",
-    "notice",
-    "Мы не требуем переводов до создания сайта и завершения бесплатного тест-драйва. Сверяйте адрес сайта и контакт " +
-      businessContact() +
-      ". Оплачивайте только согласованный счёт; чек выдаётся после оплаты.",
-  );
-  $("page").append(security);
+  const practical=el("section","card stack partner-practical");practical.append(el("h3","","Как это работает"),el("p","","Syolana предоставляет темы, шаблон, готовые блоки и редактор. Вы добавляете свои материалы и скачиваете готовый сайт. Домен, хостинг и размещение выбираете самостоятельно; подключение серверных функций согласуется отдельно."),el("p","","Сохраните основной и запасной адреса Syolana. При ограничениях интернета доступность конкретного адреса зависит от оператора. Для вашего сайта можно выбрать подходящий домен и место размещения; доступ во всех сетях не гарантируется."),el("p","","Встроенный баннер Syolana ведёт к темам, шаблонам и языковым курсам. Обновления оформления предоставляются по условиям обслуживания. Файлы сайта, домен и материалы остаются у владельца. Стоимость домена, хостинга и дополнительных серверных функций согласуется отдельно и не входит в шаблон автоматически."),el("p","","Иногда творческий проект вдохновляет нас на новую тему или песню. Такой подарок возможен по отдельной договорённости: он не входит в обязательный состав обслуживания и не обещается каждому партнёру."),link("Обсудить мой сайт",businessContact(),"btn primary"),link("Создать и опубликовать сайт","#/create-site","btn primary"),link("Попробовать редактор без входа","partner-demo/studio/","btn"),link("Первый проект: Артивид",config.artividUrl||"artivid/","btn"),link("Условия сотрудничества","#/offer","text-link"));$("page").append(practical);
 }
 async function publicSite(slug, token) {
   document.body.classList.add("partner-site");
@@ -797,9 +505,7 @@ async function publicSite(slug, token) {
     head.append(link("Связаться с автором", data.site.link, "text-link"));
   $("page").append(head);
   const grid = el("div", "grid two");
-  data.posts
-    .filter((p) => p.kind === "book" || p.kind === "portfolio")
-    .forEach((p) => grid.append(card({ ...p, author: data.site.name }, slug)));
+  
   const feed = el("div", "feed-list");
   renderFeed(
     feed,
@@ -845,609 +551,63 @@ function applyEntitlement(data) {
     siteTimer = setTimeout(() => route(), ms);
   }
 }
-async function reader({ id, slug, chapter = 0 }, token) {
-  let book, data, loaded;
-  if (slug) {
-    data = await api.request(
-      "public/" +
-        encodeURIComponent(slug) +
-        "/post/" +
-        encodeURIComponent(id) +
-        "?chapter=" +
-        chapter,
-    );
-    if (token !== routeToken) return;
-    applyEntitlement(data);
-    watchAccess(slug, token, data.active);
-    book = data.post;
-    book.author = data.site.name;
-  } else {
-    loaded = await loadBook(id, chapter);
-    if (token !== routeToken) return;
-    book = loaded.book;
-    chapter = loaded.index;
-  }
-  const chapters = book.chapters;
-  chapter = Math.max(0, Math.min(Number(chapter) || 0, chapters.length - 1));
-  const ch = slug ? data.chapter : loaded.chapter;
-  document.body.classList.add("reading");
-  document.title = book.title + (!slug || data.active ? " · Syolana" : "");
-  const base = slug ? "#/s/" + slug + "/book/" + id : "#/book/" + id;
-  const back = slug ? "#/s/" + slug : "#/library";
-  const header = el("header", "reader-header");
-  header.append(
-    link(slug ? "Каталог автора" : "Библиотека", back, "text-link"),
-    el("h1", "", book.title),
-    el("p", "muted", book.author),
-  );
-  $("page").append(header);
-  const bar = el("div", "reader-toolbar");
-  const group = el("div", "row");
-  group.append(
-    button(
-      "Оглавление",
-      () => {
-        $("toc-dialog").showModal();
-      },
-      "subtle-btn",
-    ),
-  );
-  const smaller = button("A−", () => size(-1), "subtle-btn");
-  smaller.setAttribute("aria-label", "Уменьшить текст");
-  const bigger = button("A+", () => size(1), "subtle-btn");
-  bigger.setAttribute("aria-label", "Увеличить текст");
-  group.append(smaller, bigger);
-  bar.append(group);
-  const control = el("label", "", "Атмосфера");
-  const select = el("select");
-  [
-    ["auto", "По сюжету"],
-    ["neutral", "Постоянный цвет"],
-  ].forEach(([k, v]) => {
-    const o = el("option", "", v);
-    o.value = k;
-    select.append(o);
-  });
-  select.value = getPref("reader-mood", "auto");
-  control.append(select);
-  bar.append(control);
-  const toggleSceneSound = async (...buttons) => {
-    buttons.forEach((b) => (b.disabled = true));
-    await sceneAudio.toggle();
-    buttons.forEach((b) => (b.disabled = false));
-    if (token === routeToken) update();
-  };
-
-  const sound = button(
-    "",
-    () => toggleSceneSound(sound, soundFab),
-    "subtle-btn scene-toggle",
-  );
-  const soundIcon = el("span", "scene-toggle-icon", "🎧");
-  soundIcon.setAttribute("aria-hidden", "true");
-  const soundCopy = el("span", "scene-toggle-copy");
-  const soundLabel = el("strong", "", "Звуковая атмосфера");
-  const soundHint = el("small", "", "Включить");
-  soundCopy.append(soundLabel, soundHint);
-  sound.replaceChildren(soundIcon, soundCopy);
-
-  const soundStatus = el("span", "scene-status");
-  soundStatus.setAttribute("role", "status");
-  const volumeLabel = el("label", "scene-volume", "Громкость атмосферы");
-  const volume = el("input");
-  volume.type = "range"; volume.min = "0"; volume.max = "100";
-  volume.value = String(Math.round(sceneAudio.volume * 100));
-  volume.setAttribute(
-    "aria-label",
-    "Громкость звуковой атмосферы. Максимум ограничен комфортным уровнем.",
-  );
-  volume.oninput = () => sceneAudio.setVolume(Number(volume.value) / 100);
-  volumeLabel.append(volume);
-
-  const soundFab = button(
-    "🎧",
-    () => toggleSceneSound(sound, soundFab),
-    "reader-sound-fab",
-  );
-  soundFab.setAttribute("aria-label", "Включить звуковую атмосферу чтения");
-  soundFab.setAttribute("title", "Звуковая атмосфера");
-
-  const soundState = (event) => {
-    sound.dataset.enabled = String(sceneAudio.enabled);
-    soundHint.textContent = sceneAudio.enabled ? "Включена · нажмите, чтобы выключить" : "Нажмите, чтобы включить";
-    sound.setAttribute("aria-pressed", String(sceneAudio.enabled));
-    sound.setAttribute(
-      "aria-label",
-      sceneAudio.enabled
-        ? "Звуковая атмосфера включена. Нажмите, чтобы выключить."
-        : "Включить звуковую атмосферу чтения.",
-    );
-    soundFab.dataset.enabled = String(sceneAudio.enabled);
-    soundFab.setAttribute("aria-pressed", String(sceneAudio.enabled));
-    soundFab.setAttribute(
-      "aria-label",
-      sceneAudio.enabled
-        ? "Выключить звуковую атмосферу чтения"
-        : "Включить звуковую атмосферу чтения",
-    );
-    soundStatus.textContent = event?.detail?.message || "";
-  };
-  window.addEventListener("syolana:sceneaudio", soundState);
-  soundState();
-  if (Object.keys(config.sceneAudio || {}).length) {
-    bar.append(sound, volumeLabel, soundStatus);
-    $("page").append(bar, soundFab);
-  } else {
-    $("page").append(bar);
-  }
-  const progress = el("div", "reading-progress");
-  const fill = el("div");
-  progress.append(fill);
-  $("page").append(progress);
-
-  if (Object.keys(config.sceneAudio || {}).length) {
-    const audioGuidance = el("aside", "reader-audio-guidance");
-    audioGuidance.setAttribute("role", "note");
-    audioGuidance.append(
-      el("span", "reader-audio-guidance-icon", "🎧"),
-      el(
-        "p",
-        "",
-        "Для лучшего погружения слушайте тихо: музыка и звуки должны сопровождать текст, а не перекрывать его.",
-      ),
-    );
-    $("page").append(audioGuidance);
-  }
-
-  const text = el("article", "reader-text");
-  text.append(el("h2", "", ch.title));
-  const rawParagraphs =
-    ch.blocks ||
-    ch.text
-      .split(/\n\s*\n/)
-      .filter(Boolean)
-      .map((text) => ({ text }));
-
-  const paragraphs = book.poetry
-    ? rawParagraphs
-    : rawParagraphs.flatMap((p, sceneGroup) =>
-        String(p.text || "")
-          .split(/\n\s*\n/)
-          .map((part) => part.trim())
-          .filter(Boolean)
-          .map((text) => ({
-            ...p,
-            text,
-            sceneGroup,
-          })),
-      );
-
-  if (book.poetry) text.classList.add("poetry");
-
-  paragraphs.forEach((p, i) => {
-    const node = el("p", "", p.text);
-    node.dataset.paragraph = i;
-    node.dataset.scene = p.sceneGroup ?? i;
-    node.dataset.mood =
-      ch.mood && ch.mood !== "auto" ? ch.mood : moodFor(p.text);
-    if (p.color) node.dataset.color = p.color;
-    if (p.audio) node.dataset.audio = p.audio;
-    text.append(node);
-  });
-  if (book.mediaUrl) {
-    const m = safeURL(book.mediaUrl, { media: true });
-    if (m) {
-      if (/\.(mp4|webm)(\?|$)/i.test(m)) {
-        const v = el("video");
-        v.controls = true;
-        v.playsInline = true;
-        v.preload = "metadata";
-        v.src = m;
-        v.style.width = "100%";
-        text.append(v);
-      } else if (/\.(mp3|ogg|wav|m4a)(\?|$)/i.test(m)) {
-        const audio = el("audio");
-        audio.controls = true;
-        audio.preload = "metadata";
-        audio.src = m;
-        audio.style.width = "100%";
-        text.append(audio);
-      } else text.append(link("Открыть материал", m, "text-link"));
-    }
-  }
-  $("page").append(text);
-  const end = el("div", "reader-end row between");
-  if (chapter > 0)
-    end.append(link("Предыдущая глава", base + "/" + (chapter - 1)));
-  if (chapter < chapters.length - 1)
-    end.append(
-      link("Следующая глава", base + "/" + (chapter + 1), "btn primary"),
-    );
-  else end.append(link("В каталог", back));
-  $("page").append(end);
-  $("toc-list").replaceChildren();
-  chapters.forEach((c, i) =>
-    $("toc-list").append(
-      button(
-        c.title,
-        () => {
-          $("toc-dialog").close();
-          location.hash = base + "/" + i;
-        },
-        "toc-item",
-      ),
-    ),
-  );
-  function size(delta = 0) {
-    const next = Math.max(
-      19,
-      Math.min(34, Number(getPref("reader-size", 24)) + delta),
-    );
-    setPref("reader-size", next);
-    document.documentElement.style.setProperty("--reader-size", next + "px");
-  }
-  size();
-  const key = "reading:" + (slug || "library") + ":" + id;
-  let active = 0,
-    raf = 0,
-    scrollReset = 0,
-    lastScrollY = window.scrollY;
-  const nodes = [...text.querySelectorAll("[data-paragraph]")];
-  const readerMotion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const liveNodes = new Set();
-  const visibilityObserver =
-    "IntersectionObserver" in window
-      ? new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) liveNodes.add(entry.target);
-              else liveNodes.delete(entry.target);
-            }
-            if (!raf) raf = requestAnimationFrame(update);
-          },
-          { rootMargin: "80% 0px 80% 0px", threshold: 0 },
-        )
-      : null;
-  visibilityObserver?.observe && nodes.forEach((node) => visibilityObserver.observe(node));
-
-  let dragPointer = null,
-    dragStartX = 0,
-    dragStartY = 0;
-
-  const resetReaderDrift = () => {
-    text.style.setProperty("--reader-drift-x", "0px");
-    text.style.setProperty("--reader-drift-y", "0px");
-    text.classList.remove("reader-interacting");
-  };
-
-  const pointerDown = (event) => {
-    if (!readerMotion || !event.isPrimary) return;
-    dragPointer = event.pointerId;
-    dragStartX = event.clientX;
-    dragStartY = event.clientY;
-    text.classList.add("reader-interacting");
-  };
-
-  const pointerMove = (event) => {
-    if (!readerMotion || event.pointerId !== dragPointer) return;
-    const dx = Math.max(-6, Math.min(6, (event.clientX - dragStartX) * 0.07));
-    const dy = Math.max(-5, Math.min(5, (event.clientY - dragStartY) * 0.05));
-    text.style.setProperty("--reader-drift-x", dx.toFixed(2) + "px");
-    text.style.setProperty("--reader-drift-y", dy.toFixed(2) + "px");
-  };
-
-  const pointerUp = (event) => {
-    if (event.pointerId !== dragPointer) return;
-    dragPointer = null;
-    resetReaderDrift();
-  };
-
-  if (readerMotion) {
-    text.addEventListener("pointerdown", pointerDown, { passive: true });
-    text.addEventListener("pointermove", pointerMove, { passive: true });
-    window.addEventListener("pointerup", pointerUp, { passive: true });
-    window.addEventListener("pointercancel", pointerUp, { passive: true });
-  }
-
-  function update() {
-    raf = 0;
-    const candidates = liveNodes.size ? [...liveNodes] : nodes;
-    let closest = candidates[0] || nodes[0];
-    let distance = Infinity;
-    const anchor = innerHeight * 0.46;
-
-    for (const p of candidates) {
-      const r = p.getBoundingClientRect();
-      const d =
-        r.top > anchor
-          ? r.top - anchor
-          : r.bottom < anchor
-            ? anchor - r.bottom
-            : 0;
-
-      if (d < distance) {
-        closest = p;
-        distance = d;
-      }
-
-      const signedDistance =
-        r.top > anchor
-          ? r.top - anchor
-          : r.bottom < anchor
-            ? r.bottom - anchor
-            : 0;
-
-      let opacity = 1;
-      let shift = 0;
-
-      if (readerMotion && signedDistance > 0) {
-        const t = Math.min(
-          1,
-          Math.max(0, signedDistance / Math.max(1, innerHeight - anchor)),
-        );
-        opacity = 1 - t * 0.72;
-        shift = t * 16;
-      } else if (readerMotion && signedDistance < 0) {
-        const t = Math.min(
-          1,
-          Math.abs(signedDistance) / Math.max(1, innerHeight * 0.78),
-        );
-        opacity = 1 - t * 0.22;
-        shift = -t * 3;
-      }
-
-      p.style.opacity = opacity.toFixed(3);
-      p.style.transform =
-        `translate3d(var(--reader-drift-x, 0px), calc(${shift.toFixed(2)}px + var(--reader-drift-y, 0px) + var(--reader-scroll-y, 0px)), 0)`;
-    }
-
-    if (!closest) return;
-    active = Number(closest.dataset.paragraph);
-    const mood = select.value === "neutral" ? "neutral" : closest.dataset.mood;
-    const accentColor =
-      closest.dataset.color ||
-      moodColors[mood] ||
-      moodColors.neutral;
-
-    document.documentElement.style.setProperty(
-      "--prose",
-      select.value === "neutral"
-        ? "#f6f4f8"
-        : `color-mix(in srgb, #f8f7fb 75%, ${accentColor} 25%)`,
-    );
-
-    if (!document.body.classList.contains("no-effects"))
-      sceneAudio.scene(
-        closest.dataset.audio || mood,
-        `${slug || "library"}:${id}:${chapter}:${closest.dataset.scene ?? active}`,
-      );
-    text.dataset.atmosphere = mood;
-    fill.style.width =
-      Math.round(((active + 1) / Math.max(1, nodes.length)) * 100) + "%";
-    setPref(key, { chapter, paragraph: active });
-  }
-  const scroll = () => {
-    if (readerMotion) {
-      const y = window.scrollY;
-      const delta = y - lastScrollY;
-      lastScrollY = y;
-      const drift = Math.max(-3.5, Math.min(3.5, -delta * 0.06));
-      text.style.setProperty("--reader-scroll-y", drift.toFixed(2) + "px");
-      clearTimeout(scrollReset);
-      scrollReset = setTimeout(
-        () => text.style.setProperty("--reader-scroll-y", "0px"),
-        85,
-      );
-    }
-    if (!raf) raf = requestAnimationFrame(update);
-  };
-  window.addEventListener("scroll", scroll, { passive: true });
-  select.onchange = () => {
-    setPref("reader-mood", select.value);
-    update();
-  };
-  const saved = getPref(key, null);
-  if (saved && (saved.chapter !== chapter || saved.paragraph > 0)) {
-    const b = button(
-      "Продолжить с сохранённого места",
-      () => {
-        if (saved.chapter !== chapter)
-          location.hash = base + "/" + saved.chapter;
-        else
-          nodes[Math.min(saved.paragraph, nodes.length - 1)]?.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-        b.remove();
-      },
-      "btn small",
-    );
-    header.append(b);
-  }
-  cleanup = ({ preserveAudio = false } = {}) => {
-    if (!preserveAudio) sceneAudio.stop();
-    window.removeEventListener("syolana:sceneaudio", soundState);
-    window.removeEventListener("scroll", scroll);
-    text.removeEventListener("pointerdown", pointerDown);
-    text.removeEventListener("pointermove", pointerMove);
-    window.removeEventListener("pointerup", pointerUp);
-    window.removeEventListener("pointercancel", pointerUp);
-    visibilityObserver?.disconnect();
-    liveNodes.clear();
-    clearTimeout(scrollReset);
-    cancelAnimationFrame(raf);
-  };
-  update();
-}
 function contactPage() {
-  $("page").append(
-    heading("СВЯЗАТЬСЯ С SYOLANA", "Давайте обсудим вашу идею", "Создание сайта, сотрудничество, поддержка и вопросы о материалах — в профиле Syolana на Авито."),
-  );
-  const card = el("section", "card stack contact-card contact-card-main");
-  card.append(
-    el("span", "badge", "SYOLANA · АВИТО"),
-    el("h2", "", "От идеи — к вашему сайту"),
-    el("p", "", "Расскажите, какой сайт вам нужен. Состав работы, стоимость, сроки и условия согласуем в личной переписке до оплаты."),
-    link("Открыть профиль Syolana", businessContact(), "text-link"),
-    link("Написать на Авито", businessContact(), "btn primary"),
-  );
-  $("page").append(card, el("p", "notice", "Заказы, поддержка и согласование оплаты — только в официальном профиле Syolana на Авито: avito.ru/brands/i223140984. Мы не просим переводить переписку в другие мессенджеры. Не оплачивайте заказы по сообщениям от других аккаунтов. На этом сайте нет формы оплаты и автоматических списаний. Способ оплаты зависит от правил и доступных функций Авито для конкретного объявления."));
+  const box=el("article","card stack legal-page");
+  box.append(el("h1","","Связаться с Syolana"));
+  box.append(el("h3","","Идея, сайт или языковой доступ"),el("p","","Создание сайта, условия обслуживания, ключ доступа и поддержка — в официальном профиле Syolana на Авито: avito.ru/brands/i223140984. Состав работы, цену и сроки согласуем до оплаты."));
+  box.append(el("h3","","Для заявлений о нарушении прав"),el("p","","Юридически значимые заявления принимаются по адресу syolana@yandex.ru. Не отправляйте по почте пароли, ключи доступа и реквизиты карты."));
+  box.append(link("Связаться на Авито",businessContact(),"btn"),link("Условия доступа","#/offer","text-link"),link("Как используются данные","#/privacy","text-link"));
+  $("page").append(box);
 }
 
 function terms() {
-  const box = el("article", "card stack");
-  box.append(
-    el("h1", "", "Условия тест-драйва"),
-    el(
-      "p",
-      "notice",
-      "Это предварительные условия тестовой версии. Онлайн-оплата закрыта. До платного запуска необходимы публичные сведения о владельце сайта, полная оферта и политика обработки данных с реальными реквизитами. Дополнительные сведения о конкретном заказе должны быть доступны до акцепта и оплаты.",
-    ),
-    el("h3", "", "Кто размещает материалы"),
-    el(
-      "p",
-      "",
-      "Владелец партнёрского сайта управляет своим доменом, хостингом и контентом и отвечает за наличие необходимых прав на тексты, изображения, музыку и видео. Публикации создаются, исправляются и удаляются партнёром в выбранном им источнике: публичном сообществе VK либо собственном Partner Studio. Его инфраструктура хранит и отображает ленту. Syolana предоставляет опциональное оформление, темы, плеер и иммерсивные функции.",
-    ),
-    el("h3", "", "Публикации и проверка"),
-    el(
-      "p",
-      "",
-      "Партнёр публикует материалы самостоятельно во ВКонтакте либо через редактор в своём облачном аккаунте. Syolana не создаёт и не редактирует тексты его публикаций и не обязуется проводить предварительную юридическую или редакционную проверку каждой записи. Техническая синхронизация берёт только уже публичные записи настроенного владельца страницы. При надлежащей жалобе или очевидном существенном риске Syolana может приостановить только свой подключаемый слой и прекратить сотрудничество.",
-    ),
-    el("h3", "", "Доступ и оплата"),
-    el(
-      "p",
-      "",
-      "Тест-драйв — 7 дней после предоставления готовой тестовой версии. На этапе тест-драйва предоплата и автоматические списания не требуются. После окончания подписки премиальные элементы Syolana перестают подключаться, а собственный домен, хостинг и контент партнёра остаются у него.",
-    ),
-    el("h3", "", "Данные и выгрузка"),
-    el(
-      "p",
-      "",
-      "На основном сайте в браузере сохраняются настройки темы, плеера, место чтения и учебный прогресс. Связь с Syolana и согласование оплаты происходят в официальном профиле на Авито. Партнёр управляет данными собственного сайта и редактора; доступ к его аккаунтам и порядок выгрузки согласуются отдельно.",
-    ),
-    el("h3", "", "Контакт"),
-    link("Написать на Авито", businessContact(), "text-link"),
-  );
-
+  const box=el("article","card stack legal-page");
+  box.append(el("h1","","Как заказать сайт"));
+  box.append(el("h3","","Сначала знакомство"),el("p","","Демо-сайт и редактор доступны для знакомства до заказа. Если формат подходит, состав вашего проекта, стоимость и размещение согласуются до оплаты."));
+  box.append(el("h3","","Ваш сайт и материалы"),el("p","","Вы управляете доменом, выбранным хостингом и своими материалами. После первоначальной настройки в редакторе можно выбирать и переставлять блоки, менять текст, тему, контакты и публикации. Домен и облачный аккаунт подключаются отдельно; редактор не регистрирует их автоматически."));
+  box.append(el("h3","","Публикации"),el("p","","Вы размещаете материалы через свой редактор или подключённое публичное сообщество VK и отвечаете за права на них. При подтверждённом нарушении Syolana может приостановить свой подключаемый слой. Обращения рассматриваются в пределах возможностей платформы."));
+  box.append(el("h3","","Обслуживание сайта"),el("p","","Платное обслуживание включает общие темы, обновления и личный доступ ко всем опубликованным платным языковым курсам на оплаченный период. Базовый сайт, домен и материалы остаются у вас и после окончания обслуживания. Баннер платформы является частью шаблона."));
+  box.append(link("Связаться на Авито",businessContact(),"btn"),link("Условия доступа","#/offer","text-link"),link("Как используются данные","#/privacy","text-link"));
   $("page").append(box);
 }
 
 function offerPage() {
-  const box = el("article", "card stack legal-page");
-  box.append(
-    el("h1", "", "Единые условия Syolana"),
-    el(
-      "p",
-      "notice",
-      "Сайт Syolana — пространство для чтения, самостоятельной языковой практики, музыки, живых тем и знакомства с проектом. Здесь нет оформления заказа, приёма оплаты или автоматических списаний. Конкретные материалы, услуги и цены указываются в объявлениях официального профиля Syolana на Авито. Заказ и условия оплаты обсуждаются только в переписке с этим профилем по правилам площадки. Эти условия описывают использование сайта и не заменяют индивидуальный договор по заказу.",
-    ),
-    el("h3", "", "Что предоставляет Syolana"),
-    el(
-      "p",
-      "",
-      "Syolana может настраивать партнёрский сайт, подключать Syolana Core, Partner Studio, централизованные темы, плеер, иммерсивные функции и обновления, а также предоставлять цифровые языковые продукты и отдельно согласованные творческие работы.",
-    ),
-    el("h3", "", "Сайт и публикации партнёра"),
-    el(
-      "p",
-      "",
-      "Домен, хостинг, репозиторий, тексты, изображения и иные материалы партнёра контролируются самим партнёром. Публикации поступают из открытого сообщества VK партнёра либо из его собственного Partner Studio. В режиме VK записи изменяются во VK; в режиме Studio — в редакторе на инфраструктуре партнёра. Syolana не создаёт и не редактирует эти тексты и не проводит предварительную юридическую экспертизу каждой записи.",
-    ),
-    el("h3", "", "Стоимость и тест-драйв"),
-    el(
-      "p",
-      "",
-      "Стоимость партнёрского проекта определяется индивидуально до подключения и зависит от объёма, функций и формата сотрудничества. Возможны бесплатные пилоты и специальные партнёрские условия. Тест-драйв, если он предложен, не включает автоматическое списание.",
-    ),
-    el("h3", "", "Подключаемый слой Syolana"),
-    el(
-      "p",
-      "",
-      "Право использовать платные компоненты Syolana действует в согласованный период доступа. При его окончании новые подключения иммерсивного слоя прекращаются; домен, хостинг, базовый сайт и контент партнёра остаются у владельца. Уже загруженные браузером файлы нельзя гарантированно изъять с чужого устройства. Рекламные размещения на сайте партнёра согласуются отдельно.",
-    ),
-    el("h3", "", "Прекращение сотрудничества"),
-    el(
-      "p",
-      "",
-      "Syolana сохраняет возможность вручную приостановить или прекратить подключение, в том числе при жалобе, риске нарушения закона или прав третьих лиц, нарушении условий использования либо прекращении сотрудничества. Для платного периода расчёты и возвраты производятся с учётом фактически оказанных услуг, согласованных условий и обязательных требований закона.",
-    ),
-    el("h3", "", "Жалобы"),
-    el(
-      "p",
-      "",
-      "Обычные обращения принимаются на Авито. Адрес для юридически значимых заявлений о нарушении прав указан на странице правовой информации. По обоснованной жалобе Syolana может временно отключить свой слой и передать обращение владельцу партнёрского сайта.",
-    ),
-    el("h3", "", "Персональные данные"),
-    el(
-      "p",
-      "",
-      "Основной сайт не содержит форм заказа или оплаты. Демонстрационный редактор сохраняет записи в этом браузере. Обработка обращений на Авито и локальные настройки описаны на странице конфиденциальности. Владелец реального партнёрского сайта определяет правила обработки данных на своей инфраструктуре.",
-    ),
-    el("h3", "", "Контакт"),
-    link("Написать на Авито", businessContact(), "text-link"),
-  );
+  const box=el("article","card stack legal-page");
+  box.append(el("h1","","Условия сайтов и языкового доступа"));
+  box.append(el("h3","","Два самостоятельных продукта"),el("p","","Syolana предоставляет основу сайта с оформлением и редактором, а также авторские материалы для самостоятельного изучения языков. Для языков не требуется покупать сайт. Иммерсивные книги выпускаются отдельно в проекте Артивид."));
+  box.append(el("h3","","Языковая подписка"),el("p","","690 ₽ открывают все опубликованные платные языковые курсы на 30 дней. Английский A1 бесплатен для всех. При ручной выдаче ключа срок начинается с первого входа; при онлайн-оплате — после подтверждения платёжной системой. Продление добавляет 30 дней к оставшемуся сроку или начинает новый период после его окончания. Автоматических списаний нет."));
+  box.append(el("h3","","Один готовый ключ"),el("p","","Новый покупатель получает готовый ключ без создания логина и пароля. Ключ даёт одну активную сессию: новый вход завершает предыдущую. Не передавайте его другим. При потере обратитесь в исходной переписке покупки; прежний ключ будет заменён. Прогресс и настройки хранятся в браузере и сохраняются после окончания оплаченного доступа, пока вы не очистите данные сайта."));
+  box.append(el("h3","","Что входит в курс"),el("p","","Правила с примерами, словарь, практика, повторение и браузерная озвучка. Это самостоятельные цифровые материалы без занятий с преподавателем, экзаменов и выдачи документов об образовании. Новые выпуски планируются, но подписка оплачивает доступ к уже опубликованным материалам. Озвучка зависит от устройства и установленных голосов."));
+  box.append(el("h3","","Сайты партнёров"),el("p","","Состав настройки, стоимость и период обслуживания согласуются до оплаты. Домен, хостинг и материалы контролирует партнёр. Домен, хостинг и размещение — по вашему выбору. Темы и общие обновления подключаются в оплаченный период; языковой доступ на этот период включён для одного личного пользователя. Первоначальную настройку инфраструктуры выполняем отдельно от ежедневного редактора."));
+  box.append(el("h3","","Дизайн и творческие подарки"),el("p","","Баннер Syolana входит в шаблон и ведёт на страницу платформы. Песня или отдельная тема по проекту партнёра возможны по отдельной договорённости; они не являются обязательным подарком каждому и не входят в стоимость по умолчанию."));
+  box.append(el("h3","","Оплата и возвраты"),el("p","","Цена и условия показываются до оплаты. Ручной заказ согласуется в официальном профиле на Авито. Онлайн-оплата будет доступна после завершения оформления продавца и платёжной системы. При проблеме с доступом или вопросе о возврате напишите в исходной переписке заказа; обращение рассматривается с учётом фактически предоставленного результата и обязательных прав потребителя. Прекращение продления не прекращает уже оплаченный период."));
+  box.append(el("h3","","Права на материалы"),el("p","","Курсы предназначены для личного использования. Публикация и распространение требуют разрешения правообладателя, кроме случаев, разрешённых законом. Владелец партнёрского сайта отвечает за права на собственные публикации."));
+  box.append(el("h3","","Сведения о продавце"),el("p","","Платные продажи пока закрыты. До их открытия должны быть опубликованы реальные сведения о продавце, полные условия покупки, порядок возврата и сведения об обработке данных. Syolana — название проекта, а не юридические реквизиты."));
+  box.append(link("Связаться на Авито",businessContact(),"btn"),link("Условия доступа","#/offer","text-link"),link("Как используются данные","#/privacy","text-link"));
   $("page").append(box);
 }
 
 function privacyPage() {
-  const box = el("article", "card stack legal-page");
-  box.append(
-    el("h1", "", "Конфиденциальность и данные"),
-    el(
-      "p",
-      "notice",
-      "Здесь описаны локальные настройки, сетевые запросы сайта и обращения в официальном профиле Syolana на Авито. На основном сайте нет формы заказа и приёма оплаты. Электронная переписка также может содержать персональные данные. Полные сведения о владельце и операторе обработки на сайте не указаны; эта страница не заменяет обязанность их раскрытия.",
-    ),
-    el("h3", "", "Что происходит сейчас"),
-    el(
-      "p",
-      "",
-      "Основной публичный сайт не требует обязательной регистрации. В браузере сохраняются локальные настройки темы, плеера, место чтения и учебный прогресс. Очистка данных сайта удаляет эти настройки; они не являются облачной резервной копией. Российская версия размещена в Yandex Cloud Object Storage; тестовое зеркало — на GitHub Pages. Хостинг получает сетевые данные запросов, например IP-адрес. Использование зеркала передаёт их иностранному провайдеру. Российское размещение само по себе не подтверждает полное выполнение 152-ФЗ. Браузерная озвучка зависит от голосов вашего устройства; отдельные голоса могут использовать сервис поставщика браузера или операционной системы.",
-    ),
-    el("h3", "", "Переписка на Авито"),
-    el(
-      "p",
-      "",
-      "При переходе на Авито вы используете внешнюю площадку по её правилам и политике данных. Информация, которую вы сообщаете в переписке, используется для ответа и согласования заказа. Эта страница не собирает текст обращения через собственную форму. Юридические заявления могут поступать по адресу, указанному в правовой информации.",
-    ),
-    el("h3", "", "Демонстрационный Partner Studio"),
-    el(
-      "p",
-      "",
-      "Редактор демонстрационного партнёра сохраняет созданные вами записи в локальном хранилище этого браузера. Эти записи не отправляются на сервер и не появляются у других посетителей. Реальный партнёр управляет своим редактором и данными на собственной инфраструктуре; его правила обработки данных указываются на его сайте.",
-    ),
-    el("h3", "", "Контакт"),
-    link("Написать на Авито", businessContact(), "text-link"),
-  );
+  const box=el("article","card stack legal-page");
+  box.append(el("h1","","Конфиденциальность и данные"));
+  box.append(el("h3","","Что нужно для входа"),el("p","","Для нового покупателя используется готовый ключ: сайт не просит имя, email или придуманный логин. Сервер хранит хеш ключа, случайный технический идентификатор, номер подтверждённого заказа и срок доступа. Сам ключ показывается при выдаче; сохранить его нужно у себя."));
+  box.append(el("h3","","Сессия и защита доступа"),el("p","","Cookie сессии работает до 7 дней, имеет защитные атрибуты HttpOnly, Secure и SameSite. Вход на другом устройстве завершает прежнюю сессию. Для ограничения попыток сервер кратковременно хранит хеш технических данных запроса; записи ограничения удаляются примерно через 30 минут. Прежние аккаунты сохраняются для ранее выданного доступа."));
+  box.append(el("h3","","Что остаётся на устройстве"),el("p","","Тема, громкость, учебный прогресс и место прослушивания сохраняются в браузере. Эти записи не являются облачной резервной копией. Их можно удалить вместе с данными сайта в настройках браузера. Браузерная озвучка использует установленные голоса; некоторые из них могут обращаться к сервисам поставщика устройства."));
+  box.append(el("h3","","Где работает сайт"),el("p","","Сайт использует основной и запасной адреса. Серверные функции доступа могут размещаться отдельно от публичных страниц. Хостинг получает технические данные запросов и может вести служебные журналы. На партнёрском сайте домен, хостинг и обработку данных определяет его владелец."));
+  box.append(el("h3","","Переписка и платежи"),el("p","","Для ручного заказа используется официальная переписка на Авито. Сообщённые в ней сведения нужны для заказа и поддержки. При подключённой онлайн-оплате реквизиты карты обрабатывает платёжный провайдер; сайт не хранит номер карты. Юридические заявления могут содержать персональные данные и направляются на syolana@yandex.ru."));
+  box.append(el("h3","","Редактор партнёра"),el("p","","Тестовый редактор и резервная мастерская владельца хранят черновики на устройстве. Серверный редактор сохраняет материалы через защищённый API. Перед публикацией выберите размещение и проверьте условия обработки данных. Настройки и материалы принадлежат владельцу сайта; их можно скачать."));
+  box.append(el("h3","","Правила обработки"),el("p","","Вход по ключу уменьшает объём собираемых данных, но не отменяет требований к обработке данных заказа, переписки и технических записей. До платного запуска необходимо указать фактического оператора, цели, сроки хранения и применимые основания обработки, а также проверить обязанность уведомления Роскомнадзора. Продажи до завершения этих действий закрыты."));
+  box.append(link("Связаться на Авито",businessContact(),"btn"),link("Условия доступа","#/offer","text-link"),link("Как используются данные","#/privacy","text-link"));
   $("page").append(box);
 }
 
 function legalInfo() {
-  const box = el("article", "card stack legal-page");
-  box.append(
-    el("h1", "", "Правовая информация"),
-    el(
-      "p",
-      "notice",
-      "Syolana — название проекта. Этот сайт предоставляет материалы и демонстрирует его возможности; он не принимает платежи. Заказы, общение и согласование оплаты проходят только в официальном профиле Syolana на Авито. Сведения и условия конкретного исполнителя сообщаются покупателю до заключения договора. Полные обязательные сведения о фактическом владельце сайта здесь не указаны.",
-    ),
-    el("h3", "", "Сейчас доступны"),
-    link("Единые условия Syolana", "#/offer", "text-link"),
-    link("Условия тест-драйва", "#/terms", "text-link"),
-    link("Конфиденциальность и данные", "#/privacy", "text-link"),
-    link("Подать жалобу или сообщить о нарушении", "#/report", "text-link"),
-    link("Связаться на Авито", businessContact(), "text-link"),
-    el("h3", "", "Юридические заявления о нарушении прав"),
-    el("p", "", "Адрес для заявлений, предусмотренных статьёй 15.7 149-ФЗ: syolana@yandex.ru. Для обсуждения услуг и обычной поддержки используйте Авито."),
-    el("h3", "", "Владелец сайта и исполнитель заказа"),
-    el(
-      "p",
-      "",
-      "Владелец сайта и исполнитель заказа обязаны предоставлять сведения в объёме, установленном законом. Перенос переписки и оплаты на Авито не отменяет эти обязанности. Цена, состав результата, сроки, доступ и порядок возврата согласуются до оплаты; обязательные права потребителя сохраняются. При расчётах с плательщиком НПД покупателю передаётся чек «Мой налог». Подтверждение профиля на Авито не заменяет сведения в договоре и чеке.",
-    ),
-  );
+  const box=el("article","card stack legal-page");
+  box.append(el("h1","","Правовая информация"));
+  box.append(el("h3","","О проекте"),el("p","","Syolana — название платформы шаблонов сайтов и авторских языковых материалов. Артивид — отдельный книжный проект. Syolana предоставляет темы и шаблоны; домен, хостинг и размещение выбирает владелец."));
+  box.append(el("h3","","Контакты"),el("p","","Заказы и поддержка: официальный профиль Syolana на Авито, avito.ru/brands/i223140984. Заявления о нарушении прав по статье 15.7 149-ФЗ: syolana@yandex.ru."));
+  box.append(el("h3","","До открытия продаж"),el("p","","Необходимо опубликовать реальные сведения о владельце и продавце, окончательную оферту и правила обработки данных. Сейчас приём оплаты закрыт. Цена, срок и состав конкретного заказа должны быть известны до оплаты. Обязательные права потребителя сохраняются; чек выдаётся в применимом к продавцу порядке."));
+  box.append(link("Связаться на Авито",businessContact(),"btn"),link("Условия доступа","#/offer","text-link"),link("Как используются данные","#/privacy","text-link"));
   $("page").append(box);
 }
 
@@ -1464,9 +624,6 @@ function report() {
 
 async function route() {
   const token = ++routeToken;
-  const previousLanguageTabs = $("page").querySelector(".language-tabs");
-  const switchingLanguage = previousLanguageTabs && /^#\/languages\/[^/]+\/?$/.test(location.hash);
-  const languageTabsOffset = switchingLanguage ? previousLanguageTabs.getBoundingClientRect().top : null;
   const preserveAudio = /^#\/book\//.test(location.hash) || /^#\/s\/[^/]+\/book\//.test(location.hash);
   cleanup({ preserveAudio });
   if (!preserveAudio) sceneAudio.stop();
@@ -1478,14 +635,21 @@ async function route() {
   theme.setBlocked(false);
   document.documentElement.style.setProperty("--prose", moodColors.neutral);
   $("page").replaceChildren();
-  if (!switchingLanguage) window.scrollTo({ top: 0, behavior: "instant" });
-  document.title = "Syolana · Иммерсивная платформа для творчества";
+  window.scrollTo({ top: 0, behavior: "instant" });
+  document.title = "Syolana · Темы, сайты и языки";
+  document.querySelector('#footer>span').textContent='© Syolana. Все права защищены.';
   const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
   const [view, a, b, c, d] = parts;
+  const managedView=['site','site-editor','create-site'].includes(view);
+  document.body.classList.toggle('managed-site-view',view==='site');
+  document.body.classList.toggle('managed-editor-view',view==='site-editor'||view==='create-site');
+  $('main-nav').hidden=managedView;
   const informationTitles = {
     legal: "Правовая информация", offer: "Предварительные условия",
-    privacy: "Конфиденциальность", terms: "Условия тест-драйва",
+    privacy: "Конфиденциальность", terms: "Как заказать сайт",
     report: "Обращения о нарушениях", contact: "Контакты",
+    'site':'Авторский сайт','site-editor':'Мастерская сайта','create-site':'Создать сайт',
+    'song':'История песни',
   };
   const informationView = Boolean(informationTitles[view]);
   $("banner").hidden = informationView;
@@ -1498,21 +662,14 @@ async function route() {
       x.setAttribute("aria-current", x.dataset.nav === view ? "page" : "false"),
     );
   try {
-    if (view === "home") await home(token);
-    else if (view === "library") await library(token);
-    else if (view === "languages") {
-      languages(a, b);
-      if (languageTabsOffset !== null) {
-        const tabs = $("page").querySelector(".language-tabs");
-        if (tabs) window.scrollBy({ top: tabs.getBoundingClientRect().top - languageTabsOffset, behavior: "instant" });
-        requestAnimationFrame(() => {
-          if (token !== routeToken) return;
-          const settledTabs = $("page").querySelector(".language-tabs");
-          if (settledTabs) window.scrollBy({ top: settledTabs.getBoundingClientRect().top - languageTabsOffset, behavior: "instant" });
-        });
-      }
-    }
+    if (view === 'create-site') {const next=await mountSiteCreator($('page'),{isCurrent:()=>token===routeToken});if(token===routeToken)cleanup=next||(()=>{});else next?.();}
+    else if(view==='site-editor'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) {const next=await mountManagedEditor($('page'),a,{isCurrent:()=>token===routeToken});if(token===routeToken)cleanup=next||(()=>{});else next?.();}
+    else if(view==='site'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) await mountManagedSite($('page'),a,{isCurrent:()=>token===routeToken,selectTheme:id=>theme.select(id)});
+    else if (view === "home") await home(token);
+    else if (view === "library" || view === "book") { location.replace((config.artividUrl || "artivid/") + (view === "book" ? "#/book/"+encodeURIComponent(a)+"/"+(Number(b)||0) : "#/")); return; }
+    else if (view === "languages") languages(a, b);
     else if (view === "songs") songsPage();
+    else if (view === "song") await songPage(a,token);
     else if (view === "lesson") {
       const key = [a, b, c].join("/");
       if (!lessonFiles[key]) throw Error("Этот урок пока не опубликован.");
@@ -1539,9 +696,7 @@ async function route() {
       await apiReady;
       if (token === routeToken) await studio.admin($("page"));
     } else if (view === "editor") feedEditor($("page"));
-    else if (view === "book") await reader({ id: a, chapter: b }, token);
-    else if (view === "s" && b === "book")
-      await reader({ slug: a, id: c, chapter: d }, token);
+    else if (view === "s" && b === "book") { location.replace(config.artividUrl || "artivid/"); return; }
     else if (view === "s") await publicSite(a, token);
     else if (view === "terms") terms();
     else if (view === "offer") offerPage();
@@ -1570,12 +725,12 @@ function lessonFrame(key, anchor = "") {
   if (!filename) return;
   const frame = el("iframe", "lesson-frame");
   frame.title = "Учебный материал Syolana";
-  const englishCourse = ["en/a1/course", "en/a2/course", "es/a1/course", "es/a1/rules", "es/a1/words", "es/a1/practice", "es/a2/course", "es/a2/rules", "es/a2/words", "es/a2/practice"].includes(key);
+  const englishCourse = ["en/a1/course", "en/a2/course", "es/a1/course", "es/a1/rules", "es/a1/words", "es/a1/practice", "es/a2/course", "es/a2/rules", "es/a2/words", "es/a2/practice", "fr/a1/course", "fr/a1/rules", "fr/a1/words", "fr/a1/practice"].includes(key);
   if (englishCourse) {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261008-language-4" : "") + (!anchor && /\/(rules|words|practice)$/.test(key) ? "#"+({rules:"grammar",words:"vocabulary",practice:"practice"}[key.split("/").at(-1)]) : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261009-platform-fr-a1-1" : "") + (!anchor && /\/(rules|words|practice)$/.test(key) ? "#"+({rules:"grammar",words:"vocabulary",practice:"practice"}[key.split("/").at(-1)]) : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);

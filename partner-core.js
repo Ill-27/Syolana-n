@@ -148,13 +148,13 @@ function buildBanner(config) {
 
   copy.append(
     badge,
-    make("p", "eyebrow", c.eyebrow || "ИММЕРСИВНАЯ ПЛАТФОРМА"),
+    make("p", "eyebrow", c.eyebrow || "САЙТЫ В РОССИИ · ЯЗЫКИ"),
     make("h2", "", c.title || "Ваш сайт — живой мир."),
     make(
       "p",
       "banner-description",
       c.description ||
-        "Живые темы, музыка, иммерсивные книги, языки и публикации — в одной системе.",
+        "Готовый шаблон сайта с живыми темами и размещением в России. Языки — по одной подписке.",
     ),
   );
 
@@ -220,7 +220,7 @@ function buildPlatformPitch(config) {
       "p",
       "partner-platform-pitch-text",
       c.text ||
-        "Живые 3D-темы, музыка и звуковые сцены, иммерсивные книги, языковые курсы, публикации и режим созерцания работают как одна система и обновляются вместе с Syolana.",
+        "Готовые блоки сайта, живые темы и редактор работают на общей основе Syolana. Домен, хостинг и размещение выбираете вы. Языковые курсы — отдельное направление.",
     ),
   );
 
@@ -228,7 +228,7 @@ function buildPlatformPitch(config) {
   (c.features || [
     "Живые темы",
     "Музыка",
-    "Книги со звуком",
+    "Блоки и редактор",
     "Языки",
     "Публикации",
     "Автообновления",
@@ -444,6 +444,10 @@ export async function mountPartnerCore(options = {}) {
   const player = new Player((config.songs || []).map(resolveSong));
   const theme = new ThemeEngine();
   await theme.init();
+  const partnerTheme=partner.siteSettings?.theme||partner.theme;
+  if(partnerTheme)await theme.select(partnerTheme).catch(()=>{});
+  const onPartnerTheme=e=>{if(e.detail?.theme)theme.select(e.detail.theme).catch(()=>{});};
+  window.addEventListener("syolana:partner-theme",onPartnerTheme);
 
   const flight = setupFlightLayer({
     theme,
@@ -484,6 +488,7 @@ export async function mountPartnerCore(options = {}) {
       setZen(false);
       unwireFullscreen();
       document.removeEventListener("keydown", escape);
+      window.removeEventListener("syolana:partner-theme", onPartnerTheme);
       playerUI.audio.pause();
       theme.custom?.dispose?.();
 

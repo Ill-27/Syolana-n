@@ -1,5 +1,6 @@
 import { safeHttps as checkedHttps, normalizedAccess as validateAccess,
   assetRequestUrl } from "./access.mjs";
+import { validateSiteSettings } from "./builder-model.mjs";
 
 function finishBoot() {
   if (typeof window.__partnerBootDone === "function") {
@@ -141,6 +142,24 @@ async function bootIntegration() {
       readJSON("./integration.json"),
       readJSON("./partner.json"),
     ]);
+
+    // Load the same published settings as the content shell before selecting
+    // its initial theme; an earlier shell event may have already fired.
+    if (partner) {
+      try {
+        let settings;
+        if (partner.demo === true) {
+          settings = JSON.parse(localStorage.getItem("partner-demo.settings." + partner.id) || "null");
+        } else if (partner.settingsEndpoint) {
+          const endpoint = safeHttps(partner.settingsEndpoint);
+          if (endpoint) settings = (await readJSON(endpoint))?.settings;
+        }
+        if (settings) {
+          const clean = validateSiteSettings(settings);
+          Object.assign(partner, { siteSettings: clean, theme: clean.theme });
+        }
+      } catch { /* A malformed setting cannot prevent the site from opening. */ }
+    }
 
     const access = await entitlement(config);
 

@@ -1,7 +1,13 @@
-const CONTACT_KEY = "partner-studio.contacts.v3";
+import {mountSiteBuilder} from '../site-builder.js?v=20261011-independent-1';
+import {prepareMediaUpload} from '../media-upload.mjs?v=20261009-studio-2';
+import {normalizeContacts,readDemoContacts,contactStorageKey,announceDemoUpdate} from '../contacts.mjs';
 const SESSION_KEY = "partner-studio.session.v2";
 
 const $ = (selector) => document.querySelector(selector);
+const phoneDialog=$('#phone-dialog');
+if(new URLSearchParams(location.search).get('preview')==='phone')$('#phone-preview').hidden=true;
+$('#phone-preview').onclick=()=>{const url=new URL('../',location.href);url.searchParams.set('preview','phone');$('#phone-frame').src=url.href;phoneDialog.showModal();};
+$('#close-phone-preview').onclick=()=>phoneDialog.close();
 
 function displayDate(value) {
   if (!value) return "";
@@ -281,7 +287,7 @@ function fillContacts(value = {}) {
 
 async function loadPublicContacts() {
   try {
-    const partner = await fetch("../partner.json", { cache: "no-store" }).then(
+    const partner = await fetch("../partner.json", { cache: "no-store",signal:AbortSignal.timeout(5000) }).then(
       (response) => {
         if (!response.ok) throw new Error("partner.json unavailable");
         return response.json();
@@ -292,7 +298,7 @@ async function loadPublicContacts() {
 
   if (!apiEndpoint) {
     try {
-      const saved = JSON.parse(localStorage.getItem(CONTACT_KEY) || "{}");
+      const saved = readDemoContacts(localStorage,cfg.partnerId);
       if (saved && Object.keys(saved).length) fillContacts(saved);
     } catch {}
   }
@@ -324,6 +330,7 @@ $("#login-form").addEventListener("submit", async (event) => {
     configurePublisher();
     await loadFeed();
     hideLogin();
+    await startBuilder();
     $("#contact-status").textContent =
       "Защищённые настройки подключены.";
   } catch (error) {
@@ -333,18 +340,19 @@ $("#login-form").addEventListener("submit", async (event) => {
 });
 
 $("#save-contacts").addEventListener("click", async () => {
-  const contacts = {
+  let contacts = {
     email: $("#contact-email").value.trim(),
     vk: $("#contact-vk").value.trim(),
     avito: $("#contact-avito").value.trim(),
   };
 
+  try { contacts=normalizeContacts(contacts); } catch(error) { $("#contact-status").textContent=error.message;return; }
   $("#contact-status").textContent = "Сохраняем…";
 
   if (!apiEndpoint) {
-    localStorage.setItem(CONTACT_KEY, JSON.stringify(contacts));
+    try { localStorage.setItem(contactStorageKey(cfg.partnerId), JSON.stringify(contacts));announceDemoUpdate(cfg.partnerId,"contacts"); } catch { $("#contact-status").textContent="Браузер не разрешает сохранять изменения. Включите хранение данных сайта.";return; }
     $("#contact-status").textContent =
-      "Демо: сохранено только в этом браузере.";
+      "Контакты сохранены. Они уже видны на тестовом сайте в этом браузере.";
     return;
   }
 
@@ -374,8 +382,8 @@ function configurePublisher() {
   if (!isPublisher()) return;
   $("#post-image").closest("label").hidden = isDemo();
   $("#post-video").closest("label").hidden = isDemo();
-  $("#studio-title").textContent = "Ваши публикации";
-  $("#studio-lead").textContent = "Напишите пост или получите его из VK. Фото и видео можно добавить вместе с текстом.";
+  $("#studio-title").textContent = "Место для ваших идей";
+  $("#studio-lead").textContent = "Соберите страницу, выберите тему и поделитесь новой историей. К тексту можно добавить фото и короткое видео.";
   $("#source-instruction").textContent = "Изменяйте любые записи здесь. Удаление записи VK скрывает только копию на сайте. Новая правка в VK заменяет местные изменения; скрытая копия остаётся скрытой.";
   $("#source-description").textContent = "Источник — ваше хранилище. Текст не проходит через сервер Syolana.";
   $("#publisher-help").textContent = isDemo()
@@ -408,7 +416,8 @@ $("#publisher-form").addEventListener("submit", async event => {
     const types = files.map(file => file.type.startsWith('video/') ? 'video' : 'image');
     if (files.length > 2 || new Set(types).size !== types.length) throw Error('Выберите одно фото и одно видео. Можно добавить только один файл каждого вида.');
     let demoMedia=[];
-    for (const file of files) {
+    for (const selectedFile of files) {
+      const file=await prepareMediaUpload(selectedFile);
       if(file.size>2*1024*1024)throw Error('Файл должен быть не больше 2 МБ. Для длинного видео используйте публикацию VK.');
       if (!['image/jpeg','image/png','image/webp','video/mp4','video/webm'].includes(file.type)) throw Error('Выберите JPG, PNG, WebP, MP4 или WebM.');
       const data = await readMediaFile(file);
@@ -450,7 +459,7 @@ $('#restore-post').onclick=async()=>{
 
 async function boot() {
   try {
-    cfg = await fetch("./studio-config.json", { cache: "no-store" }).then(
+    cfg = await fetch("./studio-config.json", { cache: "no-store",signal:AbortSignal.timeout(5000) }).then(
       (response) => (response.ok ? response.json() : {}),
     );
   } catch {
@@ -459,9 +468,11 @@ async function boot() {
 
   apiEndpoint = String(cfg.apiEndpoint || "").trim();
   token = sessionStorage.getItem(SESSION_KEY) || "";
+  loadPlatformDesign().catch(()=>{});
   configurePublisher();
 
   await Promise.all([loadFeed(), loadPublicContacts()]);
+  await startBuilder();
 
   if (!apiEndpoint) {
     $("#security-title").textContent = isPublisher() ? "Тестовый редактор" : "VK — источник публикаций";
@@ -473,7 +484,7 @@ async function boot() {
 
   $("#security-title").textContent = "Раздельная архитектура";
   $("#security-text").textContent =
-    "Публикации синхронизируются у партнёра; Настройки хранятся у владельца сайта в российском облаке и не зависят от подписки на оформление Syolana.";
+    "Настройки и материалы принадлежат владельцу сайта. Домен, хостинг и размещение выбирает владелец; обслуживание оформления согласуется отдельно.";
 
   if (!token) {
     showLogin();
@@ -490,3 +501,28 @@ async function boot() {
 }
 
 boot();
+
+async function loadPlatformDesign(){
+  // Independent partner sites use the existing licensed CSS delivery. Do not
+  // mirror platform fonts or alter provider-signed URLs in the neutral kit.
+  const response=await fetch('../integration.json',{cache:'no-store',signal:AbortSignal.timeout(5000)});
+  if(!response.ok)return;const integration=await response.json();
+  if(integration.environment!=='production'||integration.mode!=='active'||!integration.licenseEndpoint)return;
+  const endpoint=new URL(integration.licenseEndpoint);if(endpoint.protocol!=='https:'||endpoint.username||endpoint.password)return;
+  endpoint.searchParams.set('partnerId',integration.partnerId||'');
+  const accessResponse=await fetch(endpoint,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(6000)});if(!accessResponse.ok)return;
+  const {normalizedAccess:validateAccess,assetRequestUrl}=await import('../access.mjs');
+  const access=validateAccess(await accessResponse.json(),integration,location);if(!access.active)return;
+  const stylesheet=document.querySelector('link[href^="./studio.css"]');
+  for(const url of access.styleUrls||[]){const link=document.createElement('link');link.rel='stylesheet';link.href=assetRequestUrl(url,access,integration.environment);stylesheet.before(link);}
+}
+
+async function startBuilder(){
+ const host=document.getElementById('site-builder');if(!host)return;host.replaceChildren();
+ let partner={};try{partner=await fetch('../partner.json',{cache:'no-store',signal:AbortSignal.timeout(5000)}).then(r=>r.json());}catch{}
+ const initial={version:1,name:partner.name||'Мой проект',tagline:partner.tagline||'',description:partner.description||'',theme:'',blocks:[{id:'publications',type:'publications',title:'Публикации',text:''}]};
+ let settings=initial;if(isDemo()){try{settings=JSON.parse(localStorage.getItem('partner-demo.settings.'+cfg.partnerId)||'null')||initial;}catch{}}
+ else if(apiEndpoint&&token){try{const d=await api('/settings');settings=d.settings||initial;}catch(e){host.textContent=e.message;return;}}
+ else if(apiEndpoint){host.textContent='Войдите по ключу, чтобы менять главную страницу.';return;}
+ await mountSiteBuilder(host,{initial:settings,demo:isDemo(),contacts:false,themeBase:new URL('../../themes/',location.href),save:async value=>{if(isDemo()){localStorage.setItem('partner-demo.settings.'+cfg.partnerId,JSON.stringify(value));announceDemoUpdate(cfg.partnerId,"settings");}else await api('/settings',{method:'PUT',body:{settings:value}});}});
+}

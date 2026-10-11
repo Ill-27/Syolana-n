@@ -4007,3 +4007,18 @@ html[data-theme="white-ocean-city"] .flight-planet *{
   .course-controls {right:14px;gap:8px}
   .course-controls-audio {min-width:220px}
 }
+
+/* Shared card contrast and safe long headings on narrow screens. */
+.language-intro,.language-details,.language-level,.partner-practical,.legal-page{background:linear-gradient(125deg,#ffffff06,transparent 60%),rgba(var(--surface),.82);min-width:0;max-width:100%;}
+.card,.glass,.hero,.stack,.grid>*,.legal-page>*{min-width:0;}
+h1,h2,h3,.banner-description,.notice,.text-link{overflow-wrap:anywhere;word-break:normal;}
+.legal-page h1{font-size:clamp(2.05rem,6vw,3.8rem);line-height:1.25;max-width:100%;}
+.language-intro h2{font-size:clamp(2rem,4.6vw,3.6rem);line-height:1.2;}
+.language-intro p{max-width:68ch;}
+.language-details summary{font:600 1.15rem/1.5 var(--interface);cursor:pointer;}
+.partner-practical{margin-block:24px;}
+@media(max-width:600px){.card{padding:24px 20px;}.legal-page h1{font-size:clamp(1.9rem,8vw,2.55rem);}.language-intro,.language-details,.language-level{margin-block:18px;}.language-tabs{gap:8px;}.language-tabs .btn{padding:10px 14px;}.language-level .course-price{font-size:1.25rem;}.legal-page a{max-width:100%;}}
+
+.card.language-intro,.card.language-details,.card.language-level,.card.legal-page,.card.partner-practical{background:linear-gradient(125deg,#ffffff06,transparent 60%),rgba(var(--surface),.68)!important;}
+/* Literary pages keep the source and translation readable on phones. */
+.song-introduction{margin-block:24px}.song-poems{align-items:start;margin-block:28px}.poem-text{white-space:pre-wrap;font-family:Literata,Georgia,serif;font-size:clamp(17px,2.2vw,21px);line-height:1.85;overflow-wrap:anywhere}.song-poem h2{font-family:var(--body,system-ui);font-size:18px;line-height:1.5}.song-rights,.song-notes{margin-block:28px}.song-notes summary{cursor:pointer}.song-poems .card{min-width:0}.managed-workshop-actions{margin-bottom:40px;row-gap:16px}.managed-workspace{margin-top:20px}

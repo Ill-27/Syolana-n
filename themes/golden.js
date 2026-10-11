@@ -1,5 +1,9 @@
+import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261011-luminous-1';
 export default {
+  createRenderer:ctx=>createLuminousRenderer(ctx,"golden"),
   id: "golden",
+  marks: true,
+  cameraSmoothing: 4.2,
   renderer: "waves",
   accent: "#efd39e",
   dim: "#d8cfbf",

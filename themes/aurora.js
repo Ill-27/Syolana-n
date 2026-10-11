@@ -1,6 +1,10 @@
+import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261011-luminous-1';
 // Первая тема: палитра, свечение, звёзды и водяные знаки из вашего образца.
 export default {
+  createRenderer:ctx=>createLuminousRenderer(ctx,"aurora"),
   id: "aurora",
+  marks: true,
+  cameraSmoothing: 4.2,
   renderer: "stars",
   accent: "#d0b4ff",
   dim: "#d0cadf",

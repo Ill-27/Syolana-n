@@ -1,0 +1,61 @@
+/* Final visual pass: handwriting belongs to display headings, not controls. */
+:root{--display:"Syolana Script","Cormorant Garamond",Georgia,serif}
+.hero h1,.page-heading h1,#page>header h1,#page>section>h1,
+.card>h2,.language-level .course-level,.managed-editor-head h1,.managed-site-hero h1,
+.builder-preview>h3,.builder-preview article>h3,.studio-head h1,.studio-shell>section h2,
+.readonly-post h2{font-family:var(--display);font-weight:400;letter-spacing:.01em;line-height:1.32}
+.hero h1{line-height:1.22}
+.language-level .course-level{font-size:clamp(2.25rem,6vw,3.65rem);line-height:1.18;margin:.18em 0}
+.language-intro>h2,.partner-practical>h3{font-family:var(--display);font-weight:400;line-height:1.28}
+
+/* Language-course styles load after the shared font sheet, so keep these display
+   headings explicit and stronger than each course's local heading font. */
+.view-heading h1,.course-scroll h1,.course-scroll h2,.course-scroll h3,
+.course-hero h1,.course-hero h2,.lesson-hero h1,.lesson-hero h2,
+.course-header+* h1,.course-header+* h2{
+  font-family:var(--display)!important;
+  font-weight:400!important;
+  letter-spacing:.01em!important;
+  line-height:1.28!important;
+}
+
+/* Interface labels, tabs, actions and summaries stay compact and legible. */
+button,.btn,.button,.text-link,summary,.pill-tabs,.pill-tabs .btn,.language-tabs .btn,
+.badge,.eyebrow,input,select,textarea,label{font-family:var(--body,"Nunito",Arial,sans-serif)!important}
+.language-tabs .btn{font-size:.92rem!important;font-weight:700!important;letter-spacing:0!important}
+
+.language-intro{gap:14px}.language-intro>p{max-width:82ch;line-height:1.82}.try-first-note{margin-top:2px;padding-top:12px;border-top:1px solid rgba(216,197,239,.15);line-height:1.65}
+.language-level{gap:15px}.language-level>.btn{margin-top:18px!important}.language-level .course-price{margin-bottom:2px}.language-level .try-first-note{margin-bottom:2px}
+
+/* Complete visual theme chooser. These cards mirror the main theme gallery: a large
+   visual preview first, then a separate readable title/description area. */
+.builder-theme-picker{border:0;padding:0;margin:8px 0;min-width:0}.builder-theme-picker legend{padding:0 0 11px;color:var(--dim,#bfb8cc);font-weight:700}
+.builder-theme-choices,.managed-theme-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:12px}
+.builder-theme-choice,.managed-theme-choice{position:relative;display:grid;grid-template-rows:160px auto;min-width:0;overflow:hidden;border:1px solid rgba(218,199,242,.24);border-radius:24px;background:rgba(10,9,21,.68);cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+.builder-theme-choice:hover,.managed-theme-choice:hover{transform:translateY(-2px);border-color:rgba(224,203,255,.54)}
+.builder-theme-choice:has(input:checked),.managed-theme-choice:has(input:checked){border-color:#d9bdf8;background:rgba(206,176,246,.09);box-shadow:0 0 0 2px rgba(211,184,247,.16) inset}
+.builder-theme-choice input,.managed-theme-choice input{position:absolute!important;z-index:3;top:14px;right:14px;width:22px!important;height:22px!important;margin:0!important;accent-color:#d9bdf8}
+.builder-theme-swatch,.managed-theme-swatch{display:block;min-height:160px;width:100%;opacity:.78;filter:saturate(.86) brightness(.82);transition:opacity .18s,filter .18s;background-size:cover!important;background-position:center!important}
+.builder-theme-choice:has(input:checked) .builder-theme-swatch,.managed-theme-choice:has(input:checked) .managed-theme-swatch{opacity:1;filter:saturate(1) brightness(.98)}
+.builder-theme-copy,.managed-theme-copy{display:grid;align-content:start;gap:7px;padding:17px 18px 19px;min-width:0}
+.builder-theme-copy strong,.managed-theme-copy strong{display:block;font:400 1.55rem/1.2 var(--display);color:#f5efff;overflow-wrap:anywhere}
+.builder-theme-copy small,.managed-theme-copy small{display:block;font:500 .82rem/1.55 var(--body,"Nunito",Arial,sans-serif);color:var(--dim,#bfb8cc);overflow-wrap:anywhere}
+
+/* Do not show obsolete password/file-login surfaces in current key-only courses. */
+#loading.access-screen>.access-details,#loading.access-screen>.owner-preview{display:none!important}
+
+@media(max-width:760px){
+ .builder-theme-choices,.managed-theme-choices{grid-template-columns:1fr;gap:18px}
+ .builder-theme-choice,.managed-theme-choice{grid-template-columns:1fr;grid-template-rows:175px auto;min-height:0}
+ .builder-theme-swatch,.managed-theme-swatch{height:175px;min-height:175px}
+ .builder-theme-copy,.managed-theme-copy{padding:17px 18px 20px}
+}
+@media(max-width:600px){
+ .hero h1{font-size:clamp(3rem,14vw,5.4rem)}
+ .card>h2,.language-intro>h2,.partner-practical>h3{line-height:1.25}
+ .language-level .course-level{font-size:clamp(2.45rem,11vw,3.6rem)}
+ .view-heading h1,.course-scroll h1{font-size:clamp(2.7rem,12vw,4.3rem)!important}
+ .course-scroll h2{font-size:clamp(2rem,8.5vw,3rem)!important}
+ .language-tabs{gap:8px}.language-tabs .btn{font-size:.88rem!important;padding:9px 13px!important}
+ .language-level>.btn{margin-top:20px!important}
+}

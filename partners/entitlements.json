@@ -4,39 +4,33 @@
     "demo-partner": {
       "active": true,
       "allowedHosts": [
-        "ill-27.github.io",
-        "localhost",
-        "127.0.0.1",
+        "syolana-pilot-b1gugflkb4qcgf2vftor.website.yandexcloud.net",
+        "d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net",
         "syolana.com",
-        "www.syolana.com",
-        "d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net"
+        "www.syolana.com"
       ],
       "features": {
-        "themes": true,
-        "banner": true,
+        "immersiveTheme": true,
         "player": true,
-        "zen": true,
+        "reader": true,
         "publishing": false,
-        "marketing": false
+        "marketing": true
       }
     },
     "lana-test": {
       "active": true,
       "allowedHosts": [
-        "ill-27.github.io",
-        "localhost",
-        "127.0.0.1",
+        "syolana-pilot-b1gugflkb4qcgf2vftor.website.yandexcloud.net",
+        "d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net",
         "syolana.com",
-        "www.syolana.com",
-        "d5d8t0nr36g6la3o7n9k.4kscn31j.apigw.yandexcloud.net"
+        "www.syolana.com"
       ],
       "features": {
-        "themes": true,
-        "banner": true,
+        "immersiveTheme": true,
         "player": true,
-        "zen": true,
+        "reader": true,
         "publishing": false,
-        "marketing": false
+        "marketing": true
       }
     }
   }

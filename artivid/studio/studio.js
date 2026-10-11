@@ -1,0 +1,10 @@
+import {startStudioScene} from './scene-controls.mjs';
+startStudioScene({engineURL:new URL('../themes.js?v=20261011-workspace-6',import.meta.url).href,flightURL:new URL('../flight.js',import.meta.url).href}).catch(()=>{});
+import {mountSiteBuilder} from '../site-builder.js?v=20261011-workspace-6';
+import {installAPITransport} from "../api-transport.js?v=20261011-workspace-6";
+installAPITransport();
+let session={};const status=document.getElementById('status');
+async function request(path,body){const r=await fetch('/api/course-access/'+path,{method:body?'POST':'GET',credentials:'same-origin',cache:'no-store',headers:body?{'Content-Type':'application/json','X-CSRF-Token':session.csrf||''}:{},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(12000)});const d=await r.json();if(!r.ok)throw Error(d.error||'Не удалось открыть редактор.');return d;}
+async function open(){try{session=await request('session');const d=await request('studio/artivid/settings');const initial=d.settings||await fetch('../site-settings.json',{cache:'no-store'}).then(r=>r.json());document.getElementById('login').hidden=true;const host=document.getElementById('builder');host.hidden=false;host.replaceChildren();document.getElementById('logout').hidden=false;await mountSiteBuilder(host,{initial,books:true,themeBase:new URL('../themes/',location.href),save:value=>request('studio/artivid/settings',{settings:value})});status.textContent='Редактор подключён. Сохранённые изменения видны всем посетителям.';}catch(e){status.textContent=e.message;}}
+for(const [id,path]of[['key-form','key-login'],['owner-form','login']])document.getElementById(id).onsubmit=async e=>{e.preventDefault();const form=e.target,button=form.querySelector('button');button.disabled=true;try{session=await request(path,Object.fromEntries(new FormData(form)));form.querySelectorAll('input[type=password]').forEach(i=>i.value='');await open();}catch(e){status.textContent=e.message;}finally{button.disabled=false;}};
+document.getElementById('logout').onclick=async()=>{try{await request('logout',{});location.reload();}catch(e){status.textContent=e.message;}};open();

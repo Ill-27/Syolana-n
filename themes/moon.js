@@ -1,5 +1,9 @@
+import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261011-luminous-1';
 export default {
+  createRenderer:ctx=>createLuminousRenderer(ctx,"moon"),
   id: "moon",
+  marks: true,
+  cameraSmoothing: 4.2,
   renderer: "petals",
   accent: "#b4dbef",
   dim: "#c0d0e2",

@@ -1,4 +1,9 @@
+import {loadPublicJSON} from "../public-data.js";
+import {readDemoContacts,contactLinks,contactStorageKey} from './contacts.mjs';
+import {validateSiteSettings} from './builder-model.mjs';
+import {renderSiteBlocks} from './site-builder.js';
 async function readJSON(path) {
+  if (new URL(path,location.href).origin===location.origin && /\/(partner|feed|site-settings)\.json$/.test(new URL(path,location.href).pathname)) return loadPublicJSON(path);
   const response = await fetch(path, { cache: "no-store", credentials: "omit", signal: AbortSignal.timeout(5000) });
   if (!response.ok) throw new Error(`Не удалось загрузить ${path}`);
   return response.json();
@@ -284,7 +289,13 @@ async function boot() {
       } catch {}
     }
 
-    renderPartner(partner);
+    let settings;
+    if(partner.demo===true){try{const v=JSON.parse(localStorage.getItem('partner-demo.settings.'+partner.id)||'null');if(v)settings=validateSiteSettings(v);}catch{}}
+    else if(partner.settingsEndpoint){try{const v=await readJSON(partner.settingsEndpoint);if(v.settings)settings=validateSiteSettings(v.settings);}catch{}}
+    basePartner=structuredClone(partner);baseFeed=storedFeed;
+    if(partner.demo){const contacts=readDemoContacts(localStorage,partner.id);if(contacts)partner.contacts=contactLinks(contacts);}
+    applySettings(partner,settings);activePartner=partner;
+
 
     const posts = [...feed].filter(p=>!p.hidden).sort((a, b) =>
       String(b.publishedAt).localeCompare(String(a.publishedAt)),
@@ -304,4 +315,32 @@ async function boot() {
   }
 }
 
+let activePartner=null,basePartner=null,baseFeed=[];
+function applySettings(partner, settings){
+  if(settings)Object.assign(partner,{name:settings.name,tagline:settings.tagline,description:settings.description,siteSettings:settings,theme:settings.theme});
+  renderPartner(partner);
+  if(settings){
+    let root=document.getElementById('custom-site-blocks');
+    if(!root){root=document.createElement('div');root.id='custom-site-blocks';document.querySelector('#contact').before(root);}
+    const feedNode=document.querySelector('#feed');feedNode.parentNode?.removeChild(feedNode);
+    renderSiteBlocks(root,settings,{publications:target=>target.append(feedNode)});
+    const showsFeed=settings.blocks.some(b=>b.type==='publications');feedNode.hidden=!showsFeed;
+    if(!showsFeed)root.after(feedNode);
+    window.dispatchEvent(new CustomEvent('syolana:partner-theme',{detail:{theme:settings.theme}}));
+  }
+}
+function refreshDemo(){
+  if(!basePartner?.demo)return;
+  const partner=structuredClone(basePartner);let settings,feed=baseFeed;
+  try{const value=JSON.parse(localStorage.getItem('partner-demo.settings.'+partner.id)||'null');if(value)settings=validateSiteSettings(value);}catch{}
+  try{const value=JSON.parse(localStorage.getItem('partner-demo.feed.'+partner.id)||'null');if(Array.isArray(value))feed=value;}catch{}
+  const contacts=readDemoContacts(localStorage,partner.id);if(contacts)partner.contacts=contactLinks(contacts);
+  applySettings(partner,settings);activePartner=partner;
+  const posts=[...feed].filter(p=>!p.hidden).sort((a,b)=>String(b.publishedAt).localeCompare(String(a.publishedAt)));
+  renderFilters(posts,partner,category=>renderFeed(posts,category));renderFeed(posts);
+}
+window.addEventListener('storage',e=>{if(!basePartner?.demo)return;const id=basePartner.id;if(e.key===null||[contactStorageKey(id),'partner-studio.contacts.v3','partner-demo.settings.'+id,'partner-demo.feed.'+id].includes(e.key))refreshDemo();});
+window.addEventListener('pageshow',refreshDemo);
+window.addEventListener('syolana:demo-update',e=>{if(e.detail?.id===basePartner?.id)refreshDemo();});
+try{const channel=new BroadcastChannel('syolana-demo');channel.onmessage=e=>{if(e.data?.id===basePartner?.id)refreshDemo();};}catch{}
 boot();

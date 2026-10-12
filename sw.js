@@ -1,8 +1,8 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'i18n-20261012-1';
+const CACHE=PREFIX+'i18n-20261012-2';
 const BASE=new URL('./',self.location.href);
-const assets=['index.html','boot.js','styles.css','config.json','language-switcher.js?v=20261012-i18n-1','i18n.js?v=20261012-i18n-1'].map(path=>new URL(path,BASE).href);
+const assets=['index.html','boot.js','styles.css','config.json','language-switcher.js?v=20261012-i18n-2','i18n.js?v=20261012-i18n-2'].map(path=>new URL(path,BASE).href);
 const SCENE_RELEASE='20261012-refined-1';
 async function cacheScenes(cache){
  const modules=['aurora.js','golden.js','moon.js','violet-bloom.js','living-sea.js','amber-forest.js','white-ocean-city.js','sky-camera.mjs','scene-quality.mjs','world-gl.mjs','celestial-world.mjs','botanical-world.mjs'];

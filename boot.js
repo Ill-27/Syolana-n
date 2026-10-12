@@ -35,7 +35,7 @@ window.addEventListener("hashchange", () => {
 if (/^#\/lesson\/(?:en\/a[12]\/course|es\/a[12]\/(?:course|rules|words|practice))(?:\/|$)/.test(location.hash)) {
   document.body.classList.add("course-reading");
 }
-const release = new URL(import.meta.url).searchParams.get("v") || "20261011-worlds-2";
+const release = new URL(import.meta.url).searchParams.get("v") || "20261012-copy-1";
 const appURL = new URL("./app.js?v=20261011-worlds-2", import.meta.url);
 appURL.searchParams.set("v", release);
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -47,7 +47,7 @@ importWithRetry(appURL.href,2).then(async () => {
     if ("requestIdleCallback" in window) requestIdleCallback(register,{timeout:5000});
     else setTimeout(register,1500);
   }
-  const extras = ["polish.js","refinements.js","theme-sound.js","positioning.js","copy-polish.js"].map(name =>
+  const extras = ["polish.js","refinements.js","theme-sound.js","positioning.js","copy-polish.js","public-polish.js"].map(name =>
     importWithRetry("./"+name+"?v="+encodeURIComponent(release),2)
   );
   const results = await Promise.allSettled(extras);

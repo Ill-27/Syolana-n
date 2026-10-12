@@ -1,6 +1,6 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'bloom-control-20261012-1';
+const CACHE=PREFIX+'bloom-control-20261012-2';
 const BASE=new URL('./',self.location.href);
 const assets=['index.html','boot.js','styles.css','config.json','language-switcher.js?v=20261012-i18n-3','content-i18n.js?v=20261012-i18n-3','i18n.js?v=20261012-i18n-2'].map(path=>new URL(path,BASE).href);
 const SCENE_RELEASE='20261012-bloom-control-1';
@@ -13,6 +13,7 @@ function publicRequest(request){
  const url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin||request.headers.has('Authorization'))return false;
  if(url.pathname.includes('/api/')||url.pathname.startsWith('/personal-atlas/')||url.pathname.startsWith('/_deploy/'))return false;
+ if(url.pathname.includes('/partner-demo/')||/\/partner\/?$/.test(url.pathname))return false;
  if([...url.searchParams.keys()].some(k=>/token|key|signature|credential/i.test(k)))return false;
  if(/\/courses\/(?!en-a1\/)[^/]+\/(?:data|pronunciation)\.json$/.test(url.pathname))return false;
  if(/\/(?:api-transport|course-api-bridge|course-trial-warning|owner-vault|device-access|positioning|sketch-builder|copy-polish|public-polish|content-i18n)\.m?js$/.test(url.pathname))return false;

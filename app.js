@@ -4,7 +4,7 @@ import songDetails from './song-details.json' with {type:'json'};
 import {finishUI} from './render-ui.js';
 import {positionView,clearPositionView} from './positioning.js';
 import {loadPublicJSON} from "./public-data.js?v=20261011-poems-2";
-import { lessonFiles } from "./catalog.js?v=20261009-platform-fr-a1-1";
+import { lessonFiles } from "./catalog.js?v=20261012-fr-a2-1";
 import { mountCourseBranding } from "./course-branding.js?v=20261007-language-marks-3";
 import {
   $,
@@ -731,7 +731,7 @@ function lessonFrame(key, anchor = "") {
   if (!filename) return;
   const frame = el("iframe", "lesson-frame");
   frame.title = "Учебный материал Syolana";
-  const englishCourse = ["en/a1/course", "en/a2/course", "es/a1/course", "es/a1/rules", "es/a1/words", "es/a1/practice", "es/a2/course", "es/a2/rules", "es/a2/words", "es/a2/practice", "fr/a1/course", "fr/a1/rules", "fr/a1/words", "fr/a1/practice"].includes(key);
+  const englishCourse = ["en/a1/course", "en/a2/course", "es/a1/course", "es/a1/rules", "es/a1/words", "es/a1/practice", "es/a2/course", "es/a2/rules", "es/a2/words", "es/a2/practice", "fr/a1/course", "fr/a1/rules", "fr/a1/words", "fr/a1/practice", "fr/a2/course", "fr/a2/rules", "fr/a2/words", "fr/a2/practice"].includes(key);
   if (englishCourse) {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
@@ -915,3 +915,5 @@ async function openLesson(key, anchor, token) {
   }
   lessonFrame(key, anchor);
 }
+
+

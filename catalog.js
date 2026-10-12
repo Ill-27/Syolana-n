@@ -1,4 +1,8 @@
 export const lessonFiles = {
+  "fr/a2/course": "a2-french.html",
+  "fr/a2/rules": "a2-french.html",
+  "fr/a2/words": "a2-french.html",
+  "fr/a2/practice": "a2-french.html",
   "en/a1/course": "a1-english.html",
   "en/a2/course": "a2-english.html",
   "es/a1/course": "a1-spanish.html",

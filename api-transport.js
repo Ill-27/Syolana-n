@@ -1,5 +1,5 @@
 import accessService from './access-service.json' with {type:'json'};
-import {createOwnerVault} from './owner-vault.mjs';
+import {createOwnerVault} from './owner-vault.mjs?v=20261012-fr-a2-1';
 import {createLocalWorkshop} from './local-workshop.mjs';
 // Only public API reads may be retried. A timed-out write can already have
 // reached the server; repeating it on a second host could publish twice.
@@ -111,3 +111,5 @@ export function installAPITransport() {
   }catch{}
 
 }
+
+

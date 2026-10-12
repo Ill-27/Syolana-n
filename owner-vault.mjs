@@ -1,5 +1,5 @@
 const SESSION_KEY = 'syolana.owner.reserve.v1';
-const COURSES = ['en-a2', 'es-a1', 'es-a2', 'fr-a1'];
+const COURSES = ['en-a2', 'es-a1', 'es-a2', 'fr-a1', 'fr-a2'];
 const encode = bytes => btoa(String.fromCharCode(...bytes));
 const decode = text => Uint8Array.from(atob(text), c => c.charCodeAt(0));
 const json = (value, status = 200) => new Response(JSON.stringify(value), {status, headers:{'Content-Type':'application/json', 'Cache-Control':'no-store'}});

@@ -1,5 +1,5 @@
 import {attachPaymentControls} from './payment-ui.js?v=20261009-platform-1';
-import {installAPITransport} from '../api-transport.js';
+import {installAPITransport} from '../api-transport.js?v=20261012-fr-a2-1';
 if(typeof window!=='undefined')installAPITransport();
 const AVITO='https://www.avito.ru/brands/i223140984';
 const node=(tag,value='',cls='')=>{const n=document.createElement(tag);n.textContent=value;if(cls)n.className=cls;return n;};

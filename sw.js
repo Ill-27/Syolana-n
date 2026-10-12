@@ -1,8 +1,8 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'i18n-20261012-2';
+const CACHE=PREFIX+'i18n-20261012-3';
 const BASE=new URL('./',self.location.href);
-const assets=['index.html','boot.js','styles.css','config.json','language-switcher.js?v=20261012-i18n-2','i18n.js?v=20261012-i18n-2'].map(path=>new URL(path,BASE).href);
+const assets=['index.html','boot.js','styles.css','config.json','language-switcher.js?v=20261012-i18n-3','content-i18n.js?v=20261012-i18n-3','i18n.js?v=20261012-i18n-2'].map(path=>new URL(path,BASE).href);
 const SCENE_RELEASE='20261012-refined-1';
 async function cacheScenes(cache){
  const modules=['aurora.js','golden.js','moon.js','violet-bloom.js','living-sea.js','amber-forest.js','white-ocean-city.js','sky-camera.mjs','scene-quality.mjs','world-gl.mjs','celestial-world.mjs','botanical-world.mjs'];
@@ -15,7 +15,7 @@ function publicRequest(request){
  if(url.pathname.includes('/api/')||url.pathname.startsWith('/personal-atlas/')||url.pathname.startsWith('/_deploy/'))return false;
  if([...url.searchParams.keys()].some(k=>/token|key|signature|credential/i.test(k)))return false;
  if(/\/courses\/(?!en-a1\/)[^/]+\/(?:data|pronunciation)\.json$/.test(url.pathname))return false;
- if(/\/(?:api-transport|course-api-bridge|course-trial-warning|owner-vault|device-access|positioning|sketch-builder|copy-polish|public-polish)\.m?js$/.test(url.pathname))return false;
+ if(/\/(?:api-transport|course-api-bridge|course-trial-warning|owner-vault|device-access|positioning|sketch-builder|copy-polish|public-polish|content-i18n)\.m?js$/.test(url.pathname))return false;
  if(url.pathname.includes('/owner-vault/'))return false;
  if(url.pathname.endsWith('/song-details.json'))return false;
  if(url.pathname.endsWith('.json'))return /\/(config|feed|partner|studio-config|site-settings|manifest)\.json$/.test(url.pathname);

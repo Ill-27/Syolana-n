@@ -2,121 +2,46 @@
   "brand": "Syolana",
   "banner": {
     "eyebrow": "ЖИВЫЕ ШАБЛОНЫ · АВТОРСКИЕ ЯЗЫКОВЫЕ КУРСЫ",
-    "title": "Дизайн-система для живых сайтов",
-    "description": "Соберите эскиз сами или расскажите о проекте. Syolana превращает структуру и материалы в дизайнерский шаблон с живыми темами и передаёт готовый HTML-файл. Хостинг и домен выбираете вы.",
-    "media": {
-      "type": "video",
-      "src": "",
-      "poster": "",
-      "alt": "Творческое пространство Syolana"
-    },
+    "title": "Живой дизайн для вашего сайта",
+    "description": "Соберите эскиз сами или расскажите о проекте. Syolana превращает ваши материалы в дизайнерский шаблон с живыми темами и передаёт готовый HTML-файл. Хостинг и домен выбираете вы.",
+    "media": {"type": "video", "src": "", "poster": "", "alt": "Творческое пространство Syolana"},
     "links": [
-      {
-        "label": "Собрать эскиз",
-        "href": "#/create-site"
-      },
-      {
-        "label": "Попробовать английский A1",
-        "href": "#/lesson/en/a1/course"
-      }
+      {"label": "Собрать эскиз", "href": "#/create-site"},
+      {"label": "Попробовать английский A1", "href": "#/lesson/en/a1/course"}
     ],
-    "features": [
-      "Один готовый HTML-файл",
-      "Ваш хостинг и домен",
-      "Живые темы Syolana"
-    ],
+    "features": ["Один готовый HTML-файл", "Ваш хостинг и домен", "Живые темы Syolana"],
     "invitation": "Ваш эскиз → дизайнерская доработка → готовый сайт-файл"
   },
   "songs": [
-    {
-      "title": "¿Qué es poesía?",
-      "artist": "Syolana",
-      "src": "español-songs/qué_es_poesía.mp3",
-      "sourceTitle": "Густаво Адольфо Беккер · Rima XXI",
-      "sourceUrl": "#/song/becquer",
-      "id": "becquer"
-    },
-    {
-      "title": "Cultivo una rosa blanca",
-      "artist": "Syolana",
-      "src": "español-songs/rosa_blanca.mp3",
-      "sourceTitle": "Хосе Марти · Белая роза",
-      "sourceUrl": "#/song/marti",
-      "id": "marti"
-    },
-    {
-      "title": "El león y el ratón",
-      "artist": "Syolana",
-      "src": "español-songs/león_y_ratón.mp3",
-      "sourceTitle": "Феликс Мария де Саманьего · Лев и мышь",
-      "sourceUrl": "#/song/samaniego",
-      "id": "samaniego"
-    }
+    {"title": "¿Qué es poesía?", "artist": "Syolana", "src": "español-songs/qué_es_poesía.mp3", "sourceTitle": "Густаво Адольфо Беккер · Rima XXI", "sourceUrl": "#/song/becquer", "id": "becquer"},
+    {"title": "Cultivo una rosa blanca", "artist": "Syolana", "src": "español-songs/rosa_blanca.mp3", "sourceTitle": "Хосе Марти · Белая роза", "sourceUrl": "#/song/marti", "id": "marti"},
+    {"title": "El león y el ratón", "artist": "Syolana", "src": "español-songs/león_y_ratón.mp3", "sourceTitle": "Феликс Мария де Саманьего · Лев и мышь", "sourceUrl": "#/song/samaniego", "id": "samaniego"}
   ],
-  "plan": {
-    "pricing": "custom",
-    "priceRub": null,
-    "name": "Шаблоны Syolana"
-  },
-  "feed": {
-    "file": "feed.json",
-    "siteSlug": ""
-  },
+  "plan": {"pricing": "custom", "priceRub": null, "name": "Шаблоны Syolana"},
+  "feed": {"file": "feed.json", "siteSlug": ""},
   "languageProgram": {
     "status": "published",
     "freeCourse": "en/A1",
-    "subscription": {
-      "plan": "languages",
-      "priceRub": 690,
-      "days": 30,
-      "autoRenew": false,
-      "allPublishedPaidCourses": true,
-      "partnerIncluded": false
-    },
-    "publishedPaidCourses": [
-      "en-a2",
-      "es-a1",
-      "es-a2",
-      "fr-a1"
-    ]
+    "subscription": {"plan": "languages", "priceRub": 690, "days": 30, "autoRenew": false, "allPublishedPaidCourses": true, "partnerIncluded": false},
+    "publishedPaidCourses": ["en-a2", "es-a1", "es-a2", "fr-a1"]
   },
   "partnerBanner": {
     "eyebrow": "ОФОРМЛЕНО НА SYOLANA",
     "title": "Живые темы и дизайнерский шаблон",
     "description": "Этот сайт оформлен на Syolana. Владелец сам размещает сайт и управляет своими материалами; Syolana предоставляет шаблон, живые темы и визуальные обновления.",
-    "media": {
-      "type": "video",
-      "src": "",
-      "poster": "",
-      "alt": "Творческое пространство Syolana"
-    },
+    "media": {"type": "video", "src": "", "poster": "", "alt": "Творческое пространство Syolana"},
     "links": [
-      {
-        "label": "Посмотреть Syolana",
-        "href": "#/join"
-      },
-      {
-        "label": "Попробовать английский A1",
-        "href": "#/lesson/en/a1/course"
-      }
+      {"label": "Посмотреть Syolana", "href": "#/join"},
+      {"label": "Попробовать английский A1", "href": "#/lesson/en/a1/course"}
     ],
-    "features": [
-      "Готовый HTML-файл",
-      "Живые темы",
-      "Своя площадка"
-    ],
+    "features": ["Готовый HTML-файл", "Живые темы", "Своя площадка"],
     "invitation": "Оформление — от Syolana · содержание и размещение — у владельца"
   },
   "partnerPitch": {
     "eyebrow": "SYOLANA · ДИЗАЙН-СИСТЕМА ДЛЯ ЖИВЫХ САЙТОВ",
     "title": "Ваш проект — в дизайнерском шаблоне",
-    "text": "Соберите эскиз сами или пришлите материалы. После согласования вы получаете готовый HTML-файл, сами размещаете его на выбранном хостинге и управляете публикациями. Если источник поддерживает официальную интеграцию, новые публичные записи могут появляться на сайте автоматически.",
-    "features": [
-      "Один готовый файл",
-      "Ваши публикации",
-      "Живые темы",
-      "Ваш хостинг и домен"
-    ],
+    "text": "Соберите эскиз сами или пришлите материалы. После согласования вы получаете готовый HTML-файл, сами размещаете его на выбранном хостинге и управляете публикациями. Если ваш открытый источник поддерживает такое подключение, новые публичные записи могут появляться на сайте автоматически.",
+    "features": ["Один готовый файл", "Ваши публикации", "Живые темы", "Ваш хостинг и домен"],
     "primaryLabel": "Собрать эскиз",
     "primaryHref": "#/create-site",
     "secondaryLabel": "Попробовать английский A1",
@@ -124,29 +49,13 @@
     "note": "Шаблоны и языковые курсы — два самостоятельных направления Syolana."
   },
   "contactChannels": {
-    "website": {
-      "type": "avito",
-      "url": "https://www.avito.ru/brands/i223140984"
-    },
-    "languages": {
-      "type": "avito",
-      "url": "https://www.avito.ru/brands/i223140984"
-    },
-    "general": {
-      "type": "avito",
-      "url": "https://www.avito.ru/brands/i223140984"
-    }
+    "website": {"type": "avito", "url": "https://www.avito.ru/brands/i223140984"},
+    "languages": {"type": "avito", "url": "https://www.avito.ru/brands/i223140984"},
+    "general": {"type": "avito", "url": "https://www.avito.ru/brands/i223140984"}
   },
   "salesMode": "external-inquiry",
   "commercialReady": false,
   "legalContactEmail": "syolana@yandex.ru",
-  "subscription": {
-    "plan": "languages",
-    "priceRub": 690,
-    "days": 30,
-    "autoRenew": false,
-    "allPublishedPaidCourses": true,
-    "partnerIncluded": false
-  },
+  "subscription": {"plan": "languages", "priceRub": 690, "days": 30, "autoRenew": false, "allPublishedPaidCourses": true, "partnerIncluded": false},
   "artividUrl": "artivid/"
 }

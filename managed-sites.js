@@ -28,8 +28,7 @@ function login(host,onSuccess){
 }
 function attribution(position='bottom'){
  const section=node('aside','','card managed-attribution managed-attribution-'+position);const logo=node('img');logo.src='assets/logo.svg';logo.alt='';logo.width=50;logo.height=50;
- const text=node('div');text.append(node('h3',position==='top'?'Этот сайт создан на Syolana':'Syolana · сайты и языки'),node('p',position==='top'?'Syolana даёт автору живые темы, шаблон и редактор. Домен, хостинг и размещение — по вашему выбору.':'Создайте своё пространство на Syolana или изучайте языки по одной подписке.'));
- const row=node('div','','row');row.append(link('Создать свой сайт','#/create-site','btn'),link('Изучать языки','#/languages','btn'));section.append(logo,text,row);return section;
+ const text=node('div');text.append(link('Темы и оформление — Syolana','https://syolana.com/','text-link'));section.append(logo,text);return section;
 }
 function postsView(posts){
  const list=node('section','','managed-posts');
@@ -108,4 +107,4 @@ export async function mountManagedEditor(host,site,{isCurrent=()=>true}={}){
  await open();return()=>{disposed=true;};
 }
 
-async function downloadSite(value,site){const archive=await createSiteArchive(value),url=URL.createObjectURL(archive),a=link('Скачать',url);a.download='syolana-'+site+'.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+async function downloadSite(value,site){if(!value.license){try{const info=await request('session'),registry=await request('admin/partner-registry');const row=registry.sites.find(r=>r.siteId===site);if(row)value.license={partnerId:row.partnerId,domain:row.domain,endpoint:info.partnerLicenseEndpoint};}catch{}}const archive=await createSiteArchive(value),url=URL.createObjectURL(archive),a=link('Скачать',url);a.download='syolana-'+site+'.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}

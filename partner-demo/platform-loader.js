@@ -195,11 +195,15 @@ async function bootIntegration() {
         assetBase: access.assetBase,
       });
 
+      if(handle?.active===false){removeRemoteStyles();return;}
       let checking = false;
       let expiryTimer;
 
       const revoke = async () => {
         clearTimeout(expiryTimer);
+        clearInterval(interval);
+        document.removeEventListener("visibilitychange",onVisibility);
+        window.removeEventListener("syolana:attribution-lost",revoke);
         try { await handle?.destroy?.(); }
         finally {
           removeRemoteStyles();
@@ -234,7 +238,7 @@ async function bootIntegration() {
       };
 
       document.addEventListener("visibilitychange", onVisibility);
-      const interval = setInterval(revalidate, 60 * 1000);
+      const interval = setInterval(revalidate, 10 * 1000);
       const scheduleExpiry = (current) => {
         clearTimeout(expiryTimer);
         if (config.environment === "production")
@@ -244,6 +248,7 @@ async function bootIntegration() {
             document.removeEventListener("visibilitychange", onVisibility);
           }, Math.max(0, current.expires - Date.now()));
       };
+      window.addEventListener("syolana:attribution-lost",revoke,{once:true});
       scheduleExpiry(access);
     } catch (error) {
       removeRemoteStyles();

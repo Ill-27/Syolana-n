@@ -112,6 +112,7 @@ const FALLBACK_THEMES=[
 ];
 export class ThemeEngine {
   async init() {
+    this.destroyed=false;
     if(!document.getElementById('syolana-scene-softness')){const style=document.createElement('style');style.id='syolana-scene-softness';style.textContent=SOFT_SCENE_CSS;document.head.append(style);}
     this.canvas = document.querySelector("#starCanvas");
     this.ctx = this.canvas.getContext("2d");
@@ -194,6 +195,7 @@ export class ThemeEngine {
     document.fonts?.ready.then(() => this.draw(0));
   }
   async select(id,{force=false}={}) {
+    if(this.destroyed)return;
     if(!force&&this.id===id&&this.theme)return;
     const seq = ++this.sequence;
     const item = this.manifest.find((t) => t.id === id);
@@ -482,6 +484,7 @@ export class ThemeEngine {
   }
   // One scene in both modes. The camera projects the same particles, marks and waves.
   draw(d) {
+    if(this.destroyed)return;
     const ctx = this.ctx;
     if (!ctx || !this.stars) return;
     ctx.clearRect(0, 0, this.w, this.h);
@@ -854,8 +857,13 @@ export class ThemeEngine {
     };draw(0);
   }
 
+  destroy() {
+    if(this.destroyed)return;this.destroyed=true;++this.sequence;
+    cancelAnimationFrame(this.frame);cancelAnimationFrame(this.previewFrame);clearTimeout(this.resizeTimer);
+    this.custom?.dispose?.();this.custom=null;this.sceneAudio?.stop?.();
+  }
   sync() {
-    if (!this.reduced) return;
+    if (this.destroyed || !this.reduced) return;
     cancelAnimationFrame(this.frame);
     this.last = 0;
     const stopped =
@@ -871,6 +879,7 @@ export class ThemeEngine {
     }
     let sampleFrames=0,sampleStart=0;
     const tick = t => {
+      if(this.destroyed)return;
       const elapsed=this.last?(t-this.last)/1000:1/60;
       if(this.last&&t-this.last<(document.body.classList.contains("zen")?1000/60:1000/30)){this.frame=requestAnimationFrame(tick);return;}
       this.last=t;this.draw(Math.min(elapsed,.1));

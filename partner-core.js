@@ -1,3 +1,4 @@
+import {ATTRIBUTION_TEXT,protectAttribution} from './attribution-guard.js';
 const CORE_BASE = new URL("./", import.meta.url);
 let mounted = null;
 
@@ -410,15 +411,24 @@ export async function mountPartnerCore(options = {}) {
   shell.append(main);
   if (footer) shell.append(footer);
 
+  const previousRootStyle=document.documentElement.getAttribute("style");
+  const previousBodyStyle=document.body.getAttribute("style");
   buildBackground();
+  const attribution=make("aside","syolana-attribution");
+  attribution.dataset.syolanaInjected="true";
+  const attributionLink=make("a","",ATTRIBUTION_TEXT);
+  attributionLink.href="https://syolana.com/";attributionLink.target="_blank";attributionLink.rel="noopener noreferrer";attribution.append(attributionLink);document.body.append(attribution);
+  const attributionStyle=make("style");attributionStyle.dataset.syolanaInjected="true";attributionStyle.textContent=".syolana-attribution{position:fixed;left:12px;bottom:12px;z-index:80;background:rgba(12,15,25,.9);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:7px 11px;max-width:calc(100vw - 24px)}.syolana-attribution a{display:block!important;color:#fff!important;font:12px/1.4 system-ui,sans-serif!important;text-decoration:none;opacity:1}";document.head.append(attributionStyle);
   const controls = buildTopBar(partner);
   const config = await readJSON("config.json");
   // Promotional placements require the partner's separate opt-in and a
   // completed advertising compliance review. Basic attribution is separate.
-  const promotions = features?.marketing === true && partner?.marketing?.approved === true;
+  const marketing=partner?.marketing || {};
+  const promotions = features?.marketing === true && marketing.approved === true && /^[A-Za-z0-9_-]{8,200}$/.test(marketing.erid || "") && typeof marketing.advertiserName === "string" && marketing.advertiserName.trim().length>0;
   let zenAction = null;
   if (promotions) {
     const built = buildBanner(config);
+    built.banner.append(make("p","fine","Реклама · Рекламодатель: "+marketing.advertiserName+" · erid: "+marketing.erid));
     zenAction = built.zenAction;
     shell.prepend(buildPlatformPitch(config));
     shell.prepend(built.banner);
@@ -480,28 +490,33 @@ export async function mountPartnerCore(options = {}) {
   };
   document.addEventListener("keydown", escape);
 
+  let stopAttribution=()=>{};
+  let destroyed=false;
   mounted = {
+    get active(){return !destroyed;},
     theme,
     player,
     setZen,
     destroy() {
+      if(destroyed)return;destroyed=true;stopAttribution();
       setZen(false);
       unwireFullscreen();
       document.removeEventListener("keydown", escape);
       window.removeEventListener("syolana:partner-theme", onPartnerTheme);
       playerUI.audio.pause();
-      theme.custom?.dispose?.();
-
-      document
-        .querySelectorAll("[data-syolana-injected='true']")
-        .forEach((node) => node.remove());
+      theme.destroy?.();
+      flight.destroy?.();
+      document.querySelectorAll("link[data-platform-remote]").forEach(node=>node.remove());
 
       if (shell.isConnected) {
         parent.insertBefore(main, shell);
         if (footer) parent.insertBefore(footer, shell);
         shell.remove();
       }
-
+      document.querySelectorAll("[data-syolana-injected='true']").forEach(node=>node.remove());
+      for(const [element,old]of [[document.documentElement,previousRootStyle],[document.body,previousBodyStyle]]){
+        if(old===null)element.removeAttribute("style");else element.setAttribute("style",old);
+      }
       if (fallbackHeader) fallbackHeader.hidden = false;
       document.documentElement.classList.remove("syolana-active");
       document.body.classList.remove("partner-site", "syolana-active", "zen");
@@ -509,5 +524,7 @@ export async function mountPartnerCore(options = {}) {
     },
   };
 
-  return mounted;
+  const handle=mounted;
+  stopAttribution=protectAttribution(attributionLink,"https://syolana.com/",()=>{handle.destroy();window.dispatchEvent(new CustomEvent("syolana:attribution-lost"));},{watermark:document.getElementById("starCanvas")});
+  return handle;
 }

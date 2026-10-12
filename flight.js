@@ -41,6 +41,9 @@ export function setupFlightLayer({
   const existing = document.getElementById("flight-layer");
   if (existing) return existing;
 
+  const cleanups=[];
+  const listen=(target,event,handler,options)=>{if(!target)return;target.addEventListener(event,handler,options);cleanups.push(()=>target.removeEventListener(event,handler,options));};
+  let resizeObserver;
   const layer = el("div");
   layer.id = "flight-layer";
   layer.hidden = true;
@@ -67,14 +70,14 @@ export function setupFlightLayer({
   const measurePlayer = () => updateFlightSpacing(layer,document.getElementById("music-dock"),hint);
   if (typeof ResizeObserver !== "undefined") {
     const dock = document.getElementById("music-dock");
-    const observer=new ResizeObserver(measurePlayer);
+    const observer=new ResizeObserver(measurePlayer);resizeObserver=observer;
     if (dock) observer.observe(dock);
     observer.observe(hint);
     for(const card of layer.querySelectorAll('.flight-planet'))observer.observe(card);
     observer.observe(layer);
   }
-  window.addEventListener("resize", measurePlayer, { passive: true });
-  window.visualViewport?.addEventListener('resize',measurePlayer,{passive:true});
+  listen(window,"resize", measurePlayer, { passive: true });
+  listen(window.visualViewport,'resize',measurePlayer,{passive:true});
   document.fonts?.ready.then(measurePlayer);
   measurePlayer();
   for (const node of layer.querySelectorAll(".flight-planet")) {
@@ -304,7 +307,7 @@ export function setupFlightLayer({
     { passive: false },
   );
 
-  document.addEventListener("keydown", (e) => {
+  listen(document,"keydown", (e) => {
     if (
       !document.body.classList.contains("zen") ||
       e.target.closest("dialog,input,textarea,select")
@@ -327,5 +330,6 @@ export function setupFlightLayer({
     }
   });
 
+  layer.destroy=()=>{resizeObserver?.disconnect();for(const cleanup of cleanups)cleanup();pointers.clear();layer.remove();};
   return layer;
 }

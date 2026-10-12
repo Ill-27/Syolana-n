@@ -24,6 +24,7 @@ function rememberToken(storage, value) {
 export function createAPITransport({ nativeFetch, origin, storage, origins = API_ORIGINS, timeout = 3500, vault, workshop, preferService = () => false }) {
   let preferred = 0;
   let reserveMode = false;
+  let onlineOwner = false;try{onlineOwner=storage?.getItem('syolana.owner.server.v1')==='1'&&!!storedToken(storage);}catch{}
   const bridged = true;
   return async (input, init = {}) => {
     const original = input instanceof Request ? input : null;
@@ -45,8 +46,8 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
       if(!vault)return null;
       const local=await vault.handle(url.pathname,method,decodedBody);
       if(local){
-        if(url.pathname.endsWith('/key-login')||url.pathname.endsWith('/session'))reserveMode=true;
-        if(url.pathname.endsWith('/logout'))reserveMode=false;
+        if(url.pathname.endsWith('/key-login')||url.pathname.endsWith('/session')){reserveMode=true;onlineOwner=false;}
+        if(url.pathname.endsWith('/logout')){reserveMode=false;onlineOwner=false;rememberToken(storage,'');try{storage?.removeItem('syolana.owner.server.v1');}catch{}}
         return local;
       }
       if(vault.isOwner()&&workshop&&url.pathname.includes('/studio/'))return workshop.handle(url.pathname,method,decodedBody);
@@ -55,7 +56,9 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
     if(callerSignal?.aborted)throw callerSignal.reason||new DOMException('Aborted','AbortError');
 
     const ownerFirst = url.pathname.endsWith('/key-login') || reserveMode || vault?.isOwner() || !preferService();
-    if(ownerFirst){const local=await localReply();if(local)return local;}
+    const connectOwner=decodedBody.onlineOnly===true&&url.pathname.endsWith('/key-login');
+    const localStudio=vault?.isOwner()&&url.pathname.includes('/studio/')&&!preferService();
+    if(localStudio||(ownerFirst&&!connectOwner&&!onlineOwner)){const local=await localReply();if(local)return local;}
 
     let lastResponse;
     for (const index of read ? order : order.slice(0, 1)) {
@@ -68,22 +71,24 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
       try {
         const response = await nativeFetch(target.href, {
           ...init, method, body, headers, signal: controller.signal,
-          credentials: index < 0 ? 'same-origin' : 'include', cache: 'no-store',
+          credentials: index < 0 ? 'same-origin' : 'omit', cache: 'no-store',
         });
         lastResponse = response;
-        if(!read&&TRANSIENT.has(response.status)&&url.pathname.endsWith('/key-login')){const local=await localReply();if(local)return local;}
+        if(!connectOwner&&!read&&TRANSIENT.has(response.status)&&url.pathname.endsWith('/key-login')){const local=await localReply();if(local)return local;}
         if (read && TRANSIENT.has(response.status)) continue;
         if (index >= 0 && !TRANSIENT.has(response.status)) preferred = index;
-        if (response.ok && url.pathname.endsWith('/key-login')) {
+        if (response.ok && /\/(?:key-login|login|activate)$/.test(url.pathname)) {
           const data = await response.clone().json().catch(() => null);
           if (data?.sessionToken) rememberToken(storage, data.sessionToken);
+          if(data?.owner===true&&connectOwner){onlineOwner=true;reserveMode=false;try{storage?.setItem('syolana.owner.server.v1','1');}catch{}}
         }
-        if (response.ok && url.pathname.endsWith('/logout')) rememberToken(storage, '');
+        if (response.ok && url.pathname.endsWith('/logout')){rememberToken(storage,'');onlineOwner=false;try{storage?.removeItem('syolana.owner.server.v1');}catch{}}
+        if(onlineOwner&&read&&response.status===401){onlineOwner=false;rememberToken(storage,'');try{storage?.removeItem('syolana.owner.server.v1');}catch{}const local=await localReply();if(local)return local;}
         return response;
       } catch (error) {
         if (callerSignal?.aborted) throw callerSignal.reason || error;
         if (!read) {
-          if(url.pathname.endsWith('/key-login')){const local=await localReply();if(local)return local;}
+          if(!connectOwner&&url.pathname.endsWith('/key-login')){const local=await localReply();if(local)return local;}
           throw new Error(NETWORK_MESSAGE, { cause: error });
         }
       } finally {
@@ -91,7 +96,7 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
         callerSignal?.removeEventListener('abort', abort);
       }
     }
-    if(read||url.pathname.endsWith('/key-login')){const local=await localReply();if(local)return local;}
+    if(!connectOwner&&(read||url.pathname.endsWith('/key-login'))){const local=await localReply();if(local)return local;}
     if (lastResponse) return lastResponse;
     throw new Error(NETWORK_MESSAGE);
   };
@@ -107,7 +112,7 @@ export function installAPITransport() {
   const origins=[...API_ORIGINS];let primaryReady=false;
   window.fetch = createAPITransport({ nativeFetch, origin: location.href, storage, origins, vault, workshop:createLocalWorkshop(),preferService:()=>primaryReady });
   try{
-    if(accessService?.ready===true){const url=new URL(accessService.origin);if(url.protocol==='https:'&&!url.username&&!url.password&&!url.search&&!url.hash&&url.pathname==='/'){origins.unshift(url.origin);primaryReady=true;}}
+    if(accessService?.ready===true){const url=new URL(accessService.origin);if(url.protocol==='https:'&&!url.username&&!url.password&&!url.search&&!url.hash&&url.pathname==='/'){origins.splice(0,origins.length,url.origin);primaryReady=true;}}
   }catch{}
 
 }

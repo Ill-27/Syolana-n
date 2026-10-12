@@ -2,7 +2,7 @@ import "./device-access.js?v=20261011-device-bound-1";
 import "./language-switcher.js?v=20261012-i18n-3";
 import "./public-polish.js?v=20261012-i18n-3";
 import "./positioning.js?v=20261012-i18n-3";
-import "./content-i18n.js?v=20261012-i18n-3";
+import "./content-i18n-loader.js?v=20261012-i18n-4";
 import {installAPITransport} from "./api-transport.js?v=20261011-owner-failover-1";
 const oldStudioPath = /^\/partner\/?$/.test(location.pathname);
 if (oldStudioPath) {

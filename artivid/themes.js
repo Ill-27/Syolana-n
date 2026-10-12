@@ -1,5 +1,16 @@
 import { getPref, setPref, notify } from "./utils.js";
+import {themeTypography} from "./themes/theme-typography.mjs?v=20261012-bloom-control-1";
 const SOFT_SCENE_CSS=`
+@media screen{
+body{color:var(--page-text);--heading-ink:var(--page-heading);--label-ink:var(--page-label);--muted-ink:var(--page-muted);--heading-shadow:var(--page-heading-shadow)}
+body:is(.reading,.course-reading,.managed-editor-view){--heading-ink:var(--panel-label);--label-ink:var(--panel-label);--muted-ink:var(--panel-muted);--heading-shadow:0 1px 5px rgba(0,0,0,.35);color:var(--panel-text)}
+body :is(.card,.glass,.banner,dialog,.notice,.topbar,.top-actions,.main-nav,.btn,.provider-notice,.discovery-tip,.hero>p.muted,.managed-editor,.site-editor,.reader-surface,.course-scroll,.scene-toggle,.reader-toolbar,.music-dock,.flight-planet){--heading-ink:var(--panel-label);--label-ink:var(--panel-label);--muted-ink:var(--panel-muted);--heading-shadow:0 1px 5px rgba(0,0,0,.25);color:var(--panel-text)}
+body :is(h1,h2,h3){color:var(--heading-ink)!important;opacity:1;text-shadow:var(--heading-shadow)!important}
+body .hero h1 em{color:var(--heading-ink)!important}
+body :is(.eyebrow,.text-link){color:var(--label-ink)!important;opacity:1}
+body :is(.muted,.fine,.section-heading p,.builder-theme-copy small,.managed-theme-copy small){color:var(--muted-ink)!important}
+body .flight-hint{opacity:1!important;color:var(--panel-text)!important;background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:20px;padding:7px 12px;max-width:calc(100% - 28px);text-shadow:none!important}
+}
 body #starCanvas,body .theme-world-canvas{filter:none!important;transition:filter .45s ease,opacity .45s ease;transform:translateZ(0)!important}
 body:not(.zen):is(.reading,.course-reading,.managed-editor-view) #starCanvas,body:not(.zen):is(.reading,.course-reading,.managed-editor-view) .theme-world-canvas,body:not(.zen):has(.editor,.builder-editor,#site-builder) #starCanvas,body:not(.zen):has(.editor,.builder-editor,#site-builder) .theme-world-canvas{filter:blur(1.35px) saturate(.96) brightness(.96)!important;transform:translateZ(0) scale(1.012)!important}
 body #starCanvas{z-index:-1!important}
@@ -35,21 +46,21 @@ const FALLBACK_THEMES=[
   {
     "id": "aurora",
     "name": "Северное сияние",
-    "description": "Прежняя палитра и живые звёзды · мягкие объёмные завесы без линий горизонта",
+    "description": "Переливчатое сияние и живые звёзды · мягкие световые завесы в бескрайнем небе",
     "module": "./aurora.js",
     "preview": "linear-gradient(135deg,#031127,#147e78,#692c92)"
   },
   {
     "id": "golden",
     "name": "Золотые струны",
-    "description": "Прежние золотые переливы и звёзды · струны с глубиной и мягкими бликами",
+    "description": "Золотые переливы и звёзды · тонкие струны в бескрайнем пространстве",
     "module": "./golden.js",
     "preview": "linear-gradient(135deg,#21192b,#70502f,#181626)"
   },
   {
     "id": "moon",
     "name": "Лунный сад",
-    "description": "Прежний лунный сад · светящаяся луна, качающиеся растения и летящие лепестки",
+    "description": "Светящаяся луна, качающиеся растения и летящие лепестки",
     "module": "./moon.js",
     "preview": "linear-gradient(135deg,#122a38,#40517b,#1b193e)"
   },
@@ -156,7 +167,7 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-atmosphere-2";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-bloom-control-1";
     if (version) url.searchParams.set("v", version);
     let module;try{module=await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
     if (seq !== this.sequence) return;
@@ -174,17 +185,18 @@ export class ThemeEngine {
       sceneCanvas.addEventListener('webglcontextrestored',()=>{if(this.id===id)this.select(id,{force:true}).catch(()=>{});},{signal:this.sceneEvents.signal});
     }
     this.id = id;
-    const s = document.documentElement.style;
+    const s = document.documentElement.style, ink=themeTypography(theme,this.phase||0);
     for (const [k, v] of Object.entries({
       accent: theme.accent,
       dim: theme.dim,
       surface: theme.surface,
       radius: theme.radius,
-      "panel-bg": theme.panel?.bg || `rgba(${theme.surface},.68)`,
+      "panel-bg": ink.panelBackground,
+      "page-text":ink.pageText,"page-muted":ink.pageMuted,"page-heading":ink.pageHeading,"page-label":ink.pageLabel,"page-heading-shadow":ink.headingShadow,"panel-label":ink.panelLabel,
       "panel-border": theme.panel?.border || "rgba(224,211,255,.20)",
       "panel-glow": theme.panel?.glow || "rgba(190,160,245,.14)",
-      "panel-text": theme.panel?.text || "#f8f6ff",
-      "panel-muted": theme.panel?.muted || theme.dim,
+      "panel-text": ink.panelText,
+      "panel-muted": ink.panelMuted,
       "button-radius": theme.buttonRadius || "30px",
     }))
       s.setProperty("--" + k, v);
@@ -193,6 +205,7 @@ export class ThemeEngine {
       if (theme.backgrounds?.[i]) s.setProperty(name, theme.backgrounds[i]);
       else s.removeProperty(name);
     }
+    this.pageTone=ink.pageHeading;this.nextInkAt=0;
     document.documentElement.dataset.theme = id;
     document.querySelector("#theme-name").textContent = item.name;
     setPref("theme", id);
@@ -200,7 +213,7 @@ export class ThemeEngine {
     this.resize(true);
     this.updateChoices();
     this.sync();
-    this.selectedShip=null;this.updateFlightHint();
+    this.selectedObject=null;this.updateFlightHint();
     window.dispatchEvent(new CustomEvent("syolana:theme"));
   }
   updateChoices() {
@@ -437,6 +450,7 @@ export class ThemeEngine {
     if (!ctx || !this.stars) return;
     ctx.clearRect(0, 0, this.w, this.h);
     this.phase += d;
+    if(this.theme.pageToneAt&&this.phase>=(this.nextInkAt||0)){this.nextInkAt=this.phase+.5;const ink=themeTypography(this.theme,this.phase);if(this.pageTone!==ink.pageHeading){const style=document.documentElement.style;for(const [key,value]of Object.entries({'page-text':ink.pageText,'page-muted':ink.pageMuted,'page-heading':ink.pageHeading,'page-label':ink.pageLabel,'page-heading-shadow':ink.headingShadow}))style.setProperty('--'+key,value);this.pageTone=ink.pageHeading;}}
     if (this.zen) this.advanceCamera(d);
     if(!this.sceneLost)this.custom?.draw?.({
       delta: d,
@@ -644,7 +658,7 @@ export class ThemeEngine {
   setZen(active) {
     this.zen = active;
     this.custom?.clearSelection?.();
-    this.selectedShip=null;
+    this.selectedObject=null;
     this.updateFlightHint();
     this.custom?.resize?.({width:this.w,height:this.h,ratio:this.ratio*(this.qualityScale||1)});
     this.forwardFlightUntil = 0;
@@ -761,14 +775,22 @@ export class ThemeEngine {
   selectAt(x,y,clear=false) {
     if(!this.zen||!this.custom?.selectAt)return;
     const slot=this.custom.selectAt(x,y,clear);
-    this.selectedShip=slot>=0?slot:null;
+    this.selectedObject=slot>=0?slot:null;
     if(slot>=0)this.settle();
     this.updateFlightHint();
   }
+  rotateSelected(dx,dy) {
+    return this.zen&&this.custom?.rotateSelected?.(dx,dy);
+  }
+  get flowerSelected() { return this.theme?.id==='violet-bloom'&&this.selectedObject!=null; }
   updateFlightHint() {
     const hint=document.querySelector('.flight-hint');if(!hint)return;
-    hint.textContent=this.zen&&this.selectedShip!=null
-      ? `Корабль ${this.selectedShip+1} · свайп — курс · два пальца — глубина · касание моря — свободный полёт`
+    hint.textContent=this.theme?.id==='violet-bloom'
+      ? this.selectedObject!=null
+        ? 'Цветок · один палец — вращать · два — перемещать · щипок — глубина · касание фона — отпустить'
+        : 'Коснитесь цветка, чтобы вращать и перемещать · свайп по фону — полёт'
+      : this.zen&&this.selectedObject!=null
+      ? `Корабль ${this.selectedObject+1} · свайп — курс · два пальца — глубина · касание моря — свободный полёт`
       : this.theme?.id==='living-sea'
         ? 'Коснитесь корабля, чтобы управлять · свайп по морю — свободный полёт'
         : 'Свайп — в стороны и вверх · два пальца — вперёд и назад';
@@ -785,7 +807,7 @@ export class ThemeEngine {
         if(!rect.width||!rect.height||rect.bottom<0||rect.top>innerHeight||rect.right<0||rect.left>innerWidth)continue;
         const id=canvas.dataset.preview,c=canvas.getContext('2d');if(!c)continue;
         let poster=this.previewImages.get(id);
-        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261012-atmosphere-2',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
+        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261012-bloom-control-1',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
         if(!poster.complete||!poster.naturalWidth)continue;
         const w=canvas.width,h=canvas.height,zoom=this.reduced.matches?1:1.035+Math.sin(time/1000*.14)*.012;
         const base=Math.max(w/poster.naturalWidth,h/poster.naturalHeight),dw=poster.naturalWidth*base*zoom,dh=poster.naturalHeight*base*zoom;

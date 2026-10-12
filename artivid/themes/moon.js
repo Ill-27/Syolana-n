@@ -1,4 +1,4 @@
-import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261012-atmosphere-2';
+import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261012-bloom-control-1';
 export default {
   createRenderer:ctx=>createLuminousRenderer(ctx,"moon"),
   id: "moon",

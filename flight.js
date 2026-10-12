@@ -126,7 +126,10 @@ export function setupFlightLayer({
             ? 175
             : Math.max(360, Math.min(innerWidth, innerHeight));
 
-        if (theme.theme?.pathDepthGestures) {
+        if(theme.flowerSelected){
+          if(e.shiftKey)theme.move(dx/260,-dy/260,0);
+          else theme.rotateSelected?.(dx/panScale,-dy/panScale);
+        } else if (theme.theme?.pathDepthGestures) {
           theme.move(
             dx / (panScale * 0.82),
             -dy / (panScale * 2.15),
@@ -167,7 +170,7 @@ export function setupFlightLayer({
   let touchTap = null;
   let touchLast = null;
   let touchPinch = 0;
-  let touchCenterY = 0;
+  let touchCenterY = 0, touchCenterX = 0;
 
   const touchDistance = (list) => {
     if (list.length < 2) return 0;
@@ -193,6 +196,7 @@ export function setupFlightLayer({
         touchLast = null;
         touchPinch = touchDistance(e.touches);
         touchCenterY = (e.touches[0].clientY + e.touches[1].clientY) * 0.5;
+        touchCenterX = (e.touches[0].clientX + e.touches[1].clientX) * 0.5;
       }
     },
     { passive: false },
@@ -215,7 +219,9 @@ export function setupFlightLayer({
             ? theme.theme.gesturePanScale
             : Math.min(innerWidth, innerHeight) <= 700 ? 74 : 180;
 
-          if (theme.theme?.pathDepthGestures) {
+          if(theme.flowerSelected){
+            theme.rotateSelected?.(dx/scale,-dy/scale);
+          } else if (theme.theme?.pathDepthGestures) {
             theme.move(
               dx / (scale * 1.05),
               -dy / (scale * 2.25),
@@ -235,8 +241,14 @@ export function setupFlightLayer({
 
         let dz = 0;
         if (touchPinch && next) dz += Math.log(next / touchPinch) * 9;
-        if (touchCenterY) dz += (touchCenterY - centerY) / 28;
-        if (Math.abs(dz) > 0.001) theme.move(0, 0, dz);
+        const centerX=(e.touches[0].clientX+e.touches[1].clientX)*.5;
+        if(theme.flowerSelected){
+          theme.move((centerX-touchCenterX)/260,(touchCenterY-centerY)/260,dz);
+        }else{
+          if (touchCenterY) dz += (touchCenterY - centerY) / 28;
+          if (Math.abs(dz) > 0.001) theme.move(0, 0, dz);
+        }
+        touchCenterX=centerX;
 
         touchPinch = next;
         touchCenterY = centerY;
@@ -257,6 +269,7 @@ export function setupFlightLayer({
       touchLast = null;
       touchPinch = 0;
       touchCenterY = 0;
+      touchCenterX = 0;
     }
   };
 

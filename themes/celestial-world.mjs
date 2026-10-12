@@ -1,4 +1,4 @@
-import {createGLWorld,FULLSCREEN_VS,LIGHT_GLSL,perspective,lookAt,multiply} from './world-gl.mjs?v=20261012-atmosphere-2';
+import {createGLWorld,FULLSCREEN_VS,LIGHT_GLSL,perspective,lookAt,multiply} from './world-gl.mjs?v=20261012-bloom-control-1';
 import {createSceneMotion} from './scene-motion.mjs';
 import {createLuminousRenderer} from './luminous-atmosphere.js';
 

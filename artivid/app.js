@@ -17,8 +17,8 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261012-atmosphere-2";
-import { SceneAudio } from "./scene-audio.js?v=20261012-atmosphere-2";
+import { ThemeEngine } from "./themes.js?v=20261012-bloom-control-1";
+import { SceneAudio } from "./scene-audio.js?v=20261012-bloom-control-1";
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
   $("page").focus();

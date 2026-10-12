@@ -1,4 +1,4 @@
-import {sceneResolution} from './scene-quality.mjs?v=20261012-atmosphere-2';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-bloom-control-1';
 // Shared scene resources, colour response and soft optical bloom.
 export const FULLSCREEN_VS=`#version 300 es
 precision highp float;precision highp int;
@@ -67,12 +67,13 @@ export function createGLWorld(ctx,kind,{exposure=1,bloom=.3,vignette=.14,resolut
  const uniforms=new Map();
  function loc(p,name){let m=uniforms.get(p);if(!m){m=new Map();uniforms.set(p,m);}if(!m.has(name))m.set(name,gl.getUniformLocation(p,name));return m.get(name);}
  function mesh(geometry,instances=null){
+  const dynamic=[];
   const vao=keep(gl.createVertexArray(),gl.deleteVertexArray);gl.bindVertexArray(vao);
-  const attr=(data,location,size,divisor=0)=>{if(!data)return;const b=keep(gl.createBuffer(),gl.deleteBuffer);gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,data instanceof Float32Array?data:new Float32Array(data),gl.STATIC_DRAW);gl.enableVertexAttribArray(location);gl.vertexAttribPointer(location,size,gl.FLOAT,false,0,0);if(divisor)gl.vertexAttribDivisor(location,divisor);};
-  attr(geometry.positions,0,3);attr(geometry.normals,1,3);attr(geometry.uvs,2,2);if(instances){attr(instances.a,3,4,1);attr(instances.b,4,4,1);}
+  const attr=(data,location,size,divisor=0,live=false)=>{if(!data)return;const b=keep(gl.createBuffer(),gl.deleteBuffer);gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,data instanceof Float32Array?data:new Float32Array(data),live?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);if(live)dynamic.push([location,b]);gl.enableVertexAttribArray(location);gl.vertexAttribPointer(location,size,gl.FLOAT,false,0,0);if(divisor)gl.vertexAttribDivisor(location,divisor);};
+  attr(geometry.positions,0,3);attr(geometry.normals,1,3);attr(geometry.uvs,2,2);if(instances){attr(instances.a,3,4,1);attr(instances.b,4,4,1);attr(instances.c,5,4,1,true);attr(instances.d,6,4,1,true);}
   const index=keep(gl.createBuffer(),gl.deleteBuffer),data=geometry.indices.length>65535?new Uint32Array(geometry.indices):new Uint16Array(geometry.indices);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,index);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,data,gl.STATIC_DRAW);gl.bindVertexArray(null);
-  return{vao,count:data.length,type:data instanceof Uint32Array?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,instances:instances?instances.a.length/4:1};
+  return{vao,count:data.length,type:data instanceof Uint32Array?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,instances:instances?instances.a.length/4:1,updateInstances(values){for(const [location,buffer] of dynamic){const value=values[location===5?'c':'d'];if(value){gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferSubData(gl.ARRAY_BUFFER,0,value);}}}};
  }
  function draw(m){gl.bindVertexArray(m.vao);gl.drawElementsInstanced(gl.TRIANGLES,m.count,m.type,0,m.instances);}
  function resize({width,height,ratio:r=1}){

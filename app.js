@@ -15,7 +15,7 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261012-atmosphere-2";
+import { ThemeEngine } from "./themes.js?v=20261012-bloom-control-1";
 import { Player } from "./player.js";
 import { API } from "./api.js";
 import { lessons } from "./content.js";

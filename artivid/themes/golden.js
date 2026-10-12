@@ -1,4 +1,4 @@
-import {createCelestialRenderer} from './celestial-world.mjs?v=20261012-atmosphere-2';
+import {createCelestialRenderer} from './celestial-world.mjs?v=20261012-bloom-control-1';
 export default {
   createRenderer:ctx=>createCelestialRenderer(ctx,"golden"),
   id: "golden",

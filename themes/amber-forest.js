@@ -1,6 +1,6 @@
-import {createThemeAudio} from './theme-audio.mjs?v=20261012-atmosphere-2';
-import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-atmosphere-2';
-import {sceneResolution} from './scene-quality.mjs?v=20261012-atmosphere-2';
+import {createThemeAudio} from './theme-audio.mjs?v=20261012-bloom-control-1';
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-bloom-control-1';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-bloom-control-1';
 import {createSceneMotion} from './scene-motion.mjs';
 import {createFallingLeafField,sampleLeafFall} from './leaf-motion.mjs?v=20261011-fall-1';
 const TAU=Math.PI*2;

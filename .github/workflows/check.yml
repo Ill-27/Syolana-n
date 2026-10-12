@@ -25,3 +25,5 @@ jobs:
         run: node tests/test_worlds.mjs
       - name: Check theme interactions and audio recovery
         run: node tests/test_theme_experience.mjs
+      - name: Check flower control and theme text contrast
+        run: node tests/test_bloom_controls.mjs

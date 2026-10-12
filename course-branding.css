@@ -29,3 +29,7 @@ body.syolana-course-protected input,body.syolana-course-protected textarea,body.
 @media print{.course-attribution-layer{inset:0;z-index:1000}.course-attribution-mark{color:#555;opacity:.2}.course-attributed-card::after{color:#555;opacity:.35}}
 
 body.zen .course-attribution-layer{display:none}
+
+/* Readable pronunciation and topic labels inside embedded lessons. */
+.embedded .topic-number,.embedded .pair .ipa,.embedded .precise-ipa{opacity:1!important}
+.embedded :is(.card-label,.instruction-label,.progress-row,.topic-copy small,.word-head .ru,.pair .ru){color:var(--panel-muted,var(--course-muted))}

@@ -1,7 +1,7 @@
 import { el, link } from "./utils.js";
 
 export const FLIGHT_HINT =
-  "Свайп — в стороны и вверх · два пальца — вперёд и назад";
+  "Мышь: тяните фон, колесо — глубина. Экран: свайп — направление, щипок — глубина.";
 
 export const PLATFORM_FLIGHT_OFFERS = [
   ["Ваш сайт, ваша атмосфера", "Обсудить свой сайт на Авито", "https://www.avito.ru/brands/i223140984"],
@@ -17,6 +17,20 @@ export function platformFlightOffers(baseURL = document.baseURI) {
     subtitle,
     href.startsWith("#") ? new URL(href, baseURL).href : href,
   ]);
+}
+
+export function updateFlightSpacing(layer,dock,hint,viewportBottom=innerHeight){
+  const layerBox=layer.getBoundingClientRect?.(),dockBox=dock?.getBoundingClientRect?.(),hintBox=hint?.getBoundingClientRect?.();
+  const bottom=layerBox?.height?layerBox.bottom:viewportBottom;
+  const bottomGap=Math.max(16,dockBox?.height?bottom-dockBox.bottom:16);
+  const cards=[...layer.querySelectorAll('.flight-planet')].filter(node=>!node.hidden);
+  const cardHeight=Math.ceil(Math.max(0,...cards.map(node=>node.getBoundingClientRect?.().height||0)));
+  const hintHeight=Math.ceil(hintBox?.height||0);
+  layer.style.setProperty('--zen-player-space',bottomGap+'px');
+  layer.style.setProperty('--zen-hint-height',hintHeight+'px');
+  layer.style.setProperty('--zen-card-bottom',bottomGap+'px');
+  layer.style.setProperty('--zen-hint-bottom',(bottomGap+(cardHeight?cardHeight+10:0))+'px');
+  return{bottomGap,cardHeight,hintHeight};
 }
 
 export function setupFlightLayer({
@@ -46,20 +60,22 @@ export function setupFlightLayer({
     layer.append(a);
   }
 
-  layer.append(el("p", "flight-hint", FLIGHT_HINT));
+  const hint=el("p", "flight-hint", FLIGHT_HINT);
+  layer.append(hint);
   document.body.append(layer);
 
-  const measurePlayer = () => {
-    const dock = document.getElementById("music-dock");
-    const box = dock?.getBoundingClientRect();
-    const space = box?.height ? innerHeight - box.top : 28;
-    layer.style.setProperty("--zen-player-space", Math.max(28, space) + "px");
-  };
+  const measurePlayer = () => updateFlightSpacing(layer,document.getElementById("music-dock"),hint);
   if (typeof ResizeObserver !== "undefined") {
     const dock = document.getElementById("music-dock");
-    if (dock) new ResizeObserver(measurePlayer).observe(dock);
+    const observer=new ResizeObserver(measurePlayer);
+    if (dock) observer.observe(dock);
+    observer.observe(hint);
+    for(const card of layer.querySelectorAll('.flight-planet'))observer.observe(card);
+    observer.observe(layer);
   }
   window.addEventListener("resize", measurePlayer, { passive: true });
+  window.visualViewport?.addEventListener('resize',measurePlayer,{passive:true});
+  document.fonts?.ready.then(measurePlayer);
   measurePlayer();
   for (const node of layer.querySelectorAll(".flight-planet")) {
     node.addEventListener("pointerenter", () => { layer.dataset.cardEngaged = "true"; });

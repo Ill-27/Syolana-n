@@ -1,12 +1,12 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'bloom-control-20261012-2';
+const CACHE=PREFIX+'zen-polish-20261012-1';
 const BASE=new URL('./',self.location.href);
 const assets=['index.html','boot.js','styles.css','config.json','language-switcher.js?v=20261012-i18n-3','content-i18n.js?v=20261012-i18n-3','i18n.js?v=20261012-i18n-2'].map(path=>new URL(path,BASE).href);
-const SCENE_RELEASE='20261012-bloom-control-1';
+const SCENE_RELEASE='20261012-zen-polish-1';
 async function cacheScenes(cache){
  const modules=['aurora.js','golden.js','moon.js','violet-bloom.js','living-sea.js','amber-forest.js','white-ocean-city.js','sky-camera.mjs','scene-quality.mjs','world-gl.mjs','celestial-world.mjs','botanical-world.mjs','sea-interaction.mjs','wildflowers.mjs','flower-interaction.mjs','theme-typography.mjs','theme-audio.mjs'];
- const paths=['scene-audio.js','scene-audio.js?v='+SCENE_RELEASE,'theme-sound.js?v='+SCENE_RELEASE,'flight.js','utils.js','themes/manifest.json','themes/scene-motion.mjs','themes/luminous-atmosphere.js','themes/luminous-atmosphere.js?v='+SCENE_RELEASE,'themes/leaf-motion.mjs?v=20261011-fall-1','themes/sea-motion.mjs?v=20261011-sea13','themes.js?v='+SCENE_RELEASE,...modules.map(p=>'themes/'+p+'?v='+SCENE_RELEASE)];
+ const paths=['player.js?v='+SCENE_RELEASE,'scene-audio.js','scene-audio.js?v='+SCENE_RELEASE,'theme-sound.js?v='+SCENE_RELEASE,'flight.js','utils.js','themes/manifest.json','themes/scene-motion.mjs','themes/luminous-atmosphere.js','themes/luminous-atmosphere.js?v='+SCENE_RELEASE,'themes/leaf-motion.mjs?v=20261011-fall-1','themes/sea-motion.mjs?v=20261011-sea13','themes.js?v='+SCENE_RELEASE,...modules.map(p=>'themes/'+p+'?v='+SCENE_RELEASE)];
  await Promise.all(paths.map(async path=>{const url=new URL(path,BASE).href;try{const response=await fetch(url,{cache:'reload',credentials:'omit',signal:AbortSignal.timeout(5000)});if(response.ok)await cache.put(url,response);}catch{}}));
 }
 function publicRequest(request){

@@ -15,8 +15,8 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261012-bloom-control-1";
-import { Player } from "./player.js";
+import { ThemeEngine } from "./themes.js?v=20261012-zen-polish-1";
+import { Player } from "./player.js?v=20261012-zen-polish-1";
 import { API } from "./api.js";
 import { lessons } from "./content.js";
 import { Studio } from "./studio.js";
@@ -102,7 +102,7 @@ function zen(active) {
 }
 $("zen-toggle").onclick = () => zen(!document.body.classList.contains("zen"));
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && document.body.classList.contains("zen")) zen(false);
+  if (e.key === "Escape" && document.body.classList.contains("zen") && !document.querySelector("dialog[open]")) zen(false);
 });
 const fullscreen = $("fullscreen");
 function fullUpdate() {

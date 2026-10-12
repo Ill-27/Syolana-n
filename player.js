@@ -1,4 +1,7 @@
 import { $, el, safeURL, getPref, setPref, notify } from "./utils.js";
+export function playerMorphFrames(before,after,viewportHeight){
+  return[before,after].map((box,i)=>({left:box.left+'px',right:'auto',bottom:(viewportHeight-box.bottom)+'px',width:box.width+'px',maxWidth:box.width+'px',height:box.height+'px',minHeight:'0px',borderRadius:i?'50%':'24px',transform:'none'}));
+}
 export class Player {
   constructor(songs) {
     this.audio = $("audio");
@@ -21,6 +24,8 @@ export class Player {
       $("player-dialog").showModal();
       $("player-expand").setAttribute("aria-expanded", "true");
     };
+    $("player-expand").setAttribute('aria-label','Открыть музыкальный плеер');
+    this.initDockMotion();
     $("player-dialog").addEventListener("close", () =>
       $("player-expand").setAttribute("aria-expanded", "false"),
     );
@@ -130,6 +135,26 @@ export class Player {
       );
     this.update();
   }
+  initDockMotion(){
+    const dock=$("music-dock"),body=document.body;
+    if(!body||!dock?.getBoundingClientRect||typeof MutationObserver==='undefined')return;
+    let previous=dock.getBoundingClientRect(),zen=body.classList.contains('zen');
+    const measure=()=>{if(!this.dockAnimation)previous=dock.getBoundingClientRect();};
+    this.dockObserver=new MutationObserver(()=>{
+      const active=body.classList.contains('zen');if(active===zen)return;zen=active;
+      this.dockAnimation?.cancel();dock.dataset.morphing='true';
+      const next=dock.getBoundingClientRect(),frames=playerMorphFrames(previous,next,innerHeight);
+      if(!active){frames[0].borderRadius='50%';frames[1].borderRadius='24px';}
+      if(dock.animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+        const animation=dock.animate(frames,{duration:480,easing:'cubic-bezier(.22,.75,.25,1)'});this.dockAnimation=animation;
+        animation.finished.catch(()=>{}).then(()=>{if(this.dockAnimation===animation){this.dockAnimation=null;delete dock.dataset.morphing;measure();}});
+      }else{delete dock.dataset.morphing;measure();}
+      previous=next;
+    });
+    this.dockObserver.observe(body,{attributes:true,attributeFilter:['class']});
+    if(typeof ResizeObserver!=='undefined'){this.dockSizeObserver=new ResizeObserver(measure);this.dockSizeObserver.observe(dock);}
+    window.addEventListener('resize',measure,{passive:true});document.fonts?.ready.then(measure);
+  }
   status(t) {
     $("player-status").textContent = t;
   }
@@ -237,6 +262,7 @@ export class Player {
   update() {
     const ok = this.songs.length > 0,
       playing = ok && !this.audio.paused && !this.audio.ended;
+    const dock=$("music-dock");if(dock)dock.dataset.playing=String(playing);
     for (const id of [
       "play",
       "dock-play",

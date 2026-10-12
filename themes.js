@@ -2,14 +2,48 @@ import { getPref, setPref, notify } from "./utils.js";
 import {themeTypography} from "./themes/theme-typography.mjs?v=20261012-bloom-control-1";
 const SOFT_SCENE_CSS=`
 @media screen{
-body{color:var(--page-text);--heading-ink:var(--page-heading);--label-ink:var(--page-label);--muted-ink:var(--page-muted);--heading-shadow:var(--page-heading-shadow)}
-body:is(.reading,.course-reading,.managed-editor-view){--heading-ink:var(--panel-label);--label-ink:var(--panel-label);--muted-ink:var(--panel-muted);--heading-shadow:0 1px 5px rgba(0,0,0,.35);color:var(--panel-text)}
-body :is(.card,.glass,.banner,dialog,.notice,.topbar,.top-actions,.main-nav,.btn,.provider-notice,.discovery-tip,.hero>p.muted,.managed-editor,.site-editor,.reader-surface,.course-scroll,.scene-toggle,.reader-toolbar,.music-dock,.flight-planet){--heading-ink:var(--panel-label);--label-ink:var(--panel-label);--muted-ink:var(--panel-muted);--heading-shadow:0 1px 5px rgba(0,0,0,.25);color:var(--panel-text)}
-body :is(h1,h2,h3){color:var(--heading-ink)!important;opacity:1;text-shadow:var(--heading-shadow)!important}
+body{--text-ink:var(--page-text,#f8f6ff);color:var(--text-ink);--heading-ink:var(--page-heading,var(--accent));--label-ink:var(--page-label,var(--accent));--muted-ink:var(--page-muted,var(--dim));--heading-shadow:var(--page-heading-shadow,0 1px 5px rgba(0,0,0,.35))}
+body:is(.reading,.course-reading,.managed-editor-view){--heading-ink:var(--panel-label);--label-ink:var(--panel-label);--muted-ink:var(--panel-muted);--heading-shadow:0 1px 5px rgba(0,0,0,.35);--text-ink:var(--panel-text);color:var(--text-ink)}
+body :is(.card,.glass,.banner,dialog,.notice,.topbar,.top-actions,.main-nav,.btn,.provider-notice,.discovery-tip,.hero>p.muted,.managed-editor,.site-editor,.reader-surface,.course-scroll,.scene-toggle,.reader-toolbar,.music-dock,.flight-planet){--heading-ink:var(--panel-label);--label-ink:var(--panel-label);--muted-ink:var(--panel-muted);--heading-shadow:0 1px 5px rgba(0,0,0,.25);--text-ink:var(--panel-text);color:var(--text-ink)}
+body :where(p,li,dt,dd,label,legend,summary,figcaption){color:var(--text-ink)!important}
+body :where(a){color:var(--label-ink,var(--accent))!important}
+body :is(.managed-description,.managed-editor-link,.managed-status,.status,.field,.feed-meta,.card-label,.track-summary small,.builder-theme-copy small,.managed-theme-copy small){color:var(--muted-ink)!important;opacity:1}
+body :is(.card,.glass,dialog,.strip,.notice,.lesson,.editor,.managed-builder,.workspace-connection) :is(label,legend,small){color:var(--panel-muted)!important;opacity:1}
+body :is(input,textarea,select){color:var(--panel-text)!important}
+body :is(input,textarea)::placeholder{color:var(--panel-muted)!important;opacity:1}
+body :is(.reader-text,.prose){--text-ink:var(--prose,var(--panel-text))}
+body.no-effects,body.no-effects :is(.card,.glass,.reader-text){--text-ink:#202020;--heading-ink:#534672;--label-ink:#534672;--muted-ink:#555}
+body :is(h1,h2,h3,h4,h5,h6){color:var(--heading-ink)!important;opacity:1;text-shadow:var(--heading-shadow)!important}
 body .hero h1 em{color:var(--heading-ink)!important}
 body :is(.eyebrow,.text-link){color:var(--label-ink)!important;opacity:1}
 body :is(.muted,.fine,.section-heading p,.builder-theme-copy small,.managed-theme-copy small){color:var(--muted-ink)!important}
-body .flight-hint{opacity:1!important;color:var(--panel-text)!important;background:var(--panel-bg);border:1px solid var(--panel-border);border-radius:20px;padding:7px 12px;max-width:calc(100% - 28px);text-shadow:none!important}
+body #footer{--heading-ink:var(--panel-label,var(--accent));--label-ink:var(--panel-label,var(--accent));--muted-ink:var(--panel-muted,var(--dim));color:var(--panel-text,#f8f6ff);background:linear-gradient(125deg,rgba(255,255,255,.04),transparent 60%),var(--panel-bg,rgba(12,12,25,.78));border:1px solid var(--panel-border);border-radius:var(--radius,28px);padding:clamp(24px,4vw,38px) clamp(18px,4vw,34px);box-shadow:0 16px 50px rgba(0,0,0,.14);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+body #footer >a{color:var(--panel-label,var(--accent))!important;opacity:1;text-shadow:none}
+body #footer >span{color:var(--panel-muted,var(--dim))!important;opacity:1}
+body #footer :is(a,p,span,summary){opacity:1}
+body #footer :is(p,a){color:var(--panel-text,#f8f6ff)!important}
+body #footer >a,body #footer summary{color:var(--panel-label,var(--accent))!important}
+body #footer >div{gap:16px 24px;margin-top:22px}
+body #footer >div a{padding:5px 0;font-weight:600;line-height:1.6}
+body #footer >.notice{background:transparent!important;color:var(--panel-text)!important}
+body #footer .notice a{text-decoration:underline;text-underline-offset:.18em}
+body #footer :is(a,summary):focus-visible{outline:2px solid var(--panel-label,var(--accent));outline-offset:5px;border-radius:4px}
+body.zen #music-dock{left:auto;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));width:56px;max-width:56px;min-width:0;height:56px;min-height:0;padding:0;gap:0;border-radius:50%;transform:none;overflow:hidden;display:block;z-index:90;opacity:1;animation:zen-player-float 5.6s cubic-bezier(.45,0,.55,1) infinite;background:rgba(var(--surface),.88)!important;box-shadow:0 7px 25px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.20)}
+body.zen #music-dock :is(.dock-transport,.dock-theme,.track-summary>span:not(.track-art)){display:none!important}
+body.zen #player-expand{display:grid;place-items:center;width:56px;min-width:0;height:56px;min-height:0;padding:0;margin:0;border:0;border-radius:50%;background:transparent;box-shadow:none;color:var(--panel-text)}
+body.zen #player-expand .track-art{width:40px;height:40px;margin:0;border:0;background:transparent;box-shadow:none;display:grid;place-items:center;font-size:27px;color:var(--panel-text)}
+body.zen #music-dock[data-playing="true"]::after{content:'';position:absolute;right:9px;bottom:10px;width:7px;height:7px;border-radius:50%;background:var(--panel-label);box-shadow:0 0 9px var(--panel-glow);pointer-events:none}
+body #music-dock[data-morphing],body.zen #music-dock:is(:hover,:focus-within){animation:none!important}
+@keyframes zen-player-float{0%,100%{transform:translate(0,0)}35%{transform:translate(-3px,-5px)}70%{transform:translate(1px,-2px)}}
+@media(prefers-reduced-motion:reduce){body.zen #music-dock{animation:none}}
+body #flight-layer .flight-planet{bottom:var(--zen-card-bottom,16px)!important;left:calc(50% - 36px);width:min(640px,calc(100% - 104px));min-height:0;padding:11px 13px;grid-template-columns:34px minmax(0,1fr) 14px;gap:10px;background:rgba(var(--surface),.68)!important;box-shadow:0 5px 25px rgba(0,0,0,.12);border-color:var(--panel-border);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+body #flight-layer .planet-orb{width:34px;height:34px;font-size:22px;border-radius:12px}
+body #flight-layer .flight-copy :is(strong,small){display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+body #flight-layer .flight-copy strong{font-size:.84rem;line-height:1.4}
+body #flight-layer .flight-copy small{font-size:.70rem;line-height:1.45;color:var(--panel-muted)!important}
+body #flight-layer .flight-hint{box-sizing:border-box;left:16px;right:16px;width:auto;max-width:none;bottom:var(--zen-hint-bottom,110px);line-height:1.55;font-size:12px;font-weight:600;opacity:1!important;color:var(--panel-text)!important;background:none!important;border:0!important;border-radius:0;padding:0!important;text-shadow:0 1px 2px rgba(0,0,0,.98),0 0 8px rgba(0,0,0,.78)!important}
+html[data-theme="violet-bloom"] body #flight-layer .flight-hint{color:var(--page-text)!important;text-shadow:0 1px 3px rgba(255,255,255,.98),0 0 8px rgba(255,255,255,.85)!important}
+@media(min-width:1000px){body #flight-layer .flight-planet{width:380px}}
 }
 body #starCanvas,body .theme-world-canvas{filter:none!important;transition:filter .45s ease,opacity .45s ease;transform:translateZ(0)!important}
 body:not(.zen):is(.reading,.course-reading,.managed-editor-view) #starCanvas,body:not(.zen):is(.reading,.course-reading,.managed-editor-view) .theme-world-canvas,body:not(.zen):has(.editor,.builder-editor,#site-builder) #starCanvas,body:not(.zen):has(.editor,.builder-editor,#site-builder) .theme-world-canvas{filter:blur(1.35px) saturate(.96) brightness(.96)!important;transform:translateZ(0) scale(1.012)!important}
@@ -167,7 +201,7 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-bloom-control-1";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-zen-polish-1";
     if (version) url.searchParams.set("v", version);
     let module;try{module=await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
     if (seq !== this.sequence) return;
@@ -187,8 +221,8 @@ export class ThemeEngine {
     this.id = id;
     const s = document.documentElement.style, ink=themeTypography(theme,this.phase||0);
     for (const [k, v] of Object.entries({
-      accent: theme.accent,
-      dim: theme.dim,
+      accent: ink.panelLabel,
+      dim: ink.panelMuted,
       surface: theme.surface,
       radius: theme.radius,
       "panel-bg": ink.panelBackground,
@@ -760,9 +794,10 @@ export class ThemeEngine {
     if (!layer?.matches(":focus-within") && !layer?.dataset.cardEngaged)
       this.flightOffer = (Number(layer?.dataset.offerIndex || 0) + Math.floor(this.phase / 18)) % nodes.length;
     const start = this.flightOffer || 0;
+    const forward=performance.now()<(this.forwardFlightUntil||0);
     nodes.forEach((node, i) => {
       const position = (i - start + nodes.length) % nodes.length;
-      const visible = position < count;
+      const visible = position < count&&!forward;
       node.hidden = !visible;
       node.style.opacity = visible ? "1" : "0";
       node.style.pointerEvents = visible ? "auto" : "none";
@@ -787,13 +822,13 @@ export class ThemeEngine {
     const hint=document.querySelector('.flight-hint');if(!hint)return;
     hint.textContent=this.theme?.id==='violet-bloom'
       ? this.selectedObject!=null
-        ? 'Цветок · один палец — вращать · два — перемещать · щипок — глубина · касание фона — отпустить'
-        : 'Коснитесь цветка, чтобы вращать и перемещать · свайп по фону — полёт'
+        ? 'Цветок: тяните — вращать. Shift + мышь / свайп несколькими пальцами — двигать. Колесо / щипок — глубина. Фон — отпустить.'
+        : 'Коснитесь цветка, чтобы вращать и двигать. Полёт: тяните фон мышью или свайпом; колесо / щипок — глубина.'
       : this.zen&&this.selectedObject!=null
-      ? `Корабль ${this.selectedObject+1} · свайп — курс · два пальца — глубина · касание моря — свободный полёт`
+      ? `Корабль ${this.selectedObject+1}: тяните мышью или свайпом — курс; колесо / щипок — глубина. Касание моря — свободный полёт.`
       : this.theme?.id==='living-sea'
-        ? 'Коснитесь корабля, чтобы управлять · свайп по морю — свободный полёт'
-        : 'Свайп — в стороны и вверх · два пальца — вперёд и назад';
+        ? 'Коснитесь корабля, чтобы управлять. Полёт: тяните море мышью или свайпом; колесо / щипок — глубина.'
+        : 'Мышь: тяните фон, колесо — глубина. Экран: свайп — направление, щипок — глубина.';
     document.getElementById('flight-layer')?.setAttribute('aria-label',hint.textContent);
   }
   startPreviews() {

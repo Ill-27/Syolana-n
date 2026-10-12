@@ -27,3 +27,7 @@ jobs:
         run: node tests/test_theme_experience.mjs
       - name: Check flower control and theme text contrast
         run: node tests/test_bloom_controls.mjs
+      - name: Check compact contemplation player and layout
+        run: |
+          node tests/test_player.mjs
+          node tests/test_zen_layout.mjs

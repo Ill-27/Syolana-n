@@ -4,6 +4,7 @@ import {positionView} from './positioning.js';
 import {polishPublicView} from './public-polish.js';
 import {finishCopy} from './copy-polish.js';
 import {applyI18n,restoreI18n} from './language-switcher.js';
+import {fitHeadings} from './heading-layout.js';
 
 window.__syolanaRenderUI=true;
 let applying=false;
@@ -13,7 +14,7 @@ const observer=new MutationObserver(records=>{
  const page=document.getElementById('page');
  if(useful.some(r=>r.type==='childList'&&page?.contains(r.target)&&[...r.addedNodes].some(n=>n.nodeType===1))){finishUI();return;}
  observer.disconnect();
- try{const roots=new Set(useful.map(r=>r.target));for(const root of roots)if(root.isConnected)applyI18n(root);}finally{observe();}
+ try{const roots=new Set(useful.map(r=>r.target));for(const root of roots)if(root.isConnected)applyI18n(root);fitHeadings();}finally{observe();}
 });
 function observe(){
  for(const id of ['page','banner','main-nav','footer','chrome','music-dock','theme-dialog','player-dialog','toast','flight-layer']){
@@ -27,6 +28,7 @@ export function finishUI(){
   restoreI18n();
   polishView();refineView();positionView();polishPublicView();finishCopy();
   applyI18n();
+  fitHeadings();
  }finally{applying=false;observe();}
 }
 window.addEventListener('syolana:locale',finishUI);

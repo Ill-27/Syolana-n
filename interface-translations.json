@@ -1800,9 +1800,9 @@
     "L’espace créatif Syolana"
   ],
   "Возможности Syolana": [
-    "What Syolana offers",
-    "Lo que ofrece Syolana",
-    "Les possibilités de Syolana"
+    "Explore Syolana",
+    "Descubre Syolana",
+    "Découvrez Syolana"
   ],
   "Темы, фирменные шрифты и визуальные обновления подключаются отдельным слоем Syolana. Если он временно недоступен, собственный контент сайта остаётся читаемым в базовом оформлении.": [
     "Themes, brand fonts and visual updates are supplied through a separate Syolana layer. If it is temporarily unavailable, your own website content remains readable with basic styling.",
@@ -2183,5 +2183,95 @@
     "The main module could not be loaded. Check your connection and try again. Parts of the website already open remain available.",
     "No se pudo cargar el módulo principal. Comprueba la conexión y vuelve a intentarlo. Las partes del sitio que ya están abiertas siguen disponibles.",
     "Impossible de charger le module principal. Vérifiez votre connexion et réessayez. Les parties du site déjà ouvertes restent disponibles."
+  ],
+  "Закрыть эту подсказку": [
+    "Close this tip",
+    "Cerrar esta sugerencia",
+    "Fermer cette suggestion"
+  ],
+  "НОВЫЕ МИРЫ": [
+    "NEW WORLDS",
+    "NUEVOS MUNDOS",
+    "NOUVEAUX MONDES"
+  ],
+  "А какой фон придумали бы вы?": [
+    "What background would you dream up?",
+    "¿Qué fondo te gustaría imaginar?",
+    "Quel décor aimeriez-vous imaginer ?"
+  ],
+  "Мы постоянно выпускаем новые живые темы и каждую делаем с душой. Расскажите нам об образе или атмосфере, которую хочется увидеть — возможно, следующая тема начнётся с вашей идеи.": [
+    "We keep creating new living themes, putting our heart into each one. Tell us about a scene or atmosphere you would love to see — your idea could inspire our next theme.",
+    "Seguimos creando nuevos temas vivos y ponemos el alma en cada uno. Cuéntanos qué paisaje o ambiente te gustaría ver: quizá tu idea inspire nuestro próximo tema.",
+    "Nous créons régulièrement de nouveaux thèmes vivants, en mettant du cœur dans chacun. Parlez-nous d’un décor ou d’une atmosphère que vous aimeriez voir : votre idée pourrait inspirer notre prochain thème."
+  ],
+  "Предложить идею": [
+    "Suggest an idea",
+    "Proponer una idea",
+    "Proposer une idée"
+  ],
+  "ЯЗЫКИ В ВАШЕМ ТЕМПЕ": [
+    "LANGUAGES AT YOUR OWN PACE",
+    "IDIOMAS A TU RITMO",
+    "LES LANGUES À VOTRE RYTHME"
+  ],
+  "Слушайте язык каждый день": [
+    "Listen to your chosen language every day",
+    "Escucha el idioma que aprendes cada día",
+    "Écoutez la langue que vous apprenez chaque jour"
+  ],
+  "Курсы собраны по уровням: понятные правила, слова с четырьмя примерами и озвучка. Попробуйте английский A1 бесплатно.": [
+    "Courses are organised by level, with clear explanations, four examples for each word and audio. Try English A1 for free.",
+    "Los cursos están organizados por niveles, con explicaciones claras, cuatro ejemplos para cada palabra y audio. Prueba inglés A1 gratis.",
+    "Les cours sont organisés par niveau, avec des explications claires, quatre exemples pour chaque mot et une lecture audio. Essayez gratuitement le cours d’anglais A1."
+  ],
+  "Открыть языки": [
+    "Explore languages",
+    "Ver los idiomas",
+    "Découvrir les langues"
+  ],
+  "Иногда интерфейс лучше просто отпустить": [
+    "Sometimes it feels good to let the interface fade away",
+    "A veces apetece dejar que la interfaz desaparezca",
+    "Parfois, il fait bon laisser l’interface s’effacer"
+  ],
+  "Спрячьте страницу и полетайте внутри выбранной темы: в стороны, вверх, вниз и в глубину. Это отдельный способ почувствовать атмосферу сайта.": [
+    "Hide the page and explore your chosen theme: fly sideways, up, down and deeper into the scene. It is another way to experience the atmosphere of the site.",
+    "Oculta la página y explora el tema que has elegido: vuela hacia los lados, arriba, abajo y adéntrate en la escena. Es otra forma de disfrutar del ambiente del sitio.",
+    "Masquez la page et explorez le thème choisi : volez sur les côtés, vers le haut, vers le bas et en profondeur. Une autre façon de ressentir l’atmosphère du site."
+  ],
+  "Попробовать режим": [
+    "Try contemplation mode",
+    "Probar el modo de contemplación",
+    "Essayer le mode contemplation"
+  ],
+  "ДЛЯ АВТОРОВ И ПРОЕКТОВ": [
+    "FOR CREATORS AND PROJECTS",
+    "PARA CREADORES Y PROYECTOS",
+    "POUR LES CRÉATEURS ET LEURS PROJETS"
+  ],
+  "Ваше творчество может жить так же": [
+    "Your creativity can come to life here too",
+    "Tu creatividad también puede cobrar vida aquí",
+    "Votre créativité peut elle aussi prendre vie ici"
+  ],
+  "Сайт, живые темы, музыкальный плеер и ваше содержание собираются в одно пространство. Сначала — готовый результат и 7 дней тест-драйва.": [
+    "Your website, living themes, music player and content come together in one space. Start with a finished result and a seven-day trial.",
+    "Tu sitio, los temas vivos, el reproductor de música y tus contenidos se reúnen en un solo espacio. Empieza con el resultado terminado y siete días de prueba.",
+    "Votre site, les thèmes vivants, le lecteur musical et vos contenus se réunissent dans un même espace. Commencez par le résultat terminé et sept jours d’essai."
+  ],
+  "Посмотреть условия": [
+    "View the terms",
+    "Ver las condiciones",
+    "Consulter les conditions"
+  ],
+  "РЕЖИМ СОЗЕРЦАНИЯ": [
+    "CONTEMPLATION MODE",
+    "MODO DE CONTEMPLACIÓN",
+    "MODE CONTEMPLATION"
+  ],
+  "Посмотрите демо и редактор бесплатно. Если формат вам подходит — закажите публикацию сайта через официальный профиль Syolana на Авито.": [
+    "Explore the demo and editor for free. If the format suits you, order your website through Syolana’s official Avito profile.",
+    "Prueba la demo y el editor gratis. Si este formato te encaja, encarga la publicación de tu sitio a través del perfil oficial de Syolana en Avito.",
+    "Explorez gratuitement la démo et l’éditeur. Si ce format vous convient, commandez la publication de votre site via le profil officiel de Syolana sur Avito."
   ]
 }

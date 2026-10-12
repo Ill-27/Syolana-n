@@ -1,5 +1,5 @@
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'9e28637d780ead5d';
+const CACHE=PREFIX+'a796f95f3ef1c848';
 function allowed(request){
  const url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin||request.headers.has('Authorization'))return false;
@@ -22,4 +22,3 @@ self.addEventListener('fetch',event=>{
   catch(error){const cached=await cache.match(event.request);if(cached)return cached;throw error;}
  })());
 });
-

@@ -1,1 +1,6 @@
 #ambient-theme-sound-toggle svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}.theme-sound-toggle[hidden]{display:none!important}#starCanvas,.theme-world-canvas,.aurora-background{height:100lvh!important;backface-visibility:hidden}#syolana-lang{position:absolute;right:0;top:58px;z-index:260}#syolana-lang .syolana-lang-toggle{width:47px;height:47px;padding:0;position:relative}#syolana-lang .syolana-lang-code{position:absolute;right:-2px;bottom:-3px;min-width:23px;height:18px;padding:0 4px;border-radius:9px;border:1px solid rgba(236,225,255,.28);background:rgba(11,15,29,.94);display:grid;place-items:center;font:800 9px/1 system-ui,sans-serif;letter-spacing:.04em}@media(max-width:520px){#syolana-lang{top:56px}}
+html[data-theme-pending] .aurora-background{background:var(--startup-backdrop,#0a1420)!important;background-image:var(--startup-poster),var(--startup-backdrop)!important;background-size:cover!important;background-position:center!important}
+html[data-theme-pending] .aurora-layer{opacity:0!important;animation:none!important}
+html[data-theme-pending] .aurora-background:after{background:none!important}
+
+html[data-theme="moon"] .aurora-layer{animation:none!important;opacity:0!important}

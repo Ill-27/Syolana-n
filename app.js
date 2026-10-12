@@ -508,7 +508,7 @@ async function publicSite(slug, token) {
     head.append(link("Связаться с автором", data.site.link, "text-link"));
   $("page").append(head);
   const grid = el("div", "grid two");
-  
+
   const feed = el("div", "feed-list");
   renderFeed(
     feed,
@@ -915,5 +915,3 @@ async function openLesson(key, anchor, token) {
   }
   lessonFrame(key, anchor);
 }
-
-

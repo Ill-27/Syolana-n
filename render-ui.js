@@ -17,7 +17,7 @@ const observer=new MutationObserver(records=>{
  try{const roots=new Set(useful.map(r=>r.target));for(const root of roots)if(root.isConnected)applyI18n(root);fitHeadings();}finally{observe();}
 });
 function observe(){
- for(const id of ['page','banner','main-nav','footer','chrome','music-dock','theme-dialog','player-dialog','toast','flight-layer']){
+ for(const id of ['page','banner','main-nav','footer','chrome','music-dock','theme-dialog','player-dialog','toast','flight-layer','discovery-tip']){
   const root=document.getElementById(id);
   if(root)observer.observe(root,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','placeholder','alt']});
  }

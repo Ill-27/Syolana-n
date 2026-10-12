@@ -68,13 +68,15 @@ function addStyles(){if(document.getElementById('sketch-builder-style'))return;c
 .sketch-mobile .sketch-site h1{font-size:2.5rem}
 .sketch-theme-picker{min-width:0}
 .sketch-theme-picker>summary{cursor:pointer;line-height:1.5;padding:8px 0}
-.sketch-theme-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
-.sketch-theme-choice{display:grid;gap:8px;padding:8px;text-align:left;white-space:normal}
+.sketch-theme-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:12px}
+.sketch-theme-choice{display:grid;grid-template-rows:auto 1fr;align-content:start;gap:12px;padding:12px!important;text-align:left;white-space:normal;min-width:0;border-radius:22px;line-height:1.5}
+.sketch-theme-choice>span{display:block;min-width:0;padding:0 3px 4px;line-height:1.5;font-size:.92rem;overflow-wrap:normal;word-break:normal}
 .sketch-theme-choice img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px}
 .sketch-theme-choice[aria-pressed="true"]{border-color:var(--panel-label)}
 .sketch-save-state{font-size:.78rem;opacity:.7;line-height:1.5}
 @media(max-width:900px){.sketch-builder{grid-template-columns:1fr}.sketch-preview{position:relative;top:auto}.sketch-canvas{min-height:auto}}
 @media(max-width:520px){.sketch-panel{padding:24px 20px;gap:18px}.sketch-library{grid-template-columns:1fr}.sketch-block{grid-template-columns:1fr}.sketch-block-actions{justify-content:flex-end}}
+@media(max-width:600px){.sketch-theme-choices{grid-template-columns:1fr;gap:12px}.sketch-theme-choice{grid-template-columns:minmax(88px,38%) minmax(0,1fr);grid-template-rows:auto;align-items:center;gap:16px;padding:12px!important}.sketch-theme-choice img{aspect-ratio:16/10;max-height:105px}.sketch-theme-choice>span{padding:4px 4px 4px 0;font-size:1rem;line-height:1.5}}
 `;document.head.append(s);}
 
 export function mountSketchBuilder(host){
@@ -133,7 +135,7 @@ export function mountSketchBuilder(host){
  copy.onclick=async()=>{commit();const brief=[`Проект: ${data.name}`,`Описание: ${data.description}`,`О проекте: ${data.about}`,`Направления: ${data.services}`,`Галерея: ${data.galleryText}`,`Вопросы: ${data.faqText}`,`Кнопка: ${data.cta}`,`Контакт: ${data.contact||'—'}`,`Автопубликации: ${SOURCE_TYPES.find(x=>x[0]===data.sourceType)?.[1]||'—'} ${data.sourceUrl||''}`,`Тема: ${THEMES.find(x=>x[0]===data.theme)?.[1]||data.theme}`,`Блоки: ${data.blocks.map(x=>BLOCKS[x]||data.extraBlocks.find(b=>b.id===x)?.title||'Текстовый блок').join(' → ')}`,...data.blocks.filter(x=>data.extraBlocks.some(b=>b.id===x)).map(x=>{const b=data.extraBlocks.find(b=>b.id===x);return b.title+'\n'+b.text;})].join('\n');try{await navigator.clipboard.writeText(brief);copy.textContent='Скопировано';setTimeout(()=>copy.textContent='Скопировать бриф',1500);}catch{downloadFile('syolana-brief.txt',brief,'text/plain;charset=utf-8');}};
  reset.onclick=()=>{if(!confirm('Очистить этот локальный эскиз?'))return;try{localStorage.removeItem(STORAGE_KEY);}catch{}restore(defaults);};
  const themes=el('details','sketch-theme-picker');themes.append(el('summary','','Выбрать тему по превью'));const choices=el('div','sketch-theme-choices');
- for(const [id,name]of THEMES){const b=el('button','btn sketch-theme-choice');b.type='button';b.dataset.theme=id;const image=el('img');image.src='themes/previews/'+id+'.jpg';image.alt='';image.loading='lazy';image.decoding='async';b.append(image,el('span','',name));b.onclick=()=>{const select=fields.find(x=>x.input.dataset.key==='theme').input;select.value=id;commit();window.dispatchEvent(new CustomEvent('syolana:builder-theme',{detail:{theme:id}}));};choices.append(b);}themes.append(choices);form.append(themes);
+ for(const [id,name]of THEMES){const b=el('button','btn sketch-theme-choice');b.type='button';b.dataset.theme=id;const image=el('img');image.src='themes/previews/'+id+'.jpg?v=20261012-moon-garden-1';image.alt='';image.loading='lazy';image.decoding='async';b.append(image,el('span','',name));b.onclick=()=>{const select=fields.find(x=>x.input.dataset.key==='theme').input;select.value=id;commit();window.dispatchEvent(new CustomEvent('syolana:builder-theme',{detail:{theme:id}}));};choices.append(b);}themes.append(choices);form.append(themes);
  fields.find(x=>x.input.dataset.key==='theme').input.addEventListener('change',e=>window.dispatchEvent(new CustomEvent('syolana:builder-theme',{detail:{theme:e.target.value}})));
  desktop.setAttribute('aria-pressed','true');mobile.setAttribute('aria-pressed','false');desktop.onclick=()=>{canvas.classList.remove('sketch-mobile');desktop.setAttribute('aria-pressed','true');mobile.setAttribute('aria-pressed','false');fitHeadings();};mobile.onclick=()=>{canvas.classList.add('sketch-mobile');desktop.setAttribute('aria-pressed','false');mobile.setAttribute('aria-pressed','true');fitHeadings();};
  commit(false);return()=>document.removeEventListener('keydown',keyboard);

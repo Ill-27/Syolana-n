@@ -301,4 +301,3 @@ async function init(){
   app.hidden=false;document.getElementById('loading').hidden=true;const resize=new ResizeObserver(()=>post({height:Math.ceil(shell.getBoundingClientRect().height)}));resize.observe(shell);post({ready:true,height:Math.ceil(shell.getBoundingClientRect().height)});
 }
 init().catch(e=>{const loading=document.getElementById('loading');loading.replaceChildren(el('strong','','Курс пока не загрузился'),el('p','',e.message),button('Попробовать снова',()=>location.reload()));post({ready:true,height:450});});
-

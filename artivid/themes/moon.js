@@ -1,6 +1,6 @@
-import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261012-bloom-control-1';
+import {createMoonGardenRenderer} from './moon-garden.mjs';
 export default {
-  createRenderer:ctx=>createLuminousRenderer(ctx,"moon"),
+  createRenderer:ctx=>createMoonGardenRenderer(ctx),
   id: "moon",
   marks: true,
   particles: true,

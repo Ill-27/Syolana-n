@@ -1,7 +1,9 @@
 import {build} from 'esbuild';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import {themeTypography} from '../themes/theme-typography.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const out=path.join(root,'dist/public');
 const result=await build({
@@ -20,9 +22,19 @@ const result=await build({
  }}],
 });
 const entry=Object.entries(result.metafile.outputs).find(([,value])=>value.entryPoint==='boot.js');
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'themes/manifest.json'),'utf8'));
+const initialThemes=await Promise.all(manifest.map(async item=>{
+ const theme=(await import(pathToFileURL(path.join(root,'themes',item.id+'.js')).href)).default,ink=themeTypography(theme,0);
+ const entry=Object.entries(result.metafile.outputs).find(([,v])=>v.entryPoint==='themes/'+item.id+'.js');
+ return{id:item.id,portrait:item.id==='moon'?'themes/previews/moon-portrait.jpg?v='+createHash('sha256').update(fs.readFileSync(path.join(root,'themes/previews/moon-portrait.jpg'))).digest('hex').slice(0,12):undefined,preview:'themes/previews/'+item.id+'.jpg?v='+createHash('sha256').update(fs.readFileSync(path.join(root,'themes/previews',item.id+'.jpg'))).digest('hex').slice(0,12),backdrop:item.preview,entry:entry?.[0].replace(/^dist\/public\//,''),style:{accent:ink.panelLabel,dim:ink.panelMuted,surface:theme.surface,radius:theme.radius,'panel-bg':ink.panelBackground,'page-text':ink.pageText,'page-muted':ink.pageMuted,'page-heading':ink.pageHeading,'page-label':ink.pageLabel,'page-heading-shadow':ink.headingShadow,'panel-label':ink.panelLabel,'panel-border':theme.panel?.border,'panel-glow':theme.panel?.glow,'panel-text':ink.panelText,'panel-muted':ink.panelMuted}};
+}));
+async function firstPaint(themes){return(await build({stdin:{contents:fs.readFileSync(path.join(root,'theme-start.js'),'utf8'),loader:'js'},define:{__INITIAL_THEMES__:JSON.stringify(themes)},minify:true,write:false,charset:'utf8',legalComments:'none'})).outputFiles[0].text;}
+const startup=await firstPaint(initialThemes);fs.writeFileSync(path.join(out,'theme-start.js'),startup);
+function attachFirstPaint(html,code){html=html.replace(/<script[^>]*(?:src="theme-start\.js"|data-theme-start)[^>]*>[\s\S]*?<\/script>/g,'').replace(/<style data-theme-start>[\s\S]*?<\/style>/g,'');return html.replace(/<head>/,'<head><style data-theme-start>html{background:#030309}</style><script data-theme-start>'+code.replace(/<\/script/gi,'<\\/script')+'</script>');}
 if(!entry)throw Error('Missing startup entry');
 const script=entry[0].replace(/^dist\/public\//,'');
 let html=fs.readFileSync(path.join(out,'index.html'),'utf8');
+html=attachFirstPaint(html,startup);
 html=html.replace(/<link rel="modulepreload" href="runtime\/[^"]+">/g,'').replace(/<link rel="stylesheet" href="runtime\/site-[^"]+">/g,'');
 html=html.replace(/src="(?:boot\.js[^\"]*|runtime\/boot-[^\"]*)"/,'src="'+script+'"');
 const preload=[script,...entry[1].imports.filter(x=>x.kind==='import-statement').map(x=>x.path.replace(/^dist\/public\//,''))];
@@ -31,7 +43,7 @@ if(app)preload.push(app[0].replace(/^dist\/public\//,''));
 html=html.replace('</head>',[...new Set(preload)].map(file=>'<link rel="modulepreload" href="'+file+'">').join('\n')+'\n</head>');
 const cssFiles=['styles.css','assets/fonts/fonts.css','workspace.css','managed-sites.css','startup.css'];
 const css=await build({stdin:{contents:cssFiles.map(name=>'@import "./'+name+'";').join('\n'),resolveDir:root,loader:'css'},bundle:true,minify:true,write:false,external:['*.woff','*.woff2','*.svg','*.png','*.jpg'],legalComments:'none'});
-const {createHash}=await import('node:crypto');
+
 let text=css.outputFiles[0].text;
 text=text.replace(/url\((['"]?)(?:\.\/)?([^)'"\s]+)\1\)/g,(whole,quote,url)=>/^(?:data:|https?:|\/|\.\.\/)/.test(url)?whole:'url("../'+(fs.existsSync(path.join(root,'assets/fonts',url))?'assets/fonts/'+url:url)+'")');
 const cssName='runtime/site-'+createHash('sha256').update(text).digest('hex').slice(0,16).toUpperCase()+'.css';

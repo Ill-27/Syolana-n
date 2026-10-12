@@ -1,5 +1,6 @@
 import { el, link, button, getPref, setPref } from "./utils.js";
 import { setupFlightLayer, platformFlightOffers } from "./flight.js?v=20261005-sea12";
+import {finishUI} from './render-ui.js';
 
 export function setupDiscovery({ theme, zen, player, contactURL = "#/contact" }) {
   setupFlightLayer({
@@ -100,6 +101,7 @@ export function setupDiscovery({ theme, zen, player, contactURL = "#/contact" })
       action,
     );
 
+    finishUI();
     tip.hidden = false;
     clearTimeout(hideTimer);
     hideTimer = setTimeout(hideTip, 14000);

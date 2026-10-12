@@ -129,7 +129,7 @@ export class ThemeEngine {
     this.themeBase = themeBase;
     this.manifest = themeManifest;
     if(!Array.isArray(this.manifest)||!this.manifest.length)this.manifest=FALLBACK_THEMES;
-    const requested = new URLSearchParams(location.search).get("theme");
+    const requested = new URLSearchParams(location.search).get("theme") || window.__syolanaInitialTheme;
     const old = getPref("theme", "");
     if (requested && this.manifest.some((t) => t.id === requested)) {
       await this.select(requested);
@@ -211,10 +211,11 @@ export class ThemeEngine {
     this.custom =
       this.ctx && theme.createRenderer ? theme.createRenderer(this.ctx) : null;
     this.theme = theme;
-    const sceneCanvas=this.custom?.canvas||this.canvas.previousElementSibling;
+    const sceneCanvas=this.custom?.canvas;
     if(sceneCanvas?.classList?.contains('theme-world-canvas')){
       this.sceneEvents=new AbortController();
-      sceneCanvas.addEventListener('webglcontextlost',e=>{e.preventDefault();this.sceneLost=true;},{signal:this.sceneEvents.signal});
+      const activeRenderer=this.custom;
+      sceneCanvas.addEventListener('webglcontextlost',e=>{e.preventDefault();if(this.custom===activeRenderer)this.sceneLost=true;},{signal:this.sceneEvents.signal});
       sceneCanvas.addEventListener('webglcontextrestored',()=>{if(this.id===id)this.select(id,{force:true}).catch(()=>{});},{signal:this.sceneEvents.signal});
     }
     this.id = id;
@@ -244,6 +245,7 @@ export class ThemeEngine {
     setPref("theme", id);
     this.sprites = theme.colors.map((c) => this.sprite(c));
     this.resize(true);
+    document.documentElement.removeAttribute('data-theme-pending');
     previousRenderer?.dispose?.();
     this.updateChoices();
     this.sync();
@@ -842,7 +844,7 @@ export class ThemeEngine {
         if(!rect.width||!rect.height||rect.bottom<0||rect.top>innerHeight||rect.right<0||rect.left>innerWidth)continue;
         const id=canvas.dataset.preview,c=canvas.getContext('2d');if(!c)continue;
         let poster=this.previewImages.get(id);
-        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261012-bloom-control-1',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
+        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261012-moon-garden-1',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
         if(!poster.complete||!poster.naturalWidth)continue;
         const w=canvas.width,h=canvas.height,zoom=this.reduced.matches?1:1.035+Math.sin(time/1000*.14)*.012;
         const base=Math.max(w/poster.naturalWidth,h/poster.naturalHeight),dw=poster.naturalWidth*base*zoom,dh=poster.naturalHeight*base*zoom;

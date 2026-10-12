@@ -1,4 +1,4 @@
-const SELECTOR='#page :is(h1,h2,h3,h4,h5,h6),#banner h2';
+const SELECTOR='#page :is(h1,h2,h3,h4,h5,h6),#banner h2,#discovery-tip h3';
 const states=new WeakMap(),observed=new Set();
 let context,scheduled=false,installed=false;
 

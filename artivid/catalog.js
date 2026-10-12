@@ -1,3 +1,4 @@
+import initialCatalog from './books/catalog.json' with {type:'json'};
 // Reads the existing book catalog. Book/chapter text stays in books/*.json.
 import { safeURL } from "./utils.js";
 let catalogPromise;
@@ -27,28 +28,7 @@ export async function loadChapter(id) {
   }
   return chapters.get(id);
 }
-export function loadCatalog() {
-  if (!catalogPromise)
-    catalogPromise = fetch("books/catalog.json", { cache: "no-cache" })
-      .then(async (r) => {
-        if (!r.ok)
-          throw Error("Библиотека временно недоступна. Обновите страницу.");
-        const data = await r.json();
-        if (!Array.isArray(data)) throw Error("Не удалось прочитать каталог.");
-        return data.map((b) => ({
-          ...b,
-          title: b.title_ru || b.title_en || "Без названия",
-          author: b.author_ru || b.author_en || "Автор",
-          kind: "book",
-          external: safeURL(b.external_url),
-        }));
-      })
-      .catch((e) => {
-        catalogPromise = null;
-        throw e;
-      });
-  return catalogPromise;
-}
+export async function loadCatalog(){return initialCatalog.map(b=>({...b,title:b.title_ru||b.title_en||'Без названия',author:b.author_ru||b.author_en||'Автор',kind:'book',external:safeURL(b.external_url)}));}
 export async function loadBook(id, chapterIndex = 0) {
   const book = (await loadCatalog()).find((b) => b.id === id);
   if (!book || book.external) throw Error("Книга не найдена в библиотеке.");

@@ -19,8 +19,6 @@ body.syolana-active #banner .banner-invitation{margin:4px 0 0!important;line-hei
 #theme-dialog .theme-list{max-height:min(70vh,720px);overflow:auto;overscroll-behavior:contain}
 #theme-dialog .theme-option{min-width:0}
 #theme-dialog .theme-option strong,#theme-dialog .theme-option small{white-space:normal;overflow-wrap:anywhere}
-
-/* Exactly one canonical Syolana banner when the immersive layer is active. */
 body.syolana-active [data-syolana-canonical-fallback][hidden]{display:none!important}
 body.syolana-active #banner.syolana-canonical-banner{display:block!important;width:100%!important;min-height:0!important;max-width:none!important;padding:24px 22px!important;border-radius:22px!important;text-align:left!important}
 body.syolana-active #banner.syolana-canonical-banner .banner-copy{display:grid!important;gap:12px!important;text-align:left!important}
@@ -32,7 +30,6 @@ body.syolana-active #banner.syolana-canonical-banner .banner-actions{display:gri
 body.syolana-active #banner.syolana-canonical-banner .banner-actions .btn{width:100%!important;min-width:0!important;min-height:52px!important;padding:11px 12px!important;white-space:normal!important}
 body.syolana-active #banner.syolana-canonical-banner .banner-invitation{margin:4px 0 0!important}
 body.syolana-active .partner-platform-pitch{display:none!important}
-
 @media(max-width:720px){
   .syolana-attribution-top{margin-top:112px!important;margin-inline:22px!important;max-width:none!important}
   .syolana-attribution:not(.syolana-attribution-top){margin-inline:22px!important;margin-bottom:calc(142px + env(safe-area-inset-bottom,0px))!important}

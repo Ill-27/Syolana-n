@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 
 root = Path(sys.argv[1] if len(sys.argv) > 1 else '.').resolve()
-roots = ('artivid', 'partner-demo', 'courses', 'themes', 'assets', 'owner-vault')
+roots = ('artivid', 'partner-demo', 'courses', 'themes', 'assets', 'owner-vault', 'runtime', 'partner', 'studio', 'editor')
 files = list(root.glob('*.*')) + [p for name in roots for p in (root / name).rglob('*') if p.is_file()]
 if '--javascript' in sys.argv:
     for path in sorted(set(files)):

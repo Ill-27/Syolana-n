@@ -45,7 +45,7 @@ export function lookAt(out,eye,target){
 export function multiply(out,a,b){for(let c=0;c<4;c++)for(let r=0;r<4;r++)out[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];return out;}
 export function createGLWorld(ctx,kind,{exposure=1,bloom=.3,vignette=.14,resolution={}}={}){
  const canvas=document.createElement('canvas');canvas.className='theme-world-canvas';canvas.dataset.world=kind;canvas.setAttribute('aria-hidden','true');
- canvas.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-2;';ctx.canvas.parentNode?.insertBefore(canvas,ctx.canvas);
+ canvas.style.cssText='position:fixed;inset:0;width:100%;height:100lvh;pointer-events:none;z-index:-2;';ctx.canvas.parentNode?.insertBefore(canvas,ctx.canvas);
  const gl=canvas.getContext('webgl2',{alpha:false,antialias:true,depth:true,stencil:false,powerPreference:'high-performance'});
  if(!gl){canvas.remove();return null;}
  const cleanup=[];let dead=false,W=1,H=1,ratio=1;

@@ -1,3 +1,5 @@
+import initialConfig from './config.json' with {type:'json'};
+import initialSettings from './site-settings.json' with {type:'json'};
 import {installAPITransport} from "./api-transport.js?v=20261011-workspace-6";
 installAPITransport();
 import {renderSiteBlocks,renderContactLinks} from './site-builder.js';
@@ -17,22 +19,15 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261012-zen-polish-2";
-import { SceneAudio } from "./scene-audio.js?v=20261012-zen-polish-2";
+import { ThemeEngine } from "./themes.js?v=20261012-zen-polish-1";
+import { SceneAudio } from "./scene-audio.js?v=20261012-zen-polish-1";
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
   $("page").focus();
   $("page").scrollIntoView();
 };
 
-let config;
-try {
-  config = await fetch("config.json", {
-    signal: AbortSignal.timeout(6000),
-  }).then((r) => r.json());
-} catch {
-  config = { songs: [], banner: {}, plan: { pricing: "custom", priceRub: null, trialDays: 7 } };
-}
+const config=initialConfig;
 const player = { pause() {} };
 const theme = new ThemeEngine();
 const themeReady = theme
@@ -268,8 +263,8 @@ function card(book, slug) {
     c.append(img);
   } else c.append(art(book));
   c.append(
-    el("p", "meta", book.author || "Автор"),
-    el("h3", "", book.title),
+    el("p", "meta book-author", book.author || "Автор"),
+    el("h3", "book-title", book.title),
     el("p", "description", book.description || ""),
   );
   c.append(
@@ -295,11 +290,11 @@ function art(book) {
 }
 
 async function library(token) {
- let settings=await fetch('site-settings.json',{cache:'no-store'}).then(r=>r.json());
- try{const r=await fetch('/api/course-access/studio/artivid/public',{cache:'no-store',signal:AbortSignal.timeout(6000)});if(r.ok){const d=await r.json();if(d.settings)settings=validateSiteSettings(d.settings,{books:true});}}catch{}
+ let settings=structuredClone(initialSettings);
+
  if(token!==routeToken)return;
- await themeReady;
- if(settings.theme){try{await theme.select(settings.theme);}catch{}}
+
+ if(settings.theme)themeReady.then(()=>theme.select(settings.theme)).catch(()=>{});
  $("page").append(heading("КНИГИ СО ЗВУКОВЫМИ СЦЕНАМИ",settings.tagline||settings.name,settings.description));
  const blocks=el("div","site-blocks");$("page").append(blocks);let catalogHost=null;
  if(settings.contacts)$("page").append(renderContactLinks(settings.contacts));
@@ -328,8 +323,8 @@ async function reader({ id, slug, chapter = 0 }, token) {
   const header = el("header", "reader-header");
   header.append(
     link(slug ? "Каталог автора" : "Библиотека", back, "text-link"),
-    el("h1", "", book.title),
-    el("p", "muted", book.author),
+    el("h1", "book-title", book.title),
+    el("p", "muted book-author", book.author),
   );
   $("page").append(header);
   const bar = el("div", "reader-toolbar");
@@ -525,7 +520,7 @@ async function reader({ id, slug, chapter = 0 }, token) {
           $("toc-dialog").close();
           location.hash = base + "/" + i;
         },
-        "toc-item",
+        "toc-item book-title",
       ),
     ),
   );

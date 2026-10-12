@@ -1,3 +1,4 @@
+import accessService from './access-service.json' with {type:'json'};
 import {createOwnerVault} from './owner-vault.mjs';
 import {createLocalWorkshop} from './local-workshop.mjs';
 // Only public API reads may be retried. A timed-out write can already have
@@ -38,7 +39,6 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
     const token = storedToken(storage);
     if (/^[A-Za-z0-9_-]{43}$/.test(token)) headers.set('Authorization', 'Bearer ' + token);
     const order = bridged ? [preferred, ...origins.map((_, i) => i).filter(i => i !== preferred)] : [-1];
-    // Materialise a Request body once; the normal application uses a JSON string.
     const body = init.body !== undefined ? init.body : original && !read ? await original.clone().arrayBuffer() : undefined;
     let decodedBody={};if(typeof body==='string')try{decodedBody=JSON.parse(body);}catch{}
     const localReply=async()=>{
@@ -53,9 +53,10 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
       return null;
     };
     if(callerSignal?.aborted)throw callerSignal.reason||new DOMException('Aborted','AbortError');
-    if(!preferService()||reserveMode){
-      const local=await localReply();if(local)return local;
-    }
+
+    const ownerFirst = url.pathname.endsWith('/key-login') || reserveMode || vault?.isOwner() || !preferService();
+    if(ownerFirst){const local=await localReply();if(local)return local;}
+
     let lastResponse;
     for (const index of read ? order : order.slice(0, 1)) {
       if (callerSignal?.aborted) throw callerSignal.reason || new DOMException('Aborted', 'AbortError');
@@ -82,8 +83,6 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
       } catch (error) {
         if (callerSignal?.aborted) throw callerSignal.reason || error;
         if (!read) {
-          // An ambiguous publication must remain on its original server.
-          // Authentication may safely open a separate local owner reserve.
           if(url.pathname.endsWith('/key-login')){const local=await localReply();if(local)return local;}
           throw new Error(NETWORK_MESSAGE, { cause: error });
         }
@@ -107,10 +106,8 @@ export function installAPITransport() {
   const vault=createOwnerVault({nativeFetch,storage:reserveStorage});
   const origins=[...API_ORIGINS];let primaryReady=false;
   window.fetch = createAPITransport({ nativeFetch, origin: location.href, storage, origins, vault, workshop:createLocalWorkshop(),preferService:()=>primaryReady });
-  nativeFetch(new URL('./access-service.json',import.meta.url),{cache:'no-store',signal:AbortSignal.timeout(3000)}).then(r=>r.ok?r.json():null).then(config=>{
-    if(config?.ready!==true)return;
-    const url=new URL(config.origin);
-    if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||url.pathname!=='/')return;
-    origins.unshift(url.origin);primaryReady=true;
-  }).catch(()=>{});
+  try{
+    if(accessService?.ready===true){const url=new URL(accessService.origin);if(url.protocol==='https:'&&!url.username&&!url.password&&!url.search&&!url.hash&&url.pathname==='/'){origins.unshift(url.origin);primaryReady=true;}}
+  }catch{}
+
 }

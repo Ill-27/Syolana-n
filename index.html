@@ -17,11 +17,14 @@
     <title>Syolana · Живые темы, шаблоны и языки</title>
     <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
     <link rel="preload" href="assets/fonts/syolana-script.woff" as="font" type="font/woff" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=20261011-poems-3" />
-    <link rel="stylesheet" href="assets/fonts/fonts.css" />
-    <link rel="stylesheet" href="workspace.css?v=20261011-poems-3" />
-    <link rel="stylesheet" href="managed-sites.css?v=20261011-poems-3" />
-  </head>
+  <link rel="modulepreload" href="runtime/boot-6U223ZNU.js">
+<link rel="modulepreload" href="runtime/chunk-chunk-MCTIAI3J.js">
+<link rel="modulepreload" href="runtime/chunk-chunk-VKKGY5UD.js">
+<link rel="modulepreload" href="runtime/chunk-chunk-LDQUKS2L.js">
+<link rel="modulepreload" href="runtime/chunk-chunk-AM55BNCL.js">
+<link rel="modulepreload" href="runtime/chunk-app-UK2IFCYJ.js">
+<link rel="stylesheet" href="runtime/site-E76A5BB36CD437D6.css">
+</head>
   <body>
     <a class="skip-link" href="#page">К содержанию</a>
     <div class="aurora-background" aria-hidden="true"><div class="aurora-layer one"></div><div class="aurora-layer two"></div><div class="aurora-layer three"></div></div>
@@ -31,20 +34,22 @@
       <a href="#/" class="brand glass" aria-label="Syolana — главная"><img src="assets/logo.svg" width="47" height="47" alt="" /><span><strong>Syolana</strong><small>ШАБЛОНЫ И ЯЗЫКИ</small></span></a>
       <div class="top-actions">
         <button id="theme-toggle" class="icon-btn glass" aria-label="Выбрать тему" title="Выбрать тему">✧</button>
+        <button id="ambient-theme-sound-toggle" type="button" class="icon-btn glass" aria-label="Включить звук темы" title="Включить звук темы" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10v4h4l5 4V6L8 10H4m12.5-1.5a5 5 0 0 1 0 7M18.8 6.2a8.2 8.2 0 0 1 0 11.6"/></svg></button>
         <button id="zen-toggle" class="icon-btn glass" aria-label="Режим созерцания" aria-pressed="false" title="Скрыть интерфейс"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg></button>
         <button id="fullscreen" class="icon-btn glass" aria-label="На весь экран" aria-pressed="false" title="На весь экран"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5" /></svg></button>
+        <div id="syolana-lang" class="syolana-lang"><button class="icon-btn glass syolana-lang-toggle" type="button" aria-label="Язык интерфейса"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 4 5.6 4 9s-1.4 6.4-4 9c-2.6-2.6-4-5.6-4-9s1.4-6.4 4-9Z"/></svg><span class="syolana-lang-code">RU</span></button></div>
       </div>
     </header>
     <div id="content-shell" class="shell">
       <aside id="banner" class="banner glass" aria-label="О Syolana"></aside>
       <details id="provider-notice" class="provider-notice"><summary>Как устроены шаблоны Syolana</summary><p>Владелец получает готовый HTML-файл, сам выбирает хостинг и домен и самостоятельно управляет своими материалами. Syolana предоставляет дизайнерский шаблон, живые темы и обновления оформления.</p></details>
-      <nav id="main-nav" class="main-nav" aria-label="Разделы Syolana"><a href="#/" data-nav="home">Лента</a><a href="#/join" data-nav="join">Шаблоны</a><a href="#/create-site">Собрать эскиз</a><a href="#/languages" data-nav="languages">Языки</a></nav>
+      <nav id="main-nav" class="main-nav" aria-label="Разделы Syolana"><a href="#/" data-nav="home">Лента</a><a href="#/join" data-nav="join">Сайт</a><a href="#/create-site">Собрать эскиз</a><a href="#/languages" data-nav="languages">Языки</a></nav>
       <main id="page" tabindex="-1"><p class="loading">Открываем пространство…</p></main>
       <footer id="footer">
         <a href="#/">Syolana</a><span>© Syolana. Все права защищены.</span>
         <p class="notice">Заказы, общение и согласование оплаты — только через <a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">официальный профиль Syolana на Авито</a>. Шаблоны размещаются и ведутся их владельцами самостоятельно. Продление языкового доступа — по вашему решению. Автоматических списаний нет.</p>
-        <div><a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">Написать на Авито</a><a href="#/offer">Единые условия</a><a href="#/legal">Правовая информация</a><a href="#/privacy">Конфиденциальность</a><a href="#/terms">Как получить шаблон</a><a href="#/report">Подать жалобу</a><a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">Обсудить проект на Авито</a></div>
-        <details class="network-note"><summary>Запасной адрес при ограничениях интернета</summary><p>Если основной домен временно недоступен, попробуйте резервный адрес: <a href="https://syolana.website.yandexcloud.net/">syolana.website.yandexcloud.net</a>. Это запасной вход, а не единственная инфраструктура Syolana.</p></details>
+        <div><a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">Написать на Авито</a><a href="#/offer">Единые условия</a><a href="#/legal">Правовая информация</a><a href="#/privacy">Конфиденциальность</a><a href="#/terms">Как заказать сайт</a><a href="#/report">Подать жалобу</a><a href="https://www.avito.ru/brands/i223140984" rel="noopener noreferrer">Обсудить проект на Авито</a></div>
+        <details class="network-note"><summary>Если мобильный интернет ограничен</summary><p>Сохраните запасной адрес Syolana: <a href="https://syolana.website.yandexcloud.net/">syolana.website.yandexcloud.net</a>. На нём открываются те же публичные страницы и курсы. При мобильных белых списках доступ к отдельным серверным функциям может зависеть от оператора.</p></details>
       </footer>
     </div>
     <aside id="music-dock" class="music-dock glass" aria-label="Музыкальный плеер">
@@ -67,6 +72,6 @@
     <dialog id="toc-dialog"><div class="dialog-head"><h2>Оглавление</h2><button class="icon-btn" data-close aria-label="Закрыть">×</button></div><div id="toc-list"></div></dialog>
     <div id="toast" class="toast glass" role="status" hidden></div>
     <noscript><p class="noscript">Для курсов, эскиза и живых тем включите JavaScript. <a href="https://www.avito.ru/brands/i223140984">Связаться с Syolana на Авито</a>.</p></noscript>
-    <script type="module" src="boot.js?v=20261012-zen-polish-2"></script>
+    <script type="module" src="runtime/boot-6U223ZNU.js"></script>
   </body>
 </html>

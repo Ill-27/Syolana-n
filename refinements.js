@@ -49,5 +49,4 @@ function wireThemePreview(){document.querySelectorAll('.builder-theme-choice inp
 function wireThemeDialogClose(){if(document.documentElement.dataset.themeDialogCloseWired)return;document.documentElement.dataset.themeDialogCloseWired='1';document.addEventListener('click',event=>{const option=event.target.closest?.('#theme-list .theme-option');if(!option)return;const dialog=option.closest('dialog');if(dialog?.open)setTimeout(()=>dialog.close(),60);});}
 function normalizeDemoName(){document.querySelectorAll('input,textarea').forEach(input=>{if(input.value==='Тестовый сайт Ланы'){input.value='Тестовый сайт';input.dispatchEvent(new Event('input',{bubbles:true}));}});}
 function polish(){keepGlobalChrome();replaceText();removeLegacyPurchases();polishFooter();fixCourseCardSpacing();wireOfferTop();wireThemePreview();wireThemeDialogClose();normalizeDemoName();}
-let queued=false;function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;polish();});}
-polish();new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});window.addEventListener('hashchange',()=>requestAnimationFrame(polish));
+export {polish as refineView};

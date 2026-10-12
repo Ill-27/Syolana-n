@@ -1,16 +1,18 @@
 import {SceneAudio} from '../scene-audio.js?v=20261012-bloom-control-1';
 
 const root=new URL('../',import.meta.url);
+const mediaPath=value=>(root.pathname.endsWith('/artivid/')||document.documentElement?.dataset?.localThemeAssets==='true')?value:value.replace(/^audio-library\//,'artivid/audio-library/');
 export function audioEntry(raw){
  const entry=typeof raw==='string'?{src:raw}:raw;
- const src=new URL(entry.src,root).href;
- return{...entry,src,fallback:new URL(entry.fallback||entry.src.replace('audio-library/','audio-library/compatible/').replace(/\.ogg$/,'.m4a'),root).href,loop:entry.loop!==false};
+ const src=new URL(mediaPath(entry.src),root).href;
+ return{...entry,src,fallback:new URL(mediaPath(entry.fallback||entry.src.replace('audio-library/','audio-library/compatible/').replace(/\.ogg$/,'.m4a')),root).href,loop:entry.loop!==false};
 }
 export function createThemeAudio(spec){
  const entries=spec.loops.map(audioEntry),library=Object.fromEntries(entries.map((e,i)=>['layer'+i,e]));
  const audio=new SceneAudio(library,{pause(){document.getElementById('audio')?.pause();}});
  audio.controller=spec.title;audio.maxOutput=.6;
  const button=document.createElement('button');button.type='button';button.className='icon-btn glass theme-sound-toggle';
+ button.hidden=!!document.getElementById?.('ambient-theme-sound-toggle');
  button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path d="M16 9c1.7 1.5 1.7 4.5 0 6M18.5 6.8c3.5 3 3.5 7.4 0 10.4"/></svg>';
  document.querySelector('.top-actions')?.insertBefore(button,document.querySelector('#zen-toggle'));
  let dead=false,shotTimer=0,lastStrike=-1;const shots=new Set();

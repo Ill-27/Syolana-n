@@ -1,3 +1,5 @@
+import themeManifest from './themes/manifest.json' with {type:'json'};
+import {themeLoaders} from './theme-loaders.js';
 import { getPref, setPref, notify } from "./utils.js";
 import {themeTypography} from "./themes/theme-typography.mjs?v=20261012-bloom-control-1";
 const SOFT_SCENE_CSS=`
@@ -125,12 +127,7 @@ export class ThemeEngine {
     this.forwardFlightUntil = 0;
     const themeBase = new URL("./themes/", import.meta.url);
     this.themeBase = themeBase;
-    this.manifest = await fetch(new URL("manifest.json", themeBase), {
-      cache: "no-store", signal:AbortSignal.timeout(5000),
-    }).then((r) => {
-      if (!r.ok) throw Error("Темы недоступны");
-      return r.json();
-    }).catch(()=>FALLBACK_THEMES);
+    this.manifest = themeManifest;
     if(!Array.isArray(this.manifest)||!this.manifest.length)this.manifest=FALLBACK_THEMES;
     const requested = new URLSearchParams(location.search).get("theme");
     const old = getPref("theme", "");
@@ -203,12 +200,12 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-zen-polish-2";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-fast-interface-1";
     if (version) url.searchParams.set("v", version);
-    let module;try{module=await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
+    let module;try{module=themeLoaders[id]?await themeLoaders[id]():await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
     if (seq !== this.sequence) return;
     this.sceneEvents?.abort();
-    this.custom?.dispose?.();
+    const previousRenderer=this.custom;
     this.sceneLost = false;
     this.qualityScale = 1;
     this.custom =
@@ -247,6 +244,7 @@ export class ThemeEngine {
     setPref("theme", id);
     this.sprites = theme.colors.map((c) => this.sprite(c));
     this.resize(true);
+    previousRenderer?.dispose?.();
     this.updateChoices();
     this.sync();
     this.selectedObject=null;this.updateFlightHint();
@@ -872,13 +870,14 @@ export class ThemeEngine {
     let sampleFrames=0,sampleStart=0;
     const tick = t => {
       const elapsed=this.last?(t-this.last)/1000:1/60;
+      if(this.last&&t-this.last<(document.body.classList.contains("zen")?1000/60:1000/30)){this.frame=requestAnimationFrame(tick);return;}
       this.last=t;this.draw(Math.min(elapsed,.1));
       if(!sampleStart)sampleStart=t;sampleFrames++;
       if(t-sampleStart>2400){
         const fps=sampleFrames*1000/(t-sampleStart),previous=this.qualityScale||1;
-        if(this.custom&&fps<36)this.qualityScale=Math.max(.62,previous-.12);
-        else if(this.custom&&fps>56)this.qualityScale=Math.min(1,previous+.04);
-        if((this.qualityScale||1)!==previous)this.custom?.resize?.({width:this.w,height:this.h,ratio:this.ratio*this.qualityScale});
+        if(this.custom&&fps<24)this.qualityScale=Math.max(.62,previous-.12);
+        else if(this.custom&&fps>(document.body.classList.contains("zen")?56:28))this.qualityScale=Math.min(1,previous+.04);
+        if((this.qualityScale||1)!==previous){this.custom?.resize?.({width:this.w,height:this.h,ratio:this.ratio*this.qualityScale});this.draw(0);}
         sampleFrames=0;sampleStart=t;
       }
       this.frame=requestAnimationFrame(tick);

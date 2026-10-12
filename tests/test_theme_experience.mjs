@@ -60,7 +60,7 @@ class Context{
  async decodeAudioData(bytes){assert(bytes.byteLength>100);if(failOgg&&Buffer.from(bytes).subarray(0,4).toString()==='OggS')throw Error('Unsupported OGG');return this.createBuffer(1,8000,1000);}
  createBufferSource(){const source={connect(){},disconnect(){},start(time=0){this.started=time;sources.push(this);},stop(){this.stopped=true;}};return source;}
 }win.AudioContext=Context;
-const fetched=[];globalThis.fetch=async url=>{const parsed=new URL(url,doc.baseURI),path=parsed.pathname.replace(/^\/project\//,'');fetched.push(path);try{return new Response(await fs.readFile(new URL('../'+path,import.meta.url)));}catch{return new Response('',{status:404});}};
+const fetched=[];globalThis.fetch=async url=>{const parsed=new URL(url,doc.baseURI),path=parsed.pathname.replace(/^\/project\//,'').replace(/^artivid\//,'');fetched.push(path);try{let data;try{data=await fs.readFile(new URL('../artivid/'+path,import.meta.url));}catch{data=await fs.readFile(new URL('../'+path,import.meta.url));}return new Response(data);}catch{return new Response('',{status:404});}};
 const {THEME_AUDIO_LIBRARY:library,THEME_AUDIO_SCENES:scenes}=await import('../theme-sound.js');
 for(const id of ['aurora','golden','moon','violet-bloom']){
  const audio=new SceneAudio(library,{pause(){}});assert.equal(await audio.toggle(),true);await audio.scene(scenes[id],id);assert(audio.tracks.size>0);assert([...audio.tracks.values()].every(s=>s.source.started===0&&s.source.loop));

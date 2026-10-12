@@ -14,5 +14,4 @@ function injectLayoutFixes(){if(document.getElementById('syolana-final-layout-fi
 @media(max-width:760px){#main-nav{gap:7px!important;row-gap:8px!important;margin-bottom:14px!important}#main-nav a{min-height:46px!important;padding-inline:14px!important}#main-nav a[href="#/create-site"]{padding-inline:18px!important;margin-inline:0!important}#page>.row:has(a[href="#/create-site"]):has(a[href*="avito.ru"]){column-gap:16px!important;row-gap:14px!important}#page>a.btn[href="#/create-site"]+a.btn[href*="avito.ru"]{margin-left:14px!important}}
 `;document.head.append(s);}
 function polish(root=document){for(const n of root.querySelectorAll?.('p,h1,h2,h3,span,a,button')||[]){const t=(n.textContent||'').trim();if(exact.has(t)&&n.childElementCount===0)n.textContent=exact.get(t);}}
-let queued=false;function schedule(){if(queued)return;queued=true;queueMicrotask(()=>{queued=false;polish();});}
-injectLayoutFixes();polish();new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
+injectLayoutFixes();export {polish as finishCopy};

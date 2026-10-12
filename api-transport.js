@@ -1,3 +1,4 @@
+import accessService from './access-service.json' with {type:'json'};
 import {createOwnerVault} from './owner-vault.mjs';
 import {createLocalWorkshop} from './local-workshop.mjs';
 // Only public API reads may be retried. A timed-out write can already have
@@ -53,9 +54,6 @@ export function createAPITransport({ nativeFetch, origin, storage, origins = API
     };
     if(callerSignal?.aborted)throw callerSignal.reason||new DOMException('Aborted','AbortError');
 
-    // Owner recovery must never wait for a remote provider. Always try the
-    // encrypted owner vault first for owner login, an already-open reserve
-    // session and the local Workshop. Customer access still uses the servers.
     const ownerFirst = url.pathname.endsWith('/key-login') || reserveMode || vault?.isOwner() || !preferService();
     if(ownerFirst){const local=await localReply();if(local)return local;}
 
@@ -108,10 +106,8 @@ export function installAPITransport() {
   const vault=createOwnerVault({nativeFetch,storage:reserveStorage});
   const origins=[...API_ORIGINS];let primaryReady=false;
   window.fetch = createAPITransport({ nativeFetch, origin: location.href, storage, origins, vault, workshop:createLocalWorkshop(),preferService:()=>primaryReady });
-  nativeFetch(new URL('./access-service.json',import.meta.url),{cache:'no-store',signal:AbortSignal.timeout(3000)}).then(r=>r.ok?r.json():null).then(config=>{
-    if(config?.ready!==true)return;
-    const url=new URL(config.origin);
-    if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||url.pathname!=='/')return;
-    origins.unshift(url.origin);primaryReady=true;
-  }).catch(()=>{});
+  try{
+    if(accessService?.ready===true){const url=new URL(accessService.origin);if(url.protocol==='https:'&&!url.username&&!url.password&&!url.search&&!url.hash&&url.pathname==='/'){origins.unshift(url.origin);primaryReady=true;}}
+  }catch{}
+
 }

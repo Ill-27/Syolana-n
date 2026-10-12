@@ -1,1 +1,1 @@
-{"name":"syolana","private":true,"type":"module","scripts":{"test:player":"node tests/test_player.mjs"}}
+{"name":"syolana-private-checks","private":true,"type":"module","devDependencies":{"esbuild":"0.25.9","jsdom":"26.1.0","acorn":"8.15.0"}}

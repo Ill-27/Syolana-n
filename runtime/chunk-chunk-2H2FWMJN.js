@@ -1,0 +1,1 @@
+function M({width:n,height:s,ratio:e=1},{maxPixels:i=25e5,mobileRatio:u=1.8,desktopRatio:m=2}={}){let t=Math.max(1,Number(n)||1),h=Math.max(1,Number(s)||1),r=Number.isFinite(e)&&e>0?e:1,a=Math.min(r,t<=760?u:m,Math.sqrt(i/(t*h)));return{cssWidth:t,cssHeight:h,pixelRatio:a,width:Math.max(1,Math.round(t*a)),height:Math.max(1,Math.round(h*a))}}export{M as a};

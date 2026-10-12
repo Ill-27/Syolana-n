@@ -8,10 +8,10 @@ export async function brandingConfig(){
 }
 export async function mountCourseBranding({root=document,course='',personalMark='',cards=true}={}){
   const config=await brandingConfig(),doc=root.ownerDocument||root;
-  if(!doc.getElementById('syolana-course-attribution-style')){const css=doc.createElement('link');css.id='syolana-course-attribution-style';css.rel='stylesheet';css.href=new URL('course-branding.css?v=20261012-zen-polish-2',BASE).href;doc.head.append(css);}
+  if(!doc.getElementById('syolana-course-attribution-style')){const css=doc.createElement('link');css.id='syolana-course-attribution-style';css.rel='stylesheet';css.href=new URL('course-branding.css?v=20261012-fast-interface-1',BASE).href;doc.head.append(css);}
   let mark=/^S-[a-f0-9]{12}$/.test(personalMark)?personalMark:'',disposed=false;
   const removeProtection=protectCourseText(doc),frames=new Map();
-  function protectFrames(){for(const frame of doc.querySelectorAll('iframe.lesson-frame')){if(frames.has(frame))continue;const state={dispose:null,onload:null};state.onload=()=>{state.dispose?.();try{const d=frame.contentDocument;if(d?.body){if(!d.getElementById('syolana-course-protection-style')){const link=d.createElement('link');link.id='syolana-course-protection-style';link.rel='stylesheet';link.href=new URL('course-branding.css?v=20261012-zen-polish-2',BASE).href;d.head.append(link);}state.dispose=protectCourseText(d);}}catch{}};frame.addEventListener('load',state.onload);frames.set(frame,state);state.onload();}}
+  function protectFrames(){for(const frame of doc.querySelectorAll('iframe.lesson-frame')){if(frames.has(frame))continue;const state={dispose:null,onload:null};state.onload=()=>{state.dispose?.();try{const d=frame.contentDocument;if(d?.body){if(!d.getElementById('syolana-course-protection-style')){const link=d.createElement('link');link.id='syolana-course-protection-style';link.rel='stylesheet';link.href=new URL('course-branding.css?v=20261012-fast-interface-1',BASE).href;d.head.append(link);}state.dispose=protectCourseText(d);}}catch{}};frame.addEventListener('load',state.onload);frames.set(frame,state);state.onload();}}
   const label=()=>config.domain+(mark?' · '+mark:'');
   const overlay=doc.createElement('div');overlay.className='course-attribution-layer';overlay.setAttribute('aria-hidden','true');overlay.setAttribute('role','presentation');overlay.inert=true;
   const nodes=[];

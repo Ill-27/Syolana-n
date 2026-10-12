@@ -7,3 +7,7 @@ __pycache__/
 *.pyc
 node_modules/
 test-results/
+
+node_modules/
+dist/
+.runtime-build.json

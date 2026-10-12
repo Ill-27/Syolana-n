@@ -86,6 +86,7 @@ export class Player {
       b.type = "button";
       const n = el("span", "track-number", String(i + 1).padStart(2, "0"));
       const txt = el("span", "", song.title || "Без названия");
+      txt.dataset.originalTitle="true";
       txt.append(el("small", "", song.sourceTitle || "Syolana"));
       b.append(n, txt);
       b.onclick = () => {

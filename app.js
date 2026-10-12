@@ -1,3 +1,8 @@
+import initialConfig from './config.json' with {type:'json'};
+import initialFeed from './feed.json' with {type:'json'};
+import songDetails from './song-details.json' with {type:'json'};
+import {finishUI} from './render-ui.js';
+import {positionView,clearPositionView} from './positioning.js';
 import {loadPublicJSON} from "./public-data.js?v=20261011-poems-2";
 import { lessonFiles } from "./catalog.js?v=20261009-platform-fr-a1-1";
 import { mountCourseBranding } from "./course-branding.js?v=20261007-language-marks-3";
@@ -15,33 +20,31 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261012-zen-polish-2";
-import { Player } from "./player.js?v=20261012-zen-polish-2";
+import { ThemeEngine } from "./themes.js?v=20261012-zen-polish-1";
+import { Player } from "./player.js?v=20261012-zen-polish-1";
 import { API } from "./api.js";
 import { lessons } from "./content.js";
-import { Studio } from "./studio.js";
+
 import { renderFeed, feedEditor } from "./feed.js";
 import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
-import {mountSiteCreator,mountManagedEditor,mountManagedSite} from './managed-sites.js?v=20261011-independent-1';
+
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
   $("page").focus();
   $("page").scrollIntoView();
 };
 const api = new API();
-const apiReady = api.init();
-let config;
-try {
-  config = await loadPublicJSON("config.json");
-} catch {
-  config = { songs: [], banner: {}, plan: { pricing: "custom", priceRub: null } };
-}
+let apiReady;
+const ensureAPI=()=>apiReady??=(api.init());
+const config=initialConfig;
 const player = new Player(config.songs || []);
 const theme = new ThemeEngine();
 theme
   .init()
   .catch(() => notify("Фон временно недоступен. Содержимое сайта доступно."));
-const studio = new Studio(api, route);
+let studio;
+async function getStudio(){if(!studio){const {Studio}=await import("./studio.js");studio=new Studio(api,route);}return studio;}
+window.addEventListener('syolana:builder-theme',event=>{if(event.detail?.theme)theme.select(event.detail.theme).catch(()=>{});});
 const sceneAudio = { stop() {} };
 function businessContact(subject, kind = "website") {
   const raw = String(config.contactChannels?.[kind]?.url || "").trim();
@@ -362,7 +365,7 @@ async function home(token) {
   });
   $("page").append(tabs, list);
   try {
-    items = await loadPublicJSON(config.feed?.file || "feed.json");
+    items = structuredClone(initialFeed);
     if (!Array.isArray(items)) items = [];
     items = items.filter(p => p.category !== "Книги");
   } catch {
@@ -370,7 +373,7 @@ async function home(token) {
   }
   if (token !== routeToken) return;
   draw();
-  apiReady.then(async () => {
+  if(config.legacyStudioEnabled)ensureAPI().then(async () => {
     if (!api.online || token !== routeToken) return;
     try {
       const data = await api.request("feed");
@@ -450,7 +453,7 @@ function songsPage() {
   player.songs.forEach((song, i) => {
     const card = el("article", "card stack");
     card.append(
-      el("h3", "", song.title),
+      el("h3", "song-title", song.title),
       el("p", "muted", song.sourceTitle || "Творческий проект"),
       button("Слушать песню", () => player.select(i, true), "btn primary"),
     );
@@ -463,13 +466,13 @@ function songsPage() {
   $("page").append(list);
 }
 async function songPage(id, token) {
-  const data=await loadPublicJSON('song-details.json?v=20261011-poems-2');
+  const data=songDetails;
   if(token!==routeToken)return;
   const song=data.songs.find(s=>s.id===id);
   if(!song)throw Error('Эта песня пока не опубликована.');
   document.title=song.titleRu+' · Syolana';
   const index=player.songs.findIndex(s=>s.id===id);
-  $('page').append(link('Все песни','#/songs','text-link'),heading('МУЗЫКА И ПОЭЗИЯ',song.title,song.titleRu));
+  $('page').append(link('Все песни','#/songs','text-link'),heading('МУЗЫКА И ПОЭЗИЯ',song.title,song.titleRu));$('page').querySelector(':scope>.hero h1').classList.add('song-title');
   const introduction=el('section','card stack song-introduction');
   introduction.append(el('p','eyebrow',song.author+' · '+song.authorYears),el('h2','',song.sourceTitle),el('p','',song.about),el('p','muted',song.publication));
   if(index>=0)introduction.append(button('Слушать песню',()=>player.select(index,true),'btn primary'));
@@ -626,6 +629,7 @@ async function route() {
   const token = ++routeToken;
   const preserveAudio = /^#\/book\//.test(location.hash) || /^#\/s\/[^/]+\/book\//.test(location.hash);
   cleanup({ preserveAudio });
+  clearPositionView();
   if (!preserveAudio) sceneAudio.stop();
   cleanup = () => {};
   clearTimeout(siteTimer);
@@ -642,6 +646,7 @@ async function route() {
   const [view, a, b, c, d] = parts;
   const managedView=['site','site-editor','create-site'].includes(view);
   document.body.classList.toggle('managed-site-view',view==='site');
+  if(view==='site')$('page').dataset.i18nSkip='partner-content';else $('page').removeAttribute('data-i18n-skip');
   document.body.classList.toggle('managed-editor-view',view==='site-editor'||view==='create-site');
   $('main-nav').hidden=managedView;
   const informationTitles = {
@@ -662,9 +667,9 @@ async function route() {
       x.setAttribute("aria-current", x.dataset.nav === view ? "page" : "false"),
     );
   try {
-    if (view === 'create-site') {const next=await mountSiteCreator($('page'),{isCurrent:()=>token===routeToken});if(token===routeToken)cleanup=next||(()=>{});else next?.();}
-    else if(view==='site-editor'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) {const next=await mountManagedEditor($('page'),a,{isCurrent:()=>token===routeToken});if(token===routeToken)cleanup=next||(()=>{});else next?.();}
-    else if(view==='site'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) await mountManagedSite($('page'),a,{isCurrent:()=>token===routeToken,selectTheme:id=>theme.select(id)});
+    if (['create-site','site-editor','studio','editor','admin'].includes(view) && config.legacyStudioEnabled!==true) {positionView();}
+    else if(view==='site-editor'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) {const {mountManagedEditor}=await import('./managed-sites.js');const next=await mountManagedEditor($('page'),a,{isCurrent:()=>token===routeToken});if(token===routeToken)cleanup=next||(()=>{});else next?.();}
+    else if(view==='site'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) {const {mountManagedSite}=await import('./managed-sites.js');await mountManagedSite($('page'),a,{isCurrent:()=>token===routeToken,selectTheme:id=>theme.select(id)});}
     else if (view === "home") await home(token);
     else if (view === "library" || view === "book") { location.replace((config.artividUrl || "artivid/") + (view === "book" ? "#/book/"+encodeURIComponent(a)+"/"+(Number(b)||0) : "#/")); return; }
     else if (view === "languages") languages(a, b);
@@ -689,12 +694,12 @@ async function route() {
         link("Обсудить настройку на Авито", businessContact(), "btn primary"),
       );
     } else if (view === "studio") {
-      await apiReady;
+      await ensureAPI();
       if (token === routeToken)
-        await studio.render($("page"), token, () => routeToken);
+        await (await getStudio()).render($("page"), token, () => routeToken);
     } else if (view === "admin") {
-      await apiReady;
-      if (token === routeToken) await studio.admin($("page"));
+      await ensureAPI();
+      if (token === routeToken) await (await getStudio()).admin($("page"));
     } else if (view === "editor") feedEditor($("page"));
     else if (view === "s" && b === "book") { location.replace(config.artividUrl || "artivid/"); return; }
     else if (view === "s") await publicSite(a, token);
@@ -716,6 +721,7 @@ async function route() {
       link("На главную", "#/"),
     );
   }
+  if(token===routeToken)finishUI();
 }
 window.addEventListener("hashchange", route);
 await route();
@@ -869,7 +875,7 @@ function lessonFrame(key, anchor = "") {
 
 async function openLesson(key, anchor, token) {
   if (lessonFiles[key].startsWith("api/")) {
-    await apiReady;
+    await ensureAPI();
     if (token !== routeToken) return;
     if (!api.online) {
       $("page").append(

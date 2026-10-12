@@ -15,8 +15,8 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261012-zen-polish-1";
-import { Player } from "./player.js?v=20261012-zen-polish-1";
+import { ThemeEngine } from "./themes.js?v=20261012-zen-polish-2";
+import { Player } from "./player.js?v=20261012-zen-polish-2";
 import { API } from "./api.js";
 import { lessons } from "./content.js";
 import { Studio } from "./studio.js";

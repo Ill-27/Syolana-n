@@ -13,6 +13,8 @@ body :is(input,textarea,select){color:var(--panel-text)!important}
 body :is(input,textarea)::placeholder{color:var(--panel-muted)!important;opacity:1}
 body :is(.reader-text,.prose){--text-ink:var(--prose,var(--panel-text))}
 body.no-effects,body.no-effects :is(.card,.glass,.reader-text){--text-ink:#202020;--heading-ink:#534672;--label-ink:#534672;--muted-ink:#555}
+body.no-effects :is(label,legend,small,input,textarea,select){color:#333!important}
+body.no-effects :is(input,textarea)::placeholder{color:#666!important;opacity:1}
 body :is(h1,h2,h3,h4,h5,h6){color:var(--heading-ink)!important;opacity:1;text-shadow:var(--heading-shadow)!important}
 body .hero h1 em{color:var(--heading-ink)!important}
 body :is(.eyebrow,.text-link){color:var(--label-ink)!important;opacity:1}
@@ -201,7 +203,7 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-zen-polish-1";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-zen-polish-2";
     if (version) url.searchParams.set("v", version);
     let module;try{module=await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
     if (seq !== this.sequence) return;

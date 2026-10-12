@@ -19,6 +19,20 @@ body.syolana-active #banner .banner-invitation{margin:4px 0 0!important;line-hei
 #theme-dialog .theme-list{max-height:min(70vh,720px);overflow:auto;overscroll-behavior:contain}
 #theme-dialog .theme-option{min-width:0}
 #theme-dialog .theme-option strong,#theme-dialog .theme-option small{white-space:normal;overflow-wrap:anywhere}
+
+/* Exactly one canonical Syolana banner when the immersive layer is active. */
+body.syolana-active [data-syolana-canonical-fallback][hidden]{display:none!important}
+body.syolana-active #banner.syolana-canonical-banner{display:block!important;width:100%!important;min-height:0!important;max-width:none!important;padding:24px 22px!important;border-radius:22px!important;text-align:left!important}
+body.syolana-active #banner.syolana-canonical-banner .banner-copy{display:grid!important;gap:12px!important;text-align:left!important}
+body.syolana-active #banner.syolana-canonical-banner .banner-brandmark{justify-self:start!important}
+body.syolana-active #banner.syolana-canonical-banner .banner-copy h2{margin:8px 0 12px!important;max-width:none!important;font-size:clamp(2.15rem,7.8vw,3.4rem)!important;line-height:.96!important}
+body.syolana-active #banner.syolana-canonical-banner .banner-title-line{display:block!important;white-space:nowrap!important}
+body.syolana-active #banner.syolana-canonical-banner .banner-description{max-width:620px!important;margin:0!important;line-height:1.58!important}
+body.syolana-active #banner.syolana-canonical-banner .banner-actions{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:12px!important;width:100%!important;margin-top:8px!important}
+body.syolana-active #banner.syolana-canonical-banner .banner-actions .btn{width:100%!important;min-width:0!important;min-height:52px!important;padding:11px 12px!important;white-space:normal!important}
+body.syolana-active #banner.syolana-canonical-banner .banner-invitation{margin:4px 0 0!important}
+body.syolana-active .partner-platform-pitch{display:none!important}
+
 @media(max-width:720px){
   .syolana-attribution-top{margin-top:112px!important;margin-inline:22px!important;max-width:none!important}
   .syolana-attribution:not(.syolana-attribution-top){margin-inline:22px!important;margin-bottom:calc(142px + env(safe-area-inset-bottom,0px))!important}
@@ -28,6 +42,10 @@ body.syolana-active #banner .banner-invitation{margin:4px 0 0!important;line-hei
   body.syolana-active #banner .banner-copy h2{font-size:clamp(2rem,8.2vw,3.1rem)!important;max-width:none!important}
   body.syolana-active #banner .banner-actions{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%!important}
   body.syolana-active #banner .banner-actions .btn{width:100%!important;min-width:0!important}
+  body.syolana-active #banner.syolana-canonical-banner{padding:22px 20px!important}
+  body.syolana-active #banner.syolana-canonical-banner .banner-copy h2{font-size:clamp(2.05rem,9vw,2.8rem)!important;line-height:.96!important}
+  body.syolana-active #banner.syolana-canonical-banner .banner-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important}
+  body.syolana-active #banner.syolana-canonical-banner .banner-actions .btn{min-height:54px!important;padding:10px 8px!important;font-size:.84rem!important;line-height:1.2!important}
   #theme-dialog{max-width:calc(100vw - 24px)!important;max-height:calc(100dvh - 30px)!important}
   #theme-dialog .theme-list{grid-template-columns:1fr!important;max-height:65dvh!important}
   #theme-dialog .theme-option{grid-template-columns:1fr!important;grid-template-rows:minmax(145px,48vw) auto!important;height:auto!important;min-height:0!important}

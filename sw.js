@@ -1,8 +1,17 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'copy-20261012-1';
+const CACHE=PREFIX+'refined-20261012-1';
 const BASE=new URL('./',self.location.href);
 const assets=['index.html','boot.js','styles.css','config.json'].map(path=>new URL(path,BASE).href);
+const SCENE_RELEASE='20261012-refined-1';
+async function cacheScenes(cache){
+ const modules=['aurora.js','golden.js','moon.js','violet-bloom.js','living-sea.js','amber-forest.js','white-ocean-city.js','sky-camera.mjs','scene-quality.mjs','world-gl.mjs','celestial-world.mjs','botanical-world.mjs'];
+ const paths=['utils.js','themes/manifest.json','themes/scene-motion.mjs','themes/luminous-atmosphere.js','themes/luminous-atmosphere.js?v='+SCENE_RELEASE,'themes/leaf-motion.mjs?v=20261011-fall-1','themes/sea-motion.mjs?v=20261011-sea13','themes.js?v='+SCENE_RELEASE,...modules.map(p=>'themes/'+p+'?v='+SCENE_RELEASE)];
+ await Promise.all(paths.map(async path=>{
+  const url=new URL(path,BASE).href;
+  try{const response=await fetch(url,{cache:'reload',credentials:'omit',signal:AbortSignal.timeout(5000)});if(response.ok)await cache.put(url,response);}catch{}
+ }));
+}
 function publicRequest(request){
  const url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin||request.headers.has('Authorization'))return false;
@@ -21,6 +30,7 @@ self.addEventListener('install',event=>event.waitUntil((async()=>{
  for (const path of assets) {
   try {const response=await fetch(path,{cache:'reload',credentials:'omit',signal:AbortSignal.timeout(5000)});if(response.ok)await cache.put(path,response);} catch {}
  }
+ await cacheScenes(cache);
  await self.skipWaiting();
 })()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{

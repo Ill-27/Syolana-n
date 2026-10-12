@@ -1,5 +1,5 @@
-import {sceneResolution} from './scene-quality.mjs?v=20261011-worlds-2';
-import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-worlds-2';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-refined-1';
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-refined-1';
 import { createSeaMotion, shipHullGeometry, shipDeckGeometry, shipRailGeometry } from "./sea-motion.mjs?v=20261011-sea13";
 
 const TAU=Math.PI*2;
@@ -265,6 +265,17 @@ void main(){
 `;
 
 
+export function shipMasts(type){return type===2?[{z:1.4,h:11.2,w:3.9}]:type===1?[{z:-4.2,h:15.1,w:4.5},{z:4.1,h:16.0,w:4.2}]:[{z:-5.8,h:15.6,w:4.5},{z:0,h:17.2,w:4.9},{z:5.35,h:15.9,w:4.35}];}
+export function shipRiggingGeometry(type){
+  const rig=[],masts=shipMasts(type),line=(a,b)=>rig.push(...a,...b);
+  for(const m of masts){
+    const deckY=m.z>3?2.95:1.94;
+    for(const side of [-1,1])for(const dz of [-.48,.48])line([0,m.h*.88,m.z],[side*2.65,deckY,m.z+dz]);
+  }
+  line([0,masts[0].h*.92,masts[0].z],[0,3.05,-12.8]);
+  for(let i=1;i<masts.length;i++)line([0,masts[i-1].h+1.0,masts[i-1].z],[0,masts[i].h+1.0,masts[i].z]);
+  return new Float32Array(rig);
+}
 function shipWireGeometries(){
   const line=(arr,a,b)=>arr.push(...a,...b);
   const addHull=(wood,deck,len,width,height,sections=12)=>{
@@ -370,6 +381,7 @@ function shipWireGeometries(){
         line(g.sail,[0,16.75,zs[1]],[0,18.0,zs[1]]);
       }
     }
+    g.rig=shipRiggingGeometry(type);
     return Object.fromEntries(Object.entries(g).map(([k,v])=>[k,new Float32Array(v)]));
   };
   return [make(0),make(1),make(2),make(3)];
@@ -712,11 +724,7 @@ function createRenderer(ctx){
     }
     obj(M.mast,local(0,2.65,-11.1),[.16*bs,6.4*bs,.16*bs],[pitch-Math.PI*.40,yaw,roll],mastCol,eye,fog,c);
 
-    const mastSpec=type===2
-      ?[{z:1.4,h:11.2,w:3.9}]
-      :type===1
-        ?[{z:-4.2,h:15.1,w:4.5},{z:4.1,h:16.0,w:4.2}]
-        :[{z:-5.8,h:15.6,w:4.5},{z:0,h:17.2,w:4.9},{z:5.35,h:15.9,w:4.35}];
+    const mastSpec=shipMasts(type);
 
     mastSpec.forEach((m,mi)=>{
       obj(M.mast,local(0,1.8+m.h*.50,m.z),[.25*bs,m.h*bs,.25*bs],rot,mastCol,eye,fog,c);
@@ -746,10 +754,7 @@ function createRenderer(ctx){
     }
 
     // Fine linework now serves only as rigging/rail detail, not the body of the ship.
-    wirePart(g.wood,[x,y,z],bs,rot,mastCol,0.,c,t,phase,0);
-    wirePart(g.deck,[x,y,z],bs,rot,deckLight,0.,c,t,phase,0);
-    wirePart(g.rig,[x,y,z],bs,rot,rigCol,.56,c,t,phase,0);
-    wirePart(g.sail,[x,y,z],bs,rot,sailCol,0.,c,t,phase,1);
+    wirePart(g.rig,[x,y,z],bs,rot,rigCol,.28,c,t,phase,0);
     wirePart(g.accent,[x,y,z],bs,rot,blackShip?[.30,.20,.12]:[.70,.50,.20],.44,c,t,phase,0);
   }
 

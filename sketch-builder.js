@@ -1,5 +1,5 @@
 const STORAGE_KEY='syolana.partner.sketch.v1';
-const THEMES=[['aurora','Северное сияние'],['golden','Золотые струны'],['moon','Лунный сад'],['amber-forest','Янтарный лес'],['living-sea','Море странствий'],['white-ocean-city','Белый город'],['violet-bloom','Фиолетовое цветение'],['lunar-muse','Лунная муза']];
+const THEMES=[['aurora','Северное сияние'],['golden','Золотые струны'],['moon','Лунный сад'],['amber-forest','Янтарный лес'],['living-sea','Море странствий'],['white-ocean-city','Белый город'],['violet-bloom','Фиолетовое цветение']];
 const SOURCE_TYPES=[['none','Без автоленты'],['vk','VK'],['telegram','Telegram'],['youtube','YouTube'],['instagram','Instagram'],['facebook','Facebook'],['other','Другой публичный источник']];
 const defaults={name:'Мой проект',eyebrow:'АВТОРСКИЙ ПРОЕКТ',description:'Коротко расскажите, чем вы занимаетесь и почему это важно.',about:'Расскажите о себе, подходе или проекте.',services:'Опишите основные направления, услуги или материалы.',cta:'Связаться',contact:'',sourceType:'none',sourceUrl:'',theme:'aurora',blocks:['about','services','publications','contacts']};
 

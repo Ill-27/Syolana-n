@@ -6,7 +6,8 @@ body #starCanvas{z-index:-1!important}
 body.reading #reading-shade,body.course-reading #reading-shade{backdrop-filter:blur(1.1px)!important;-webkit-backdrop-filter:blur(1.1px)!important}
 body.zen #starCanvas,body.zen .theme-world-canvas{filter:none!important;opacity:1!important;transform:translateZ(0)!important}
 .builder-theme-swatch,.theme-swatch{aspect-ratio:16/9;object-fit:cover}
-body:has(.theme-world-canvas) .aurora-layer{animation:none!important;opacity:0!important}
+body:has(.theme-world-canvas:not([data-layered])) .aurora-layer{animation:none!important;opacity:0!important}
+body .theme-world-canvas[data-layered]{opacity:.64!important}
 `;
 const FALLBACK_THEMES=[
   {
@@ -33,21 +34,21 @@ const FALLBACK_THEMES=[
   {
     "id": "aurora",
     "name": "Северное сияние",
-    "description": "Световые завесы с глубиной · изумрудные лучи, сапфировые и фиолетовые переливы",
+    "description": "Прежняя палитра и живые звёзды · мягкие объёмные завесы без линий горизонта",
     "module": "./aurora.js",
     "preview": "linear-gradient(135deg,#031127,#147e78,#692c92)"
   },
   {
     "id": "golden",
     "name": "Золотые струны",
-    "description": "Объёмные спирали золотых нитей · мягкие блики, изгибы и полёт сквозь свет",
+    "description": "Прежние золотые переливы и звёзды · струны с глубиной и мягкими бликами",
     "module": "./golden.js",
     "preview": "linear-gradient(135deg,#21192b,#70502f,#181626)"
   },
   {
     "id": "moon",
     "name": "Лунный сад",
-    "description": "Луна с рельефом · серебристые цветы, объёмные лепестки и ночные бабочки",
+    "description": "Прежний лунный сад · светящаяся луна, качающиеся растения и летящие лепестки",
     "module": "./moon.js",
     "preview": "linear-gradient(135deg,#122a38,#40517b,#1b193e)"
   },
@@ -57,13 +58,6 @@ const FALLBACK_THEMES=[
     "description": "Светлый цветочный мир · объёмные лепестки, мягкие тени и переливчатые бабочки",
     "module": "./violet-bloom.js",
     "preview": "linear-gradient(135deg,#faf7ff,#9758d5,#d987bf)"
-  },
-  {
-    "id": "lunar-muse",
-    "name": "Лунная муза",
-    "description": "Сапфировая муза · лунный свет, звёзды, цветы и полёт синих бабочек",
-    "module": "./lunar-muse.js",
-    "preview": "linear-gradient(135deg,#03091d,#2458a9,#8a56b1)"
   }
 ];
 export class ThemeEngine {
@@ -161,7 +155,7 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261011-worlds-2";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-refined-1";
     if (version) url.searchParams.set("v", version);
     let module;try{module=await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
     if (seq !== this.sequence) return;
@@ -449,7 +443,7 @@ export class ThemeEngine {
       height: this.h,
       camera: this.zen ? this.camera : null,
     });
-    if (this.theme.renderer === "waves") this.drawWaves();
+    if (this.theme.renderer === "waves" && !this.theme.spatialWaves) this.drawWaves();
     if (this.zen && this.theme.particles !== false) this.drawZenDust(d);
 
     for (const m of this.marks) {
@@ -538,13 +532,19 @@ export class ThemeEngine {
           ctx.save();
           ctx.translate(point.x, point.y);
           ctx.rotate(s.phase * 0.15);
-          ctx.fillStyle = this.theme.colors[s.ci];
+          const petalX=s.size*2*point.scale;
+          const petalY=s.size*.6*point.scale*(.42+.58*Math.abs(Math.sin(s.phase*.57)));
+          const sheen=ctx.createLinearGradient(-petalX,-petalY,petalX,petalY);
+          sheen.addColorStop(0,this.theme.colors[s.ci]);
+          sheen.addColorStop(.45,'#f0f5ff');
+          sheen.addColorStop(1,this.theme.colors[s.ci]);
+          ctx.fillStyle = sheen;
           ctx.beginPath();
           ctx.ellipse(
             0,
             0,
-            s.size * 2 * point.scale,
-            s.size * 0.6 * point.scale,
+            petalX,
+            petalY,
             0,
             0,
             Math.PI * 2,
@@ -762,7 +762,7 @@ export class ThemeEngine {
         if(!rect.width||!rect.height||rect.bottom<0||rect.top>innerHeight||rect.right<0||rect.left>innerWidth)continue;
         const id=canvas.dataset.preview,c=canvas.getContext('2d');if(!c)continue;
         let poster=this.previewImages.get(id);
-        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261011-worlds-2',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
+        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261012-refined-1',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
         if(!poster.complete||!poster.naturalWidth)continue;
         const w=canvas.width,h=canvas.height,zoom=this.reduced.matches?1:1.035+Math.sin(time/1000*.14)*.012;
         const base=Math.max(w/poster.naturalWidth,h/poster.naturalHeight),dw=poster.naturalWidth*base*zoom,dh=poster.naturalHeight*base*zoom;

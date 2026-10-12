@@ -17,7 +17,7 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261011-worlds-2";
+import { ThemeEngine } from "./themes.js?v=20261012-refined-1";
 import { SceneAudio } from "./scene-audio.js";
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();

@@ -1,4 +1,4 @@
-import {createGLWorld,FULLSCREEN_VS,LIGHT_GLSL,perspective,lookAt,multiply} from './world-gl.mjs?v=20261011-worlds-2';
+import {createGLWorld,FULLSCREEN_VS,LIGHT_GLSL,perspective,lookAt,multiply} from './world-gl.mjs?v=20261012-refined-1';
 import {createSceneMotion} from './scene-motion.mjs';
 import {createLuminousRenderer} from './luminous-atmosphere.js';
 
@@ -33,36 +33,34 @@ vec3 moon(vec3 rd,vec3 sky){
 }
 vec3 aurora(vec3 ro,vec3 rd){
  vec3 emission=vec3(0.0);float trans=1.0;
- // Integrate luminous gas in world space. Folds have depth and vertical rays.
- for(int i=0;i<48;i++){
-  float travel=7.0+(float(i)+.5)*3.2;vec3 p=ro+rd*travel;
-  float wind=uTime*.18;
-  float fold=sin(p.x*.095+wind*.18)*9.5+sin(p.x*.21-wind*.14)*3.9+sin(p.x*.43+wind*.08)*1.1;
-  float depth=mod(p.z+fold+24.0,51.0)-25.5;
-  float curtain=exp(-depth*depth*.115);
-  float bottom=7.0+sin(p.x*.061+p.z*.038+wind*.06)*3.4+sin(p.x*.19+wind*.03)*1.1;
-  float y=p.y-bottom;float vertical=smoothstep(-.7,1.3,y)*exp(-max(0.0,y)*.065);
-  float fibers=.28+.72*pow(.5+.5*sin(p.x*2.0+sin(p.x*.49+wind*.13)*3.0+wind*.22),2.0);
-  fibers*=.55+.55*fbm(vec3(p.x*.35,p.y*.08-wind*.03,p.z*.13));
-  float d=curtain*vertical*fibers*smoothstep(-1.0,2.0,p.y)*.087;
-  vec3 green=vec3(.07,1.0,.36),blue=vec3(.08,.64,1.0),violet=vec3(.65,.12,.80);
-  vec3 color=mix(green,blue,smoothstep(1.0,11.0,y));color=mix(color,violet,smoothstep(10.0,29.0,y));
-  color+=vec3(.18,.66,.35)*exp(-y*y*.08);
-  emission+=trans*color*d*3.3;trans*=1.0-d*.53;
- }return emission*smoothstep(-.08,.17,rd.y);
+ // Soft gas curtains have no lower contour or horizon silhouette.
+ for(int i=0;i<28;i++){
+  float reach=8.0+(float(i)+.5)*4.9;vec3 p=ro+rd*reach;float wind=uTime*.62;
+  float fold=sin(p.x*.083+wind*.31)*10.5+sin(p.x*.19-wind*.19)*4.5+sin(p.x*.37+wind*.13)*1.2+sin(p.y*.043+wind*.18)*3.5+p.y*.075;
+  float depth=mod(p.z+fold+22.0,49.0)-24.5;
+  float curtain=exp(-depth*depth*.071);
+  float band=sin(p.x*.041+p.z*.019+wind*.12)*9.0+7.0;
+  float y=sin((p.y-band)*.021)*48.0;float vertical=.18+.82*exp(-y*y*.0009);
+  float fibers=.33+.67*pow(.5+.5*sin(p.x*1.72+sin(p.x*.38+p.y*.027+wind*.29)*3.1+wind*.41),2.0);
+  fibers*=.64+.40*noise(vec3(p.x*.18,p.y*.032-wind*.08,p.z*.09));
+  float d=curtain*vertical*fibers*.054;
+  float hue=.5+.5*sin(p.x*.039+p.z*.022+wind*.17+y*.018);
+  vec3 color=mix(vec3(.11,.64,.57),vec3(.34,.26,.78),hue);
+  color=mix(color,vec3(.64,.18,.55),smoothstep(.55,.98,hue)*.48);
+  emission+=trans*color*d*1.65;trans*=1.0-d*.38;
+ }return emission;
 }
 void main(){
  vec2 screen=(vUv*2.0-1.0)*vec2(uAspect,1.0)*.54;
  vec3 rd=normalize(uForward+uRight*screen.x+uUp*screen.y);float h=clamp(rd.y*.5+.5,0.0,1.0);vec3 sky;
  if(uKind==3){float wash=fbm(rd*3.0+vec3(uTime*.003,0,0));sky=mix(vec3(2.72,2.50,2.96),vec3(3.45,3.38,3.52),smoothstep(.05,.8,h))+(wash-.5)*.08;}
- else if(uKind==1){sky=mix(vec3(.019,.009,.006),vec3(.064,.037,.020),h);float glow=pow(max(dot(rd,normalize(vec3(-.6,.4,-1))),0.0),16.0);sky+=vec3(.20,.11,.037)*glow;sky+=stars(rd)*.36;}
+ else if(uKind==1){sky=mix(vec3(.012,.008,.008),vec3(.030,.019,.013),h);float glow=pow(max(dot(rd,normalize(vec3(-.6,.4,-1))),0.0),5.0);sky+=vec3(.066,.035,.015)*glow;}
  else{
   sky=mix(vec3(.004,.011,.026),vec3(.005,.009,.031),h);
   float n=fbm(rd*5.4+vec3(uTime*.003,0,0));float mist=pow(max(0.0,n-.33),2.0);
   sky+=mix(vec3(.06,.15,.32),vec3(.21,.06,.31),n)*mist*(uKind==0?.16:.45);
-  sky+=stars(rd);
-  if(uKind==0){sky+=aurora(uEye,rd);float horizon=exp(-abs(rd.y+.025)*19.0);sky+=vec3(.01,.045,.055)*horizon;}
-  else sky=moon(rd,sky);
+  if(uKind==0){sky=mix(vec3(.012,.006,.025),vec3(.026,.015,.049),h)+aurora(uEye,rd);}
+  else sky=moon(rd,sky+stars(rd));
  }
  outColor=vec4(sky,1.0);
 }`;
@@ -79,10 +77,11 @@ layout(location=3)in vec4 aInstance;layout(location=4)in vec4 aDetail;
 uniform mat4 uViewProj;uniform vec3 uEye;uniform float uTime,uTravel;
 out vec3 vWorld,vNormal;out vec2 vUv;out float vSeed;
 vec3 path(float t){float b=aInstance.x,s=aInstance.y;
- float x=(t-.5)*150.0+uEye.x;
- float helix=s*6.283185+x*.046+uTime*.078;
- float y=sin(x*.058+uTime*.09+b*1.7)*4.8+sin(x*.114-uTime*.055+b)*1.7+sin(b*3.1)*3.0+cos(helix)*(1.2+.25*sin(x*.03));
- float z=mod(-b*23.0-uTravel+120.0,138.0)-116.0+sin(x*.073+uTime*.063+b)*8.0+sin(helix)*(2.8+.4*cos(x*.03));
+ float x=(t-.5)*340.0+uEye.x;
+ float helix=s*6.283185+x*.046+uTime*.23;
+ float baseY=mod(-12.0+b*.9-uEye.y+40.0,80.0)-40.0+uEye.y;
+ float y=baseY+sin(x*.042+uTime*.28+b*.71)*7.2+sin(x*.094-uTime*.16+b)*1.8+cos(helix)*(1.15+.25*sin(x*.03));
+ float z=mod(-b*23.0+uTravel+120.0,156.0)-120.0+sin(x*.063+uTime*.18+b)*7.0+sin(helix)*(2.8+.4*cos(x*.03));
  return vec3(x,y,z);
 }
 void main(){float t=aPosition.x;vec3 p=path(t),T=normalize(path(t+.0008)-path(t-.0008)),B=normalize(cross(T,vec3(0,1,0))),N=cross(B,T);
@@ -107,17 +106,19 @@ export function stringGeometry(segments=160,sides=8){
 }
 export function stringInstances(){const a=[],b=[];for(let layer=0;layer<6;layer++)for(let i=0;i<30;i++){a.push(layer,i/29,layer*1.731+i*.219,.024+(i%5)*.004);b.push(0,0,0,0);}return{a,b};}
 export function createCelestialRenderer(ctx,kind){
- const world=createGLWorld(ctx,kind,{exposure:kind==='aurora'?1.22:1.08,bloom:kind==='aurora'?.48:.34,vignette:.16});
+ const world=createGLWorld(ctx,kind,{exposure:1.04,bloom:kind==='aurora'?.28:.28,vignette:.10,resolution:{maxPixels:1400000}});
  if(!world)return createLuminousRenderer(ctx,kind);
+ world.canvas.dataset.layered='true';
  const{gl,loc}=world;let sky,threads,mesh;
  try{sky=world.program(FULLSCREEN_VS,SKY_FS);if(kind==='golden'){threads=world.program(STRING_VS,STRING_FS);mesh=world.mesh(stringGeometry(),stringInstances());}}
  catch(e){world.dispose();return createLuminousRenderer(ctx,kind);}
- const projection=new Float32Array(16),view=new Float32Array(16),vp=new Float32Array(16),motion=createSceneMotion({rest:.45,flight:1.4,xLimit:1e6,yLimit:1e6});
+ const projection=new Float32Array(16),view=new Float32Array(16),vp=new Float32Array(16),motion=createSceneMotion({rest:.72,flight:2.2,xLimit:1e6,yLimit:1e6});
  return{canvas:world.canvas,resize:world.resize,draw({time,width,height,camera}){
   if(width!==world.width||height!==world.height)world.resize({width,height,ratio:devicePixelRatio||1});if(!world.begin())return;
   const{travel,input}=motion.step(time,camera);const eye=[input.x*3,input.y*1.7+(kind==='aurora'?1:2),24];
-  lookAt(view,eye,[eye[0]+Math.sin(time*.022)*.25,eye[1]+(kind==='aurora'?6.2:0),-16]);perspective(projection,1.0,width/height);multiply(vp,projection,view);
-  drawSky(world,sky,time,kind==='aurora'?0:1,eye,view);
+  lookAt(view,eye,[eye[0]+Math.sin(time*.035)*.25,eye[1],-16]);perspective(projection,1.0,width/height);multiply(vp,projection,view);
+  const gasEye=kind==='aurora'?[eye[0],eye[1],eye[2]-travel-input.z*5]:eye;
+  drawSky(world,sky,time,kind==='aurora'?0:1,gasEye,view);
   if(threads){gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.CULL_FACE);gl.useProgram(threads);gl.uniformMatrix4fv(loc(threads,'uViewProj'),false,vp);gl.uniform3fv(loc(threads,'uEye'),eye);gl.uniform1f(loc(threads,'uTime'),time);gl.uniform1f(loc(threads,'uTravel'),travel+input.z*5);world.draw(mesh);}
   world.finish();
  },dispose:world.dispose};

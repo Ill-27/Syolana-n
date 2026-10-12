@@ -1,5 +1,5 @@
-import {createGLWorld,FULLSCREEN_VS,LIGHT_GLSL,perspective,orthographic,lookAt,multiply} from './world-gl.mjs?v=20261011-worlds-2';
-import {SKY_FS,drawSky} from './celestial-world.mjs?v=20261011-worlds-2';
+import {createGLWorld,FULLSCREEN_VS,LIGHT_GLSL,perspective,orthographic,lookAt,multiply} from './world-gl.mjs?v=20261012-refined-1';
+import {SKY_FS,drawSky} from './celestial-world.mjs?v=20261012-refined-1';
 import {createSceneMotion} from './scene-motion.mjs';
 import {createLuminousRenderer} from './luminous-atmosphere.js';
 
@@ -14,7 +14,7 @@ function surface(rows,columns,sample){
  }
  for(let i=0;i<rows;i++)for(let j=0;j<columns;j++){const a=i*(columns+1)+j,b=a+columns+1;indices.push(a,b,a+1,a+1,b,b+1);}return{positions,normals,uvs,indices};
 }
-export function petalGeometry(){return surface(24,14,(t,v)=>{const s=v*2-1,w=.10+.52*Math.sin(Math.PI*t*.86);return[s*w,t*1.13-.24*Math.pow(t,5)*s*s,(.18-.12*s*s)*Math.sin(t*Math.PI)+.03*t*t];});}
+export function petalGeometry(){return surface(18,10,(t,v)=>{const s=v*2-1,w=.10+.52*Math.sin(Math.PI*t*.86);return[s*w,t*1.13-.24*Math.pow(t,5)*s*s,(.18-.12*s*s)*Math.sin(t*Math.PI)+.03*t*t];});}
 export function leafGeometry(){return surface(18,8,(t,v)=>{const s=v*2-1;return[s*Math.sin(Math.PI*t)*.28,t*1.55,.15*Math.sin(t*Math.PI)+.08*s*s];});}
 export function stemGeometry(){return surface(18,8,(t,v)=>{const a=v*TAU;return[Math.cos(a)*.034+Math.sin(t*2.6)*.16,-t*3.6,Math.sin(a)*.034-.25];});}
 function mergeGeometry(items){const positions=[],normals=[],uvs=[],indices=[];for(const g of items){const offset=positions.length/3;positions.push(...g.positions);normals.push(...g.normals);uvs.push(...g.uvs);indices.push(...g.indices.map(i=>i+offset));}return{positions,normals,uvs,indices};}
@@ -29,27 +29,38 @@ export function butterflyBodyGeometry(){
  const body=surface(14,12,(u,v)=>{const a=u*Math.PI,b=v*TAU;return[Math.sin(a)*Math.cos(b)*.065,Math.cos(a)*.43,Math.sin(a)*Math.sin(b)*.065];});
  const antenna=[];for(const side of [-1,1])antenna.push(surface(12,4,(u,v)=>{const a=v*TAU;return[side*(.025+u*.18)+Math.cos(a)*.007,.34+u*.48,Math.sin(a)*.007-.03];}));return mergeGeometry([body,...antenna]);
 }
-export function botanicalInstances(kind='bloom'){
- const flowers=[],petals={a:[],b:[]},leaves={a:[],b:[]},stems={a:[],b:[]},loose={a:[],b:[]},butterflies={a:[],b:[]};
- const count=kind==='moon'?10:kind==='lunar'?16:22;
- for(let i=0;i<count;i++){
-  const f=i===0?[6,2,-9,1.2,3.7]:i===1?[-6,-4,-19,3.6,3.0]:[(random(i+11)-.5)*47,(random(i+83)-.5)*25,-69+random(i+91)*81,random(i+19)*TAU,1.35+random(i+73)*2.1];
-  if(kind==='lunar'){f[0]=(i%2?1:-1)*(9+random(i+214)*12);f[1]=-3+random(i+255)*16;f[2]=-46-random(i+219)*24;f[4]*=.66;if(i<2){f[0]=i===0?8:-9;f[1]=-9;f[2]=-13;f[4]=1.8;}}
+export const BOTANICAL_SPAN=[92,72,156];
+export function wrapBotanicalPosition(position,eye=[0,2.5,24],travel=0){
+ const wrap=(v,n)=>((v%n)+n)%n;
+ return[wrap(position[0]-eye[0]+46,92)-46+eye[0],wrap(position[1]-eye[1]+36,72)-36+eye[1],wrap(position[2]+travel+120,156)-120];
+}
+export function botanicalInstances(){
+ const flowers=[],petals={a:[],b:[]},leaves={a:[],b:[]},loose={a:[],b:[]},butterflies={a:[],b:[]};
+ for(let i=0;i<36;i++){
+  const ix=i%3,iy=Math.floor(i/3)%3,iz=Math.floor(i/9);
+  const f=[(ix-1)*30+(random(i+11)-.5)*8,(iy-1)*24+(random(i+83)-.5)*6,9-iz*39+(random(i+91)-.5)*12,random(i+19)*TAU,1.15+random(i+73)*1.05];
+  if(i===0){f[0]=-8;f[1]=-7;f[2]=-13;f[4]=3.45;}
+  if(i===4){f[0]=8;f[1]=8;f[2]=-11;f[4]=3.40;}
+  if(i===31){f[0]=3;f[1]=-11;f[2]=-49;f[4]=3.0;}
   flowers.push(f);
   for(let ring=0;ring<7;ring++){const n=5+ring*3;for(let p=0;p<n;p++){petals.a.push(...f.slice(0,4));petals.b.push(p/n*TAU+ring*2.399,.18+ring*.145,(random(i*103+p+ring*19)-.5)*.13,f[4]);}}
   for(let j=0;j<3;j++){leaves.a.push(...f.slice(0,4));leaves.b.push(j*2.28+.4,1.0+j*.11,j,f[4]);}
-  stems.a.push(...f.slice(0,4));stems.b.push(0,1,0,f[4]);
  }
- for(let i=0;i<(kind==='moon'?74:38);i++){loose.a.push((random(i+277)-.5)*48,(random(i+381)-.5)*28,-78+random(i+331)*90,random(i+271)*TAU);loose.b.push(random(i+779)*TAU,.6,random(i+777)*.12,.13+random(i+743)*.20);}
- for(let i=0;i<(kind==='moon'?6:16);i++){butterflies.a.push(i<2?(i===0?-3:4):(random(i+477)-.5)*35,i<2?4:(random(i+411)-.5)*18,i<2?-4-i*8:-64+random(i+451)*76,random(i+431)*TAU);butterflies.b.push(i<2?.70:.22+random(i+432)*.48,random(i+763),0,0);}
- return{flowers,petals,leaves,stems,loose,butterflies};
+ for(let i=0;i<24;i++){loose.a.push((random(i+277)-.5)*88,(random(i+381)-.5)*68,-118+random(i+331)*152,random(i+271)*TAU);loose.b.push(random(i+779)*TAU,.6,random(i+777)*.12,.13+random(i+743)*.20);}
+ for(let i=0;i<24;i++){const f=flowers[(i*11+4)%flowers.length];const pose=i===0?[-2,6,-10,1.3]:i===1?[4,-2,-20,3.4]:[f[0]+(random(i+477)-.5)*6,f[1]+2+random(i+411)*3,f[2]+random(i+451)*8,random(i+431)*TAU];butterflies.a.push(...pose);butterflies.b.push(i<2?.70:.28+random(i+432)*.37,random(i+763),0,0);}
+ return{flowers,petals,leaves,loose,butterflies};
 }
+const FIELD_GLSL=`
+vec3 wrapField(vec3 p){return vec3(mod(p.x-uEye.x+46.0,92.0)-46.0+uEye.x,mod(p.y-uEye.y+36.0,72.0)-36.0+uEye.y,mod(p.z+uTravel+120.0,156.0)-120.0);}
+float fieldVisibility(vec3 p){return smoothstep(0.0,6.0,46.0-abs(p.x-uEye.x))*smoothstep(0.0,6.0,36.0-abs(p.y-uEye.y));}
+`;
 export const PLANT_VS=`#version 300 es
 precision highp float;precision highp int;
 layout(location=0)in vec3 aPosition;layout(location=1)in vec3 aNormal;layout(location=2)in vec2 aUv;
 layout(location=3)in vec4 aInstance;layout(location=4)in vec4 aDetail;
 uniform mat4 uViewProj,uLightMatrix;uniform float uTime,uTravel;uniform vec3 uEye;uniform int uPart;
-out vec3 vWorld,vNormal;out vec2 vUv;out vec4 vShadow;out float vSeed,vLayer;
+out vec3 vWorld,vNormal;out vec2 vUv;out vec4 vShadow;out float vSeed,vLayer,vVisibility;
+${FIELD_GLSL}
 mat3 rx(float a){float c=cos(a),s=sin(a);return mat3(1,0,0,0,c,s,0,-s,c);}
 mat3 ry(float a){float c=cos(a),s=sin(a);return mat3(c,0,-s,0,1,0,s,0,c);}
 mat3 rz(float a){float c=cos(a),s=sin(a);return mat3(c,s,0,-s,c,0,0,0,1);}
@@ -62,14 +73,13 @@ void main(){
   N=normalize(vec3(N.x-(.36*p.x+.05)*N.z,N.y-.36*p.y*N.z,N.z));p=part*p;N=part*N;}
  else if(uPart==1){part=rz(aDetail.x)*rx(.4+aDetail.z*.25);p*=aDetail.y;p.y+=.60;p.z-=.38;p=part*p;N=part*N;}
  else if(uPart==3){flower=rz(seed+uTime*.13)*rx(seed*.7+uTime*.26)*ry(seed+uTime*.11);p*=aDetail.y;}
- vec3 center=aInstance.xyz;center.x=mod(center.x-uEye.x+26.0,52.0)-26.0+uEye.x;
- center.z=mod(center.z-uTravel+80.0,108.0)-80.0;
+ vec3 center=wrapField(aInstance.xyz);vVisibility=fieldVisibility(center);
  if(uPart==3){center.y+=sin(uTime*.38+seed)*1.2;center.x+=sin(uTime*.27+seed)*.8;center.z+=sin(uTime*.31+seed)*.7;}
  vWorld=center+flower*p*scale;vNormal=normalize(flower*N);vUv=aUv;vSeed=seed+aDetail.z;vLayer=aDetail.y;vShadow=uLightMatrix*vec4(vWorld,1.0);gl_Position=uViewProj*vec4(vWorld,1.0);
 }`;
 export const PLANT_FS=`#version 300 es
 precision highp float;precision highp int;
-in vec3 vWorld,vNormal;in vec2 vUv;in vec4 vShadow;in float vSeed,vLayer;out vec4 outColor;
+in vec3 vWorld,vNormal;in vec2 vUv;in vec4 vShadow;in float vSeed,vLayer,vVisibility;out vec4 outColor;
 uniform vec3 uEye;uniform float uTime;uniform int uKind,uPart;uniform sampler2D uShadowMap;
 ${LIGHT_GLSL}
 float shadow(){vec3 p=vShadow.xyz/vShadow.w*.5+.5;if(any(lessThan(p,vec3(0)))||any(greaterThan(p,vec3(1))))return 1.0;
@@ -79,7 +89,7 @@ float shadow(){vec3 p=vShadow.xyz/vShadow.w*.5+.5;if(any(lessThan(p,vec3(0)))||a
 }
 void main(){
  vec3 N=normalize(vNormal);if(!gl_FrontFacing)N=-N;vec3 V=normalize(uEye-vWorld),L=normalize(vec3(-.45,.8,.6));
- float phase=.5+.5*sin(uTime*.053+vSeed*.58);vec3 base;
+ float phase=.5-.5*cos(uTime*.031+sin(vSeed)*.32);vec3 base;
  if(uKind==3)base=mix(vec3(.28,.024,.54),vec3(.67,.045,.31),phase*.44);
  else if(uKind==4)base=mix(vec3(.015,.072,.36),vec3(.21,.09,.54),phase*.45);
  else base=mix(vec3(.36,.58,.74),vec3(.49,.37,.72),phase*.52);
@@ -93,8 +103,8 @@ void main(){
  float rim=pow(1.0-max(0.0,dot(N,V)),3.5);
  c+=base*rim*.31+base*pow(max(0.0,dot(-N,L)),2.0)*.24;
  c*=shadow();if(uKind!=3)c+=vec3(.065,.14,.28)*pow(max(0.0,dot(N,normalize(vec3(.4,.6,-.7)))),3.0);
- float distance=length(uEye-vWorld),near=smoothstep(2.3,7.5,distance),fog=exp(-max(0.0,distance-(uKind==3?55.0:22.0))*(uKind==3?.0045:.020));
- vec3 haze=uKind==3?vec3(.94,.88,1.02):vec3(.005,.010,.031);c=mix(haze,c,fog*near);outColor=vec4(c,1);
+ float distance=length(uEye-vWorld),near=smoothstep(1.8,5.0,distance),fog=exp(-max(0.0,distance-92.0)*.007);
+ float alpha=vVisibility*near*fog*(1.0-smoothstep(126.0,165.0,distance));if(alpha<.01)discard;outColor=vec4(c,alpha);
 }`;
 export const SHADOW_FS=`#version 300 es
 precision highp float;precision highp int;void main(){}`;
@@ -103,20 +113,21 @@ precision highp float;precision highp int;
 layout(location=0)in vec3 aPosition;layout(location=1)in vec3 aNormal;layout(location=2)in vec2 aUv;
 layout(location=3)in vec4 aInstance;layout(location=4)in vec4 aDetail;
 uniform mat4 uViewProj;uniform vec3 uEye;uniform float uTime,uTravel;uniform int uPart;
-out vec3 vWorld,vNormal;out vec2 vUv;out float vSeed;
-vec3 path(float t){float s=aInstance.w;return aInstance.xyz+vec3(sin(t*.24+s)*3.3+sin(t*.57+s*.71)*1.1,sin(t*.33+s*1.6)*1.75+sin(t*.71+s)*.34,sin(t*.18+s)*4.0);}
+out vec3 vWorld,vNormal;out vec2 vUv;out float vSeed,vVisibility;
+${FIELD_GLSL}
+vec3 path(float t){float s=aInstance.w;t*=.78+.22*sin(s*2.7);return aInstance.xyz+vec3(sin(t*.17+s)*6.3+sin(t*.39+s*.71)*1.3+t*.32*cos(s),sin(t*.23+s*1.6)*3.0+sin(t*.51+s)*.42,sin(t*.13+s)*7.5+sin(t*.31+s)*1.6); }
 void main(){
- float seed=aInstance.w;vec3 center=path(uTime),vel=path(uTime+.02)-path(uTime-.02);
- center.x=mod(center.x-uEye.x+26.0,52.0)-26.0+uEye.x;center.z=mod(center.z-uTravel+80.0,108.0)-80.0;
- vec3 p=aPosition,N=aNormal;float side=sign(p.x),beat=sin(uTime*(25.0+sin(seed)*3.0)+seed)+sin(uTime*50.0+seed)*.12;
- float a=beat*.91+sin(uTime*.47+seed)*.1,c=cos(a),s=sin(a);
- if(uPart==0){p=vec3(p.x*c,p.y,p.z+abs(p.x)*s);N=normalize(vec3(-side*s,N.y*.15,c));}
- float heading=atan(vel.y,vel.x)-1.570796,bank=clamp(vel.z*8.0,-.35,.35),hc=cos(heading),hs=sin(heading);
- mat3 turn=mat3(hc,hs,0,-hs,hc,0,0,0,1)*mat3(cos(bank),0,-sin(bank),0,1,0,sin(bank),0,cos(bank));
+ float seed=aInstance.w;vec3 center=wrapField(path(uTime)),vel=path(uTime+.03)-path(uTime-.03);vVisibility=fieldVisibility(center);
+ vec3 p=aPosition,N=aNormal;float side=sign(p.x),beat=sin(uTime*(27.0+sin(seed)*3.0)+seed);
+ float a=beat*.93+sin(uTime*.47+seed)*.08,c=cos(a),s=sin(a);
+ if(uPart==0){p=vec3(p.x*c-side*p.z*s,p.y,side*p.x*s+p.z*c);N=normalize(vec3(N.x*c-side*N.z*s,N.y,side*N.x*s+N.z*c));}
+ vec3 forward=normalize(vel),right=normalize(cross(forward,vec3(0,.7,1))),normal=normalize(cross(right,forward));
+ vec3 accel=path(uTime+.08)+path(uTime-.08)-2.0*path(uTime);float bank=clamp(dot(accel,right)*110.0,-.42,.42);
+ mat3 turn=mat3(right*cos(bank)+normal*sin(bank),forward,normal*cos(bank)-right*sin(bank));
  vWorld=center+turn*p*aDetail.x;vNormal=normalize(turn*N);vUv=aUv;vSeed=seed;gl_Position=uViewProj*vec4(vWorld,1.0);
 }`;
 export const BUTTERFLY_FS=`#version 300 es
-precision highp float;precision highp int;in vec3 vWorld,vNormal;in vec2 vUv;in float vSeed;out vec4 outColor;
+precision highp float;precision highp int;in vec3 vWorld,vNormal;in vec2 vUv;in float vSeed,vVisibility;out vec4 outColor;
 uniform vec3 uEye;uniform float uTime;uniform int uKind,uPart;
 ${LIGHT_GLSL}
 void main(){
@@ -127,20 +138,9 @@ void main(){
  float spots=pow(max(0.0,sin(vUv.y*62.832)),20.0)*smoothstep(.81,.88,vUv.x)*(1.0-smoothstep(.93,1.0,vUv.x));base+=spots*vec3(.7,.52,.24);
  if(uPart==1)base=vec3(.025,.019,.03);
  vec3 c=shadeSurface(base,N,V,normalize(vec3(-.4,.8,.6)),.31,.14,1.0)+base*.16+vec3(.08,.16,.25)*pow(angle,4.0);
- float d=length(uEye-vWorld),fog=exp(-max(0.0,d-24.0)*.018)*smoothstep(2.0,6.0,d);
- vec3 haze=uKind==3?vec3(2.9,2.75,3.15):vec3(.005,.010,.031);outColor=vec4(mix(haze,c,fog),1);
+ float d=length(uEye-vWorld),fog=exp(-max(0.0,d-92.0)*.007)*smoothstep(2.0,6.0,d);
+ float alpha=vVisibility*fog*(1.0-smoothstep(126.0,165.0,d));if(alpha<.01)discard;outColor=vec4(c,alpha);
 }`;
-export const PORTRAIT_VS=`#version 300 es
-precision highp float;precision highp int;layout(location=0)in vec3 aPosition;layout(location=2)in vec2 aUv;
-uniform mat4 uViewProj;uniform vec3 uEye;uniform float uTime,uAspect;out vec2 vUv;
-void main(){vec3 p=aPosition;float hair=(1.0-smoothstep(.16,.36,aUv.x))+smoothstep(.68,.92,aUv.x);
- p.x+=sin(uTime*.61+aUv.y*5.0)*.085*hair;p.y+=sin(uTime*.46)*.030;p.z+=sin(aUv.x*3.14159)*sin(aUv.y*3.14159)*.9;
- p+=vec3(uAspect<.8?uEye.x*.85:uEye.x*.85+5.0,2.0+uEye.y*.16,-17.0);vUv=aUv;gl_Position=uViewProj*vec4(p,1.0);}`;
-export const PORTRAIT_FS=`#version 300 es
-precision highp float;precision highp int;in vec2 vUv;out vec4 outColor;uniform sampler2D uPortrait;
-void main(){vec4 c=texture(uPortrait,vUv);c.a*=smoothstep(0.0,.13,vUv.y);if(c.a<.025)discard;outColor=vec4(pow(c.rgb,vec3(2.2))*.95,c.a);}`;
-export function portraitGeometry(){const g=surface(90,60,(u,v)=>[(v-.5)*24,(u-.5)*36,0]);for(let i=0;i<g.uvs.length;i+=2){const u=g.uvs[i];g.uvs[i]=g.uvs[i+1];g.uvs[i+1]=u;}return g;}
-
 function createShadow(world){
  const{gl,keep}=world,texture=keep(gl.createTexture(),gl.deleteTexture),fbo=keep(gl.createFramebuffer(),gl.deleteFramebuffer),size=1024;
  gl.bindTexture(gl.TEXTURE_2D,texture);gl.texImage2D(gl.TEXTURE_2D,0,gl.DEPTH_COMPONENT24,size,size,0,gl.DEPTH_COMPONENT,gl.UNSIGNED_INT,null);
@@ -153,33 +153,29 @@ function botanicalFallback(ctx,kind){
   for(let f=0;f<6;f++){const x=w*(.12+random(f+4)*.86),y=h*(.12+random(f+9)*.80),r=Math.min(w,h)*(.08+random(f+6)*.08);ctx.save();ctx.translate(x,y);ctx.rotate(Math.sin(time*.3+f)*.04);
    for(let ring=4;ring>=0;ring--)for(let i=0;i<9;i++){const a=i/9*TAU+ring*.9,rr=r*(.18+ring*.19);ctx.save();ctx.rotate(a);const g=ctx.createRadialGradient(0,rr,0,0,rr,rr);g.addColorStop(0,palette[ring%3]);g.addColorStop(1,'#20172c');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,rr*.5,rr*.46,rr*.69,0,0,TAU);ctx.fill();ctx.restore();}ctx.restore();}ctx.restore();},dispose:base.dispose};
 }
-export function createBotanicalRenderer(ctx,kind='bloom'){
- const mode=kind==='bloom'?3:kind==='lunar'?4:2,world=createGLWorld(ctx,kind,{exposure:kind==='bloom'?1.16:1.12,bloom:kind==='bloom'?.16:.36,vignette:kind==='bloom'?0:.13});
- if(!world)return botanicalFallback(ctx,kind);
- const{gl,loc}=world,instances=botanicalInstances(kind);let sky,plant,shadowProgram,fly,portrait,portraitMesh,portraitTexture,image,loaded=false,dead=false;
- let petals,leaves,stems,loose,wings,bodies,shadow;
+export function createBotanicalRenderer(ctx){
+ const mode=3,world=createGLWorld(ctx,'bloom',{exposure:1.16,bloom:.16,vignette:0,resolution:{maxPixels:1600000}});
+ if(!world)return botanicalFallback(ctx,'bloom');
+ const{gl,loc}=world,instances=botanicalInstances();let sky,plant,shadowProgram,fly,dead=false;
+ let petals,leaves,loose,wings,bodies,shadow;
  try{
   sky=world.program(FULLSCREEN_VS,SKY_FS);plant=world.program(PLANT_VS,PLANT_FS);shadowProgram=world.program(PLANT_VS,SHADOW_FS);fly=world.program(BUTTERFLY_VS,BUTTERFLY_FS);
-  petals=world.mesh(petalGeometry(),instances.petals);leaves=world.mesh(leafGeometry(),instances.leaves);stems=world.mesh(stemGeometry(),instances.stems);loose=world.mesh(petalGeometry(),instances.loose);wings=world.mesh(butterflyGeometry(),instances.butterflies);bodies=world.mesh(butterflyBodyGeometry(),instances.butterflies);shadow=createShadow(world);
-  if(kind==='lunar'){
-   portrait=world.program(PORTRAIT_VS,PORTRAIT_FS);portraitMesh=world.mesh(portraitGeometry());portraitTexture=world.keep(gl.createTexture(),gl.deleteTexture);image=new Image();image.decoding='async';
-   image.onload=()=>{if(dead)return;gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,portraitTexture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.generateMipmap(gl.TEXTURE_2D);loaded=true;if(matchMedia('(prefers-reduced-motion: reduce)').matches)window.dispatchEvent(new Event('syolana:scene-ready'));};
-   image.src=new URL('./assets/lunar-muse.webp',import.meta.url).href;
-  }
- }catch(e){world.dispose();return botanicalFallback(ctx,kind);}
+  petals=world.mesh(petalGeometry(),instances.petals);leaves=world.mesh(leafGeometry(),instances.leaves);loose=world.mesh(petalGeometry(),instances.loose);wings=world.mesh(butterflyGeometry(),instances.butterflies);bodies=world.mesh(butterflyBodyGeometry(),instances.butterflies);shadow=createShadow(world);
+ }catch(e){world.dispose();return botanicalFallback(ctx,'bloom');}
  const projection=new Float32Array(16),view=new Float32Array(16),vp=new Float32Array(16),lightP=new Float32Array(16),lightV=new Float32Array(16),lightVP=new Float32Array(16);
- const motion=createSceneMotion({rest:kind==='bloom'?.20:.12,flight:.70,xLimit:1e6,yLimit:1e6});
+ const motion=createSceneMotion({rest:.32,flight:1.35,xLimit:1e6,yLimit:1e6});let shadowTime=-1,shadowEye=[1e8,1e8,1e8];
  const plantDraw=(p,m,part,eye,time,travel,matrix)=>{gl.useProgram(p);gl.uniformMatrix4fv(loc(p,'uViewProj'),false,matrix);gl.uniformMatrix4fv(loc(p,'uLightMatrix'),false,lightVP);gl.uniform3fv(loc(p,'uEye'),eye);gl.uniform1f(loc(p,'uTime'),time);gl.uniform1f(loc(p,'uTravel'),travel);gl.uniform1i(loc(p,'uKind'),mode);gl.uniform1i(loc(p,'uPart'),part);gl.uniform1i(loc(p,'uShadowMap'),1);world.draw(m);};
  return{canvas:world.canvas,resize:world.resize,draw({time,width,height,camera}){
   if(width!==world.width||height!==world.height)world.resize({width,height,ratio:devicePixelRatio||1});if(dead||!world.begin())return;
-  const{travel,input}=motion.step(time,camera),depth=travel+input.z*3,eye=[input.x*3,2.5+input.y*2,24];
+  const{travel,input}=motion.step(time,camera),depth=travel+input.z*4,eye=[input.x*3,2.5+input.y*3,24];
   lookAt(view,eye,[eye[0]+Math.sin(time*.019)*.24,eye[1]-.7,-20]);perspective(projection,1.0,width/height);multiply(vp,projection,view);
-  lookAt(lightV,[eye[0]-18,eye[1]+30,35],[eye[0],0,-15]);orthographic(lightP,-32,32,-32,32,1,140);multiply(lightVP,lightP,lightV);
-  if(shadow.valid){gl.bindFramebuffer(gl.FRAMEBUFFER,shadow.fbo);gl.viewport(0,0,shadow.size,shadow.size);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.clear(gl.DEPTH_BUFFER_BIT);gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1.5,2);
-   plantDraw(shadowProgram,petals,0,eye,time,depth,lightVP);plantDraw(shadowProgram,leaves,1,eye,time,depth,lightVP);gl.disable(gl.POLYGON_OFFSET_FILL);world.begin();}
-  drawSky(world,sky,time,mode,eye,view);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,shadow.texture);
-  if(kind==='moon')plantDraw(plant,stems,2,eye,time,depth,vp);plantDraw(plant,leaves,1,eye,time,depth,vp);plantDraw(plant,petals,0,eye,time,depth,vp);plantDraw(plant,loose,3,eye,time,depth,vp);
-  if(loaded){gl.useProgram(portrait);gl.uniformMatrix4fv(loc(portrait,'uViewProj'),false,vp);gl.uniform3fv(loc(portrait,'uEye'),eye);gl.uniform1f(loc(portrait,'uTime'),time);gl.uniform1f(loc(portrait,'uAspect'),width/height);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,portraitTexture);gl.uniform1i(loc(portrait,'uPortrait'),0);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);world.draw(portraitMesh);gl.disable(gl.BLEND);}
+  if(shadow.valid&&(time-shadowTime>=1/30||eye.some((v,i)=>Math.abs(v-shadowEye[i])>.08))){
+   lookAt(lightV,[eye[0]-18,eye[1]+30,35],[eye[0],eye[1]-2.5,-15]);orthographic(lightP,-42,42,-38,38,1,180);multiply(lightVP,lightP,lightV);
+   gl.bindFramebuffer(gl.FRAMEBUFFER,shadow.fbo);gl.viewport(0,0,shadow.size,shadow.size);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.clear(gl.DEPTH_BUFFER_BIT);gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1.5,2);
+   plantDraw(shadowProgram,petals,0,eye,time,depth,lightVP);plantDraw(shadowProgram,leaves,1,eye,time,depth,lightVP);gl.disable(gl.POLYGON_OFFSET_FILL);world.begin();shadowTime=time;shadowEye=[...eye];
+  }
+  drawSky(world,sky,time,mode,eye,view);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,shadow.texture);
+  plantDraw(plant,leaves,1,eye,time,depth,vp);plantDraw(plant,petals,0,eye,time,depth,vp);plantDraw(plant,loose,3,eye,time,depth,vp);
   gl.useProgram(fly);gl.uniformMatrix4fv(loc(fly,'uViewProj'),false,vp);gl.uniform3fv(loc(fly,'uEye'),eye);gl.uniform1f(loc(fly,'uTime'),time);gl.uniform1f(loc(fly,'uTravel'),depth);gl.uniform1i(loc(fly,'uKind'),mode);gl.uniform1i(loc(fly,'uPart'),0);world.draw(wings);gl.uniform1i(loc(fly,'uPart'),1);world.draw(bodies);world.finish();
- },dispose(){if(dead)return;dead=true;if(image){image.onload=null;image.src='';}world.dispose();}};
+ },dispose(){if(dead)return;dead=true;world.dispose();}};
 }

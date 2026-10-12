@@ -1,5 +1,5 @@
-import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-worlds-2';
-import {sceneResolution} from './scene-quality.mjs?v=20261011-worlds-2';
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-refined-1';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-refined-1';
 import {createSceneMotion} from './scene-motion.mjs';
 const TAU = Math.PI * 2;
 const MODULE_ORIGIN = new URL(import.meta.url).origin;

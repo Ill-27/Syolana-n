@@ -1,5 +1,5 @@
-import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261011-worlds-2';
-import {sceneResolution} from './scene-quality.mjs?v=20261011-worlds-2';
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-refined-1';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-refined-1';
 import {createSceneMotion} from './scene-motion.mjs';
 import {createFallingLeafField,sampleLeafFall} from './leaf-motion.mjs?v=20261011-fall-1';
 const TAU=Math.PI*2;
@@ -146,12 +146,7 @@ void main(){
 
   if(branch){
     float az=iPhase;
-    float thinBranch=1.0-smoothstep(.060,.115,iScale.x);
-    float pitch=mix(
-      .40+.27*(.5+.5*sin(iScale.y*.47+az*1.73)),
-      .82+.18*(.5+.5*sin(az*1.37+iScale.y*.31)),
-      thinBranch
-    );
+    float pitch=iScale.z;
     vec3 dir=normalize(vec3(cos(az)*cos(pitch),sin(pitch),sin(az)*cos(pitch)));
     vec3 ref=abs(dir.y)>.94?vec3(1.0,0.0,0.0):vec3(0.0,1.0,0.0);
     vec3 side=normalize(cross(dir,ref));
@@ -161,7 +156,7 @@ void main(){
     world=center
       +dir*(aPosition.y*iScale.y)
       +side*(aPosition.x*iScale.x*taper)
-      +binormal*(aPosition.z*iScale.z*taper);
+      +binormal*(aPosition.z*iScale.x*.86*taper);
     normal=normalize(side*aNormal.x+binormal*aNormal.z+dir*aNormal.y*.12);
   }else{
     vec3 local=aPosition;
@@ -364,6 +359,10 @@ function trailCenter(z){
   return Math.sin(a*2.0)*7.2+Math.sin(a*5.0+1.35)*2.7+Math.sin(a+0.72)*3.9;
 }
 
+export function branchSegment(start,end,width,tone){
+  const dx=end[0]-start[0],dy=end[1]-start[1],dz=end[2]-start[2];
+  return[(start[0]+end[0])*.5,(start[1]+end[1])*.5,(start[2]+end[2])*.5,width,Math.hypot(dx,dy,dz),Math.atan2(dy,Math.hypot(dx,dz)),-Math.max(.02,tone),Math.atan2(dz,dx)];
+}
 function buildForest(){
   const rnd=seeded(91277),spanZ=720,spanX=360,trunks=[],leaves=[];
   const addLeaf=(x,y,z,tone,type,phase,size,angle)=>leaves.push(x,y,z,tone,type,phase,size,angle);
@@ -412,22 +411,18 @@ function buildForest(){
       const dx=c.x-x,dz=c.z-z;
       const az=Math.atan2(dz,dx);
       const len=Math.max(2.0,Math.hypot(Math.hypot(dx,dz),c.y-branchStartY)*(.58+rnd()*.12));
-      const midX=x+dx*.40,midY=branchStartY+(c.y-branchStartY)*.36,midZ=z+dz*.40;
-      trunks.push(midX,midY,midZ,radius*.22,len,radius*.19,-Math.max(.02,tone),az);
+      const root=[x,Math.min(c.y-1.8,branchStartY+h*.12*i/mainCount),z];
+      const tip=[c.x,c.y-c.r*.15,c.z];
+      trunks.push(...branchSegment(root,tip,radius*.26,tone));
 
       // Fine secondary twig: same bark, smaller radius, subtly diverging angle.
       if(rnd()>.14){
         const twigAz=az+(rnd()-.5)*.78;
         const twigLen=len*(.28+rnd()*.24);
         const ox=x+dx*.70,oy=branchStartY+(c.y-branchStartY)*.62,oz=z+dz*.70;
-        trunks.push(
-          ox+Math.cos(twigAz)*twigLen*.18,
-          oy+twigLen*.12,
-          oz+Math.sin(twigAz)*twigLen*.18,
-          radius*.095,twigLen,radius*.075,
-          -Math.max(.02,tone),
-          twigAz
-        );
+        const fork=root.map((v,k)=>v+(tip[k]-v)*.72);
+        const twigTip=[c.x+Math.cos(twigAz)*c.r*.55,c.y+c.r*.28,c.z+Math.sin(twigAz)*c.r*.55];
+        trunks.push(...branchSegment(fork,twigTip,radius*.10,tone));
 
         // A final twig tier makes the crown end in fine branchwork rather than rods.
         if(rnd()>.32){
@@ -436,14 +431,7 @@ function buildForest(){
           const tx=ox+Math.cos(twigAz)*twigLen*.42;
           const ty=oy+twigLen*.34;
           const tz=oz+Math.sin(twigAz)*twigLen*.42;
-          trunks.push(
-            tx+Math.cos(tipAz)*tipLen*.14,
-            ty+tipLen*.18,
-            tz+Math.sin(tipAz)*tipLen*.14,
-            radius*.048,tipLen,radius*.036,
-            -Math.max(.02,tone),
-            tipAz
-          );
+          // Keep the crown's sampling sequence; do not add detached hairlike tips.
         }
       }
     }
@@ -456,14 +444,7 @@ function buildForest(){
       const lx=x+Math.cos(leaderAz)*radius*.22;
       const ly=base+h*(.79+rnd()*.055);
       const lz=z+Math.sin(leaderAz)*radius*.22;
-      trunks.push(
-        lx+Math.cos(leaderAz)*leaderLen*.08,
-        ly+leaderLen*.24,
-        lz+Math.sin(leaderAz)*leaderLen*.08,
-        radius*.052,leaderLen,radius*.039,
-        -Math.max(.02,tone),
-        leaderAz
-      );
+      trunks.push(...branchSegment([x,ly,z],[lx+Math.cos(leaderAz)*leaderLen*.18,ly+leaderLen*.70,lz+Math.sin(leaderAz)*leaderLen*.18],radius*.07,tone));
     }
 
     const totalLeaves=(species===1?565:690)+Math.floor(rnd()*(species===1?90:125));

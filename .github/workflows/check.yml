@@ -21,3 +21,5 @@ jobs:
         run: |
           python tests/check_distribution.py . --javascript > /tmp/syolana-js-files.txt
           while IFS= read -r file; do node --check "$file"; done < /tmp/syolana-js-files.txt
+      - name: Check theme geometry and continuous motion
+        run: node tests/test_worlds.mjs

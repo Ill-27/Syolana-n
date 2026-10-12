@@ -15,7 +15,7 @@ let engine,pending='';
 window.addEventListener('syolana:partner-theme',e=>{const id=e.detail?.theme;if(!id)return;pending=id;if(engine)engine.select(id).catch(()=>{});});
 window.addEventListener('syolana:builder-theme',e=>{const id=e.detail?.theme;if(!id)return;pending=id;if(engine)engine.select(id).catch(()=>{});});
 try{
-  const {ThemeEngine}=await import('../themes.js?v=20261011-worlds-2');engine=new ThemeEngine();await engine.init();
+  const {ThemeEngine}=await import('../themes.js?v=20261012-refined-1');engine=new ThemeEngine();await engine.init();
   try{const data=await fetch('./partner.json',{cache:'no-store'}).then(r=>r.ok?r.json():null);const saved=data?.demo?JSON.parse(localStorage.getItem('partner-demo.settings.'+data.id)||'null')?.theme:data?.theme;pending=pending||saved||'';}catch{}
   if(pending)await engine.select(pending).catch(()=>{});
 }catch(error){console.warn('Partner live theme unavailable',error);}

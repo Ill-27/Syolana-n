@@ -15,7 +15,7 @@ import {
   moodFor,
   formatDate,
 } from "./utils.js";
-import { ThemeEngine } from "./themes.js?v=20261011-worlds-2";
+import { ThemeEngine } from "./themes.js?v=20261012-refined-1";
 import { Player } from "./player.js";
 import { API } from "./api.js";
 import { lessons } from "./content.js";

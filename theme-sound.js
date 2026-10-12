@@ -15,8 +15,7 @@ const scenes={
   'aurora':'night,glow',
   'golden':'warm',
   'moon':'night,glow',
-  'violet-bloom':'forest',
-  'lunar-muse':'night,glow'
+  'violet-bloom':'forest'
 };
 const silentPlayer={pause(){}};
 const audio=new SceneAudio(library,silentPlayer);

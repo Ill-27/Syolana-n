@@ -63,7 +63,7 @@ let engine,pendingTheme='';
 function storedTheme(){try{const raw=localStorage.getItem('partner-demo.settings.lana-test');return raw?JSON.parse(raw)?.theme||'':'';}catch{return '';}}
 async function start(){
   try{
-    const {ThemeEngine}=await import('../../themes.js?v=20261011-worlds-2');engine=new ThemeEngine();setupStudioScene(engine,setupFlightLayer);await engine.init();
+    const {ThemeEngine}=await import('../../themes.js?v=20261012-refined-1');engine=new ThemeEngine();setupStudioScene(engine,setupFlightLayer);await engine.init();
     const saved=pendingTheme||storedTheme();if(saved)await engine.select(saved).catch(()=>{});
     const dialog=document.getElementById('theme-dialog');dialog.setAttribute('open','');engine.startPreviews();
   }catch(error){console.warn('Studio live theme unavailable',error);}

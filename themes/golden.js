@@ -1,15 +1,13 @@
-import {createCelestialRenderer} from './celestial-world.mjs?v=20261011-worlds-2';
+import {createCelestialRenderer} from './celestial-world.mjs?v=20261012-refined-1';
 export default {
   createRenderer:ctx=>createCelestialRenderer(ctx,"golden"),
   id: "golden",
   marks: true,
-  cameraSmoothing: 4.2,
-  renderer: "webgl-golden-filaments",
-  particles: false,
+  particles: true,
   continuousDepth: true,
-  depthDirectScale: .45,
-  depthGain: .6,
-  depthCap: 1.5,
+  cameraSmoothing: 4.2,
+  renderer: "waves",
+  spatialWaves: true,
   accent: "#efd39e",
   dim: "#d8cfbf",
   surface: "24,20,20",

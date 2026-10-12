@@ -1,4 +1,4 @@
-import {sceneResolution} from './scene-quality.mjs?v=20261011-worlds-2';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-refined-1';
 // Shared scene resources, colour response and soft optical bloom.
 export const FULLSCREEN_VS=`#version 300 es
 precision highp float;precision highp int;
@@ -43,7 +43,7 @@ export function lookAt(out,eye,target){
  out.set([xx,yx,zx,0,xy,yy,zy,0,xz,yz,zz,0,-xx*eye[0]-xz*eye[2],-yx*eye[0]-yy*eye[1]-yz*eye[2],-zx*eye[0]-zy*eye[1]-zz*eye[2],1]);return out;
 }
 export function multiply(out,a,b){for(let c=0;c<4;c++)for(let r=0;r<4;r++)out[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];return out;}
-export function createGLWorld(ctx,kind,{exposure=1,bloom=.3,vignette=.14}={}){
+export function createGLWorld(ctx,kind,{exposure=1,bloom=.3,vignette=.14,resolution={}}={}){
  const canvas=document.createElement('canvas');canvas.className='theme-world-canvas';canvas.dataset.world=kind;canvas.setAttribute('aria-hidden','true');
  canvas.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-2;';ctx.canvas.parentNode?.insertBefore(canvas,ctx.canvas);
  const gl=canvas.getContext('webgl2',{alpha:false,antialias:true,depth:true,stencil:false,powerPreference:'high-performance'});
@@ -76,7 +76,7 @@ export function createGLWorld(ctx,kind,{exposure=1,bloom=.3,vignette=.14}={}){
  }
  function draw(m){gl.bindVertexArray(m.vao);gl.drawElementsInstanced(gl.TRIANGLES,m.count,m.type,0,m.instances);}
  function resize({width,height,ratio:r=1}){
-  const size=sceneResolution({width,height,ratio:r});W=size.cssWidth;H=size.cssHeight;ratio=size.pixelRatio;
+  const size=sceneResolution({width,height,ratio:r},resolution);W=size.cssWidth;H=size.cssHeight;ratio=size.pixelRatio;
   const w=size.width,h=size.height;if(canvas.width===w&&canvas.height===h)return;
   canvas.width=w;canvas.height=h;gl.bindTexture(gl.TEXTURE_2D,texture);gl.texImage2D(gl.TEXTURE_2D,0,floatTarget?gl.RGBA16F:gl.RGBA,w,h,0,gl.RGBA,floatTarget?gl.HALF_FLOAT:gl.UNSIGNED_BYTE,null);
   gl.bindRenderbuffer(gl.RENDERBUFFER,depth);gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT24,w,h);gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texture,0);gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,depth);

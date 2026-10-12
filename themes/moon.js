@@ -1,15 +1,12 @@
-import {createBotanicalRenderer} from './botanical-world.mjs?v=20261011-worlds-2';
+import {createLuminousRenderer} from './luminous-atmosphere.js?v=20261012-refined-1';
 export default {
-  createRenderer:ctx=>createBotanicalRenderer(ctx,"moon"),
+  createRenderer:ctx=>createLuminousRenderer(ctx,"moon"),
   id: "moon",
   marks: true,
-  cameraSmoothing: 4.2,
-  renderer: "webgl-moonlit-garden",
-  particles: false,
+  particles: true,
   continuousDepth: true,
-  depthDirectScale: .40,
-  depthGain: .5,
-  depthCap: 1.3,
+  cameraSmoothing: 4.2,
+  renderer: "petals",
   accent: "#b4dbef",
   dim: "#c0d0e2",
   surface: "10,20,32",

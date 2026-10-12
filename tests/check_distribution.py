@@ -24,7 +24,7 @@ for path in files:
         json.loads(path.read_text(encoding='utf-8'))
 
 themes = read('themes/manifest.json')
-assert len(themes) == 8 and len({theme['id'] for theme in themes}) == 8
+assert len(themes) == 7 and len({theme['id'] for theme in themes}) == 7
 for theme in themes:
     path = (root / 'themes' / theme['module']).resolve()
     assert path.is_relative_to(root) and path.is_file(), theme['module']
@@ -52,4 +52,4 @@ assert read('artivid/access-service.json') == access
 songs = read('song-details.json')
 assert len(songs['songs']) == 3 and songs['rightsNote']
 assert '__RELEASE__' not in (root / 'sw.js').read_text(), 'Service worker release must be sealed'
-print('PASS: eight themes, both applications, protected courses, song metadata and published assets')
+print('PASS: seven themes, both applications, protected courses, song metadata and published assets')

@@ -1,4 +1,4 @@
-import {createBotanicalRenderer} from './botanical-world.mjs?v=20261011-worlds-2';
+import {createBotanicalRenderer} from './botanical-world.mjs?v=20261012-refined-1';
 export default {
  id:'violet-bloom',renderer:'webgl-sculpted-bloom',particles:false,marks:true,markDark:true,continuousDepth:true,
  cameraSmoothing:4.2,depthDirectScale:.4,depthGain:.5,depthCap:1.3,depthDamping:4,

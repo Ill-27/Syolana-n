@@ -1,6 +1,6 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'atmosphere-20261012-2';
+const CACHE=PREFIX+'polish-20261012-4';
 const BASE=new URL('./',self.location.href);
 const assets=['index.html','boot.js','styles.css','config.json','language-switcher.js?v=20261012-i18n-3','content-i18n.js?v=20261012-i18n-3','i18n.js?v=20261012-i18n-2'].map(path=>new URL(path,BASE).href);
 const SCENE_RELEASE='20261012-atmosphere-2';

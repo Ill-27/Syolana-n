@@ -1,11 +1,19 @@
 /* Final mobile polish for partner/demo pages. */
 .syolana-attribution-top{margin-top:clamp(118px,18vw,154px)!important;margin-bottom:34px!important;position:relative;z-index:4}
 .syolana-attribution:not(.syolana-attribution-top){margin-top:44px!important;margin-bottom:calc(126px + env(safe-area-inset-bottom,0px))!important;position:relative;z-index:4}
-/* The immersive Syolana shell already contains the full platform banner.
-   Keep fallback attribution only when that shell is unavailable. */
 body.syolana-active > .syolana-attribution{display:none!important}
-body.syolana-active #content-shell.shell>main{margin-top:34px!important}
+body.syolana-active #content-shell.shell>main{margin-top:36px!important}
 body.syolana-active #content-shell.shell>footer{margin-bottom:calc(118px + env(safe-area-inset-bottom,0px))!important}
+body.syolana-active #main-nav{gap:14px!important;row-gap:14px!important;margin-bottom:28px!important;padding:2px!important}
+body.syolana-active #main-nav a{min-height:50px!important;padding:12px 22px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+body.syolana-active #banner{padding:clamp(24px,5vw,38px)!important}
+body.syolana-active #banner .banner-copy{gap:12px!important}
+body.syolana-active #banner .banner-copy h2{font-family:"Syolana Script",cursive!important;font-weight:400!important;font-size:clamp(2.5rem,8vw,4.5rem)!important;line-height:1.02!important;letter-spacing:.01em!important;max-width:12ch!important;margin:8px 0 12px!important}
+body.syolana-active #banner .banner-description{max-width:620px!important;font-size:clamp(1rem,2.3vw,1.15rem)!important;line-height:1.65!important;margin:0!important}
+body.syolana-active #banner .banner-features{margin-top:4px!important;gap:8px!important}
+body.syolana-active #banner .banner-actions{gap:12px!important;row-gap:12px!important;margin-top:8px!important}
+body.syolana-active #banner .banner-actions .btn{min-height:52px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1.25!important;padding:12px 18px!important}
+body.syolana-active #banner .banner-invitation{margin:4px 0 0!important;line-height:1.45!important;font-size:.92rem!important}
 .partner-watermarks{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;opacity:.10;font:600 18px/1 system-ui,sans-serif;color:var(--accent,#d7b9ff);mix-blend-mode:screen}
 .partner-watermarks span{position:absolute;white-space:nowrap;text-shadow:0 0 14px rgba(0,0,0,.28)}
 .partner-watermarks span:nth-child(1){left:8%;top:18%}.partner-watermarks span:nth-child(2){right:7%;top:30%}.partner-watermarks span:nth-child(3){left:16%;top:48%}.partner-watermarks span:nth-child(4){right:12%;top:60%}.partner-watermarks span:nth-child(5){left:7%;top:76%}.partner-watermarks span:nth-child(6){right:9%;top:86%}
@@ -15,6 +23,12 @@ body.syolana-active #content-shell.shell>footer{margin-bottom:calc(118px + env(s
 @media(max-width:720px){
   .syolana-attribution-top{margin-top:112px!important;margin-inline:22px!important;max-width:none!important}
   .syolana-attribution:not(.syolana-attribution-top){margin-inline:22px!important;margin-bottom:calc(142px + env(safe-area-inset-bottom,0px))!important}
+  body.syolana-active #main-nav{gap:12px!important;row-gap:14px!important;margin-bottom:24px!important}
+  body.syolana-active #main-nav a{padding-inline:18px!important}
+  body.syolana-active #banner{padding:24px 22px!important}
+  body.syolana-active #banner .banner-copy h2{font-size:clamp(2.35rem,10vw,3.45rem)!important;max-width:10.5ch!important}
+  body.syolana-active #banner .banner-actions{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%!important}
+  body.syolana-active #banner .banner-actions .btn{width:100%!important;min-width:0!important}
   #theme-dialog{max-width:calc(100vw - 24px)!important;max-height:calc(100dvh - 30px)!important}
   #theme-dialog .theme-list{grid-template-columns:1fr!important;max-height:65dvh!important}
   #theme-dialog .theme-option{grid-template-columns:1fr!important;grid-template-rows:minmax(145px,48vw) auto!important;height:auto!important;min-height:0!important}

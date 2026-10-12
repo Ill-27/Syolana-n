@@ -1,4 +1,6 @@
 import "./device-access.js?v=20261011-device-bound-1";
+import "./public-polish.js?v=20261012-final-polish-1";
+import "./positioning.js?v=20261012-final-polish-1";
 import {installAPITransport} from "./api-transport.js?v=20261011-owner-failover-1";
 const oldStudioPath = /^\/partner\/?$/.test(location.pathname);
 if (oldStudioPath) {
@@ -47,7 +49,7 @@ importWithRetry(appURL.href,2).then(async () => {
     if ("requestIdleCallback" in window) requestIdleCallback(register,{timeout:5000});
     else setTimeout(register,1500);
   }
-  const extras = ["polish.js","refinements.js","theme-sound.js","positioning.js","copy-polish.js","public-polish.js"].map(name =>
+  const extras = ["polish.js","refinements.js","theme-sound.js","copy-polish.js"].map(name =>
     importWithRetry("./"+name+"?v="+encodeURIComponent(release),2)
   );
   const results = await Promise.allSettled(extras);

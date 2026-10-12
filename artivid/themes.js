@@ -5,6 +5,7 @@ body:not(.zen):is(.reading,.course-reading,.managed-editor-view) #starCanvas,bod
 body #starCanvas{z-index:-1!important}
 body.reading #reading-shade,body.course-reading #reading-shade{backdrop-filter:blur(1.1px)!important;-webkit-backdrop-filter:blur(1.1px)!important}
 body.zen #starCanvas,body.zen .theme-world-canvas{filter:none!important;opacity:1!important;transform:translateZ(0)!important}
+body.zen #main-nav{display:none!important;visibility:hidden!important;pointer-events:none!important}
 .builder-theme-swatch,.theme-swatch{aspect-ratio:16/9;object-fit:cover}
 body:has(.theme-world-canvas:not([data-layered])) .aurora-layer{animation:none!important;opacity:0!important}
 body .theme-world-canvas[data-layered]{opacity:.64!important}
@@ -155,7 +156,7 @@ export class ThemeEngine {
     if (!item) return;
     const url = new URL(item.module, this.themeBase || new URL("./themes/", import.meta.url));
     if (url.origin !== (this.themeBase || url).origin) throw Error("Invalid theme");
-    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-refined-1";
+    const version = new URL(import.meta.url).searchParams.get("v") || "20261012-atmosphere-2";
     if (version) url.searchParams.set("v", version);
     let module;try{module=await import(url.href);}catch{url.searchParams.set('retry','1');module=await import(url.href);}const theme=module.default;
     if (seq !== this.sequence) return;
@@ -199,6 +200,7 @@ export class ThemeEngine {
     this.resize(true);
     this.updateChoices();
     this.sync();
+    this.selectedShip=null;this.updateFlightHint();
     window.dispatchEvent(new CustomEvent("syolana:theme"));
   }
   updateChoices() {
@@ -496,8 +498,8 @@ export class ThemeEngine {
       for (let i = 0; i < group.length; i++, globalParticleIndex++) {
         let s = group[i];
         const speed = this.theme.speed || 1;
-        s.x += s.sx * d * speed;
-        s.y -= s.sy * d * speed;
+        s.x += s.sx * d * speed * (this.custom?.projectParticle ? .35 : 1);
+        s.y -= s.sy * d * speed * (this.custom?.projectParticle ? .22 : 1);
         s.phase += s.blink * d;
 
         if (s.y < -25)
@@ -508,9 +510,9 @@ export class ThemeEngine {
         if (s.x < -25) s.x = this.w + 25;
         else if (s.x > this.w + 25) s.x = -25;
 
-        const point = isZenExtra
-          ? this.projectZenStar(s)
-          : this.project(s.x, s.y, s.depth);
+        const point = this.custom?.projectParticle
+          ? this.custom.projectParticle(s,this.w,this.h)
+          : isZenExtra ? this.projectZenStar(s) : this.project(s.x, s.y, s.depth);
         if (
           point.x < -110 ||
           point.y < -110 ||
@@ -641,6 +643,9 @@ export class ThemeEngine {
   }
   setZen(active) {
     this.zen = active;
+    this.custom?.clearSelection?.();
+    this.selectedShip=null;
+    this.updateFlightHint();
     this.custom?.resize?.({width:this.w,height:this.h,ratio:this.ratio*(this.qualityScale||1)});
     this.forwardFlightUntil = 0;
     // Enter the exact current theme, without replacing or restarting its animation.
@@ -651,6 +656,7 @@ export class ThemeEngine {
   }
   move(dx = 0, dy = 0, dz = 0) {
     if (!this.zen) return;
+    if (this.custom?.moveSelected?.(dx,dy,dz)) return;
     const cam = this.camera;
 
     // Only forward depth flight clears the view. Sideways/up/down exploration
@@ -743,6 +749,7 @@ export class ThemeEngine {
     nodes.forEach((node, i) => {
       const position = (i - start + nodes.length) % nodes.length;
       const visible = position < count;
+      node.hidden = !visible;
       node.style.opacity = visible ? "1" : "0";
       node.style.pointerEvents = visible ? "auto" : "none";
       node.tabIndex = visible ? 0 : -1;
@@ -750,6 +757,22 @@ export class ThemeEngine {
       const offset = count === 2 ? (position ? 210 : -210) : 0;
       node.style.transform = `translateX(calc(-50% + ${offset}px))`;
     });
+  }
+  selectAt(x,y,clear=false) {
+    if(!this.zen||!this.custom?.selectAt)return;
+    const slot=this.custom.selectAt(x,y,clear);
+    this.selectedShip=slot>=0?slot:null;
+    if(slot>=0)this.settle();
+    this.updateFlightHint();
+  }
+  updateFlightHint() {
+    const hint=document.querySelector('.flight-hint');if(!hint)return;
+    hint.textContent=this.zen&&this.selectedShip!=null
+      ? `Корабль ${this.selectedShip+1} · свайп — курс · два пальца — глубина · касание моря — свободный полёт`
+      : this.theme?.id==='living-sea'
+        ? 'Коснитесь корабля, чтобы управлять · свайп по морю — свободный полёт'
+        : 'Свайп — в стороны и вверх · два пальца — вперёд и назад';
+    document.getElementById('flight-layer')?.setAttribute('aria-label',hint.textContent);
   }
   startPreviews() {
     cancelAnimationFrame(this.previewFrame);
@@ -762,7 +785,7 @@ export class ThemeEngine {
         if(!rect.width||!rect.height||rect.bottom<0||rect.top>innerHeight||rect.right<0||rect.left>innerWidth)continue;
         const id=canvas.dataset.preview,c=canvas.getContext('2d');if(!c)continue;
         let poster=this.previewImages.get(id);
-        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261012-refined-1',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
+        if(!poster){poster=new Image();poster.decoding='async';poster.src=new URL('previews/'+id+'.jpg?v=20261012-atmosphere-2',this.themeBase).href;poster.onload=()=>{if(this.reduced.matches)this.startPreviews();};this.previewImages.set(id,poster);}
         if(!poster.complete||!poster.naturalWidth)continue;
         const w=canvas.width,h=canvas.height,zoom=this.reduced.matches?1:1.035+Math.sin(time/1000*.14)*.012;
         const base=Math.max(w/poster.naturalWidth,h/poster.naturalHeight),dw=poster.naturalWidth*base*zoom,dh=poster.naturalHeight*base*zoom;

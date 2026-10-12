@@ -42,6 +42,7 @@ export function setupFlightLayer({
     const arrow = el("span", "flight-arrow", "↗");
     arrow.setAttribute("aria-hidden", "true");
     a.append(icon, copy, arrow);
+    a.hidden=layer.querySelectorAll(".flight-planet").length>0;
     layer.append(a);
   }
 
@@ -78,6 +79,7 @@ export function setupFlightLayer({
   layer.addEventListener("pointerdown", (e) => {
     if (e.pointerType === "touch") return;
     const interactive = e.target.closest("a,button");
+    if(!interactive)theme.selectAt?.(e.clientX,e.clientY);
     pointers.set(e.pointerId, {
       x: e.clientX,
       y: e.clientY,
@@ -143,6 +145,7 @@ export function setupFlightLayer({
     const meta = pointers.get(e.pointerId);
     if (meta?.dragged) suppressClickUntil = performance.now() + 320;
     else if (meta?.interactive) theme.settle?.();
+    else if(meta)theme.selectAt?.(e.clientX,e.clientY,true);
     pointers.delete(e.pointerId);
     pinch = distance();
   };
@@ -161,6 +164,7 @@ export function setupFlightLayer({
     true,
   );
 
+  let touchTap = null;
   let touchLast = null;
   let touchPinch = 0;
   let touchCenterY = 0;
@@ -179,9 +183,13 @@ export function setupFlightLayer({
 
       if (e.touches.length === 1) {
         const t = e.touches[0];
+        const interactive=!!e.target.closest('a,button');
+        touchTap={x:t.clientX,y:t.clientY,moved:false,interactive};
+        if(!interactive)theme.selectAt?.(t.clientX,t.clientY);
         touchLast = { x: t.clientX, y: t.clientY };
         touchPinch = 0;
       } else if (e.touches.length >= 2) {
+        if(touchTap)touchTap.moved=true;
         touchLast = null;
         touchPinch = touchDistance(e.touches);
         touchCenterY = (e.touches[0].clientY + e.touches[1].clientY) * 0.5;
@@ -200,6 +208,7 @@ export function setupFlightLayer({
         const t = e.touches[0];
 
         if (touchLast) {
+          if(touchTap&&Math.hypot(t.clientX-touchTap.x,t.clientY-touchTap.y)>7)touchTap.moved=true;
           const dx = t.clientX - touchLast.x;
           const dy = t.clientY - touchLast.y;
           const scale = Number.isFinite(theme.theme?.gesturePanScale)
@@ -242,6 +251,9 @@ export function setupFlightLayer({
       const t = e.touches[0];
       touchLast = { x: t.clientX, y: t.clientY };
     } else {
+      if(touchTap&&!touchTap.moved&&!touchTap.interactive&&e.type!=="touchcancel")theme.selectAt?.(touchTap.x,touchTap.y,true);
+      if(touchTap?.moved)suppressClickUntil=performance.now()+320;
+      touchTap=null;
       touchLast = null;
       touchPinch = 0;
       touchCenterY = 0;

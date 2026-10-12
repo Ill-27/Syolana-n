@@ -1,4 +1,4 @@
-import {sceneResolution} from './scene-quality.mjs?v=20261012-refined-1';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-atmosphere-2';
 // Shared scene resources, colour response and soft optical bloom.
 export const FULLSCREEN_VS=`#version 300 es
 precision highp float;precision highp int;

@@ -23,3 +23,5 @@ jobs:
           while IFS= read -r file; do node --check "$file"; done < /tmp/syolana-js-files.txt
       - name: Check theme geometry and continuous motion
         run: node tests/test_worlds.mjs
+      - name: Check theme interactions and audio recovery
+        run: node tests/test_theme_experience.mjs

@@ -1,5 +1,7 @@
-import {sceneResolution} from './scene-quality.mjs?v=20261012-refined-1';
-import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-refined-1';
+import {stormStrike,lightningBranches,fleetPosition,pickShip,createFleetControl} from './sea-interaction.mjs?v=20261012-atmosphere-2';
+import {createThemeAudio} from './theme-audio.mjs?v=20261012-atmosphere-2';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-atmosphere-2';
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-atmosphere-2';
 import { createSeaMotion, shipHullGeometry, shipDeckGeometry, shipRailGeometry } from "./sea-motion.mjs?v=20261011-sea13";
 
 const TAU=Math.PI*2;
@@ -23,10 +25,10 @@ const STATES=[
 {day:.08,sunset:.14,night:1,storm:0,fog:.10,rain:0,wind:.11},
 {day:.3,sunset:.28,night:.55,storm:0,fog:.24,rain:0,wind:.10}
 ];
-function stateAt(time){
+export function stateAt(time){
   const span=34,raw=time/span,i=Math.floor(raw)%STATES.length,j=(i+1)%STATES.length,t=smooth(raw-Math.floor(raw)),a=STATES[i],b=STATES[j],o={};
   for(const k of Object.keys(a))o[k]=mix(a[k],b[k],t);
-  const pulse=Math.max(0,Math.sin(time*.66+Math.sin(time*.17)*2));o.lightning=o.storm*Math.pow(pulse,38);o.wave=1.15+.40*o.wind+1.65*o.storm;return o
+  o.strike=stormStrike(time,o.storm);o.lightning=o.strike.flash;o.wave=1.15+.40*o.wind+1.65*o.storm;return o
 }
 
 const SKY_VS=`#version 300 es
@@ -517,6 +519,15 @@ function atmosphere(){
       ctx.globalAlpha=a*.92;ctx.fillStyle=moon;ctx.beginPath();ctx.arc(mx,my,mr,0,TAU);ctx.fill();ctx.restore();ctx.restore();
     }
 
+    if(c.strike?.flash>.008){
+      const bolt=c.strike,xx=w*(.50+bolt.pan*.43),yy=horizon*.12,length=horizon*.78;
+      ctx.save();ctx.beginPath();ctx.rect(0,0,w,horizon);ctx.clip();ctx.globalCompositeOperation='screen';ctx.lineCap='round';ctx.lineJoin='round';
+      const glow=ctx.createRadialGradient(xx,yy+length*.36,0,xx,yy+length*.36,w*.45);glow.addColorStop(0,`rgba(188,214,255,${bolt.flash*.10})`);glow.addColorStop(1,'rgba(178,210,255,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,w,horizon);
+      const branches=lightningBranches(bolt.seed);
+      for(const [width,alpha]of [[5.5,.035],[2.1,.17],[.72,.87]])for(let j=0;j<branches.length;j++){
+        ctx.lineWidth=width*(j? .48:1);ctx.strokeStyle=`rgba(217,231,255,${alpha*bolt.flash*(j ? .42 : 1)})`;ctx.beginPath();branches[j].forEach((p,i)=>ctx[i?'lineTo':'moveTo'](xx+p[0]*w*.29,yy+p[1]*length));ctx.stroke();
+      }ctx.restore();
+    }
     if(c.rain>.035){
       ctx.save();ctx.lineCap="round";
       const layers=[
@@ -563,22 +574,11 @@ function atmosphere(){
   }}
 }
 
-const SOUND={title:"Звучание Моря странствий",ocean:"audio-library/nature/ocean_waves.ogg",wind:"audio-library/nature/wind_soft.ogg",rain:"audio-library/nature/storm_heavy_rain.ogg",thunder:"audio-library/nature/thunder_claps.ogg"};
-function soundscape(){
-  const button=document.createElement("button");button.type="button";button.className="icon-btn glass theme-sound-toggle";button.setAttribute("aria-label","Включить звучание Моря странствий");button.setAttribute("aria-pressed","false");button.title="Звучание темы";button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path d="M16 9c1.7 1.5 1.7 4.5 0 6M18.5 6.8c3.5 3 3.5 7.4 0 10.4"/></svg>';document.querySelector(".top-actions")?.insertBefore(button,document.querySelector("#zen-toggle"));
-  const Ctx=window.AudioContext||window.webkitAudioContext;let ac=null,master=null,enabled=false,current={wind:0,rain:0},seq=0,lastThunder=-99;const tracks={},cache=new Map(),root=new URL("../",import.meta.url);
-  const load=async p=>{if(cache.has(p))return cache.get(p);const q=(async()=>{const r=await fetch(new URL(p,root),{cache:"force-cache"});if(!r.ok)throw Error("audio");return ac.decodeAudioData(await r.arrayBuffer())})();cache.set(p,q);return q};
-  const sync=()=>{button.dataset.enabled=String(enabled);button.setAttribute("aria-pressed",String(enabled))};
-  const gain=(k,v)=>{const t=tracks[k];if(!t||!ac)return;const now=ac.currentTime;t.gain.gain.cancelScheduledValues(now);t.gain.gain.setValueAtTime(t.gain.gain.value,now);t.gain.gain.linearRampToValueAtTime(v,now+1)};
-  const apply=()=>{if(enabled){gain("ocean",.13+.05*current.wind);gain("wind",.02+.13*current.wind);gain("rain",.15*current.rain)}};
-  const start=async()=>{if(!Ctx)return;if(!ac){ac=new Ctx();master=ac.createGain();master.gain.value=.82;master.connect(ac.destination)}enabled=true;const r=++seq;sync();await ac.resume();const all=await Promise.allSettled([SOUND.ocean,SOUND.wind,SOUND.rain,SOUND.thunder].map(load));if(!enabled||r!==seq)return;["ocean","wind","rain"].forEach((k,i)=>{if(all[i].status!=="fulfilled")return;const src=ac.createBufferSource(),g=ac.createGain();src.buffer=all[i].value;src.loop=true;g.gain.value=0;src.connect(g);g.connect(master);src.start();tracks[k]={source:src,gain:g}});if(all[3].status==="fulfilled")tracks.thunderBuffer=all[3].value;apply()};
-  const stop=()=>{enabled=false;seq++;sync();for(const k of["ocean","wind","rain"]){try{tracks[k]?.source.stop()}catch{}delete tracks[k]}};
-  const setWeather=(c,time)=>{current=c;apply();if(enabled&&c.lightning>.55&&time-lastThunder>9&&tracks.thunderBuffer&&ac){lastThunder=time;const src=ac.createBufferSource(),g=ac.createGain();src.buffer=tracks.thunderBuffer;g.gain.value=.10+.12*c.storm;src.connect(g);g.connect(master);src.start()}};
-  button.onclick=()=>enabled?stop():start().catch(stop);return{setWeather,dispose(){stop();button.remove();try{ac?.close()}catch{}}}
-}
+const SOUND={title:"Звучание Моря странствий",loops:[{src:"audio-library/nature/ocean_waves.ogg",volume:.18},{src:"audio-library/nature/wind_soft.ogg",volume:.06},{src:"audio-library/nature/storm_heavy_rain.ogg",volume:.00001}],thunder:{src:"audio-library/nature/thunder_claps.ogg",volume:.22}};
+function soundscape(){return createThemeAudio(SOUND);}
 
-function fallback(ctx){
-  const air=atmosphere(),motion=createSeaMotion();
+function fallback(ctx,sound){
+  const air=atmosphere(),motion=createSeaMotion(),fleet=createFleetControl(),screenShips=[];
   const color=(a,b,t)=>a.map((n,i)=>mix(n,b[i],t));
   const rgb=a=>`rgb(${a.map(n=>Math.round(n)).join(",")})`;
   const ships=[{x:.30,z:.045,s:.58},{x:.60,z:.018,s:.39},{x:.79,z:.075,s:.94}];
@@ -607,7 +607,11 @@ function fallback(ctx){
     ctx.fillStyle=rgb(color(linen,[94,111,119],.17));ctx.beginPath();ctx.moveTo(41,-131);ctx.lineTo(97,-26);ctx.quadraticCurveTo(68,-35,48,-32);ctx.closePath();ctx.fill();
     ctx.fillStyle=c.night>.5?"#43566e":"#69494b";ctx.beginPath();ctx.moveTo(1,-175);ctx.quadraticCurveTo(15,-185,26,-177+Math.sin(t*3)*3);ctx.lineTo(3,-166);ctx.closePath();ctx.fill();ctx.restore();
   }
-  return{resize(){},draw({time,width:w,height:h,camera}){
+  return{resize(){},clearSelection(){fleet.clear();},moveSelected(dx,dy,dz){return fleet.move(dx,dy,dz);},selectAt(x,y,clear=false){
+    const hit=screenShips.filter(p=>x>=p.x-p.size*90&&x<=p.x+p.size*100&&y>=p.y-p.size*184&&y<=p.y+p.size*38).sort((a,b)=>b.size-a.size)[0];
+    if(hit)fleet.select(hit.slot);else if(clear)fleet.clear();return fleet.selected;
+  },draw({time,width:w,height:h,camera}){
+    fleet.step(time);screenShips.length=0;
     const c=stateAt(time),pose=motion.step(time,camera,c),cx=pose.input.x;
     const elevation=Math.max(0,pose.eye[1]-6.2-(1.775+3.16*c.storm)*c.wave);
     const horizon=h*(.435-Math.min(.17,elevation*.0018));
@@ -628,14 +632,16 @@ function fallback(ctx){
       ctx.lineTo(w+24,h+24);ctx.closePath();ctx.fill();
     }
     for(const [i,p] of ships.entries()){
-      const distance=[290,365,145][i]+pose.eye[2]-pose.routeZ;
+      const slot=[1,2,0][i],offset=fleet.pose(slot,{x:0,z:0,yaw:0});
+      const distance=[290,365,145][i]+pose.eye[2]-pose.routeZ-offset.z;
       if(distance<18)continue;
       const zoom=([290,365,145][i]+18)/distance;
-      const size=Math.min(w,h)*.00185*p.s*zoom,px=w*(.5+(p.x-.5)*zoom-pose.eye[0]/distance*.8),py=horizon+h*p.z*zoom+elevation/distance*h*.7+Math.sin(time*.78+i)*(.7+c.storm*2.4);
+      const size=Math.min(w,h)*.00185*p.s*zoom,px=w*(.5+(p.x-.5)*zoom+(offset.x-pose.eye[0])/distance*.8),py=horizon+h*p.z*zoom+elevation/distance*h*.7+Math.sin(time*.78+i)*(.7+c.storm*2.4);
+      screenShips.push({slot,x:px,y:py,size});
       ship(px,py,size,time,c,i);
       const wake=ctx.createLinearGradient(0,py+size*18,0,py+size*48);wake.addColorStop(0,"rgba(30,83,99,0)");wake.addColorStop(1,rgb(color(distant,deep,.14)));ctx.fillStyle=wake;ctx.beginPath();ctx.ellipse(px,py+size*38,size*88,size*14,0,0,TAU);ctx.fill();
     }
-    air.draw(ctx,time,w,h,{...c,horizon:horizon/h});
+    air.draw(ctx,time,w,h,{...c,horizon:horizon/h});sound?.setWeather(c);
   },dispose(){}};
 }
 
@@ -644,8 +650,8 @@ function createRenderer(ctx){
   const canvas=document.createElement("canvas");canvas.className="theme-world-canvas living-sea-world";canvas.setAttribute("aria-hidden","true");Object.assign(canvas.style,{position:"fixed",inset:"0",width:"100%",height:"100%",zIndex:"-2",pointerEvents:"none",display:"block",transform:"translateZ(0)",backfaceVisibility:"hidden"});src.parentNode?.insertBefore(canvas,src);
   const style=document.createElement("style");style.textContent='html[data-theme="living-sea"] .aurora-layer{animation:none!important;opacity:0!important}html[data-theme="living-sea"] .flight-hint{color:#e7f2f2;opacity:.8}';document.head.append(style);
   const sound=soundscape(),fx=atmosphere(),gl=canvas.getContext("webgl2",{alpha:false,antialias:true,depth:true,powerPreference:"high-performance"});
-  if(!gl){canvas.remove();const f=fallback(ctx),d=f.dispose;f.dispose=()=>{d?.();style.remove();sound.dispose()};return f}
-  let skyP,oceanP,objP,sailP,threadP,underP;try{skyP=program(gl,SKY_VS,SKY_FS);oceanP=program(gl,OCEAN_VS,OCEAN_FS);objP=program(gl,OBJ_VS,OBJ_FS);sailP=program(gl,SAIL_VS,SAIL_FS);threadP=program(gl,THREAD_VS,THREAD_FS);underP=program(gl,SKY_VS,UNDERWATER_FS)}catch(e){console.warn("Living sea renderer unavailable",e.message);canvas.remove();const f=fallback(ctx),d=f.dispose;f.dispose=()=>{d?.();style.remove();sound.dispose()};return f}
+  if(!gl){canvas.remove();const f=fallback(ctx,sound),d=f.dispose;f.dispose=()=>{d?.();style.remove();sound.dispose()};return f}
+  let skyP,oceanP,objP,sailP,threadP,underP;try{skyP=program(gl,SKY_VS,SKY_FS);oceanP=program(gl,OCEAN_VS,OCEAN_FS);objP=program(gl,OBJ_VS,OBJ_FS);sailP=program(gl,SAIL_VS,SAIL_FS);threadP=program(gl,THREAD_VS,THREAD_FS);underP=program(gl,SKY_VS,UNDERWATER_FS)}catch(e){console.warn("Living sea renderer unavailable",e.message);canvas.remove();const f=fallback(ctx,sound),d=f.dispose;f.dispose=()=>{d?.();style.remove();sound.dispose()};return f}
   const R=[],keep=x=>{R.push(x);return x},skyVao=keep(gl.createVertexArray()),sb=keep(gl.createBuffer());gl.bindVertexArray(skyVao);gl.bindBuffer(gl.ARRAY_BUFFER,sb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
   const ocean=oceanGeometry(),oceanVao=keep(gl.createVertexArray());gl.bindVertexArray(oceanVao);const ob=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,ob);gl.bufferData(gl.ARRAY_BUFFER,ocean.vertices,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);const oi=keep(gl.createBuffer());gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,oi);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,ocean.indices,gl.STATIC_DRAW);
   const vao=g=>{const v=keep(gl.createVertexArray());gl.bindVertexArray(v);const p=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,p);gl.bufferData(gl.ARRAY_BUFFER,g.positions,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);const n=keep(gl.createBuffer());gl.bindBuffer(gl.ARRAY_BUFFER,n);gl.bufferData(gl.ARRAY_BUFFER,g.normals,gl.STATIC_DRAW);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);return{vao:v,count:g.positions.length/3}};
@@ -679,14 +685,12 @@ function createRenderer(ctx){
   function ship(slot,t,camZ,eye,fog,c){
     // A steady fleet rather than ships racing through a loop and respawning.
     const epoch=0,type=slot===0?3:slot===1?1:0;
-    const lane=Math.min(1,(W/H)*1.7),phasePath=t*.016+slot*2.1;
-    const x=([-11,48,-62][slot]+Math.sin(phasePath)*[8,12,14][slot])*lane;
-    const z=camZ-[145,290,365][slot]+Math.cos(phasePath)*[22,35,42][slot];
+    const {x,z,yaw}=fleet.pose(slot,fleetPosition(slot,t,camZ,W/H));
     const bs=slot===0?1.82:1.56;
     const y=.60+seaHeight(x,z,t,c)*.96;
-    const yaw=[-.52,.28,-.22][slot]+Math.sin(phasePath*.7)*.065;
     const roll=clamp(Math.atan((seaHeight(x+5,z,t,c)-seaHeight(x-5,z,t,c))/10),-.15,.15);
     const pitch=clamp(-Math.atan((seaHeight(x,z+11,t,c)-seaHeight(x,z-11,t,c))/22),-.12,.12);
+    ships[slot]={slot,x,y,z,yaw,pitch,roll,scale:bs,masts:shipMasts(type)};
     const rot=[pitch,yaw,roll],g=shipWires[type],phase=epoch*.73+slot*1.7;
     const blackShip=slot===2;
 
@@ -759,8 +763,9 @@ function createRenderer(ctx){
   }
 
   const skyView=skyCameraUniforms(gl,skyP);
-  const motion=createSeaMotion();
+  const motion=createSeaMotion(),fleet=createFleetControl(),ships=[];
   function render(t,camera,c){
+    fleet.step(t);
     const pose=motion.step(t,camera,c),{eye,target,camZ,routeZ}=pose;
     const cx=pose.input.x;
     perspective(P,.94,W/H,.35,1700);lookAt(V,eye,target,[0,1,0]);multiply(VP,P,V);
@@ -770,7 +775,7 @@ function createRenderer(ctx){
     gl.bindVertexArray(null);
     return {horizon:clamp(.5-V[6]/(2*Math.tan(.94/2)*V[5]),.04,.9)};
   }
-  return{canvas,resize,draw({time,width,height,camera}){if(dead)return;if(width!==W||height!==H)resize({width,height,ratio:devicePixelRatio||1});const c=stateAt(time),sky=render(time,camera,c);fx.draw(ctx,time,width,height,{...c,...sky,proceduralSky:true});sound.setWeather(c,time)},dispose(){dead=true;canvas.remove();style.remove();sound.dispose();try{for(const p of[skyP,oceanP,objP,sailP,threadP,underP])gl.deleteProgram(p);for(const r of R){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}gl.getExtension('WEBGL_lose_context')?.loseContext();}catch{}}}
+  return{canvas,resize,selectAt(x,y,clear=false){const slot=pickShip(ships,VP,x,y,W,H);if(slot>=0)fleet.select(slot);else if(clear)fleet.clear();return fleet.selected;},clearSelection(){fleet.clear();},moveSelected(dx,dy,dz){return fleet.move(dx,dy,dz);},draw({time,width,height,camera}){if(dead)return;if(width!==W||height!==H)resize({width,height,ratio:devicePixelRatio||1});const c=stateAt(time),sky=render(time,camera,c);fx.draw(ctx,time,width,height,{...c,...sky,proceduralSky:true});sound.setWeather(c,time)},dispose(){dead=true;canvas.remove();style.remove();sound.dispose();try{for(const p of[skyP,oceanP,objP,sailP,threadP,underP])gl.deleteProgram(p);for(const r of R){if(typeof WebGLVertexArrayObject!=="undefined"&&r instanceof WebGLVertexArrayObject)gl.deleteVertexArray(r);else gl.deleteBuffer(r)}gl.getExtension('WEBGL_lose_context')?.loseContext();}catch{}}}
 }
 
 export default{id:"living-sea",renderer:"webgl-living-sea-v13",particles:false,marks:true,flightCards:true,autoFlightCards:true,continuousDepth:true,cameraSmoothing:4.2,gesturePanScale:360,depthDirectScale:.65,depthGain:.44,depthCap:1.5,depthDamping:4,flightBounds:{x:60,y:10,z:60},accent:"#bcdde5",dim:"#c7d9dd",surface:"12,27,38",panel:{bg:"rgba(14,35,47,.54)",border:"rgba(190,224,230,.26)",glow:"rgba(83,174,194,.17)",text:"#f2fbfc",muted:"#c6dce0"},radius:"28px",buttonRadius:"28px",heading:'"Cormorant Garamond", Georgia, serif',body:'"Nunito", system-ui, sans-serif',colors:["#d9eff2","#8fc1ce","#f1c48d","#9eb6c6"],backgrounds:["radial-gradient(ellipse at 72% 18%,rgba(180,220,228,.24),transparent 45%),radial-gradient(ellipse at 28% 8%,rgba(73,124,153,.26),transparent 58%)","radial-gradient(ellipse at 60% 35%,rgba(134,182,193,.12),transparent 55%)","linear-gradient(to bottom,rgba(41,83,105,.14),rgba(6,19,28,.44))"],soundscape:SOUND,createRenderer};

@@ -1,5 +1,23 @@
 import { safeURL, notify, getPref, setPref } from "./utils.js";
 
+export async function fetchSceneAudio(url,{nativeFetch=fetch}={}) {
+  const request={signal:AbortSignal.timeout(12000),credentials:'omit'};
+  let response=await nativeFetch(url,request);
+  const source=new URL(url),audioIndex=source.pathname.indexOf('/audio-library/');
+  if(!response.ok&&[403,404].includes(response.status)&&audioIndex>=0&&!source.pathname.slice(0,audioIndex).endsWith('/artivid')){
+    source.pathname=source.pathname.slice(0,audioIndex+1)+'artivid'+source.pathname.slice(audioIndex);source.search='';
+    response=await nativeFetch(source.href,request);
+  }
+  if(!response.ok)throw Error('Audio unavailable');
+  if(response.headers?.get('content-type')?.includes('application/json')){
+    const relocation=await response.json(),base=new URL(relocation.movedTo),path=new URL(url).pathname.split('/audio-library/')[1];
+    if(relocation.status!=='moved'||base.protocol!=='https:'||base.username||base.password||!path||path.split('/').includes('..')||!/^[-a-zA-Z0-9_./]+\.(ogg|m4a)$/.test(path))throw Error('Invalid audio location');
+    response=await nativeFetch(new URL('audio-library/'+path,base).href,request);
+    if(!response.ok)throw Error('Audio unavailable');
+  }
+  return response;
+}
+
 // Sound is decoded only after the reader's gesture. No page-load audio downloads.
 export class SceneAudio {
   constructor(library, player) {
@@ -15,11 +33,13 @@ export class SceneAudio {
     // capped so ambience stays behind the text even at maximum device volume.
     this.maxOutput = 0.21;
     this.volume = Math.max(0, Math.min(1, Number(getPref("scene-volume", 0.65)) || 0));
-    document.getElementById("audio")?.addEventListener("play", () => this.stop());
-    window.addEventListener("pagehide", () => this.stop());
+    this.mediaNode=document.getElementById('audio');
+    this.onMediaPlay=()=>this.stop();this.onPageHide=()=>this.stop();
+    this.onVisibility=()=>{if(!document.hidden&&this.enabled)this.context?.resume().catch(()=>{});};
+    this.mediaNode?.addEventListener('play',this.onMediaPlay);window.addEventListener('pagehide',this.onPageHide);document.addEventListener('visibilitychange',this.onVisibility);
   }
   emit(message = "") {
-    window.dispatchEvent(new CustomEvent("syolana:sceneaudio", { detail: { enabled: this.enabled, message } }));
+    window.dispatchEvent(new CustomEvent("syolana:sceneaudio", { detail: { enabled: this.enabled, message, controller: this.controller || "reader" } }));
   }
   async toggle() {
     if (this.enabled) { this.stop(); return false; }
@@ -64,7 +84,8 @@ export class SceneAudio {
         const entry = typeof raw === "string" ? { src: raw } : raw;
         const src = safeURL(entry?.src, { media: true });
         if (!src || result.some(t => t.src === src)) continue;
-        result.push({ ...entry, src, fallback: safeURL(entry.fallback, { media: true }), loop: entry.loop !== false, volume: Math.max(0, Math.min(0.55, entry.volume ?? 0.2)) });
+        const compatible=src.includes('audio-library/')&&src.endsWith('.ogg')?src.replace('audio-library/','audio-library/compatible/').replace(/\.ogg$/,'.m4a'):'';
+        result.push({ ...entry, src, fallback: safeURL(entry.fallback || compatible, { media: true }), loop: entry.loop !== false, volume: Math.max(0, Math.min(0.55, entry.volume ?? 0.2)) });
       }
     }
     return result.slice(0, 4);
@@ -77,8 +98,7 @@ export class SceneAudio {
     const promise = (async () => {
       for (const url of [entry.src, entry.fallback].filter(Boolean)) {
         try {
-          const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
-          if (!response.ok) throw Error("Audio unavailable");
+          const response = await fetchSceneAudio(url);
           const buffer = await this.context.decodeAudioData(await response.arrayBuffer());
           return entry.loop ? this.seamless(buffer) : buffer;
         } catch (error) { if (url === (entry.fallback || entry.src)) throw error; }
@@ -184,6 +204,9 @@ export class SceneAudio {
         this.fade(url, state, 0, entries.length ? fadeSeconds : 2.4);
     }
 
+    if (entries.length && prepared.every(item=>item.failed)) {
+      this.stop(); this.emit("Не удалось загрузить звук. Нажмите ещё раз после восстановления связи."); return;
+    }
     if (!entries.length) this.emit("Для этой сцены звуков пока нет.");
     else if (failed)
       this.emit("Один из звуков недоступен. Остальные продолжают звучать.");
@@ -203,6 +226,11 @@ export class SceneAudio {
     try { state.source.disconnect(); } catch {}
     try { state.gain.disconnect(); } catch {}
     if (this.tracks.get(url) === state) this.tracks.delete(url);
+  }
+  dispose() {
+    this.stop();this.mediaNode?.removeEventListener('play',this.onMediaPlay);
+    window.removeEventListener('pagehide',this.onPageHide);document.removeEventListener('visibilitychange',this.onVisibility);
+    this.context?.close().catch(()=>{});
   }
   stop() {
     this.enabled = false; this.key = ""; this.sceneId = ""; this.sequence++;

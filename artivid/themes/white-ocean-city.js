@@ -1,5 +1,6 @@
-import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-refined-1';
-import {sceneResolution} from './scene-quality.mjs?v=20261012-refined-1';
+import {createThemeAudio} from './theme-audio.mjs?v=20261012-atmosphere-2';
+import {SKY_CAMERA_GLSL,SMOKE_FIELD_GLSL,skyCameraUniforms,setSkyCamera} from './sky-camera.mjs?v=20261012-atmosphere-2';
+import {sceneResolution} from './scene-quality.mjs?v=20261012-atmosphere-2';
 import {createSceneMotion} from './scene-motion.mjs';
 const TAU = Math.PI * 2;
 const MODULE_ORIGIN = new URL(import.meta.url).origin;
@@ -558,35 +559,7 @@ const SOUND = {
   oneShots:[{src:centralAsset("audio-library/nature/bird_wings_flutter.ogg"),fallback:centralAsset("audio-library/compatible/nature/bird_wings_flutter.m4a"),volume:.17,minDelay:11,maxDelay:27}]
 };
 
-function createThemeSound(){
-  const button=document.createElement("button");
-  button.id="theme-sound-toggle";
-  button.type="button";
-  button.className="icon-btn glass theme-sound-toggle";
-  button.setAttribute("aria-label","Включить звучание Белого города");
-  button.setAttribute("aria-pressed","false");
-  button.title="Звучание темы";
-  button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path class="sound-wave" d="M16 9c1.7 1.5 1.7 4.5 0 6M18.5 6.8c3.5 3 3.5 7.4 0 10.4"/></svg>';
-  document.querySelector(".top-actions")?.insertBefore(button,document.querySelector("#zen-toggle"));
-  const Ctx=window.AudioContext||window.webkitAudioContext;
-  let ac=null, master=null, enabled=false, seq=0;
-  const cache=new Map(), tracks=new Set(), timers=new Set();
-  const assetRoot=new URL("../",import.meta.url);
-  const same=(raw)=>{try{const u=new URL(raw,assetRoot);return u.origin===assetRoot.origin?u.href:""}catch{return ""}};
-  const norm=(e)=>{const src=same(e.src);return src?{...e,src,fallback:same(e.fallback),volume:Math.max(0,Math.min(.5,Number(e.volume)||.1))}:null};
-  const sync=()=>{button.dataset.enabled=String(enabled);button.setAttribute("aria-pressed",String(enabled));button.setAttribute("aria-label",enabled?"Выключить звучание Белого города":"Включить звучание Белого города");};
-  const load=async(raw)=>{const e=norm(raw);if(!e)throw Error("audio");const key=e.src+"|"+e.fallback;if(cache.has(key))return cache.get(key);const p=(async()=>{let last;for(const u of [e.src,e.fallback].filter(Boolean)){try{const r=await fetch(u,{cache:"force-cache",signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error("audio");return {buffer:await ac.decodeAudioData(await r.arrayBuffer()),entry:e}}catch(err){last=err}}throw last||Error("audio")})();cache.set(key,p);try{return await p}catch(err){cache.delete(key);throw err}};
-  const fadeOut=(seconds=1.8)=>{if(!ac)return;const now=ac.currentTime;for(const t of [...tracks]){const g=t.gain.gain;g.cancelScheduledValues(now);g.setValueAtTime(g.value,now);g.linearRampToValueAtTime(0,now+seconds);setTimeout(()=>{try{t.source.stop();t.source.disconnect();t.gain.disconnect()}catch{}tracks.delete(t)},seconds*1000+80)}};
-  const clearTimers=()=>{for(const t of timers)clearTimeout(t);timers.clear()};
-  const stop=(silent=false)=>{if(!enabled&&!tracks.size)return;enabled=false;seq++;clearTimers();fadeOut();if(!silent)sync()};
-  const scheduleBird=(request)=>{const raw=SOUND.oneShots[0], e=norm(raw);if(!e)return;const again=()=>{if(!enabled||request!==seq)return;const delay=(e.minDelay+Math.random()*(e.maxDelay-e.minDelay))*1000;const timer=setTimeout(async()=>{timers.delete(timer);if(!enabled||request!==seq)return;try{const {buffer}=await load(e);if(!enabled||request!==seq)return;const source=ac.createBufferSource(),gain=ac.createGain(),pan=ac.createStereoPanner?.();source.buffer=buffer;gain.gain.value=e.volume;source.connect(gain);if(pan){gain.connect(pan);pan.connect(master);pan.pan.value=Math.random()*1.4-.7}else gain.connect(master);source.start()}catch{}again()},delay);timers.add(timer)};again()};
-  const start=async()=>{if(!Ctx)return; if(!ac){ac=new Ctx();master=ac.createGain();master.gain.value=.18;const comp=ac.createDynamicsCompressor();comp.threshold.value=-14;comp.knee.value=22;comp.ratio.value=5;master.connect(comp);comp.connect(ac.destination)}enabled=true;const request=++seq;sync();await ac.resume();const ready=await Promise.allSettled(SOUND.loops.map(load));if(!enabled||request!==seq)return;ready.forEach((r,i)=>{if(r.status!=="fulfilled")return;const source=ac.createBufferSource(),gain=ac.createGain();source.buffer=r.value.buffer;source.loop=true;gain.gain.value=0;source.connect(gain);gain.connect(master);const state={source,gain};tracks.add(state);source.start();gain.gain.linearRampToValueAtTime(SOUND.loops[i].volume,ac.currentTime+4+i*.45)});scheduleBird(request)};
-  button.onclick=()=>{if(enabled)stop();else start().catch(()=>{stop();button.title="Нажмите ещё раз, чтобы браузер разрешил звук"})};
-  const onPlay=(e)=>{if(e.target instanceof HTMLMediaElement&&!e.target.muted)stop()};
-  const onScene=(e)=>{if(e.detail?.enabled)stop()};
-  document.addEventListener("play",onPlay,true);window.addEventListener("syolana:sceneaudio",onScene);window.addEventListener("pagehide",()=>stop(true),{once:true});
-  return {dispose(){stop(true);document.removeEventListener("play",onPlay,true);window.removeEventListener("syolana:sceneaudio",onScene);button.remove();try{ac?.close()}catch{}}};
-}
+function createThemeSound(){return createThemeAudio(SOUND);}
 
 function createRenderer(ctx){
   const sourceCanvas=ctx?.canvas;

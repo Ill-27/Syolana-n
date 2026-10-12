@@ -1,24 +1,25 @@
-import {SceneAudio} from './scene-audio.js?v=20261011-theme-audio-2';
+import {SceneAudio} from './scene-audio.js?v=20261012-atmosphere-2';
 
-const library={
+export const THEME_AUDIO_LIBRARY={
   forest:{src:'audio-library/ambience/deep_forest.ogg',loop:true,volume:.18},
-  ocean:{src:'audio-library/ambience/wind_howl_window.ogg',fallback:'audio-library/compatible/ambience/wind_howl_window.m4a',loop:true,volume:.13},
+  ocean:{src:'audio-library/nature/ocean_waves.ogg',fallback:'audio-library/compatible/nature/ocean_waves.m4a',loop:true,volume:.13},
   night:{src:'audio-library/ambience/night_air.ogg',fallback:'audio-library/compatible/ambience/night_air.m4a',loop:true,volume:.14},
-  distant:{src:'audio-library/ambience/distant_rumble.ogg',loop:true,volume:.1},
-  glow:{src:'audio-library/music/ghostly_apparition.ogg',loop:true,volume:.12},
-  warm:{src:'audio-library/music/comedy_pizzicato.ogg',loop:true,volume:.1}
+  glow:{src:'audio-library/music/synth_mystic_pad.ogg',loop:true,volume:.12},
+  meadow:{src:'audio-library/nature/forest_morning.ogg',loop:true,volume:.14},
+  breeze:{src:'audio-library/nature/wind_soft.ogg',loop:true,volume:.09},
+  warm:{src:'audio-library/music/piano_romantic_soft.ogg',loop:true,volume:.1}
 };
-const scenes={
-  'living-sea':'ocean,distant',
+export const THEME_AUDIO_SCENES={
+  'living-sea':'ocean',
   'amber-forest':'forest',
   'white-ocean-city':'ocean,night',
   'aurora':'night,glow',
   'golden':'warm',
   'moon':'night,glow',
-  'violet-bloom':'forest'
+  'violet-bloom':'meadow,breeze'
 };
 const silentPlayer={pause(){}};
-const audio=new SceneAudio(library,silentPlayer);
+const audio=new SceneAudio(THEME_AUDIO_LIBRARY,silentPlayer);audio.controller='theme-atmosphere';
 const actions=document.querySelector('.top-actions');
 const themeButton=document.getElementById('theme-toggle');
 let button;
@@ -28,14 +29,14 @@ function icon(){
   const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d','M4 10v4h4l5 4V6L8 10H4m12.5-1.5a5 5 0 0 1 0 7M18.8 6.2a8.2 8.2 0 0 1 0 11.6');path.setAttribute('fill','none');path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width','1.8');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.append(path);return svg;
 }
 function currentTheme(){return document.documentElement.dataset.theme||'aurora';}
-async function syncScene(){const native=!!document.querySelector('.theme-sound-toggle');if(button)button.hidden=native;if(native){audio.stop();return;}if(audio.enabled)await audio.scene(scenes[currentTheme()]||'',currentTheme());}
+async function syncScene(){const native=!!document.querySelector('.theme-sound-toggle');if(button)button.hidden=native;if(native){audio.stop();return;}if(audio.enabled)await audio.scene(THEME_AUDIO_SCENES[currentTheme()]||'',currentTheme());}
 function update(detail={}){
   if(!button)return;button.setAttribute('aria-pressed',String(!!detail.enabled));button.title=detail.enabled?'Выключить звук темы':'Включить звук темы';button.setAttribute('aria-label',button.title);button.classList.toggle('active',!!detail.enabled);
 }
 if(actions&&themeButton){
   button=document.createElement('button');button.id='ambient-theme-sound-toggle';button.type='button';button.className='icon-btn glass';button.setAttribute('aria-pressed','false');button.append(icon());themeButton.insertAdjacentElement('afterend',button);update({enabled:false});syncScene();
-  button.addEventListener('click',async()=>{const enabled=await audio.toggle();update({enabled});if(enabled)await syncScene();});
-  window.addEventListener('syolana:sceneaudio',e=>update(e.detail||{}));
+  button.addEventListener('click',async()=>{if(audio.enabled&&audio.context?.state==='suspended'){await audio.context.resume();return;}const enabled=await audio.toggle();update({enabled});if(enabled)await syncScene();});
+  window.addEventListener('syolana:sceneaudio',e=>{if(e.detail?.controller!==audio.controller&&e.detail?.enabled)audio.stop();update({enabled:audio.enabled});});
   window.addEventListener('syolana:theme',syncScene);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncScene();});
 }

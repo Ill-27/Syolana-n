@@ -3,12 +3,13 @@ import {getLocale,tr} from './i18n.js?v=20261012-i18n-2';
 const TEXT='Не оформляйте подписку, пока не пройдёте бесплатный английский A1 и не убедитесь, что вам подходит этот формат. Методика, структура уроков и принцип практики едины для всех языков Syolana.';
 const TITLE='Сначала попробуйте методику бесплатно';
 const CTA='Открыть английский A1 бесплатно';
+const SCRIPT_FONT=new URL('./assets/fonts/syolana-script.woff',import.meta.url).href;
 
 function style(){
   if(document.getElementById('syolana-course-trial-style'))return;
   const s=document.createElement('style');
   s.id='syolana-course-trial-style';
-  s.textContent=`.syolana-course-trial{margin:22px 0;padding:22px 20px;border:1px solid rgba(220,195,255,.34);border-radius:24px;background:linear-gradient(135deg,rgba(135,99,190,.14),rgba(255,255,255,.025)),rgba(10,10,24,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-family:Inter,system-ui,sans-serif}.syolana-course-trial strong{display:block;margin:0 0 13px;font-family:Inter,system-ui,sans-serif;font-size:1.06rem;line-height:1.35;font-weight:700}.syolana-course-trial p{margin:0 0 18px;line-height:1.68;font-family:Inter,system-ui,sans-serif}.syolana-course-trial a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:58px;padding:13px 18px;border:1px solid rgba(220,195,255,.38);border-radius:999px;color:inherit;text-decoration:none;font-family:Inter,system-ui,sans-serif;font-weight:700;line-height:1.28;white-space:normal}`;
+  s.textContent=`@font-face{font-family:"Syolana Script";font-style:normal;font-weight:400;font-display:swap;src:url("${SCRIPT_FONT}") format("woff")}.access-screen>h1{font-family:"Syolana Script","Segoe Print",cursive!important;font-weight:400!important;font-size:clamp(2.7rem,10vw,4.6rem)!important;line-height:1.02!important;letter-spacing:.01em!important;margin:10px 0 22px!important}.syolana-course-trial{margin:22px 0;padding:22px 20px;border:1px solid rgba(220,195,255,.34);border-radius:24px;background:linear-gradient(135deg,rgba(135,99,190,.14),rgba(255,255,255,.025)),rgba(10,10,24,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-family:Inter,system-ui,sans-serif}.syolana-course-trial strong{display:block;margin:0 0 13px;font-family:Inter,system-ui,sans-serif;font-size:1.06rem;line-height:1.35;font-weight:700}.syolana-course-trial p{margin:0 0 18px;line-height:1.68;font-family:Inter,system-ui,sans-serif}.syolana-course-trial a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:58px;padding:13px 18px;border:1px solid rgba(220,195,255,.38);border-radius:999px;color:inherit;text-decoration:none;font-family:Inter,system-ui,sans-serif;font-weight:700;line-height:1.28;white-space:normal}`;
   document.head.append(s);
 }
 

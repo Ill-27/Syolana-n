@@ -2,7 +2,7 @@ import "./device-access.js?v=20261011-device-bound-1";
 import {installAPITransport} from "./api-transport.js?v=20261011-owner-failover-1";
 const oldStudioPath = /^\/partner\/?$/.test(location.pathname);
 if (oldStudioPath) {
-  location.replace(new URL("./partner-demo/studio/", import.meta.url).href);
+  location.replace(new URL("./#/create-site", import.meta.url).href);
 } else {
 installAPITransport();
 
@@ -32,7 +32,7 @@ window.addEventListener("hashchange", () => {
   }));
 }, true);
 
-if (/^#\/lesson\/(?:en\/a[12]\/course|es\/a[12]\/(?:course|rules|words|practice))(?:\/|$)/.test(location.hash)) {
+if (/^#\/lesson\//.test(location.hash)) {
   document.body.classList.add("course-reading");
 }
 const release = new URL(import.meta.url).searchParams.get("v") || "20261012-refined-1";

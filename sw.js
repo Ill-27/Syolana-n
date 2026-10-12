@@ -1,6 +1,6 @@
 /* Public offline shell only. Server access checks always use the network. */
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'worlds-20261011-2';
+const CACHE=PREFIX+'copy-20261012-1';
 const BASE=new URL('./',self.location.href);
 const assets=['index.html','boot.js','styles.css','config.json'].map(path=>new URL(path,BASE).href);
 function publicRequest(request){
@@ -9,8 +9,7 @@ function publicRequest(request){
  if(url.pathname.includes('/api/')||url.pathname.startsWith('/personal-atlas/')||url.pathname.startsWith('/_deploy/'))return false;
  if([...url.searchParams.keys()].some(k=>/token|key|signature|credential/i.test(k)))return false;
  if(/\/courses\/(?!en-a1\/)[^/]+\/(?:data|pronunciation)\.json$/.test(url.pathname))return false;
- // Access, device binding, current positioning and owner recovery always come from the current deployment.
- if(/\/(?:api-transport|course-api-bridge|owner-vault|device-access|positioning|sketch-builder)\.m?js$/.test(url.pathname))return false;
+ if(/\/(?:api-transport|course-api-bridge|owner-vault|device-access|positioning|sketch-builder|copy-polish|public-polish)\.m?js$/.test(url.pathname))return false;
  if(url.pathname.includes('/owner-vault/'))return false;
  if(url.pathname.endsWith('/song-details.json'))return false;
  if(url.pathname.endsWith('.json'))return /\/(config|feed|partner|studio-config|site-settings|manifest)\.json$/.test(url.pathname);

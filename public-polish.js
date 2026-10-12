@@ -13,10 +13,8 @@ const COPY_REPLACEMENTS=[
  ['Перед подпиской попробуйте английский A1 бесплатно — так вы заранее поймёте, подходит ли вам методика.','Сначала пройдите английский A1 бесплатно. Не оформляйте подписку, пока не убедитесь, что вам подходит этот формат: методика и структура едины для всех языков Syolana.'],
  ['Технические журналы','Служебные данные']
 ];
-
 const TRIAL_TEXT='Не оформляйте подписку, пока не пройдёте бесплатный английский A1 и не убедитесь, что вам подходит этот формат. Методика, структура уроков и принцип практики едины для всех языков Syolana.';
 const BRAND_RULE='По условиям использования фирменного оформления нельзя удалять или изменять баннер Syolana, водяные знаки syolana.com, подключение живых тем и фирменные шрифты — вручную или с помощью ИИ. Если фирменный слой изменить, живые темы, фирменные шрифты и визуальные обновления Syolana отключатся. Ваши собственные материалы останутся на месте.';
-
 function injectStyle(){
  if(document.getElementById('syolana-public-polish'))return;
  const style=document.createElement('style');style.id='syolana-public-polish';style.textContent=`
@@ -30,10 +28,10 @@ function injectStyle(){
 .card.stack{overflow:visible}
 body:not(.zen) .theme-world-canvas{filter:blur(1.45px) saturate(.96) brightness(.96)!important;transform:translateZ(0) scale(1.014)!important;transform-origin:center!important}
 body:not(.zen) .aurora-background{filter:blur(1.2px) saturate(.97)!important;transform:scale(1.006)!important}
-body:not(.zen) #starCanvas{filter:none!important;transform:translateZ(0)!important;opacity:1!important}
+body #starCanvas#starCanvas{filter:none!important;transform:translateZ(0)!important;opacity:1!important}
 body:not(.zen):is(.reading,.course-reading) .theme-world-canvas{filter:blur(5.8px) saturate(.90) brightness(.82)!important;transform:translateZ(0) scale(1.035)!important}
 body:not(.zen):is(.reading,.course-reading) .aurora-background{filter:blur(5px) saturate(.90) brightness(.84)!important;transform:scale(1.025)!important}
-body.zen .theme-world-canvas,body.zen .aurora-background,body.zen #starCanvas{filter:none!important;transform:translateZ(0)!important;opacity:1!important}
+body.zen .theme-world-canvas,body.zen .aurora-background{filter:none!important;transform:translateZ(0)!important;opacity:1!important}
 .method-trial-notice,.syolana-brand-rule{border-color:rgba(224,199,255,.32)!important;background:linear-gradient(135deg,rgba(139,104,190,.14),rgba(255,255,255,.025)),rgba(var(--surface),.64)!important}
 .method-trial-notice h2,.syolana-brand-rule h2{font-size:clamp(1.65rem,4vw,2.45rem)}
 .method-trial-notice .eyebrow,.syolana-brand-rule .eyebrow{margin-bottom:8px}

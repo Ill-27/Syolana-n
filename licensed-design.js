@@ -1,5 +1,13 @@
 import {ATTRIBUTION_TEXT,protectAttribution} from './attribution-guard.js';
 const https=value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.hash?u.href:'';}catch{return '';}};
+const mountBrandLogo=brand=>{
+ if(!brand||brand.querySelector('[data-syolana-logo]'))return;
+ const logo=document.createElement('img');
+ logo.src='https://syolana.com/assets/logo.svg?v=20261013-holo-1';
+ logo.alt='';logo.width=34;logo.height=34;logo.dataset.syolanaLogo='true';
+ Object.assign(logo.style,{display:'inline-block',width:'34px',height:'34px',marginRight:'8px',verticalAlign:'middle',objectFit:'contain',filter:'drop-shadow(0 0 10px rgba(197,164,255,.28))'});
+ brand.prepend(logo);
+};
 export async function mountLicensedDesign({settings,license,themes=[],brand=document.getElementById('syolana-attribution')}){
  let live=false,closed=false,checking=false,expiry=0,frame,stop=()=>{};const remote=[];const previousStyle=document.documentElement.getAttribute('style');
  const controls=document.querySelector('.export-controls');if(controls)controls.hidden=true;
@@ -19,6 +27,7 @@ export async function mountLicensedDesign({settings,license,themes=[],brand=docu
     live=true;for(const path of ['assets/fonts/fonts.css','styles.css']){const link=document.createElement('link');link.rel='stylesheet';link.href='https://syolana.com/'+path;link.dataset.syolanaStyle='true';document.head.append(link);remote.push(link);}
     frame=document.createElement('iframe');frame.className='export-theme';frame.title='';frame.allow='autoplay';frame.setAttribute('aria-hidden','true');frame.src='https://syolana.com/theme-embed.html?theme='+encodeURIComponent(settings.theme);document.body.prepend(frame);
     if(controls)controls.hidden=false;
+    mountBrandLogo(brand);
     stop=protectAttribution(brand,'https://syolana.com/',lose,{watermark:frame});
     const list=document.getElementById('theme-list');if(list){for(const item of themes){const button=document.createElement('button');button.type='button';button.className='theme-option';const image=document.createElement('img');image.className='theme-swatch';image.alt='';image.src='https://syolana.com/themes/previews/'+encodeURIComponent(item.id)+'.jpg';button.append(image,document.createTextNode(item.name));button.onclick=()=>{frame.contentWindow?.postMessage({syolanaEmbed:true,theme:item.id},'https://syolana.com');document.getElementById('theme-dialog').close();};list.append(button);}}
     const sound=document.getElementById('sound-toggle');if(sound)sound.onclick=()=>frame.contentWindow?.postMessage({syolanaEmbed:true,sound:true},'https://syolana.com');

@@ -1,5 +1,5 @@
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'brand-holo-20261013-1';
+const CACHE=PREFIX+'brand-holo-20261013-2';
 function allowed(request){
  const url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin||request.headers.has('Authorization'))return false;

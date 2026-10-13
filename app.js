@@ -1,6 +1,7 @@
 import initialConfig from './config.json' with {type:'json'};
 import initialFeed from './feed.json' with {type:'json'};
 import songDetails from './song-details.json' with {type:'json'};
+import {getLocale,tr} from './i18n.js';
 import {finishUI} from './render-ui.js';
 import {positionView,clearPositionView} from './positioning.js';
 import {loadPublicJSON} from "./public-data.js?v=20261011-poems-2";
@@ -478,9 +479,19 @@ async function songPage(id, token) {
   if(index>=0)introduction.append(button('Слушать песню',()=>player.select(index,true),'btn primary'));
   introduction.append(el('p','fine','Ниже — полный литературный первоисточник песни. Повторы и изменения в музыкальной версии не приписываются автору оригинала.'));
   const poems=el('div','song-poems grid two');
-  for(const [title,text,language]of [['Полный текст первоисточника',song.original,'es'],[song.translationLabel,song.translationRu,'ru']]){
-    const card=el('section','card stack song-poem');card.append(el('h2','',title));const poem=el('p','poem-text',text);poem.lang=language;card.append(poem);if(language==='ru')card.append(el('p','fine',song.translationNote));poems.append(card);
+  poems.dataset.i18nSkip='poetry';
+  function renderPoems(){
+    const locale=getLocale(),originalLanguage=song.originalLanguage;
+    const translation=locale==='ru'?song.translationRu:song.translations?.[locale];
+    const labels={ru:song.translationLabel,en:'Новый перевод на английский для Syolana',fr:'Новый перевод на французский для Syolana'};
+    const rows=[['Полный текст первоисточника',song.original,originalLanguage]];
+    if(locale!==originalLanguage&&translation)rows.push([labels[locale],translation,locale]);
+    poems.replaceChildren();poems.classList.toggle('two',rows.length>1);
+    for(const [title,text,language]of rows){
+      const card=el('section','card stack song-poem');card.append(el('h2','',tr(title)));const poem=el('p','poem-text',text);poem.lang=language;card.append(poem);if(language!==originalLanguage)card.append(el('p','fine',tr(song.translationNote)));poems.append(card);
+    }
   }
+  renderPoems();window.addEventListener('syolana:locale',renderPoems);cleanup=()=>window.removeEventListener('syolana:locale',renderPoems);
   const rights=el('section','card stack song-rights');rights.append(el('p','eyebrow','АВТОР И ПРАВА'),el('h2','','Исторический текст — общественное достояние'),el('p','',song.publicDomain.explanation),el('p','fine',song.publicDomain.scopeNote),link('ГК РФ: статьи 1281 и 1282',song.publicDomain.lawUrl,'text-link'));
   const notes=el('details','card stack song-notes');notes.append(el('summary','','Примечания и проверенные источники'));for(const text of song.notes)notes.append(el('p','',text));for(const source of song.sources||[])notes.append(link(source.label,source.url,'text-link'));
   $('page').append(introduction,poems,rights,notes,link('К списку песен','#/songs','btn'));

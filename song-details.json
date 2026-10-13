@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "checkedAt": "2026-10-11",
   "language": "ru",
   "songs": [
@@ -48,7 +48,11 @@
           "label": "Biblioteca Nacional de España: Libro de los gorriones, 1868; издание Rimas, 1871; годы жизни",
           "url": "https://www.bne.es/es/obras/libro-gorriones"
         }
-      ]
+      ],
+      "translations": {
+        "en": "\"What is poetry?\" you say, fixing\nyour blue gaze upon my own.\nPoetry! And you ask me?\nPoetry… is you.",
+        "fr": "« Qu’est-ce que la poésie ? » dis-tu, en plongeant\nton regard bleu dans le mien.\nLa poésie ! Et c’est toi qui me le demandes ?\nLa poésie… c’est toi."
+      }
     },
     {
       "id": "marti",
@@ -100,7 +104,11 @@
           "label": "Real Academia Española: значение слова oruga",
           "url": "https://dle.rae.es/oruga"
         }
-      ]
+      ],
+      "translations": {
+        "en": "I grow a white rose,\nin July as in January,\nfor the sincere friend\nwho offers me an open hand.\n\nAnd for the cruel one who tears out\nthe heart that keeps me alive,\nI grow neither thistle nor arugula:\nI grow the white rose.",
+        "fr": "Je cultive une rose blanche,\nen juillet comme en janvier,\npour l’ami sincère\nqui me tend une main loyale.\n\nEt pour l’être cruel qui m’arrache\nle cœur grâce auquel je vis,\nje ne cultive ni chardon ni roquette :\nje cultive la rose blanche."
+      }
     },
     {
       "id": "samaniego",
@@ -152,8 +160,12 @@
           "label": "Biblioteca Nacional de España: Саманьего и год его смерти",
           "url": "https://www.bne.es/es/blog/blog-bne/moralejas-de-un-ilustrado-felix-ma-de-samaniego"
         }
-      ]
+      ],
+      "translations": {
+        "en": "A little mouse was held captive\nin a lion’s claws; the hapless creature\nhad not been caught in such a mousetrap\nfor stealing bacon or cheese,\nbut because, with others, he had disturbed\nthe lion as he rested in seclusion.\nWeeping over his insolence, he begs pardon;\nhearing this plea for royal mercy,\nthe king replies in a majestic tone\n(Titus would have said no more): \"I forgive you.\"\nSoon afterwards, while hunting, the lion stumbles\ninto a net concealed in the undergrowth.\nHe tries to escape, but remains a prisoner.\nHis furious roars thunder through the forest.\nThe little mouse, now free, hears him\nand comes running, diligently gnawing\nthe knots of the net until at last\nhe breaks the beast’s bonds.\n\nThose with power\nshould be merciful to the unfortunate;\nthey may one day find themselves in need\nof help from someone even less fortunate.",
+        "fr": "Un souriceau était emprisonné\ndans les griffes d’un lion ; le malheureux\nn’avait pas été pris dans cette souricière\npour avoir dérobé du lard ou du fromage,\nmais parce qu’avec d’autres il importunait\nle lion qui se reposait à l’écart.\nIl demande pardon, en pleurs, pour son insolence ;\nen l’entendant implorer la clémence royale,\nle roi répond d’un ton majestueux\n(Titus n’en aurait pas dit davantage) : « Je te pardonne. »\nPeu après, en chassant, le lion se prend\ndans un filet dissimulé dans les broussailles.\nIl veut sortir, mais reste prisonnier.\nSes rugissements furieux font retentir la forêt.\nLe souriceau désormais libre l’entend\net accourt ; il ronge avec ardeur\nles nœuds du filet, jusqu’à ce qu’enfin\nil brise les liens de la bête.\n\nIl convient aux puissants\nde se montrer compatissants envers les malheureux ;\npeut-être auront-ils un jour besoin\ndu secours de plus malheureux qu’eux."
+      }
     }
   ],
-  "rightsNote": "Общественное достояние исторического стихотворения позволяет использовать именно этот текст. Оно не даёт автоматически разрешения на чужую современную мелодию, аранжировку, перевод, исполнение или MP3. У новых переводов и переработок есть отдельные правила (статья 1260 ГК РФ), у исполнений и фонограмм — отдельные смежные права (статья 1303 ГК РФ). Представленные русские переводы подготовлены заново для Syolana; чужие современные переводы не воспроизводятся. Правомерность размещения существующих аудиозаписей проверяется по происхождению записи и условиям её создания."
+  "rightsNote": "Общественное достояние исторического стихотворения позволяет использовать именно этот текст. Оно не даёт автоматически разрешения на чужую современную мелодию, аранжировку, перевод, исполнение или MP3. У новых переводов и переработок есть отдельные правила (статья 1260 ГК РФ), у исполнений и фонограмм — отдельные смежные права (статья 1303 ГК РФ). Представленные переводы подготовлены заново для Syolana; чужие современные переводы не воспроизводятся. Правомерность размещения существующих аудиозаписей проверяется по происхождению записи и условиям её создания."
 }

@@ -1,1 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g stroke="#c5a4ff" stroke-width="1.6" fill="#aa7bea" fill-opacity=".15"><path d="M50 15C60 28 65 42 50 50C35 42 40 28 50 15Z"/><path d="M50 50C65 42 85 32 90 47C80 57 65 57 50 50Z"/><path d="M50 50C35 42 15 32 10 47C20 57 35 57 50 50Z"/><path d="M50 50C65 60 75 80 60 90C50 80 50 65 50 50Z"/><path d="M50 50C35 60 25 80 40 90C50 80 50 65 50 50Z"/></g><text x="50" y="59" font-family="Georgia,serif" font-size="29" font-weight="600" fill="white" text-anchor="middle">SY</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Syolana">
+  <defs>
+    <linearGradient id="syolana-logo-holo" gradientUnits="userSpaceOnUse" x1="-150" y1="0" x2="-50" y2="100">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#dff7ff" stop-opacity=".18"/>
+      <stop offset="37%" stop-color="#f7e8ff" stop-opacity=".62"/>
+      <stop offset="50%" stop-color="#fff1cb" stop-opacity=".82"/>
+      <stop offset="63%" stop-color="#dff7ff" stop-opacity=".55"/>
+      <stop offset="82%" stop-color="#ffffff" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      <animate attributeName="x1" values="-150;160" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="-50;260" dur="8s" repeatCount="indefinite"/>
+    </linearGradient>
+    <filter id="syolana-logo-glow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="1.15" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <style>
+    .syolana-logo-holo{opacity:.92;mix-blend-mode:screen;pointer-events:none}
+    @media (prefers-reduced-motion:reduce){.syolana-logo-holo{display:none}}
+  </style>
+  <g stroke="#c5a4ff" stroke-width="1.6" fill="#aa7bea" fill-opacity=".15">
+    <path d="M50 15C60 28 65 42 50 50C35 42 40 28 50 15Z"/>
+    <path d="M50 50C65 42 85 32 90 47C80 57 65 57 50 50Z"/>
+    <path d="M50 50C35 42 15 32 10 47C20 57 35 57 50 50Z"/>
+    <path d="M50 50C65 60 75 80 60 90C50 80 50 65 50 50Z"/>
+    <path d="M50 50C35 60 25 80 40 90C50 80 50 65 50 50Z"/>
+  </g>
+  <text x="50" y="59" font-family="Georgia,serif" font-size="29" font-weight="600" fill="white" text-anchor="middle">SY</text>
+  <g class="syolana-logo-holo" stroke="url(#syolana-logo-holo)" stroke-width="2.1" fill="url(#syolana-logo-holo)" fill-opacity=".12" filter="url(#syolana-logo-glow)">
+    <path d="M50 15C60 28 65 42 50 50C35 42 40 28 50 15Z"/>
+    <path d="M50 50C65 42 85 32 90 47C80 57 65 57 50 50Z"/>
+    <path d="M50 50C35 42 15 32 10 47C20 57 35 57 50 50Z"/>
+    <path d="M50 50C65 60 75 80 60 90C50 80 50 65 50 50Z"/>
+    <path d="M50 50C35 60 25 80 40 90C50 80 50 65 50 50Z"/>
+    <text x="50" y="59" font-family="Georgia,serif" font-size="29" font-weight="600" stroke="none" fill="url(#syolana-logo-holo)" fill-opacity=".9" text-anchor="middle">SY</text>
+  </g>
+</svg>

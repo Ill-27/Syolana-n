@@ -1,2 +1,2 @@
 await import("./boot-core-64AXX7LY.js");
-await import("./syolana-trust-ui.js?v=20261013-2");
+await import("./syolana-trust-ui.js?v=20261013-3");

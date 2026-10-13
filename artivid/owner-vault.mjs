@@ -1,6 +1,6 @@
 const SESSION_KEY = 'syolana.owner.reserve.v1';
 const COURSES = ['en-a2', 'es-a1', 'es-a2', 'fr-a1', 'fr-a2'];
-const encode = bytes => btoa(String.fromCharCode(...bytes));
+const encode = bytes => {let text='';for(let i=0;i<bytes.length;i+=8192)text+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(text);};
 const decode = text => Uint8Array.from(atob(text), c => c.charCodeAt(0));
 const json = (value, status = 200) => new Response(JSON.stringify(value), {status, headers:{'Content-Type':'application/json', 'Cache-Control':'no-store'}});
 
@@ -58,5 +58,13 @@ export function createOwnerVault({nativeFetch, crypto = globalThis.crypto, stora
     if (/\/admin\//.test(path)) return json({error:'Резерв открывает ваши материалы. Выдача и продление ключей покупателей требуют работающего сервера доступа.'}, 503);
     return null;
   }
-  return {handle, unlock, isOwner:() => Boolean(read()), session, courseData};
+  async function privateKey(purpose){
+    if(!read())throw Error('Введите ключ владельца.');
+    if(purpose!=='domain-book')throw Error('Неверный вид закрытых данных.');
+    const source=await crypto.subtle.importKey('raw',decode(read().contentKey),'HKDF',false,['deriveKey']);
+    return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:new TextEncoder().encode('syolana.private-storage.v1'),info:new TextEncoder().encode(purpose)},source,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  }
+  async function sealPrivate(value,purpose){const key=await privateKey(purpose),iv=crypto.getRandomValues(new Uint8Array(12));const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:new TextEncoder().encode(purpose)},key,new TextEncoder().encode(JSON.stringify(value)));return {schema:'syolana.private-storage.v1',iv:encode(iv),ciphertext:encode(new Uint8Array(ciphertext))};}
+  async function openPrivate(record,purpose){if(record?.schema!=='syolana.private-storage.v1')throw Error('Выберите зашифрованную копию списка.');const key=await privateKey(purpose);try{const bytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:decode(record.iv),additionalData:new TextEncoder().encode(purpose)},key,decode(record.ciphertext));return JSON.parse(new TextDecoder().decode(bytes));}catch{throw Error('Копия не открывается этим ключом либо повреждена.');}}
+  return {handle, unlock, isOwner:() => Boolean(read()), session, courseData,sealPrivate,openPrivate};
 }

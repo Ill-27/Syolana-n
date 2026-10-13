@@ -1,4 +1,5 @@
 import {mountPartnerRegistry} from './partner-registry-ui.js';
+import {claimCourseTab} from './single-tab.js';
 import {attachPaymentControls} from './payment-ui.js?v=20261009-platform-1';
 import {installAPITransport} from '../api-transport.js?v=20261012-fr-a2-1';
 if(typeof window!=='undefined')installAPITransport();
@@ -46,6 +47,7 @@ export function createCourseAccess({course,title,validateCourse}){
  function mountAccountPanel(host,beforeLeave){
   if(!currentSession?.access)return;
   const panel=node('details','','access-details');panel.append(node('summary',currentSession.owner?'Ключи и подписки':'Мой доступ'));host.append(panel);const status=node('p','','notice');status.setAttribute('role','status');
+  if(currentSession.owner){const domains=node('a','Мои партнёрские сайты — закрытый список');domains.href=new URL('./#/owner-sites',document.baseURI).href;domains.target='_top';panel.append(domains);}
   const logout=node('button','Выйти');logout.type='button';logout.onclick=async()=>{logout.disabled=true;try{await request('logout',{},currentSession.csrf);beforeLeave();location.reload();}catch(e){status.textContent=e.message;logout.disabled=false;}};
   if(currentSession.reserve){panel.append(node('p','Резервный доступ владельца. Курсы открываются независимо от сервера проверки ключей. Для управления покупателями и партнёрскими сайтами подключитесь, когда сервер доступен.'));const connect=node('form','','access-form'),ownerKey=field(connect,'Ключ владельца','password','ownerKey');ownerKey.maxLength=43;ownerKey.minLength=43;const button=node('button','Подключить управление');button.type='submit';connect.append(button);connect.onsubmit=async e=>{e.preventDefault();button.disabled=true;try{const result=await request('key-login',{key:ownerKey.value.trim(),onlineOnly:true});if(!result.owner||result.reserve)throw Error('Нужен доступ владельца через работающий сервер.');currentSession=result;ownerKey.value='';panel.remove();mountAccountPanel(host,beforeLeave);}catch(e){status.textContent=e.message;}finally{button.disabled=false;}};panel.append(connect,logout,status);return;}
   if(!currentSession.owner){panel.append(node('p',currentSession.keyOnly?'Доступ до '+date(currentSession.accessUntil)+'. Один ключ работает в одной активной сессии. Для продления используйте тот же ключ.':'Ранее выданный доступ сохранён на прежних условиях.'),logout,status);const renew=node('a','Продлить доступ на Авито');renew.href=AVITO;renew.target='_blank';renew.rel='noopener noreferrer';panel.append(renew);if(currentSession.keyOnly&&currentSession.automaticPayments)attachPaymentControls(panel,course,(p,b,c)=>request(p,b,c,true));return;}
@@ -67,11 +69,12 @@ export function createCourseAccess({course,title,validateCourse}){
  }
  function monitorAccess(beforeLeave){
   if(!currentSession||currentSession.reserve||document.getElementById('loading')?.dataset.access==='local-owner')return()=>{};
-  let closed=false,busy=false,failures=0;
-  function close(message){if(closed)return;closed=true;beforeLeave();document.getElementById('app').replaceChildren();const host=document.getElementById('loading');host.hidden=false;host.replaceChildren(node('h1','Доступ к курсам'),node('p',message));const retry=node('button','Войти снова');retry.type='button';retry.onclick=()=>location.reload();host.append(retry);if(window.parent!==window)window.parent.postMessage({syolanaLesson:true,courseAudio:null,ready:true,height:400},location.origin);clearInterval(timer);}
+  let closed=false,busy=false,failures=0,stopTab=()=>{};
+  function close(message){if(closed)return;closed=true;stopTab();beforeLeave();document.getElementById('app').replaceChildren();const host=document.getElementById('loading');host.hidden=false;host.replaceChildren(node('h1','Доступ к курсам'),node('p',message));const retry=node('button','Войти снова');retry.type='button';retry.onclick=()=>location.reload();host.append(retry);if(window.parent!==window)window.parent.postMessage({syolanaLesson:true,courseAudio:null,ready:true,height:400},location.origin);clearInterval(timer);}
   async function verify(){if(closed||busy||document.hidden)return;busy=true;try{const s=await request('session');failures=0;if(!s.access)close('Оплаченный период или эта сессия завершились. Используйте ваш ключ для входа; при необходимости продлите доступ.');}catch{if(++failures>=1)close('Не удаётся проверить доступ. Восстановите интернет и войдите снова.');}finally{busy=false;}}
-  const timer=setInterval(verify,10000);window.addEventListener('focus',verify);document.addEventListener('visibilitychange',verify);window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
-  return()=>{closed=true;clearInterval(timer);window.removeEventListener('focus',verify);document.removeEventListener('visibilitychange',verify);};
+  let timer=setInterval(verify,10000);const onPageHide=()=>{clearInterval(timer);stopTab();};const onPageShow=()=>{if(closed)return;stopTab=claimCourseTab({onReplaced:close});clearInterval(timer);timer=setInterval(verify,10000);verify();};window.addEventListener('focus',verify);document.addEventListener('visibilitychange',verify);window.addEventListener('pagehide',onPageHide);window.addEventListener('pageshow',onPageShow);
+  stopTab=claimCourseTab({onReplaced:close});
+  return()=>{closed=true;stopTab();clearInterval(timer);window.removeEventListener('focus',verify);document.removeEventListener('visibilitychange',verify);window.removeEventListener('pagehide',onPageHide);window.removeEventListener('pageshow',onPageShow);};
  }
  return{loadCourse,mountAccountPanel,monitorAccess,watchSession:monitorAccess,sessionMark:()=>currentSession?.watermark||''};
 }

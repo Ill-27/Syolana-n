@@ -199,7 +199,7 @@ function renderBanner() {
   visual.append(m);
 
   const txt = el("div", "banner-copy");
-  const brand = el("div", "banner-brandmark");
+  const brand = el("div", "banner-brandmark syolana-passport-button");
   const logo = el("img");
   logo.src = "assets/logo.svg?v=20261014-passport-1";
   logo.alt = "";

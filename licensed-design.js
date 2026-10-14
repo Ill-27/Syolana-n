@@ -8,7 +8,9 @@ const installBrandLogoStyle=()=>{
 `;document.head.append(style);
 };
 const mountBrandLogo=brand=>{
- if(!brand||brand.querySelector('[data-syolana-logo]'))return;
+ if(!brand)return;
+ (brand.closest('.export-attribution')||brand).classList.add('syolana-passport-button');
+ if(brand.querySelector('[data-syolana-logo]'))return;
  installBrandLogoStyle();
  const wrap=document.createElement('span');wrap.className='syolana-partner-logo-wrap';wrap.setAttribute('aria-hidden','true');
  const logo=document.createElement('img');logo.src='https://syolana.com/assets/logo.svg?v=20261014-passport-1';logo.alt='';logo.width=34;logo.height=34;logo.dataset.syolanaLogo='true';

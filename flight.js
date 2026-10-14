@@ -29,7 +29,9 @@ export function updateFlightSpacing(layer,dock,hint,viewportBottom=innerHeight){
   layer.style.setProperty('--zen-player-space',bottomGap+'px');
   layer.style.setProperty('--zen-hint-height',hintHeight+'px');
   layer.style.setProperty('--zen-card-bottom',bottomGap+'px');
-  layer.style.setProperty('--zen-hint-bottom',(bottomGap+(cardHeight?cardHeight+10:0))+'px');
+  const hintBottom=bottomGap+(cardHeight?cardHeight+10:0);
+  layer.style.setProperty('--zen-hint-bottom',hintBottom+'px');
+  layer.parentElement?.style.setProperty('--zen-contact-bottom',(hintBottom+hintHeight+18)+'px');
   return{bottomGap,cardHeight,hintHeight};
 }
 
@@ -330,6 +332,6 @@ export function setupFlightLayer({
     }
   });
 
-  layer.destroy=()=>{resizeObserver?.disconnect();for(const cleanup of cleanups)cleanup();pointers.clear();layer.remove();};
+  layer.destroy=()=>{resizeObserver?.disconnect();for(const cleanup of cleanups)cleanup();pointers.clear();layer.parentElement?.style.removeProperty('--zen-contact-bottom');layer.remove();};
   return layer;
 }

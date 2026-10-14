@@ -139,7 +139,7 @@ function buildBanner(config) {
   visual.append(node);
 
   const copy = make("div", "banner-copy");
-  const badge = make("div", "banner-brandmark");
+  const badge = make("div", "banner-brandmark syolana-passport-button");
   const logo = make("img");
   logo.src = central("assets/logo.svg?v=20261014-passport-1");
   logo.alt = "";

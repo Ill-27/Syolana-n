@@ -4027,3 +4027,25 @@ h1,h2,h3,h4,h5,h6{overflow-wrap:break-word;word-break:normal;hyphens:manual;text
 /* Compact reading rhythm between copy, notices and actions inside plain cards. */
 #page .card:not(.stack,.sketch-panel,.sketch-preview,.song-poem) > :is(h1,h2,h3,p,.row,.notice) + :is(h1,h2,h3,p,.row,.notice,form,.text-link){margin-block-start:16px;}
 #page .card:not(.stack,.sketch-panel,.sketch-preview,.song-poem) > :is(p,.notice) + .btn{margin-block-start:20px;}
+
+/* The approved passport sheen covers the complete Syolana capsule. */
+:where(.syolana-passport-button:not(.export-attribution)){position:relative}
+.syolana-passport-button{isolation:isolate}
+.syolana-passport-button::before,.syolana-passport-button::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background-size:260% 100%;animation:syolanaButtonSheen 8s linear infinite;
+}
+.syolana-passport-button::before{
+  padding:1px;background-image:linear-gradient(105deg,transparent 22%,rgba(222,247,255,.26) 36%,rgba(250,229,255,.52) 47%,rgba(255,241,197,.48) 53%,rgba(222,247,255,.26) 62%,transparent 78%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.syolana-passport-button::after{
+  background-image:linear-gradient(105deg,transparent 22%,rgba(222,247,255,.06) 36%,rgba(250,229,255,.13) 47%,rgba(255,241,197,.12) 53%,rgba(222,247,255,.06) 62%,transparent 78%);
+  mix-blend-mode:screen;
+}
+@keyframes syolanaButtonSheen{0%{background-position:210% 0}100%{background-position:-60% 0}}
+@media(prefers-reduced-motion:reduce){
+  .syolana-passport-button::before,.syolana-passport-button::after{animation:none;background-position:50% 0}
+}

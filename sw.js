@@ -1,5 +1,5 @@
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'24556885d535d7f9';
+const CACHE=PREFIX+'c1ef036b93d38413';
 function allowed(request){
  const url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin||request.headers.has('Authorization'))return false;

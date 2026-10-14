@@ -4,11 +4,31 @@ export const FLIGHT_HINT =
   "Мышь: тяните фон, колесо — глубина. Экран: свайп — направление, щипок — глубина.";
 
 export const PLATFORM_FLIGHT_OFFERS = [
-  ["Ваш сайт, ваша атмосфера", "Обсудить свой сайт на Авито", "https://www.avito.ru/brands/i223140984"],
-  ["Поживите внутри истории", "Открыть иммерсивную библиотеку", "#/library"],
-  ["Немного английского каждый день", "Открыть A1 · бесплатно для всех", "#/languages/en"],
-  ["Пусть ваша история зазвучит", "Послушать песни Syolana", "#/songs"],
-  ["Новый язык — в вашем ритме", "Слова, правила и самостоятельная практика", "#/languages"],
+  [
+    "Сайт с вашей атмосферой",
+    "Обсудить на Авито",
+    "https://www.avito.ru/brands/i223140984"
+  ],
+  [
+    "Книги с живым фоном",
+    "Читать с музыкой",
+    "#/library"
+  ],
+  [
+    "Английский A1",
+    "Начать бесплатно",
+    "#/languages/en"
+  ],
+  [
+    "Песни Syolana",
+    "Включить музыку",
+    "#/songs"
+  ],
+  [
+    "Выберите свой язык",
+    "Слова, правила, практика",
+    "#/languages"
+  ]
 ];
 
 export function platformFlightOffers(baseURL = document.baseURI) {
@@ -22,10 +42,16 @@ export function platformFlightOffers(baseURL = document.baseURI) {
 export function updateFlightSpacing(layer,dock,hint,viewportBottom=innerHeight){
   const layerBox=layer.getBoundingClientRect?.(),dockBox=dock?.getBoundingClientRect?.(),hintBox=hint?.getBoundingClientRect?.();
   const bottom=layerBox?.height?layerBox.bottom:viewportBottom;
-  const bottomGap=Math.max(16,dockBox?.height?bottom-dockBox.bottom:16);
+  const computed=dock?.ownerDocument?.defaultView?.getComputedStyle?.(dock);
+  const cssBottom=parseFloat(computed?.bottom);
+  const oldPlayerOffset=parseFloat(layer.parentElement?.style.getPropertyValue?.('--zen-player-row-offset'))||0;
+  const bottomGap=Math.max(16,Number.isFinite(cssBottom)?cssBottom-oldPlayerOffset:dockBox?.height?bottom-dockBox.bottom:16);
   const cards=[...layer.querySelectorAll('.flight-planet')];
   layer.style.removeProperty?.('--zen-card-height');
-  const cardHeight=Math.ceil(Math.max(0,...cards.map(node=>node.getBoundingClientRect?.().height||0)));
+  const cardHeight=cards.length?Math.ceil(Math.max(56,...cards.map(node=>node.getBoundingClientRect?.().height||0))):0;
+  const playerHeight=dockBox?.height||56;
+  const playerOffset=cardHeight?Math.max(0,(cardHeight-playerHeight)/2):0;
+  layer.parentElement?.style.setProperty('--zen-player-row-offset',playerOffset+'px');
   layer.style.setProperty('--zen-card-height',cardHeight+'px');
   const hintHeight=Math.ceil(hintBox?.height||0);
   layer.style.setProperty('--zen-player-space',bottomGap+'px');
@@ -58,9 +84,11 @@ export function setupFlightLayer({
     const a = link("", url, "flight-planet");
     const copy = el("span", "flight-copy");
     copy.append(el("strong", "", title), el("small", "", subtitle));
-    const icon = el("span", "planet-orb", "✧");
+    const icon = el("span", "planet-orb");
+    icon.innerHTML="<svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\" focusable=\"false\"><path d=\"m12 3 2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6L12 3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/></svg>";
     icon.setAttribute("aria-hidden", "true");
-    const arrow = el("span", "flight-arrow", "↗");
+    const arrow = el("span", "flight-arrow");
+    arrow.innerHTML="<svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6 18 18 6M6 6h12v12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>";
     arrow.setAttribute("aria-hidden", "true");
     a.append(icon, copy, arrow);
     a.hidden=layer.querySelectorAll(".flight-planet").length>0;
@@ -338,6 +366,6 @@ export function setupFlightLayer({
     }
   });
 
-  layer.destroy=()=>{resizeObserver?.disconnect();for(const cleanup of cleanups)cleanup();pointers.clear();layer.parentElement?.style.removeProperty('--zen-contact-bottom');layer.remove();};
+  layer.destroy=()=>{resizeObserver?.disconnect();for(const cleanup of cleanups)cleanup();pointers.clear();layer.parentElement?.style.removeProperty('--zen-contact-bottom');layer.parentElement?.style.removeProperty('--zen-player-row-offset');layer.remove();};
   return layer;
 }

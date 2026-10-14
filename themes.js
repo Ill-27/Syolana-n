@@ -32,19 +32,27 @@ body #footer >div a{padding:5px 0;font-weight:600;line-height:1.6}
 body #footer >.notice{background:transparent!important;color:var(--panel-text)!important}
 body #footer .notice a{text-decoration:underline;text-underline-offset:.18em}
 body #footer :is(a,summary):focus-visible{outline:2px solid var(--panel-label,var(--accent));outline-offset:5px;border-radius:4px}
-body.zen #music-dock{left:auto;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));width:56px;max-width:56px;min-width:0;height:56px;min-height:0;padding:0;gap:0;border-radius:50%;transform:none;overflow:hidden;display:block;z-index:90;opacity:1;animation:zen-player-float 5.6s cubic-bezier(.45,0,.55,1) infinite;background:rgba(var(--surface),.88)!important;box-shadow:0 7px 25px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.20)}
+body.zen #music-dock{left:auto;right:max(16px,env(safe-area-inset-right));bottom:calc(max(16px,env(safe-area-inset-bottom)) + var(--zen-player-row-offset,0px));width:56px;max-width:56px;min-width:0;height:56px;min-height:0;padding:0;gap:0;border-radius:50%;transform:none;overflow:hidden;display:block;z-index:90;opacity:1;animation:zen-player-float 5.6s cubic-bezier(.45,0,.55,1) infinite;background:rgba(var(--surface),.88)!important;box-shadow:0 7px 25px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.20)}
 body.zen #music-dock :is(.dock-transport,.dock-theme,.track-summary>span:not(.track-art)){display:none!important}
 body.zen #player-expand{display:grid;place-items:center;width:56px;min-width:0;height:56px;min-height:0;padding:0;margin:0;border:0;border-radius:50%;background:transparent;box-shadow:none;color:var(--panel-text)}
-body.zen #player-expand .track-art{width:40px;height:40px;margin:0;border:0;background:transparent;box-shadow:none;display:grid;place-items:center;font-size:27px;color:var(--panel-text)}
+body.zen #player-expand .track-art{width:28px;height:28px;margin:0;padding:0;border:0;background:transparent;box-shadow:none;display:grid;place-items:center;line-height:0;color:var(--panel-text)}
+body.zen #player-expand .track-art svg{display:block;width:26px;height:26px}
 body.zen #music-dock[data-playing="true"]::after{content:'';position:absolute;right:9px;bottom:10px;width:7px;height:7px;border-radius:50%;background:var(--panel-label);box-shadow:0 0 9px var(--panel-glow);pointer-events:none}
-body #music-dock[data-morphing],body.zen #music-dock:is(:hover,:focus-within){animation:none!important}
-@keyframes zen-player-float{0%,100%{transform:translate(0,0)}35%{transform:translate(-3px,-5px)}70%{transform:translate(1px,-2px)}}
-@media(prefers-reduced-motion:reduce){body.zen #music-dock{animation:none}}
-body #flight-layer .flight-planet{bottom:var(--zen-card-bottom,16px)!important;left:calc(50% - 36px);width:min(640px,calc(100% - 104px));min-height:var(--zen-card-height,0px);padding:11px 13px;grid-template-columns:34px minmax(0,1fr) 14px;gap:10px;background:rgba(var(--surface),.68)!important;box-shadow:0 5px 25px rgba(0,0,0,.12);border-color:var(--panel-border);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
-body #flight-layer .planet-orb{width:34px;height:34px;font-size:22px;border-radius:12px}
+body #music-dock[data-morphing]{animation:none!important;translate:none}
+body.zen #music-dock:is(:hover,:focus-within){animation-play-state:paused!important}
+@keyframes zen-player-float{0%,100%{translate:0 0}35%{translate:-1px -3px}70%{translate:1px -1px}}
+@media(prefers-reduced-motion:reduce){body.zen #music-dock,body.zen #flight-layer .flight-planet{animation:none!important;translate:none}}
+body #flight-layer .flight-planet{bottom:var(--zen-card-bottom,16px)!important;left:calc((100% + max(16px,env(safe-area-inset-left)) - max(16px,env(safe-area-inset-right)) - 72px)/2);width:min(640px,calc(100% - max(16px,env(safe-area-inset-left)) - max(16px,env(safe-area-inset-right)) - 72px));min-height:max(56px,var(--zen-card-height,56px));padding:8px 10px;grid-template-columns:28px minmax(0,1fr) 14px;gap:8px;border-radius:22px;background:linear-gradient(125deg,rgba(255,255,255,.045),rgba(255,255,255,.012)),rgba(var(--surface),.38)!important;box-shadow:0 5px 20px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.09);border-color:color-mix(in srgb,var(--panel-label) 24%,transparent);backdrop-filter:blur(12px) saturate(112%);-webkit-backdrop-filter:blur(12px) saturate(112%)}
+body.zen #flight-layer .flight-planet{animation:zen-player-float 5.6s cubic-bezier(.45,0,.55,1) infinite}
+body.zen #flight-layer:is([data-card-engaged],:focus-within) .flight-planet,body.zen #flight-layer .flight-planet:is(:hover,:active){animation-play-state:paused}
+body #flight-layer .flight-planet:focus-visible{outline:2px solid var(--panel-label);outline-offset:3px}
+body #flight-layer .planet-orb{display:grid;place-items:center;width:28px;height:28px;margin:0;padding:0;border-radius:10px;line-height:0;background:rgba(255,255,255,.05);border-color:color-mix(in srgb,var(--panel-label) 20%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+body #flight-layer :is(.planet-orb,.flight-arrow) svg{display:block;flex:none}
+body #flight-layer .flight-arrow{display:grid;place-items:center;line-height:0}
 body #flight-layer .flight-copy :is(strong,small){display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-body #flight-layer .flight-copy strong{font-size:.84rem;line-height:1.4}
-body #flight-layer .flight-copy small{font-size:.70rem;line-height:1.45;color:var(--panel-muted)!important}
+body #flight-layer .flight-copy{gap:2px}
+body #flight-layer .flight-copy strong{font-size:13px;font-weight:650;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.70)}
+body #flight-layer .flight-copy small{font-size:11.5px;line-height:1.3;color:var(--panel-muted)!important;text-shadow:0 1px 3px rgba(0,0,0,.70)!important}
 body #flight-layer .flight-hint{box-sizing:border-box;left:16px;right:16px;width:auto;max-width:none;bottom:var(--zen-hint-bottom,110px);line-height:1.55;font-size:12px;font-weight:600;opacity:1!important;color:var(--panel-text)!important;background:none!important;border:0!important;border-radius:0;padding:0!important;text-shadow:0 1px 2px rgba(0,0,0,.98),0 0 8px rgba(0,0,0,.78)!important}
 html[data-theme="violet-bloom"] body #flight-layer .flight-hint{color:var(--page-text)!important;text-shadow:0 1px 3px rgba(255,255,255,.98),0 0 8px rgba(255,255,255,.85)!important}
 @media(min-width:1000px){body #flight-layer .flight-planet{width:380px}}

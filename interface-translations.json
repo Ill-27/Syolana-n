@@ -2408,5 +2408,50 @@
     "Previously issued server keys are checked by the server. New local permission is issued as a file for the chosen browser and checked here. Progress stays in the browser. Conversations, payment and host logs are addressed separately in the data processing rules.",
     "Las claves anteriores del servidor se comprueban en el servidor. El nuevo permiso local se emite como archivo para el navegador elegido y se comprueba aquí. El progreso permanece en el navegador. La conversación, el pago y los registros del alojamiento se tratan por separado en las reglas de tratamiento de datos.",
     "Les anciennes clés du serveur sont vérifiées par le serveur. La nouvelle autorisation locale est délivrée sous forme de fichier pour le navigateur choisi et vérifiée ici. La progression reste dans le navigateur. Les conversations, paiements et journaux d’hébergement sont traités séparément dans les règles de traitement des données."
+  ],
+  "Сайт с вашей атмосферой": [
+    "A site with your atmosphere",
+    "Un sitio a tu estilo",
+    "Un site à votre image"
+  ],
+  "Обсудить на Авито": [
+    "Discuss on Avito",
+    "Hablar por Avito",
+    "En parler sur Avito"
+  ],
+  "Книги с живым фоном": [
+    "Books with living scenery",
+    "Libros con fondos vivos",
+    "Livres et décors vivants"
+  ],
+  "Читать с музыкой": [
+    "Read with music",
+    "Leer con música",
+    "Lire en musique"
+  ],
+  "Английский A1": [
+    "English A1",
+    "Inglés A1",
+    "Anglais A1"
+  ],
+  "Песни Syolana": [
+    "Syolana songs",
+    "Canciones de Syolana",
+    "Chansons de Syolana"
+  ],
+  "Включить музыку": [
+    "Play music",
+    "Escuchar música",
+    "Écouter la musique"
+  ],
+  "Выберите свой язык": [
+    "Choose your language",
+    "Elige tu idioma",
+    "Choisissez votre langue"
+  ],
+  "Слова, правила, практика": [
+    "Words, rules, practice",
+    "Palabras, reglas, práctica",
+    "Mots, règles, pratique"
   ]
 }

@@ -15,6 +15,8 @@ for(const [width,height]of [[320,640],[360,780],[393,852],[709,1536],[780,360],[
   if(width<1000){const cardWidth=Math.min(640,width-104),cardRight=width/2-36+cardWidth/2;assert(cardRight<=dock.getBoundingClientRect().left-16,'Invitation must leave room for the compact player');}
   assert(properties.get('--zen-card-bottom')>=16);
   assert(bodyProperties.get('--zen-contact-bottom')>=properties.get('--zen-hint-bottom')+hintHeight+18,'Avito must leave space above the full wrapped instruction');
+  const actualCardHeight=properties.get('--zen-card-height');
+  assert.equal(properties.get('--zen-card-bottom')+actualCardHeight/2,properties.get('--zen-card-bottom')+bodyProperties.get('--zen-player-row-offset')+28,'The invitation and compact player must share the same vertical centre');
  }
  const full={left:20,bottom:height-16,width:width-40,height:70},compact={left:width-72,bottom:height-16,width:56,height:56};
  const frames=playerMorphFrames(full,compact,height);assert.equal(frames[0].width,(width-40)+'px');assert.equal(frames[0].maxWidth,(width-40)+'px');assert.equal(frames[1].width,'56px');assert.equal(frames[1].left,(width-72)+'px');assert.equal(frames[1].bottom,'16px');assert(frames.every(f=>!f.transform.includes('scale')),'Glyphs must not be enlarged while the player collapses');
@@ -30,6 +32,12 @@ short.hidden=true;tall.hidden=false;updateFlightSpacing(stableLayer,stableDock,s
 assert.equal(properties.get('--zen-hint-bottom'),stillHint);assert.equal(bodyProperties.get('--zen-contact-bottom'),stillContact);
 // A wider viewport may shrink the reserved space again without stale heights.
 tall.getBoundingClientRect=()=>({height:58});updateFlightSpacing(stableLayer,stableDock,stableHint,852);assert.equal(properties.get('--zen-card-height'),58);
+// Floating transforms must not change the measured bottom spacing.
+stableLayer.parentElement.style.getPropertyValue=k=>bodyProperties.get(k)+'px';
+bodyProperties.set('--zen-player-row-offset',8);
+stableDock.ownerDocument={defaultView:{getComputedStyle:()=>({bottom:'24px'})}};
+stableDock.getBoundingClientRect=()=>({height:56,bottom:833});
+updateFlightSpacing(stableLayer,stableDock,stableHint,852);assert.equal(properties.get('--zen-card-bottom'),16,'Read layout bottom rather than a floating bounding rectangle');
 assert(/Мышь/.test(FLIGHT_HINT)&&/Экран/.test(FLIGHT_HINT)&&/колесо/.test(FLIGHT_HINT)&&/щипок/.test(FLIGHT_HINT));assert(!/два пальца/i.test(FLIGHT_HINT));
 const hint={textContent:''},doc={querySelector:()=>hint,getElementById:()=>({setAttribute(){}})};globalThis.document=doc;
 const engine=new ThemeEngine();engine.zen=true;

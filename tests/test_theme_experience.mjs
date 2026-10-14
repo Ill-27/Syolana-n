@@ -36,8 +36,8 @@ const flowers=wildflowerInstances();assert.equal(flowers.flowers.length,120);
 for(let kind=0;kind<5;kind++){const g=wildflowerGeometry(kind);assert(g.positions.every(Number.isFinite)&&g.normals.every(Number.isFinite));assert(g.indices.every(i=>i>=0&&i<g.positions.length/3));assert.equal(g.uvs.length,g.positions.length/3*2);assert(Math.max(...g.positions.filter((_,i)=>i%3===2))>.25);assert.equal(flowers.groups[kind].a.length,flowers.groups[kind].b.length);}
 
 class Node extends EventTarget{
- constructor(){super();this.dataset={};this.style={setProperty(){}};this.children=[];this.attributes={};this.hidden=false;this.classList={contains:()=>false};}
- setAttribute(k,v){this.attributes[k]=v;}append(...nodes){this.children.push(...nodes);}remove(){}insertBefore(n){this.children.push(n);}matches(){return false;}
+ constructor(){super();this.dataset={};this.styleWrites=0;this.attributeWrites=0;this.style=new Proxy({setProperty(){}},{set:(target,key,value)=>{this.styleWrites++;target[key]=value;return true;}});this.children=[];this.attributes={};this.hidden=false;this.classList={contains:()=>false};}
+ setAttribute(k,v){this.attributeWrites++;this.attributes[k]=v;}getAttribute(k){return this.attributes[k]??null;}append(...nodes){this.children.push(...nodes);}remove(){}insertBefore(n){this.children.push(n);}matches(){return false;}
 }
 const actions=new Node(),doc=new EventTarget(),win=new EventTarget();let offers=[],layer=new Node();
 Object.assign(doc,{baseURI:'https://example.test/project/',hidden:false,getElementById:id=>id==='flight-layer'?layer:null,querySelectorAll:selector=>selector==='.flight-planet'?offers:[],querySelector:selector=>selector==='.top-actions'?actions:null,createElement:()=>new Node()});
@@ -46,6 +46,12 @@ globalThis.CustomEvent??=class extends Event{constructor(type,args){super(type);
 const engine=new ThemeEngine();engine.w=540;engine.phase=1;
 offers=Array.from({length:5},()=>new Node());engine.drawPlanets();assert.equal(offers.filter(n=>!n.hidden).length,1);assert.equal(offers.filter(n=>n.attributes['aria-hidden']==='true').length,4);
 engine.phase=23;engine.drawPlanets();assert.equal(offers.filter(n=>!n.hidden).length,1);
+engine.forwardFlightUntil=performance.now()+5000;engine.drawPlanets();assert.equal(offers.filter(n=>!n.hidden).length,1,'The invitation must remain visible during forward motion');
+const writes=offers.map(n=>[n.styleWrites,n.attributeWrites]);
+for(let frame=0;frame<120;frame++)engine.drawPlanets();
+assert.deepEqual(offers.map(n=>[n.styleWrites,n.attributeWrites]),writes,'Steady frames must not rewrite invitation styles or attributes');
+assert(offers.every(n=>n.style.opacity==='1'),'Changing invitations must not fade the text out');
+engine.w=1440;engine.drawPlanets();assert.equal(offers.filter(n=>!n.hidden).length,2);
 const themeSource=await fs.readFile(new URL('../themes.js',import.meta.url),'utf8');assert(themeSource.includes('body.zen #main-nav{display:none!important'));
 
 const sources=[];let resumes=0,failOgg=false;

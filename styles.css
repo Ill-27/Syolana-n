@@ -3966,7 +3966,6 @@ html[data-theme="white-ocean-city"] .flight-planet *{
 #flight-layer .flight-hint{bottom:calc(var(--zen-player-space,110px) + 12px);margin:0;font-size:.65rem;}
 @media(max-height:440px){
   #flight-layer .flight-planet{bottom:calc(var(--zen-player-space,85px) + 12px);min-height:56px;padding:9px 14px;}
-  #flight-layer .flight-hint{display:none;}
 }
 
 
@@ -4049,3 +4048,6 @@ h1,h2,h3,h4,h5,h6{overflow-wrap:break-word;word-break:normal;hyphens:manual;text
 @media(prefers-reduced-motion:reduce){
   .syolana-passport-button::before,.syolana-passport-button::after{animation:none;background-position:50% 0}
 }
+
+/* Inactive invitations keep their geometry without covering the scene. */
+#flight-layer .flight-planet[hidden]{display:grid!important;visibility:hidden}

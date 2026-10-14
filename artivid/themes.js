@@ -40,7 +40,7 @@ body.zen #music-dock[data-playing="true"]::after{content:'';position:absolute;ri
 body #music-dock[data-morphing],body.zen #music-dock:is(:hover,:focus-within){animation:none!important}
 @keyframes zen-player-float{0%,100%{transform:translate(0,0)}35%{transform:translate(-3px,-5px)}70%{transform:translate(1px,-2px)}}
 @media(prefers-reduced-motion:reduce){body.zen #music-dock{animation:none}}
-body #flight-layer .flight-planet{bottom:var(--zen-card-bottom,16px)!important;left:calc(50% - 36px);width:min(640px,calc(100% - 104px));min-height:0;padding:11px 13px;grid-template-columns:34px minmax(0,1fr) 14px;gap:10px;background:rgba(var(--surface),.68)!important;box-shadow:0 5px 25px rgba(0,0,0,.12);border-color:var(--panel-border);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+body #flight-layer .flight-planet{bottom:var(--zen-card-bottom,16px)!important;left:calc(50% - 36px);width:min(640px,calc(100% - 104px));min-height:var(--zen-card-height,0px);padding:11px 13px;grid-template-columns:34px minmax(0,1fr) 14px;gap:10px;background:rgba(var(--surface),.68)!important;box-shadow:0 5px 25px rgba(0,0,0,.12);border-color:var(--panel-border);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
 body #flight-layer .planet-orb{width:34px;height:34px;font-size:22px;border-radius:12px}
 body #flight-layer .flight-copy :is(strong,small){display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 body #flight-layer .flight-copy strong{font-size:.84rem;line-height:1.4}
@@ -799,17 +799,19 @@ export class ThemeEngine {
     if (!layer?.matches(":focus-within") && !layer?.dataset.cardEngaged)
       this.flightOffer = (Number(layer?.dataset.offerIndex || 0) + Math.floor(this.phase / 18)) % nodes.length;
     const start = this.flightOffer || 0;
-    const forward=performance.now()<(this.forwardFlightUntil||0);
     nodes.forEach((node, i) => {
       const position = (i - start + nodes.length) % nodes.length;
-      const visible = position < count&&!forward;
-      node.hidden = !visible;
-      node.style.opacity = visible ? "1" : "0";
-      node.style.pointerEvents = visible ? "auto" : "none";
-      node.tabIndex = visible ? 0 : -1;
-      node.setAttribute("aria-hidden", String(!visible));
+      const visible = position < count;
+      if(node.hidden!==!visible)node.hidden = !visible;
+      if(node.style.opacity!=="1")node.style.opacity="1";
+      const pointerEvents=visible?"auto":"none",tabIndex=visible?0:-1;
+      if(node.style.pointerEvents!==pointerEvents)node.style.pointerEvents=pointerEvents;
+      if(node.tabIndex!==tabIndex)node.tabIndex=tabIndex;
+      const ariaHidden=String(!visible);
+      if(node.getAttribute("aria-hidden")!==ariaHidden)node.setAttribute("aria-hidden",ariaHidden);
       const offset = count === 2 ? (position ? 210 : -210) : 0;
-      node.style.transform = `translateX(calc(-50% + ${offset}px))`;
+      const transform=`translateX(calc(-50% + ${offset}px))`;
+      if(node.style.transform!==transform)node.style.transform=transform;
     });
   }
   selectAt(x,y,clear=false) {

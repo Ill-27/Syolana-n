@@ -23,8 +23,10 @@ export function updateFlightSpacing(layer,dock,hint,viewportBottom=innerHeight){
   const layerBox=layer.getBoundingClientRect?.(),dockBox=dock?.getBoundingClientRect?.(),hintBox=hint?.getBoundingClientRect?.();
   const bottom=layerBox?.height?layerBox.bottom:viewportBottom;
   const bottomGap=Math.max(16,dockBox?.height?bottom-dockBox.bottom:16);
-  const cards=[...layer.querySelectorAll('.flight-planet')].filter(node=>!node.hidden);
+  const cards=[...layer.querySelectorAll('.flight-planet')];
+  layer.style.removeProperty?.('--zen-card-height');
   const cardHeight=Math.ceil(Math.max(0,...cards.map(node=>node.getBoundingClientRect?.().height||0)));
+  layer.style.setProperty('--zen-card-height',cardHeight+'px');
   const hintHeight=Math.ceil(hintBox?.height||0);
   layer.style.setProperty('--zen-player-space',bottomGap+'px');
   layer.style.setProperty('--zen-hint-height',hintHeight+'px');
@@ -62,6 +64,7 @@ export function setupFlightLayer({
     arrow.setAttribute("aria-hidden", "true");
     a.append(icon, copy, arrow);
     a.hidden=layer.querySelectorAll(".flight-planet").length>0;
+    a.style.opacity="1";
     layer.append(a);
   }
 
@@ -75,7 +78,10 @@ export function setupFlightLayer({
     const observer=new ResizeObserver(measurePlayer);resizeObserver=observer;
     if (dock) observer.observe(dock);
     observer.observe(hint);
-    for(const card of layer.querySelectorAll('.flight-planet'))observer.observe(card);
+    for(const card of layer.querySelectorAll('.flight-planet')){
+      observer.observe(card);
+      const copy=card.querySelector('.flight-copy');if(copy)observer.observe(copy);
+    }
     observer.observe(layer);
   }
   listen(window,"resize", measurePlayer, { passive: true });

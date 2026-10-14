@@ -19,6 +19,17 @@ for(const [width,height]of [[320,640],[360,780],[393,852],[709,1536],[780,360],[
  const full={left:20,bottom:height-16,width:width-40,height:70},compact={left:width-72,bottom:height-16,width:56,height:56};
  const frames=playerMorphFrames(full,compact,height);assert.equal(frames[0].width,(width-40)+'px');assert.equal(frames[0].maxWidth,(width-40)+'px');assert.equal(frames[1].width,'56px');assert.equal(frames[1].left,(width-72)+'px');assert.equal(frames[1].bottom,'16px');assert(frames.every(f=>!f.transform.includes('scale')),'Glyphs must not be enlarged while the player collapses');
 }
+// Changing the active invitation must not move the instructions or contact link.
+const short={hidden:false,getBoundingClientRect:()=>({height:58})},tall={hidden:true,getBoundingClientRect:()=>({height:112})};
+const stableLayer={parentElement:{style:{setProperty:(k,v)=>bodyProperties.set(k,parseFloat(v))}},style:{setProperty:(k,v)=>properties.set(k,parseFloat(v)),removeProperty:k=>properties.delete(k)},getBoundingClientRect:()=>({height:852,bottom:852}),querySelectorAll:()=>[short,tall]};
+const stableHint={getBoundingClientRect:()=>({height:38})},stableDock={getBoundingClientRect:()=>({height:56,bottom:836})};
+updateFlightSpacing(stableLayer,stableDock,stableHint,852);
+const stillHint=properties.get('--zen-hint-bottom'),stillContact=bodyProperties.get('--zen-contact-bottom');
+assert.equal(properties.get('--zen-card-height'),112,'Space must include the tallest inactive invitation');
+short.hidden=true;tall.hidden=false;updateFlightSpacing(stableLayer,stableDock,stableHint,852);
+assert.equal(properties.get('--zen-hint-bottom'),stillHint);assert.equal(bodyProperties.get('--zen-contact-bottom'),stillContact);
+// A wider viewport may shrink the reserved space again without stale heights.
+tall.getBoundingClientRect=()=>({height:58});updateFlightSpacing(stableLayer,stableDock,stableHint,852);assert.equal(properties.get('--zen-card-height'),58);
 assert(/Мышь/.test(FLIGHT_HINT)&&/Экран/.test(FLIGHT_HINT)&&/колесо/.test(FLIGHT_HINT)&&/щипок/.test(FLIGHT_HINT));assert(!/два пальца/i.test(FLIGHT_HINT));
 const hint={textContent:''},doc={querySelector:()=>hint,getElementById:()=>({setAttribute(){}})};globalThis.document=doc;
 const engine=new ThemeEngine();engine.zen=true;

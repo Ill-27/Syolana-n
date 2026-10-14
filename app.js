@@ -175,7 +175,7 @@ function renderBanner() {
       : "img",
     "banner-media",
   );
-  m.src = src || "assets/logo.svg";
+  m.src = src || "assets/logo.svg?v=20261014-passport-1";
 
   if (m.tagName === "IMG") {
     m.alt = media.alt || "Syolana";
@@ -190,7 +190,7 @@ function renderBanner() {
     "error",
     () => {
       const fallback = el("img", "banner-media");
-      fallback.src = "assets/logo.svg";
+      fallback.src = "assets/logo.svg?v=20261014-passport-1";
       fallback.alt = "Syolana";
       visual.replaceChildren(fallback);
     },
@@ -201,7 +201,7 @@ function renderBanner() {
   const txt = el("div", "banner-copy");
   const brand = el("div", "banner-brandmark");
   const logo = el("img");
-  logo.src = "assets/logo.svg";
+  logo.src = "assets/logo.svg?v=20261014-passport-1";
   logo.alt = "";
   logo.width = 34;
   logo.height = 34;

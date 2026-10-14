@@ -119,7 +119,7 @@ function buildBanner(config) {
       ? make("video", "banner-media")
       : make("img", "banner-media");
 
-  node.src = src || central("assets/logo.svg");
+  node.src = src || central("assets/logo.svg?v=20261014-passport-1");
   if (node.tagName === "VIDEO") {
     node.dataset.motion = "true";
     node.muted = true;
@@ -141,7 +141,7 @@ function buildBanner(config) {
   const copy = make("div", "banner-copy");
   const badge = make("div", "banner-brandmark");
   const logo = make("img");
-  logo.src = central("assets/logo.svg");
+  logo.src = central("assets/logo.svg?v=20261014-passport-1");
   logo.alt = "";
   logo.width = 28;
   logo.height = 28;

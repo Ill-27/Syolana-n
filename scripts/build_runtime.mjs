@@ -3,8 +3,9 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
-import {themeTypography} from '../themes/theme-typography.mjs';
-const root=fileURLToPath(new URL('../',import.meta.url));
+const repositoryRoot=fileURLToPath(new URL('../',import.meta.url));
+const root=fs.existsSync(path.join(repositoryRoot,'public-site/boot.js'))?path.join(repositoryRoot,'public-site'):repositoryRoot;
+const {themeTypography}=await import(pathToFileURL(path.join(root,'themes/theme-typography.mjs')).href);
 const out=path.join(root,'dist/public');
 const result=await build({
  absWorkingDir:root,entryPoints:['boot.js','reader-ui.js',{in:'dist/public/artivid/app.js',out:'reader-app'}],outdir:path.join(out,'runtime'),

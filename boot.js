@@ -1,4 +1,6 @@
 import './device-access.js';
+import './trust-ui.js';
+import './brand-effects.js';
 import './language-switcher.js';
 import './theme-sound.js';
 import {installAPITransport} from './api-transport.js';

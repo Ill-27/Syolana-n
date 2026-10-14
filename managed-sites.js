@@ -27,7 +27,7 @@ function login(host,onSuccess){
  host.append(card);
 }
 function attribution(position='bottom'){
- const section=node('aside','','card managed-attribution managed-attribution-'+position);const logo=node('img');logo.src='assets/logo.svg';logo.alt='';logo.width=50;logo.height=50;
+ const section=node('aside','','card managed-attribution managed-attribution-'+position);const logo=node('img');logo.src='assets/logo.svg?v=20261014-passport-1';logo.alt='';logo.width=50;logo.height=50;
  const text=node('div');text.append(link('Темы и оформление — Syolana','https://syolana.com/','text-link'));section.append(logo,text);return section;
 }
 function postsView(posts){

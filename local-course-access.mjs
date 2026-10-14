@@ -116,7 +116,7 @@ export function createLocalCourseAccess({store=createLocalCourseStore(),crypto=g
   for(const course of LOCAL_COURSES){const data=JSON.parse(dec.decode(await unpacked(await open(crypto,decoded.key,record.courses[course],aad(record.id,course)))));if(data?.schema!=='syolana.course.v1'||data.courseId!==course)throw Error('Повреждён курс '+course+'.');}
   await store.put('license',record);return session();
  }
- async function session(){const record=await store.get('license');if(!record)return null;const {meta}=await decodePackage(record);await checkTime(meta);return {access:true,owner:false,localLicense:true,accessUntil:meta.until,watermark:'Syolana · копия '+meta.id.slice(0,8),automaticPayments:false};}
+ async function session(){const record=await store.get('license');if(!record)return null;const {meta}=await decodePackage(record);await checkTime(meta);const mark='S-'+Array.from(unb64(meta.id).slice(0,6),b=>b.toString(16).padStart(2,'0')).join('');return {access:true,owner:false,localLicense:true,accessUntil:meta.until,watermark:mark,automaticPayments:false};}
  async function courseData(course){
   if(!LOCAL_COURSES.includes(course))throw Error('Неизвестный курс.');const record=await store.get('license');if(!record)throw Error('Выберите своё разрешение.');
   const {key,meta}=await decodePackage(record);await checkTime(meta);

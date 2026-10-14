@@ -489,10 +489,10 @@
     "Gratis",
     "Gratuit"
   ],
-  "690 ₽ / 30 дней · все платные курсы": [
-    "690 ₽ / 30 days · all paid courses",
-    "690 ₽ / 30 días · todos los cursos de pago",
-    "690 ₽ / 30 jours · tous les cours payants"
+  "650 ₽ / 30 дней · все платные курсы": [
+    "650 ₽ / 30 days · all paid courses",
+    "650 ₽ / 30 días · todos los cursos de pago",
+    "650 ₽ / 30 jours · tous les cours payants"
   ],
   "Дата появится после подготовки": [
     "Release date will be announced when ready",
@@ -519,10 +519,10 @@
     "Suscripción, nuevos niveles y derechos de autor",
     "Abonnement, nouveaux niveaux et droits d’auteur"
   ],
-  "Одна подписка за 690 ₽ открывает все опубликованные платные языковые курсы на 30 дней. Продление — только по вашему решению, без автоматических списаний. Английский A1 доступен без подписки.": [
-    "One 690 ₽ subscription unlocks all published paid language courses for 30 days. Renewal happens only when you choose it, with no automatic charges. English A1 is available without a subscription.",
-    "Una suscripción de 690 ₽ abre durante 30 días todos los cursos de idiomas de pago publicados. Solo se renueva si tú lo decides, sin cargos automáticos. El inglés A1 está disponible sin suscripción.",
-    "Un abonnement à 690 ₽ donne accès pendant 30 jours à tous les cours de langues payants publiés. Le renouvellement n’a lieu que sur votre décision, sans prélèvement automatique. L’anglais A1 est accessible sans abonnement."
+  "Одна подписка за 650 ₽ открывает все опубликованные платные языковые курсы на 30 дней. Продление — только по вашему решению, без автоматических списаний. Английский A1 доступен без подписки.": [
+    "One 650 ₽ subscription unlocks all published paid language courses for 30 days. Renewal happens only when you choose it, with no automatic charges. English A1 is available without a subscription.",
+    "Una suscripción de 650 ₽ abre durante 30 días todos los cursos de idiomas de pago publicados. Solo se renueva si tú lo decides, sin cargos automáticos. El inglés A1 está disponible sin suscripción.",
+    "Un abonnement à 650 ₽ donne accès pendant 30 jours à tous les cours de langues payants publiés. Le renouvellement n’a lieu que sur votre décision, sans prélèvement automatique. L’anglais A1 est accessible sans abonnement."
   ],
   "План — готовить примерно один новый уровень в месяц. Язык выбирается с учётом ваших пожеланий, а срок зависит от подготовки и проверки материалов. Подписка открывает то, что уже опубликовано; будущий выпуск не гарантируется к определённой дате.": [
     "The plan is to prepare roughly one new level each month. The language is chosen with your requests in mind, while timing depends on preparation and review. A subscription unlocks what is already published; future releases are not guaranteed by a specific date.",
@@ -2353,5 +2353,60 @@
     "What you offer",
     "Qué ofreces",
     "Ce que vous proposez"
+  ],
+  "Одна подписка за 650 ₽ открывает все опубликованные платные языковые курсы на 30 дней. Продление — только по вашему решению, без автоматических списаний. Английский A1 доступен без подписки. Партнёрам с оплаченным обслуживанием сайта языковой доступ включён на оплаченный период.": [
+    "One 650 ₽ subscription unlocks all published paid language courses for 30 days. Renew only when you choose, with no automatic charges. English A1 is free. Partners with paid website service receive language access for their paid service period.",
+    "Una suscripción de 650 ₽ abre todos los cursos de idiomas de pago publicados durante 30 días. Se renueva solo si lo decides, sin cargos automáticos. El inglés A1 es gratuito. Los socios con servicio web pagado reciben acceso a los idiomas durante ese período.",
+    "Un abonnement de 650 ₽ ouvre tous les cours de langues payants publiés pendant 30 jours. Vous choisissez de renouveler, sans prélèvement automatique. L’anglais A1 est gratuit. Les partenaires ayant payé le service de leur site bénéficient de cet accès pendant la période payée."
+  ],
+  "В оплаченный период обслуживания включён доступ ко всем опубликованным платным языковым курсам Syolana. Для изучения языков без сайта есть отдельная подписка — 650 ₽ за 30 дней.": [
+    "Paid website service includes access to all published paid Syolana language courses for the paid period. A separate language subscription costs 650 ₽ for 30 days.",
+    "El servicio web pagado incluye acceso a todos los cursos de idiomas de pago publicados de Syolana durante ese período. La suscripción de idiomas por separado cuesta 650 ₽ por 30 días.",
+    "Le service payé du site comprend l’accès à tous les cours de langues payants publiés par Syolana pendant la période payée. L’abonnement aux langues seul coûte 650 ₽ pour 30 jours."
+  ],
+  "650 ₽ открывают все опубликованные платные языковые курсы на 30 дней. Английский A1 бесплатен для всех. Для нового локального файла срок начинается с выдачи. Для ранее выданного серверного ключа при ручной продаже — с первого входа; при онлайн-оплате — после подтверждения платёжной системой. Продление добавляет 30 дней к оставшемуся сроку или начинает новый период после его окончания. Автоматических списаний нет.": [
+    "650 ₽ unlocks all published paid language courses for 30 days. English A1 is free. A new local file starts its period when issued. Previously issued server keys start on first use after manual sale, or after payment confirmation for online payment. Renewal adds 30 days to the remaining period or starts a new period after expiry. No automatic charges.",
+    "650 ₽ dan acceso a todos los cursos de idiomas de pago publicados durante 30 días. El inglés A1 es gratuito. El plazo del nuevo archivo local empieza al emitirse. Para las claves anteriores del servidor, empieza con el primer acceso tras la venta manual o con la confirmación del pago en línea. La renovación añade 30 días al plazo restante o inicia uno nuevo si ya terminó. No hay cargos automáticos.",
+    "650 ₽ ouvrent tous les cours de langues payants publiés pendant 30 jours. L’anglais A1 est gratuit. Le nouveau fichier local prend effet dès sa délivrance. Les anciennes clés du serveur prennent effet à la première connexion après une vente manuelle, ou après confirmation du paiement en ligne. Le renouvellement ajoute 30 jours à la période restante ou en ouvre une nouvelle après expiration. Aucun prélèvement automatique."
+  ],
+  "Ранее выданный серверный ключ работает без создания нового логина и пароля. Ключ даёт одну активную сессию и одну открытую вкладку платного курса: новый вход или открытие платного курса в другой вкладке завершает предыдущий доступ. Не передавайте его другим. При потере обратитесь в исходной переписке покупки; прежний ключ будет заменён. Прогресс и настройки хранятся в браузере и сохраняются после окончания оплаченного доступа, пока вы не очистите данные сайта.": [
+    "Previously issued server keys work without creating a new username or password. A key allows one active session and one paid course tab: a new login or paid course tab ends the previous access. Do not share it. If lost, contact the seller in the original purchase conversation to replace it. Progress and settings remain in the browser after access expires until you clear site data.",
+    "Las claves anteriores del servidor funcionan sin crear un nuevo usuario ni contraseña. Permiten una sesión activa y una pestaña de curso de pago: un nuevo acceso o una nueva pestaña cierra el acceso anterior. No compartas la clave. Si la pierdes, pide su sustitución en la conversación original de compra. El progreso y los ajustes permanecen en el navegador después de caducar el acceso, hasta que borres los datos del sitio.",
+    "Les anciennes clés du serveur fonctionnent sans créer de nouvel identifiant ni mot de passe. Une clé autorise une session et un onglet de cours payant actifs : une nouvelle connexion ou un nouvel onglet met fin à l’accès précédent. Ne partagez pas la clé. En cas de perte, demandez son remplacement dans la conversation d’achat initiale. La progression et les réglages restent dans le navigateur après expiration, jusqu’à l’effacement des données du site."
+  ],
+  "Локальное разрешение для браузера": [
+    "Local permission for your browser",
+    "Permiso local para tu navegador",
+    "Autorisation locale pour votre navigateur"
+  ],
+  "Отдельный зашифрованный файл выдаётся вручную для браузера, в котором создан запрос. Срок — 30 дней с момента выдачи. Файл открывается в этом браузере без серверной проверки ключа. Очистка данных сайта может уничтожить локальный ключ. Дистанционный отзыв и немедленный перенос такого разрешения недоступны; условия ранее выданного серверного доступа сохраняются.": [
+    "A separate encrypted file is issued manually for the browser that created the request. The period is 30 days from issue. The file opens in that browser without a server key check. Clearing site data may destroy its local key. Remote revocation and immediate transfer are unavailable; the terms of previously issued server access remain in force.",
+    "Se emite manualmente un archivo cifrado para el navegador que creó la solicitud. El plazo es de 30 días desde la emisión. El archivo se abre en ese navegador sin comprobar la clave en un servidor. Borrar los datos del sitio puede destruir la clave local. No es posible revocarlo a distancia ni trasladarlo de inmediato; se mantienen las condiciones del acceso anterior mediante servidor.",
+    "Un fichier chiffré distinct est délivré manuellement pour le navigateur ayant créé la demande. La période dure 30 jours à compter de sa délivrance. Le fichier s’ouvre dans ce navigateur sans vérification de clé par le serveur. Effacer les données du site peut détruire sa clé locale. La révocation à distance et le transfert immédiat sont indisponibles ; les conditions des accès antérieurs par serveur sont conservées."
+  ],
+  "Для нового локального доступа создаётся запрос браузера без ввода имени, email или логина; затем покупатель получает зашифрованный файл. Ранее выданный серверный доступ проверяется отдельно: сервер хранит хеш ключа, случайный идентификатор, номер заказа и срок доступа.": [
+    "New local access uses a browser request without entering a name, email or username; the buyer then receives an encrypted file. Previously issued server access is checked separately: the server stores the key hash, a random identifier, order number and access period.",
+    "El nuevo acceso local utiliza una solicitud del navegador sin introducir nombre, correo ni usuario; después el comprador recibe un archivo cifrado. El acceso anterior por servidor se comprueba por separado: el servidor guarda el hash de la clave, un identificador aleatorio, el número de pedido y el plazo de acceso.",
+    "Le nouvel accès local utilise une demande du navigateur sans saisir de nom, d’adresse e-mail ni d’identifiant ; l’acheteur reçoit ensuite un fichier chiffré. Les accès antérieurs par serveur sont vérifiés séparément : le serveur conserve l’empreinte de la clé, un identifiant aléatoire, le numéro de commande et la période d’accès."
+  ],
+  "Ранее выданный серверный ключ имеет одну активную браузерную сессию. Новый вход завершает прежнюю; сервер проверяет её перед выдачей материалов, открытый курс перепроверяет доступ каждые 10 секунд. Случайный токен сессии действует до 30 дней, но не продлевает оплаченный срок. Для ограничения попыток используются общий счётчик и хеш ключа; приложение не использует IP или постоянный ID устройства. Прежние аккаунты сохраняются для ранее выданного доступа.": [
+    "A previously issued server key has one active browser session. A new login ends the previous one; the server checks it before serving course material, and an open course checks access every 10 seconds. A random session token lasts up to 30 days but does not extend paid access. Rate limits use a shared counter and key hash; the application does not use IP addresses or a permanent device ID. Earlier accounts remain for previously issued access.",
+    "Una clave anterior del servidor tiene una sesión activa del navegador. Un nuevo acceso cierra la anterior; el servidor la comprueba antes de entregar el material y el curso abierto comprueba el acceso cada 10 segundos. El token aleatorio dura hasta 30 días, sin prolongar el plazo pagado. Los límites de intentos usan un contador general y el hash de la clave; la aplicación no utiliza IP ni un identificador permanente del dispositivo. Se conservan las cuentas anteriores para el acceso ya concedido.",
+    "Une ancienne clé du serveur dispose d’une session active du navigateur. Une nouvelle connexion termine la précédente ; le serveur la vérifie avant de fournir les cours, et un cours ouvert vérifie l’accès toutes les 10 secondes. Le jeton aléatoire dure au plus 30 jours, sans prolonger la période payée. Les limites de tentatives utilisent un compteur commun et l’empreinte de la clé ; l’application n’utilise ni adresse IP ni identifiant permanent d’appareil. Les comptes antérieurs sont conservés pour les accès déjà accordés."
+  ],
+  "Локальные разрешения": [
+    "Local permissions",
+    "Permisos locales",
+    "Autorisations locales"
+  ],
+  "Запрос браузера создаётся после вашего нажатия и передаётся продавцу вами. Локальный ключ и зашифрованный файл хранятся в этом браузере; проверка файла не обращается к серверу учёта покупателей. При выборе ссылки хостинг получает запрос на загрузку файла. Если продавец связывает запрос или файл с перепиской и покупкой, это необходимо учитывать при определении состава обрабатываемых данных. Ранее выданный серверный доступ сохраняет собственную проверку сессий.": [
+    "The browser request is created after you click and is sent to the seller by you. The local key and encrypted file stay in this browser; checking the file does not contact a customer registry server. If you choose a link, the host receives a file download request. If the seller links the request or file to a conversation and purchase, that must be considered when determining which data is processed. Previously issued server access keeps its own session checks.",
+    "La solicitud se crea cuando pulsas el botón y tú mismo la envías al vendedor. La clave local y el archivo cifrado permanecen en este navegador; comprobar el archivo no consulta un servidor de registro de compradores. Si eliges un enlace, el alojamiento recibe una solicitud de descarga. Si el vendedor vincula la solicitud o el archivo con la conversación y la compra, debe tenerlo en cuenta al determinar qué datos procesa. El acceso anterior por servidor conserva sus propias comprobaciones de sesión.",
+    "La demande est créée après votre clic et c’est vous qui l’envoyez au vendeur. La clé locale et le fichier chiffré restent dans ce navigateur ; la vérification du fichier ne contacte pas un serveur de registre clients. Si vous choisissez un lien, l’hébergeur reçoit une demande de téléchargement. Si le vendeur relie la demande ou le fichier à une conversation et un achat, il faut en tenir compte pour déterminer les données traitées. Les accès antérieurs par serveur conservent leurs propres vérifications de session."
+  ],
+  "Ранее выданные серверные ключи проверяются сервером. Новое локальное разрешение выдаётся файлом для выбранного браузера; его проверка выполняется здесь. Прогресс хранится в браузере. Переписка, оплата и журналы хостинга учитываются отдельно в правилах обработки данных.": [
+    "Previously issued server keys are checked by the server. New local permission is issued as a file for the chosen browser and checked here. Progress stays in the browser. Conversations, payment and host logs are addressed separately in the data processing rules.",
+    "Las claves anteriores del servidor se comprueban en el servidor. El nuevo permiso local se emite como archivo para el navegador elegido y se comprueba aquí. El progreso permanece en el navegador. La conversación, el pago y los registros del alojamiento se tratan por separado en las reglas de tratamiento de datos.",
+    "Les anciennes clés du serveur sont vérifiées par le serveur. La nouvelle autorisation locale est délivrée sous forme de fichier pour le navigateur choisi et vérifiée ici. La progression reste dans le navigateur. Les conversations, paiements et journaux d’hébergement sont traités séparément dans les règles de traitement des données."
   ]
 }

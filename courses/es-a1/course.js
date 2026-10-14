@@ -1,5 +1,5 @@
 import {mountCourseBranding} from '../../course-branding.js?v=20261007-language-marks-3';
-import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261009-platform-1';
+import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261014-local-1';
 import {SpeechPlayer,secondsFor} from './audio.js?v=20261008-es-a1-2';
 import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261008-es-a1-2';
 import {trainerGroups} from './trainers.js?v=20261008-es-a1-2';
@@ -299,4 +299,5 @@ async function init(){
   app.hidden=false;document.getElementById('loading').hidden=true;const resize=new ResizeObserver(()=>post({height:Math.ceil(shell.getBoundingClientRect().height)}));resize.observe(shell);post({ready:true,height:Math.ceil(shell.getBoundingClientRect().height)});
 }
 init().catch(e=>{const loading=document.getElementById('loading');loading.replaceChildren(el('strong','','Курс пока не загрузился'),el('p','',e.message),button('Попробовать снова',()=>location.reload()));post({ready:true,height:450});});
+
 

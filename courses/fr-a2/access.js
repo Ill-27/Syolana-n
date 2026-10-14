@@ -18,3 +18,4 @@ export function validateCourse(d){
 
 const access=createCourseAccess({course:'fr-a2',title:'французского A2',validateCourse});
 export const loadCourse=access.loadCourse,mountAccountPanel=access.mountAccountPanel,monitorAccess=access.monitorAccess,watchSession=access.watchSession,sessionMark=access.sessionMark;
+

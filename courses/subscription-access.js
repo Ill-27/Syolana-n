@@ -1,3 +1,5 @@
+import {localCourseAccess} from '../local-course-access.mjs';
+import {mountLocalBuyer,mountLocalIssuer} from '../local-course-ui.mjs';
 import {mountPartnerRegistry} from './partner-registry-ui.js';
 import {claimCourseTab} from './single-tab.js';
 import {attachPaymentControls} from './payment-ui.js?v=20261009-platform-1';
@@ -7,8 +9,9 @@ const AVITO='https://www.avito.ru/brands/i223140984';
 const node=(tag,value='',cls='')=>{const n=document.createElement(tag);n.textContent=value;if(cls)n.className=cls;return n;};
 function field(form,label,type,name){const l=node('label',label,'field'),i=node('input');i.type=type;i.name=name;i.required=true;i.autocomplete='off';l.append(i);form.append(l);return i;}
 const date=value=>value?new Date(value*1000).toLocaleString('ru-RU',{dateStyle:'medium',timeStyle:'short'}):'с первого входа';
-export function createCourseAccess({course,title,validateCourse}){
+export function createCourseAccess({course,title,validateCourse,localAccess=localCourseAccess}){
  let currentSession=null;
+ const local=localAccess;
  async function request(path,body,csrf='',plan=false){
   const r=await fetch('/api/course-access/'+(plan?'languages':course)+'/'+path,{method:body!==undefined?'POST':'GET',credentials:'same-origin',cache:'no-store',headers:body!==undefined?{'Content-Type':'application/json','X-CSRF-Token':csrf}:{},...(body!==undefined?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(path==='session'?5000:12000)});
   if(!(r.headers.get('content-type')||'').includes('application/json'))throw Error('Сервер доступа временно недоступен. Попробуйте ещё раз.');
@@ -17,11 +20,13 @@ export function createCourseAccess({course,title,validateCourse}){
  async function loadCourse(){
   const host=document.getElementById('loading');host.replaceChildren();host.classList.add('access-screen');
   let status={},opening=false;
-  const initialSession=request('session').catch(()=>({}));
+  let priorSession=false;try{priorSession=!!sessionStorage.getItem('syolana.owner.reserve.v1')||!!localStorage.getItem('syolana-api-session');}catch{}
+  const initialSession=local().session().catch(()=>null).then(s=>s|| (priorSession?request('session').catch(()=>({})):{}));
   host.append(node('p',title.replace(/кого(?=\s+[ABC][12]\b)/i,'кий').toUpperCase(),'eyebrow'),node('h1','Один ключ. Все языковые курсы.'),node('p','Правила, слова с четырьмя разными примерами, озвучка и повторение — в вашем темпе.','view-intro'));
-  const intro=node('div','','access-intro');intro.append(node('strong','690 ₽ / 30 дней','access-price'),node('p','Одна подписка открывает все опубликованные платные языковые курсы. Продление по вашему решению; автоматических списаний нет. Английский A1 бесплатен для всех.'),node('p',status.salesOpen?'После подтверждения оплаты вы получите готовый личный ключ. Введите его — создавать логин и пароль не нужно.':'Продажи пока закрыты. Готовый ключ будет выдаваться после подтверждения оплаты; регистрация не требуется.'),node('p','На другом устройстве используйте тот же ключ: предыдущая сессия завершится. Для ключа с Авито срок начинается с первого входа; при онлайн-оплате — с подтверждения платежа. Продление сохраняет оставшиеся дни. Учебный прогресс хранится отдельно в этом браузере.'));host.append(intro);
+  const intro=node('div','','access-intro');intro.append(node('strong','650 ₽ / 30 дней','access-price'),node('p','Одна подписка открывает все опубликованные платные языковые курсы. Продление по вашему решению; автоматических списаний нет. Английский A1 бесплатен для всех.'),node('p',status.salesOpen?'После подтверждения оплаты вы получите готовый личный ключ. Введите его — создавать логин и пароль не нужно.':'Продажи пока закрыты. Готовый ключ будет выдаваться после подтверждения оплаты; регистрация не требуется.'),node('p','Новый локальный доступ выдаётся файлом для выбранного браузера на 30 дней с момента выдачи. Пересылка файла другому браузеру не открывает курс. Ранее выданные серверные ключи сохраняют прежние условия: вход на другом устройстве завершает предыдущую сессию. Учебный прогресс хранится в этом браузере.'));host.append(intro);
   if(currentSession?.accessUntil)host.append(node('p','Оплаченный период: до '+date(currentSession.accessUntil),'notice'));
-  const form=node('form','','access-form');const key=field(form,'Ваш ключ доступа','password','accessKey');key.minLength=43;key.maxLength=43;key.autocomplete='off';key.spellcheck=false;key.placeholder='Вставьте ключ целиком';
+  let openLocal=async()=>{};mountLocalBuyer(host,{access:local(),onStart:()=>{opening=true;},onOpen:s=>openLocal(s)});
+  const form=node('form','','access-form');const key=field(form,'Ключ владельца или ранее выданный ключ','password','accessKey');key.minLength=43;key.maxLength=43;key.autocomplete='off';key.spellcheck=false;key.placeholder='Вставьте ключ целиком';
   const show=node('button','Показать ключ');show.type='button';show.onclick=()=>{key.type=key.type==='password'?'text':'password';show.textContent=key.type==='password'?'Показать ключ':'Скрыть ключ';};
   const submit=node('button','Открыть курсы','primary');submit.type='submit';const error=node('p','','notice');error.setAttribute('role','status');form.append(show,submit,error);host.append(form);
   const links=node('div','','actions');const avito=node('a',status.salesOpen?'Оформить или продлить доступ':'Уточнить запуск на Авито','primary');avito.href=AVITO;avito.target='_blank';avito.rel='noopener noreferrer';const free=node('a','Попробовать английский A1');free.href=new URL('./#\/lesson/en/a1/course',document.baseURI).href;free.target='_top';links.append(avito,free);host.append(links);
@@ -36,25 +41,28 @@ export function createCourseAccess({course,title,validateCourse}){
   return new Promise(resolve=>{
    let settled=false;
    function done(d,mode){if(settled)return;settled=true;observer.disconnect();host.dataset.access=mode;host.replaceChildren();resolve(d);}
+   openLocal=async s=>{const data=validateCourse(await local().courseData(course));currentSession=s;done(data,'local-buyer');};
    async function open(path,body,button,message){opening=true;button.disabled=true;message.textContent='Проверяем доступ…';try{currentSession=await request(path,body);if(!currentSession.access){message.textContent='Оплаченный период закончился. Продлите доступ с тем же ключом.';return;}done(validateCourse(await request('data')),currentSession.owner?'owner':'buyer');key.value='';}catch(e){message.textContent=e.message;}finally{button.disabled=false;}}
    form.onsubmit=e=>{e.preventDefault();open('key-login',{key:key.value.trim()},submit,error);};
    oldForm.onsubmit=e=>{e.preventDefault();open('login',{username:user.value,password:password.value},login,oldStatus).then(()=>{password.value='';});};
    claim.onsubmit=e=>{e.preventDefault();open('activate',{code:oldCode.value.trim(),username:oldUser.value,password:oldPass.value},activate,oldError).then(()=>{oldPass.value='';oldCode.value='';});};
    file.onchange=async()=>{const f=file.files?.[0];if(!f)return;try{if(f.size>16*1024*1024)throw Error('Выберите исходный data.json: файл слишком большой.');done(validateCourse(JSON.parse(await f.text())),'local-owner');}catch(e){previewError.textContent=e.message;}file.value='';};
-   initialSession.then(async value=>{if(opening||settled)return;status=value;currentSession=value;if(value.access){try{const data=validateCourse(await request('data'));if(!opening)done(data,value.owner?'owner':'buyer');}catch(e){if(!opening)error.textContent=e.message;}}});
+   initialSession.then(async value=>{if(opening||settled)return;status=value;currentSession=value;if(value.access){try{const data=validateCourse(value.localLicense?await local().courseData(course):await request('data'));if(!opening)done(data,value.localLicense?'local-buyer':value.owner?'owner':'buyer');}catch(e){if(!opening)error.textContent=e.message;}}});
   });
  }
  function mountAccountPanel(host,beforeLeave){
   if(!currentSession?.access)return;
   const panel=node('details','','access-details');panel.append(node('summary',currentSession.owner?'Ключи и подписки':'Мой доступ'));host.append(panel);const status=node('p','','notice');status.setAttribute('role','status');
   if(currentSession.owner){const domains=node('a','Мои партнёрские сайты — закрытый список');domains.href=new URL('./#/owner-sites',document.baseURI).href;domains.target='_top';panel.append(domains);}
-  const logout=node('button','Выйти');logout.type='button';logout.onclick=async()=>{logout.disabled=true;try{await request('logout',{},currentSession.csrf);beforeLeave();location.reload();}catch(e){status.textContent=e.message;logout.disabled=false;}};
+  const logout=node('button','Выйти');logout.type='button';logout.onclick=async()=>{logout.disabled=true;try{if(currentSession.localLicense)await local().logout();else await request('logout',{},currentSession.csrf);beforeLeave();location.reload();}catch(e){status.textContent=e.message;logout.disabled=false;}};
+  if(currentSession.localLicense){panel.append(node('p','Разрешение для этого браузера: до '+date(currentSession.accessUntil)+'. Для продления создайте запрос в этом же браузере и отправьте его на Авито. Файл разрешения не переносит доступ в другой браузер.'),logout,status);return;}
+  if(currentSession.owner)mountLocalIssuer(panel,{getCourseData:async id=>{const r=await fetch('/api/course-access/'+id+'/data',{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error('Не удалось открыть закрытый курс '+id+'.');return r.json();}});
   if(currentSession.reserve){panel.append(node('p','Резервный доступ владельца. Курсы открываются независимо от сервера проверки ключей. Для управления покупателями и партнёрскими сайтами подключитесь, когда сервер доступен.'));const connect=node('form','','access-form'),ownerKey=field(connect,'Ключ владельца','password','ownerKey');ownerKey.maxLength=43;ownerKey.minLength=43;const button=node('button','Подключить управление');button.type='submit';connect.append(button);connect.onsubmit=async e=>{e.preventDefault();button.disabled=true;try{const result=await request('key-login',{key:ownerKey.value.trim(),onlineOnly:true});if(!result.owner||result.reserve)throw Error('Нужен доступ владельца через работающий сервер.');currentSession=result;ownerKey.value='';panel.remove();mountAccountPanel(host,beforeLeave);}catch(e){status.textContent=e.message;}finally{button.disabled=false;}};panel.append(connect,logout,status);return;}
   if(!currentSession.owner){panel.append(node('p',currentSession.keyOnly?'Доступ до '+date(currentSession.accessUntil)+'. Один ключ работает в одной активной сессии. Для продления используйте тот же ключ.':'Ранее выданный доступ сохранён на прежних условиях.'),logout,status);const renew=node('a','Продлить доступ на Авито');renew.href=AVITO;renew.target='_blank';renew.rel='noopener noreferrer';panel.append(renew);if(currentSession.keyOnly&&currentSession.automaticPayments)attachPaymentControls(panel,course,(p,b,c)=>request(p,b,c,true));return;}
   mountPartnerRegistry(panel,(p,b)=>request(p,b,currentSession.csrf,true));
-  panel.append(node('p','Выдавайте ключ после проверки оплаты: 690 ₽ за 30 дней всех языков. Для партнёра подтвердите оплаченное обслуживание сайта. Ключ показывается один раз; хранится только его хеш.'));
+  panel.append(node('p','Выдавайте ключ после проверки оплаты: 650 ₽ за 30 дней всех языков. Для партнёра подтвердите оплаченное обслуживание сайта. Ключ показывается один раз; хранится только его хеш.'));
   const form=node('form','','access-form'),ref=field(form,'Уникальный номер подтверждённого заказа','text','orderReference');ref.maxLength=120;
-  const kind=node('select');kind.name='kind';for(const [v,t]of[['subscription','Языковая подписка · 690 ₽'],['partner','Включено в оплаченное обслуживание сайта']]){const o=node('option',t);o.value=v;kind.append(o);}const kl=node('label','Тип доступа','field');kl.append(kind);form.append(kl);
+  const kind=node('select');kind.name='kind';for(const [v,t]of[['subscription','Языковая подписка · 650 ₽'],['partner','Включено в оплаченное обслуживание сайта']]){const o=node('option',t);o.value=v;kind.append(o);}const kl=node('label','Тип доступа','field');kl.append(kind);form.append(kl);
   const reserveKey=field(form,'Ключ из запаса · необязательно','password','reservedKey');reserveKey.required=false;reserveKey.maxLength=43;reserveKey.minLength=43;
   const siteId=field(form,'Код сайта партнёра · необязательно','text','siteId');siteId.required=false;
   const partnerRef=field(form,'Номер оплаченного заказа сайта · для партнёра','text','partnerOrderReference');partnerRef.required=false;
@@ -71,10 +79,11 @@ export function createCourseAccess({course,title,validateCourse}){
   if(!currentSession||currentSession.reserve||document.getElementById('loading')?.dataset.access==='local-owner')return()=>{};
   let closed=false,busy=false,failures=0,stopTab=()=>{};
   function close(message){if(closed)return;closed=true;stopTab();beforeLeave();document.getElementById('app').replaceChildren();const host=document.getElementById('loading');host.hidden=false;host.replaceChildren(node('h1','Доступ к курсам'),node('p',message));const retry=node('button','Войти снова');retry.type='button';retry.onclick=()=>location.reload();host.append(retry);if(window.parent!==window)window.parent.postMessage({syolanaLesson:true,courseAudio:null,ready:true,height:400},location.origin);clearInterval(timer);}
-  async function verify(){if(closed||busy||document.hidden)return;busy=true;try{const s=await request('session');failures=0;if(!s.access)close('Оплаченный период или эта сессия завершились. Используйте ваш ключ для входа; при необходимости продлите доступ.');}catch{if(++failures>=1)close('Не удаётся проверить доступ. Восстановите интернет и войдите снова.');}finally{busy=false;}}
+  async function verify(){if(closed||busy||document.hidden)return;busy=true;try{const s=currentSession.localLicense?await local().session():await request('session');failures=0;if(!s?.access)close('Оплаченный период или эта сессия завершились. Используйте ваш ключ для входа; при необходимости продлите доступ.');}catch(e){if(currentSession.localLicense)close(e.message);else if(++failures>=1)close('Не удаётся проверить доступ. Восстановите интернет и войдите снова.');}finally{busy=false;}}
   let timer=setInterval(verify,10000);const onPageHide=()=>{clearInterval(timer);stopTab();};const onPageShow=()=>{if(closed)return;stopTab=claimCourseTab({onReplaced:close});clearInterval(timer);timer=setInterval(verify,10000);verify();};window.addEventListener('focus',verify);document.addEventListener('visibilitychange',verify);window.addEventListener('pagehide',onPageHide);window.addEventListener('pageshow',onPageShow);
   stopTab=claimCourseTab({onReplaced:close});
   return()=>{closed=true;stopTab();clearInterval(timer);window.removeEventListener('focus',verify);document.removeEventListener('visibilitychange',verify);window.removeEventListener('pagehide',onPageHide);window.removeEventListener('pageshow',onPageShow);};
  }
  return{loadCourse,mountAccountPanel,monitorAccess,watchSession:monitorAccess,sessionMark:()=>currentSession?.watermark||''};
 }
+

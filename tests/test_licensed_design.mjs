@@ -28,7 +28,7 @@ test('the final public pages retain licence terms, session rules and data disclo
  const {positionView}=await import('../positioning.js');
  for(const route of ['join','terms','offer']){
   window.location.hash='#/'+route;root.replaceChildren();positionView();
-  assert.match(root.textContent,/12 месяцев/);assert.match(root.textContent,/базовая структура сайта остаются у вас/);assert.match(root.textContent,/Ранее согласованные условия/);
+  assert.match(root.textContent,/12 месяцев/);assert.match(root.textContent,/базовая структура сайта остаются у вас/);assert.doesNotMatch(root.textContent,/Ранее согласованные|ранее выдан|Прежние покупки/);assert.match(root.textContent,/Для всех партнёров/);
  }
  assert.match(root.textContent,/650 ₽/);assert.match(root.textContent,/одну активную браузерную сессию/);assert.match(root.textContent,/Платные продажи пока закрыты/);assert.match(root.textContent,/права потребителя сохраняются/);
  window.location.hash='#/privacy';root.replaceChildren();positionView();

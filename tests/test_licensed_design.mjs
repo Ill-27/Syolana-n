@@ -19,4 +19,17 @@ test('an expired partner reaches export without receiving editing controls',asyn
  const root=document.createElement('div');document.body.append(root);const destroy=await mountManagedEditor(root,'owned-site');
  assert.ok(root.textContent.includes('Ваши материалы сохранены'));assert.ok([...root.querySelectorAll('button')].some(n=>n.textContent==='Скачать готовый сайт'));assert.equal(root.querySelector('.managed-builder'),null);assert.equal(root.querySelector('.managed-publisher'),null);assert.equal(root.querySelector('input[name="key"]'),null);assert.deepEqual(calls,['session','studio/owned-site/settings']);destroy();dom.window.close();
 });
+test('the final public pages retain licence terms, session rules and data disclosures',async()=>{
+ const dom=setup();const root=document.createElement('main');root.id='page';document.body.append(root);
+ const {positionView}=await import('../positioning.js');
+ for(const route of ['join','terms','offer']){
+  window.location.hash='#/'+route;root.replaceChildren();positionView();
+  assert.match(root.textContent,/12 месяцев/);assert.match(root.textContent,/базовая структура сайта остаются у вас/);assert.match(root.textContent,/Ранее согласованные условия/);
+ }
+ assert.match(root.textContent,/650 ₽/);assert.match(root.textContent,/одну активную браузерную сессию/);assert.match(root.textContent,/Платные продажи пока закрыты/);assert.match(root.textContent,/права потребителя сохраняются/);
+ window.location.hash='#/privacy';root.replaceChildren();positionView();
+ assert.match(root.textContent,/случайную сессию/);assert.match(root.textContent,/Приложение не определяет/);assert.match(root.textContent,/уведомления Роскомнадзора/);assert.doesNotMatch(root.textContent,/одном активном устройстве/);
+ window.location.hash='#/legal';root.replaceChildren();positionView();assert.match(root.textContent,/реальные сведения о продавце/);
+ dom.window.close();
+});
 

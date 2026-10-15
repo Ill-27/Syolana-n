@@ -2463,5 +2463,60 @@
     "Syolana themes and shared updates are provided for 12 months from the agreed activation date. The start and end dates, included features and price are agreed before payment. Renewal is your choice, with no automatic charges. When the term ends, the Syolana layer is disabled; the domain, your own texts, photos and basic site remain yours. After paid maintenance ends, the server workshop lets you download your materials; saving new changes requires renewal. Language access is included for the agreed paid period. You choose the domain, hosting and deployment.",
     "Los temas y las actualizaciones comunes de Syolana se ofrecen durante 12 meses desde la fecha de activación acordada. Las fechas de inicio y finalización, las funciones y el precio se acuerdan antes del pago. Tú decides si renuevas, sin cobros automáticos. Al finalizar el plazo, se desactiva la capa de Syolana; el dominio, tus propios textos, fotos y el sitio básico siguen siendo tuyos. Al terminar el mantenimiento pagado, el taller del servidor permite descargar tus materiales; guardar nuevos cambios requiere renovar el servicio. El acceso a los idiomas se incluye durante el período pagado acordado. Tú eliges el dominio, el alojamiento y la publicación.",
     "Les thèmes et les mises à jour communes de Syolana sont fournis pendant 12 mois à compter de la date d’activation convenue. Les dates de début et de fin, les fonctionnalités et le prix sont convenus avant le paiement. Vous choisissez de renouveler, sans prélèvements automatiques. À la fin de la période, la couche Syolana est désactivée ; le domaine, vos propres textes, photos et le site de base restent à vous. Après la fin de la maintenance payée, l’atelier sur le serveur permet de télécharger vos contenus ; enregistrer de nouvelles modifications nécessite un renouvellement. L’accès aux langues est inclus pendant la période payée convenue. Vous choisissez le domaine, l’hébergement et la publication."
+  ],
+  "Срок тем и обновлений": [
+    "Term for themes and updates",
+    "Duración de los temas y las actualizaciones",
+    "Durée des thèmes et des mises à jour"
+  ],
+  "Живые темы, фирменное оформление и общие обновления Syolana предоставляются на 12 месяцев с согласованной даты подключения. Даты начала и окончания, состав и цена согласуются до оплаты. Продление — только по вашему решению, без автоматических списаний. После окончания срока отключается слой Syolana; ваш HTML-файл, домен, собственные тексты, фото и базовая структура сайта остаются у вас. Ранее согласованные условия уже переданных шаблонов сохраняются.": [
+    "Syolana’s living themes, branded design and general updates are provided for 12 months from the agreed activation date. The start and end dates, scope and price are agreed before payment. Renewal is your choice, with no automatic charges. When the term ends, the Syolana layer stops; your HTML file, domain, own texts, photos and basic site structure remain yours. Previously agreed terms for templates already delivered remain in effect.",
+    "Los temas vivos, el diseño de marca y las actualizaciones generales de Syolana se ofrecen durante 12 meses desde la fecha de activación acordada. Las fechas de inicio y fin, el contenido y el precio se acuerdan antes del pago. La renovación es voluntaria y no hay cobros automáticos. Al finalizar el plazo se desactiva la capa de Syolana; conservas tu archivo HTML, dominio, textos, fotos y estructura básica del sitio. Se mantienen las condiciones ya acordadas para las plantillas entregadas.",
+    "Les thèmes vivants, l’habillage de marque et les mises à jour générales de Syolana sont fournis pendant 12 mois à compter de la date d’activation convenue. Les dates de début et de fin, le contenu et le prix sont convenus avant le paiement. Le renouvellement est volontaire, sans prélèvement automatique. À l’échéance, la couche Syolana se désactive ; vous conservez votre fichier HTML, domaine, textes, photos et structure de base du site. Les conditions déjà convenues pour les modèles livrés restent applicables."
+  ],
+  "Один ключ — одна сессия": [
+    "One key — one session",
+    "Una clave — una sesión",
+    "Une clé — une session"
+  ],
+  "Серверный ключ даёт одну активную браузерную сессию. Новый вход по тому же ключу завершает предыдущую сессию. Приложение не определяет модель устройства, IP-адрес или местонахождение покупателя.": [
+    "A server key allows one active browser session. Signing in again with the same key ends the previous session. The application does not identify the buyer’s device model, IP address or location.",
+    "Una clave del servidor permite una sesión activa en el navegador. Un nuevo acceso con la misma clave cierra la sesión anterior. La aplicación no identifica el modelo del dispositivo, la dirección IP ni la ubicación del comprador.",
+    "Une clé serveur autorise une session active dans le navigateur. Une nouvelle connexion avec la même clé met fin à la session précédente. L’application n’identifie ni le modèle de l’appareil, ni l’adresse IP, ni la localisation de l’acheteur."
+  ],
+  "Сервер проверяет ключ, случайную сессию, права и срок доступа. Прогресс и настройки хранятся в браузере. Полная анонимность не обещается: ключ или запрос могут быть связаны с заказом в переписке.": [
+    "The server checks the key, a random session, permissions and the access period. Progress and settings are stored in the browser. Complete anonymity is not promised: a key or request may be linked to an order in the conversation.",
+    "El servidor comprueba la clave, una sesión aleatoria, los permisos y el plazo de acceso. El progreso y los ajustes se guardan en el navegador. No se promete anonimato total: una clave o solicitud puede vincularse con un pedido en la conversación.",
+    "Le serveur vérifie la clé, une session aléatoire, les droits et la durée d’accès. La progression et les réglages sont conservés dans le navigateur. L’anonymat complet n’est pas promis : une clé ou une demande peut être reliée à une commande dans la conversation."
+  ],
+  "До открытия продаж": [
+    "Before sales open",
+    "Antes de abrir las ventas",
+    "Avant l’ouverture des ventes"
+  ],
+  "Платные продажи пока закрыты. Перед их открытием должны быть опубликованы реальные сведения о продавце, полные условия покупки, возврата и обработки данных. Название Syolana не заменяет юридические реквизиты.": [
+    "Paid sales are currently closed. Before they open, the seller’s actual details and full purchase, refund and data processing terms must be published. The name Syolana does not replace legal details.",
+    "Las ventas de pago están cerradas por ahora. Antes de abrirlas deben publicarse los datos reales del vendedor y las condiciones completas de compra, devolución y tratamiento de datos. El nombre Syolana no sustituye los datos legales.",
+    "Les ventes payantes sont actuellement fermées. Avant leur ouverture, les coordonnées réelles du vendeur et les conditions complètes d’achat, de remboursement et de traitement des données doivent être publiées. Le nom Syolana ne remplace pas les mentions légales."
+  ],
+  "Заказ и возврат": [
+    "Orders and refunds",
+    "Pedidos y devoluciones",
+    "Commandes et remboursements"
+  ],
+  "Цена, состав и срок заказа согласуются до оплаты через официальный профиль на Авито. По вопросам доступа или возврата обращайтесь в исходной переписке. Обязательные права потребителя сохраняются.": [
+    "The price, scope and term of the order are agreed before payment through the official Avito profile. For access or refund questions, use the original conversation. Mandatory consumer rights remain in effect.",
+    "El precio, el contenido y el plazo del pedido se acuerdan antes del pago a través del perfil oficial de Avito. Para consultas sobre el acceso o la devolución, utiliza la conversación original. Se mantienen los derechos obligatorios del consumidor.",
+    "Le prix, le contenu et la durée de la commande sont convenus avant le paiement via le profil officiel Avito. Pour toute question d’accès ou de remboursement, utilisez la conversation d’origine. Les droits impératifs du consommateur restent applicables."
+  ],
+  "Переписка и платежи": [
+    "Messages and payments",
+    "Mensajes y pagos",
+    "Messages et paiements"
+  ],
+  "Переписка на Авито, подтверждение оплаты и служебные журналы хостинга учитываются отдельно. Отсутствие полей с именем и телефоном на сайте само по себе не подтверждает освобождение от уведомления Роскомнадзора.": [
+    "Avito messages, payment confirmation and hosting service logs must be considered separately. The absence of name and phone fields on the site does not by itself establish an exemption from notifying Roskomnadzor.",
+    "La conversación en Avito, la confirmación del pago y los registros técnicos del alojamiento se consideran por separado. La ausencia de campos de nombre y teléfono en el sitio no demuestra por sí sola una exención de notificar a Roskomnadzor.",
+    "Les messages sur Avito, la confirmation du paiement et les journaux techniques de l’hébergement doivent être examinés séparément. L’absence de champs de nom et de téléphone sur le site ne suffit pas à établir une dispense de notification à Roskomnadzor."
   ]
 }

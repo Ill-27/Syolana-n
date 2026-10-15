@@ -8,7 +8,7 @@ const root=fs.existsSync(path.join(repositoryRoot,'public-site/boot.js'))?path.j
 const {themeTypography}=await import(pathToFileURL(path.join(root,'themes/theme-typography.mjs')).href);
 const out=path.join(root,'dist/public');
 const result=await build({
- absWorkingDir:root,entryPoints:['boot.js','reader-ui.js',{in:'dist/public/artivid/app.js',out:'reader-app'}],outdir:path.join(out,'runtime'),
+ absWorkingDir:root,entryPoints:['boot.js','reader-ui.js'],outdir:path.join(out,'runtime'),
  bundle:true,splitting:true,format:'esm',platform:'browser',target:['es2022'],
  minify:true,charset:'utf8',legalComments:'none',metafile:true,
  entryNames:'[name]-[hash]',chunkNames:'chunk-[name]-[hash]',

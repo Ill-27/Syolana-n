@@ -57,5 +57,5 @@
   "commercialReady": false,
   "legalContactEmail": "syolana@yandex.ru",
   "subscription": {"plan": "languages", "priceRub": 690, "days": 30, "autoRenew": false, "allPublishedPaidCourses": true, "partnerIncluded": false},
-  "artividUrl": "artivid/"
+  "artividUrl": "https://ill-27.github.io/Immersivebooks/"
 }

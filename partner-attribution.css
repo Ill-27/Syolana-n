@@ -1,0 +1,22 @@
+/* A quiet, shared credit for the site's design system. */
+.syolana-credit{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;justify-content:center;gap:9px;box-sizing:border-box;max-width:100%;min-height:44px;padding:7px 12px!important;border:1px solid color-mix(in srgb,var(--panel-label,#eee8fa) 18%,transparent)!important;border-radius:16px;background:rgba(255,255,255,.025);color:var(--panel-text,#f7f5fb)!important;font:500 13px/1.45 var(--interface,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif)!important;letter-spacing:normal!important;text-align:left;text-decoration:none!important;text-shadow:none!important;overflow:hidden;vertical-align:middle;opacity:1!important}
+.syolana-credit:visited{color:var(--panel-text,#f7f5fb)!important}
+.syolana-credit>img,.syolana-credit .syolana-partner-logo-wrap{display:block;flex:0 0 28px;width:28px;height:28px;margin:0;object-fit:contain;line-height:0}
+.syolana-credit .syolana-partner-logo-wrap>img{display:block;width:28px;height:28px;object-fit:contain}
+.syolana-credit>span{font:inherit!important;color:inherit!important;letter-spacing:inherit!important;opacity:1!important}
+.syolana-credit::before,.syolana-credit::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background-size:260% 100%;animation:syolanaButtonSheen 8s linear infinite}
+.syolana-credit::before{padding:1px;background-image:linear-gradient(105deg,transparent 22%,rgba(222,247,255,.26) 36%,rgba(250,229,255,.52) 47%,rgba(255,241,197,.48) 53%,rgba(222,247,255,.26) 62%,transparent 78%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.syolana-credit::after{background-image:linear-gradient(105deg,transparent 22%,rgba(222,247,255,.06) 36%,rgba(250,229,255,.13) 47%,rgba(255,241,197,.12) 53%,rgba(222,247,255,.06) 62%,transparent 78%);mix-blend-mode:screen}
+.syolana-credit:focus-visible{outline:2px solid var(--panel-label,#eee8fa)!important;outline-offset:4px}
+body .export-attribution a.syolana-credit{display:inline-flex!important;align-items:center;gap:9px;padding:7px 12px!important;font:500 13px/1.45 var(--interface,system-ui,sans-serif)!important}
+.syolana-attribution,.export-attribution{position:static!important;inset:auto!important;display:flex;justify-content:center;padding:16px 0!important;margin:20px auto 0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;max-width:100%;width:auto!important}
+body #footer.partner-footer{display:flex;flex-direction:column;align-items:stretch;gap:18px;padding:22px clamp(18px,4vw,30px);margin-block:36px 0;text-align:center}
+.partner-footer-meta{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.partner-footer-meta>span{font:400 13px/1.5 var(--interface,system-ui,sans-serif);color:var(--panel-muted,#d3d0de)}
+.partner-footer-nav{display:flex;align-items:center;justify-content:center;gap:4px 18px;flex-wrap:wrap}
+body #footer .partner-footer-nav>a{padding:8px 0;font:400 13px/1.5 var(--interface,system-ui,sans-serif)!important;letter-spacing:normal;text-decoration:none;text-shadow:none}
+body #footer .partner-footer-nav>a:hover{text-decoration:underline;text-underline-offset:4px}
+body #footer .partner-footer-credit{margin:0;padding-top:16px;border-top:1px solid var(--panel-border,rgba(255,255,255,.12));text-align:center}
+@keyframes syolanaButtonSheen{0%{background-position:210% 0}100%{background-position:-60% 0}}
+@media(max-width:620px){.partner-footer-meta{justify-content:center;gap:8px}.partner-footer-nav{width:100%;gap:2px 16px}}
+@media(prefers-reduced-motion:reduce){.syolana-credit::before,.syolana-credit::after{animation:none;background-position:50% 0}}

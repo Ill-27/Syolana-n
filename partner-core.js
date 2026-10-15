@@ -1,3 +1,4 @@
+import {prepareAttribution} from './partner-attribution.js';
 import {ATTRIBUTION_TEXT,protectAttribution} from './attribution-guard.js';
 const CORE_BASE = new URL("./", import.meta.url);
 let mounted = null;
@@ -414,11 +415,11 @@ export async function mountPartnerCore(options = {}) {
   const previousRootStyle=document.documentElement.getAttribute("style");
   const previousBodyStyle=document.body.getAttribute("style");
   buildBackground();
-  const attribution=make("aside","syolana-attribution");
+  const attribution=make("p","syolana-attribution");
   attribution.dataset.syolanaInjected="true";
-  const attributionLink=make("a","",ATTRIBUTION_TEXT);
-  attributionLink.href="https://syolana.com/";attributionLink.target="_blank";attributionLink.rel="noopener noreferrer";attribution.append(attributionLink);document.body.append(attribution);
-  const attributionStyle=make("style");attributionStyle.dataset.syolanaInjected="true";attributionStyle.textContent=".syolana-attribution{position:fixed;left:12px;bottom:12px;z-index:80;background:rgba(12,15,25,.9);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:7px 11px;max-width:calc(100vw - 24px)}.syolana-attribution a{display:block!important;color:#fff!important;font:12px/1.4 system-ui,sans-serif!important;text-decoration:none;opacity:1}";document.head.append(attributionStyle);
+  const attributionLink=prepareAttribution(make("a","",ATTRIBUTION_TEXT));
+  attribution.append(attributionLink);
+  if(footer)footer.append(attribution);else{const creditFooter=make("footer");creditFooter.append(attribution);shell.append(creditFooter);}
   const controls = buildTopBar(partner);
   const config = await readJSON("config.json");
   // Promotional placements require the partner's separate opt-in and a

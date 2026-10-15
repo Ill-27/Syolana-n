@@ -24,10 +24,16 @@ test('premium teardown restores the complete original main and footer',async()=>
  class Theme{async init(){}setZen(){}destroy(){this.destroyed=true;}}
  globalThis.__partnerFakes={themes:{ThemeEngine:Theme},player:{Player:class{}},flight:{setupFlightLayer:()=>({destroy(){}}),platformFlightOffers:()=>[]}};
  const url=new URL('../partner-core.js',import.meta.url);let source=await readFile(url,'utf8');
- source=source.replace("'./attribution-guard.js'",JSON.stringify(new URL('../attribution-guard.js',import.meta.url).href)).replaceAll('import.meta.url',JSON.stringify(url.href));
+ source=source.replace("'./attribution-guard.js'",JSON.stringify(new URL('../attribution-guard.js',import.meta.url).href)).replace("'./partner-attribution.js'",JSON.stringify(new URL('../partner-attribution.js',import.meta.url).href)).replaceAll('import.meta.url',JSON.stringify(url.href));
  for(const [name,fake]of [['themes','themes'],['player','player'],['flight','flight']])source=source.replace('import(central("'+name+'.js") + "?v=" + encodeURIComponent(version))','Promise.resolve(globalThis.__partnerFakes.'+fake+')');
  const module=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
  const handle=await module.mountPartnerCore();assert.equal(document.querySelector('main').parentElement.id,'content-shell');
  document.querySelector('.syolana-attribution').remove();await new Promise(r=>setTimeout(r,90));
  assert.equal(handle.theme.destroyed,true);assert.equal(document.querySelector('main').parentElement,document.body);assert.equal(document.querySelector('main').textContent,'Тексты партнёра');assert.equal(document.querySelector('footer').textContent,'Свой подвал');assert.equal(document.querySelector('.site-header').hidden,false);assert.equal(document.querySelector('[data-syolana-injected]'),null);dom.window.close();
+});
+test('a footer credit may scroll below the viewport and remains valid in contemplation',()=>{
+ const {dom,a}=page();const footer=document.createElement('footer');footer.append(a);document.body.append(footer);
+ a.getBoundingClientRect=()=>({left:12,top:1800,right:212,bottom:1822,width:200,height:22});
+ assert.equal(attributionVisible(a,a.href),true);footer.style.display='none';assert.equal(attributionVisible(a,a.href),false);
+ document.body.classList.add('zen');assert.equal(attributionVisible(a,a.href),true);a.remove();assert.equal(attributionVisible(a,'https://syolana.com/'),false);dom.window.close();
 });

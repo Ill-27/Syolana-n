@@ -1,27 +1,13 @@
+import {prepareAttribution} from './partner-attribution.js';
 import {ATTRIBUTION_TEXT,protectAttribution} from './attribution-guard.js';
 import {calendarWindow} from './partner-periods.mjs';
 const https=value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.hash?u.href:'';}catch{return '';}};
-const installBrandLogoStyle=()=>{
- if(document.getElementById('syolana-partner-brand-holo'))return;
- const style=document.createElement('style');style.id='syolana-partner-brand-holo';style.textContent=`
-.syolana-partner-logo-wrap{position:relative;display:inline-grid;place-items:center;width:34px;height:34px;margin-right:8px;vertical-align:middle;line-height:0;isolation:isolate}
-.syolana-partner-logo-wrap>img{grid-area:1/1;width:34px;height:34px;object-fit:contain}
-`;document.head.append(style);
-};
-const mountBrandLogo=brand=>{
- if(!brand)return;
- (brand.closest('.export-attribution')||brand).classList.add('syolana-passport-button');
- if(brand.querySelector('[data-syolana-logo]'))return;
- installBrandLogoStyle();
- const wrap=document.createElement('span');wrap.className='syolana-partner-logo-wrap';wrap.setAttribute('aria-hidden','true');
- const logo=document.createElement('img');logo.src='https://syolana.com/assets/logo.svg?v=20261014-passport-1';logo.alt='';logo.width=34;logo.height=34;logo.dataset.syolanaLogo='true';
- wrap.append(logo);brand.prepend(wrap);
-};
+const mountBrandLogo=brand=>prepareAttribution(brand);
 export async function mountLicensedDesign({settings,license,themes=[],brand=document.getElementById('syolana-attribution')}){
  const calendar=license?.mode==='calendar';
  let live=false,closed=false,checking=false,expiry=0,frame,stop=()=>{};const remote=[];const previousStyle=document.documentElement.getAttribute('style'),previousTheme=document.documentElement.getAttribute('data-theme');
  const controls=document.querySelector('.export-controls');if(controls)controls.hidden=true;
- const lose=()=>{if(closed)return;closed=true;live=false;stop();clearTimeout(expiry);clearInterval(timer);for(const n of remote)n.remove();frame?.remove();brand?.querySelector('[data-syolana-logo]')?.parentElement?.remove();document.body.classList.remove('zen');document.getElementById('theme-dialog')?.close?.();if(controls)controls.hidden=true;if(previousStyle===null)document.documentElement.removeAttribute('style');else document.documentElement.setAttribute('style',previousStyle);if(previousTheme===null)document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',previousTheme);};
+ const lose=()=>{if(closed)return;closed=true;live=false;stop();clearTimeout(expiry);clearInterval(timer);for(const n of remote)n.remove();frame?.remove();brand?.querySelector('[data-syolana-logo]')?.remove();document.body.classList.remove('zen');document.getElementById('theme-dialog')?.close?.();if(controls)controls.hidden=true;if(previousStyle===null)document.documentElement.removeAttribute('style');else document.documentElement.setAttribute('style',previousStyle);if(previousTheme===null)document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',previousTheme);};
  const palette=e=>{if(!live||e.source!==frame?.contentWindow||e.origin!=='https://syolana.com'||!e.data?.syolanaThemeState)return;if(/^[-a-z0-9]+$/.test(e.data.theme||''))document.documentElement.dataset.theme=e.data.theme;for(const [key,value]of Object.entries(e.data.vars||{}))if(/^--[a-z0-9-]{1,50}$/.test(key)&&typeof value==='string'&&value.length<250)document.documentElement.style.setProperty(key,value);};
  window.addEventListener('message',palette);
  async function verify(){

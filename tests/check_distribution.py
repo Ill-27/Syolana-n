@@ -48,8 +48,7 @@ for course in ('en-a2', 'es-a1', 'es-a2', 'fr-a1'):
 access = read('access-service.json')
 assert isinstance(access['ready'], bool)
 assert not access['ready'] or access['origin'].startswith('https://')
-assert read('artivid/access-service.json') == access
 songs = read('song-details.json')
 assert len(songs['songs']) == 3 and songs['rightsNote']
 assert '__RELEASE__' not in (root / 'sw.js').read_text(), 'Service worker release must be sealed'
-print('PASS: seven themes, both applications, protected courses, song metadata and published assets')
+print('PASS: seven themes, the primary application and partner compatibility, protected courses, song metadata and published assets')

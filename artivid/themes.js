@@ -1,3 +1,4 @@
+import {normalizePartnerFooter} from '../partner-attribution.js';
 import themeManifest from './themes/manifest.json' with {type:'json'};
 import {themeLoaders} from './theme-loaders.js';
 import { getPref, setPref, notify } from "./utils.js";
@@ -120,6 +121,7 @@ const FALLBACK_THEMES=[
 ];
 export class ThemeEngine {
   async init() {
+    document.querySelectorAll('footer a.platform-credit').forEach(normalizePartnerFooter);
     this.destroyed=false;
     if(!document.getElementById('syolana-scene-softness')){const style=document.createElement('style');style.id='syolana-scene-softness';style.textContent=SOFT_SCENE_CSS;document.head.append(style);}
     this.canvas = document.querySelector("#starCanvas");

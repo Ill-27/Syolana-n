@@ -36,3 +36,4 @@ jobs:
           npm ci
           node --test tests/test_contact_discovery.mjs
           node tests/test_licensed_design.mjs
+          node --test tests/test_partner_credit.mjs tests/test_attribution_guard.mjs

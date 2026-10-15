@@ -1,8 +1,11 @@
-export const ATTRIBUTION_TEXT='Темы и оформление — Syolana';
+export {ATTRIBUTION_TEXT} from './partner-attribution.js';
+import {ATTRIBUTION_TEXT} from './partner-attribution.js';
 export function attributionVisible(node,expectedHref){
  if(!node?.isConnected||node.textContent.trim()!==ATTRIBUTION_TEXT||node.href!==expectedHref)return false;
+ if(node.closest('footer')&&document.body.classList.contains('zen'))return true;
  const rect=node.getBoundingClientRect();
- if(rect.width<130||rect.height<14||rect.right<=0||rect.bottom<=0||rect.left>=innerWidth||rect.top>=innerHeight)return false;
+ if(rect.width<130||rect.height<14)return false;
+ if(!node.closest('footer')&&(rect.right<=0||rect.bottom<=0||rect.left>=innerWidth||rect.top>=innerHeight))return false;
  let opacity=1;
  for(let p=node;p&&p.nodeType===1;p=p.parentElement){const s=getComputedStyle(p);opacity*=Number(s.opacity||1);if(p.hidden||s.display==='none'||s.visibility==='hidden'||s.visibility==='collapse'||s.contentVisibility==='hidden'||(s.clipPath&&s.clipPath!=='none')||/brightness\(0(?:\.0+)?\)/.test(s.filter)||opacity<.45)return false;}
  const style=getComputedStyle(node);

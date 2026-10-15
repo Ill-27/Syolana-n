@@ -7,6 +7,8 @@ FILES=['index.html', 'app.js', 'api.js', 'api-transport.js', 'boot.js', 'catalog
 DIRECTORIES=['assets','themes','courses','owner-vault','español-songs','partner-demo','partners','artivid','legacy-scripts','runtime','personal-atlas','partner','studio','editor']
 FILES.extend(['attribution-guard.js', 'licensed-design.js', 'scene-audio.js', 'trust-ui.js', 'brand-effects.js', 'owner-sites.js', 'owner-registry-store.mjs', 'partner-brand-banner.js', 'partner-brand-banner.css'])
 FILES.extend(['local-course-access.mjs','local-course-ui.mjs'])
+FILES.extend(['avito-dock.js','course-discovery.js'])
+DIRECTORIES.append('course-packages')
 def deduplicate_course_bootstrap(text):
  for pattern in (r'<base\s+href="\./"\s*/?>',r'<link\s+rel="stylesheet"\s+href="assets/fonts/fonts\.css"\s*/?>',r'<script\s+type="module"\s+src="course-api-bridge\.js(?:\?[^\"]*)?"\s*>\s*</script>'):
   seen=False

@@ -2518,5 +2518,25 @@
     "Avito messages, payment confirmation and hosting service logs must be considered separately. The absence of name and phone fields on the site does not by itself establish an exemption from notifying Roskomnadzor.",
     "La conversación en Avito, la confirmación del pago y los registros técnicos del alojamiento se consideran por separado. La ausencia de campos de nombre y teléfono en el sitio no demuestra por sí sola una exención de notificar a Roskomnadzor.",
     "Les messages sur Avito, la confirmation du paiement et les journaux techniques de l’hébergement doivent être examinés séparément. L’absence de champs de nom et de téléphone sur le site ne suffit pas à établir une dispense de notification à Roskomnadzor."
+  ],
+  "Языковая подписка": [
+    "Language subscription",
+    "Suscripción a los cursos de idiomas",
+    "Abonnement aux cours de langues"
+  ],
+  "Заказ и оплата": [
+    "Ordering and payment",
+    "Pedido y pago",
+    "Commande et paiement"
+  ],
+  "На сайте Syolana оплата не принимается. Заказ, стоимость, срок доступа и согласование оплаты проходят через официальный профиль Syolana на Авито до оплаты.": [
+    "Payments are not accepted on the Syolana website. Orders, prices, access periods and payment arrangements are agreed through Syolana’s official Avito profile before payment.",
+    "Los pagos no se realizan en el sitio Syolana. El pedido, el precio, el plazo de acceso y las condiciones de pago se acuerdan a través del perfil oficial de Syolana en Avito antes de pagar.",
+    "Les paiements ne s’effectuent pas sur le site Syolana. La commande, le prix, la durée d’accès et les modalités de paiement sont convenus via le profil officiel Syolana sur Avito avant le paiement."
+  ],
+  "Для работы ключей доступа, поддержки и выполнения заказа используются только необходимые технические данные. Подробные правила собраны на этой странице; оплата и переписка проходят через официальный профиль Syolana на Авито.": [
+    "Only the technical data needed for access keys, support and fulfilling orders are used. The detailed rules are on this page; payment arrangements and correspondence take place through Syolana’s official Avito profile.",
+    "Solo se utilizan los datos técnicos necesarios para las claves de acceso, la asistencia y la gestión del pedido. Las normas detalladas están en esta página; el pago y la comunicación se acuerdan a través del perfil oficial de Syolana en Avito.",
+    "Seules les données techniques nécessaires aux clés d’accès, à l’assistance et à l’exécution de la commande sont utilisées. Les règles détaillées figurent sur cette page ; les modalités de paiement et les échanges passent par le profil officiel Syolana sur Avito."
   ]
 }

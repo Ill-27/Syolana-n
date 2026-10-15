@@ -2,6 +2,7 @@ import initialConfig from './config.json' with {type:'json'};
 import initialFeed from './feed.json' with {type:'json'};
 import songDetails from './song-details.json' with {type:'json'};
 import {getLocale,tr} from './i18n.js';
+import {coursePurchaseButton,songLanguage,songCourseLink,songCoursePromo} from './course-discovery.js';
 import {finishUI} from './render-ui.js';
 import {positionView,clearPositionView} from './positioning.js';
 import {loadPublicJSON} from "./public-data.js?v=20261011-poems-2";
@@ -409,7 +410,9 @@ function languages(lang = "en") {
   for (const [level,description] of Object.entries({A1:"Основы языка и первые повседневные разговоры",A2:"Больше слов, времен и уверенности в обычных ситуациях"})) {
     const key=lang+"/"+level.toLowerCase()+"/course",published=Boolean(lessonFiles[key]),free=lang==="en"&&level==="A1";
     const item=el("article","card stack language-level");item.dataset.level=level;
-    item.append(el("span","badge",free?"БЕСПЛАТНО ДЛЯ ВСЕХ":published?"В ОБЩЕЙ ПОДПИСКЕ":"ГОТОВИТСЯ"),el("h3","course-level",data.name+" "+level),el("p","",description),el("p","course-price",free?"Бесплатно":published?"650 ₽ / 30 дней · все платные курсы":"Дата появится после подготовки"),published?link(free?"Начать бесплатно":"Открыть курс", "#/lesson/"+key,"btn primary"):link("Предложить следующий язык",businessContact("Хочу изучать "+data.name+" "+level,"languages"),"text-link"));levels.append(item);
+    item.append(el("span","badge",free?"БЕСПЛАТНО ДЛЯ ВСЕХ":published?"В ОБЩЕЙ ПОДПИСКЕ":"ГОТОВИТСЯ"),el("h3","course-level",data.name+" "+level),el("p","",description),el("p","course-price",free?"Бесплатно":published?"650 ₽ / 30 дней · все платные курсы":"Дата появится после подготовки"),published?link(free?"Начать бесплатно":"Открыть курс", "#/lesson/"+key,"btn primary"):link("Предложить следующий язык",businessContact("Хочу изучать "+data.name+" "+level,"languages"),"text-link"));
+    if(published&&!free)item.append(coursePurchaseButton());
+    levels.append(item);
   }
   $("page").append(levels);
   const details=el("details","card stack language-details");details.append(el("summary","","Подписка, новые уровни и авторские права"),el("p","","Одна подписка за 650 ₽ открывает все опубликованные платные языковые курсы на 30 дней. Продление — только по вашему решению, без автоматических списаний. Английский A1 доступен без подписки. Партнёрам с оплаченным обслуживанием сайта языковой доступ включён на оплаченный период."),el("p","","План — готовить примерно один новый уровень в месяц. Язык выбирается с учётом ваших пожеланий, а срок зависит от подготовки и проверки материалов. Подписка открывает то, что уже опубликовано; будущий выпуск не гарантируется к определённой дате."),el("p","fine","Это материалы для самостоятельной практики: без занятий с преподавателем, экзаменов и выдачи документов об образовании. Название уровня обозначает сложность материала. Озвучка зависит от голосов браузера и устройства; прогресс хранится в этом браузере."),el("p","fine","© Syolana. Материалы предназначены для личного использования. Публикация, копирование и распространение требуют разрешения правообладателя, кроме случаев, разрешённых законом."),link("Условия доступа", "#/offer","text-link"));$("page").append(details);
@@ -450,6 +453,8 @@ function songsPage() {
       "Коллекция пополняется: включите любую из опубликованных песен.",
     ),
   );
+  const promo=songCoursePromo(player.songs.map(song=>songLanguage(song,songDetails.songs)));
+  if(promo)$("page").append(promo);
   const list = el("div", "grid two songs-grid");
   player.songs.forEach((song, i) => {
     const card = el("article", "card stack");
@@ -462,6 +467,8 @@ function songsPage() {
       card.append(
         link("Открыть источник вдохновения", song.sourceUrl, "text-link"),
       );
+    const courseLink=songCourseLink(songLanguage(song,songDetails.songs));
+    if(courseLink)card.append(courseLink);
     list.append(card);
   });
   $("page").append(list);
@@ -494,7 +501,8 @@ async function songPage(id, token) {
   renderPoems();window.addEventListener('syolana:locale',renderPoems);cleanup=()=>window.removeEventListener('syolana:locale',renderPoems);
   const rights=el('section','card stack song-rights');rights.append(el('p','eyebrow','АВТОР И ПРАВА'),el('h2','','Исторический текст — общественное достояние'),el('p','',song.publicDomain.explanation),el('p','fine',song.publicDomain.scopeNote),link('ГК РФ: статьи 1281 и 1282',song.publicDomain.lawUrl,'text-link'));
   const notes=el('details','card stack song-notes');notes.append(el('summary','','Примечания и проверенные источники'));for(const text of song.notes)notes.append(el('p','',text));for(const source of song.sources||[])notes.append(link(source.label,source.url,'text-link'));
-  $('page').append(introduction,poems,rights,notes,link('К списку песен','#/songs','btn'));
+  const promo=songCoursePromo([songLanguage(song)]);
+  $('page').append(introduction,...(promo?[promo]:[]),poems,rights,notes,link('К списку песен','#/songs','btn'));
 }
 function join() {
   $("page").append(heading("ТЕМЫ И ШАБЛОНЫ · 7 ДНЕЙ ЗНАКОМСТВА", "Ваш сайт. Ваши материалы. Общая забота о дизайне.", "Готовый шаблон с живыми темами и понятным редактором. Домен, хостинг и размещение — по вашему выбору. Для авторов, мастеров, студий и небольших проектов."));

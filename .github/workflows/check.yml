@@ -31,3 +31,8 @@ jobs:
         run: |
           node tests/test_player.mjs
           node tests/test_zen_layout.mjs
+      - name: Check contact gestures and course discovery
+        run: |
+          npm ci
+          node --test tests/test_contact_discovery.mjs
+          node tests/test_licensed_design.mjs

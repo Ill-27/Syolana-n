@@ -1,4 +1,5 @@
 import {registerTranslations, getLocale as currentLocale, tr as t} from "./i18n.js";
+import {mountAvitoDock} from './avito-dock.js';
 
 const MAIN_URL = "https://syolana.com/";
 const YANDEX_URL = "https://syolana.website.yandexcloud.net/";
@@ -162,6 +163,7 @@ function renderFloatingButton() {
   button.setAttribute("aria-label", label);
   button.title = label;
   button.innerHTML = `${avitoMark()}<span class="syolana-avito-float-label">${label}</span>`;
+  mountAvitoDock(button);
 }
 
 function renderTrustUI() {

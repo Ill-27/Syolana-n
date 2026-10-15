@@ -1,4 +1,5 @@
 import {validateSiteSettings} from './partner-demo/builder-model.mjs';
+import {calendarLicense} from './partner-periods.mjs';
 const utf8=new TextEncoder();
 const table=Uint32Array.from({length:256},(_,v)=>{for(let n=0;n<8;n++)v=(v&1)?0xedb88320^(v>>>1):v>>>1;return v>>>0;});
 function crc32(bytes){let crc=0xffffffff;for(const byte of bytes)crc=table[(crc^byte)&255]^(crc>>>8);return (crc^0xffffffff)>>>0;}
@@ -36,8 +37,8 @@ export async function createSiteArchive(value,{nativeFetch=fetch,baseURL=new URL
     const bytes=new Uint8Array(await response.arrayBuffer());let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));item.src='data:'+mime+';base64,'+btoa(binary);
   }
   const manifest=await nativeFetch(new URL('themes/manifest.json',baseURL),{cache:'no-store'});if(!manifest.ok)throw Error('Не удалось получить список тем.');const themes=(await manifest.json()).map(t=>({id:t.id,name:t.name}));if(!themes.length||themes.some(t=>!/^[-a-z0-9]+$/.test(t.id)||typeof t.name!=='string'))throw Error('Не удалось проверить список тем.');
-  const assets=['licensed-design.js','attribution-guard.js'];
-  const files=[['index.html',PAGE],['site.js',RUNTIME],['site-settings.json',JSON.stringify({settings,posts,themes,license:value.license||null},null,2)],['START.txt','Syolana: готовый шаблон сайта.\nЗагрузите содержимое архива в корень сайта на выбранном хостинге с HTTPS. Домен и хостинг выбираете вы.\nЖивое оформление подключается только после регистрации домена и выдачи лицензии Syolana. При её отключении тексты и вложения остаются доступны. Открытие index.html как файла не заменяет размещение: модулям нужен веб-сервер.\nТексты, настройки и вложения включены в архив. Изменения в редакторе после экспорта требуют нового экспорта и загрузки.\n']];
+  const assets=['licensed-design.js','attribution-guard.js','partner-periods.mjs'];
+  const files=[['index.html',PAGE],['site.js',RUNTIME],['site-settings.json',JSON.stringify({settings,posts,themes,license:value.license||calendarLicense()},null,2)],['START.txt','Syolana: готовый шаблон сайта.\nЗагрузите содержимое архива в корень сайта на выбранном хостинге с HTTPS. Домен и хостинг выбираете вы.\nНовый календарный файл по умолчанию даёт бесплатное оформление до 1 января 2027 года, 00:00 МСК. Оплаченный файл 2027 года выдаётся вручную отдельно и заканчивается 1 января 2028 года, 00:00 МСК. Регистрация домена на сервере лицензий для календарного файла не нужна. Срок проверяется по часам браузера, поэтому защита от изменения часов или кода не гарантируется. Ранее выданная серверная лицензия сохраняет свои условия. При её отключении тексты и вложения остаются доступны. Открытие index.html как файла не заменяет размещение: модулям нужен веб-сервер.\nТексты, настройки и вложения включены в архив. Изменения в редакторе после экспорта требуют нового экспорта и загрузки.\n']];
   const loaded=await Promise.all(assets.map(async path=>{const r=await nativeFetch(new URL(path,baseURL),{cache:'no-store'});if(!r.ok)throw Error('Не удалось подготовить оформление сайта. Повторите экспорт.');return[path,new Uint8Array(await r.arrayBuffer())];}));
   return zipFiles([...files,...loaded]);
 }

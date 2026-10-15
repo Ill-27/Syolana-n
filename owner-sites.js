@@ -1,6 +1,7 @@
 import {createOwnerVault} from './owner-vault.mjs';
 import {createDomainBook,validateDomainRow,yearLater} from './owner-registry-store.mjs';
 import {installAPITransport} from './api-transport.js';
+import {mountPartnerFileBuilder} from './partner-file.mjs';
 
 const make=(tag,text='',cls='')=>{const n=document.createElement(tag);n.textContent=text;if(cls)n.className=cls;return n;};
 const stamp=()=>Math.floor(Date.now()/1000);
@@ -23,6 +24,7 @@ export async function mountOwnerSites(host,{isCurrent=()=>true}={}){
  const show=make('button','Показать ключ');show.type='button';show.onclick=()=>{key.type=key.type==='password'?'text':'password';show.textContent=key.type==='password'?'Показать ключ':'Скрыть ключ';};
  const unlock=make('button','Открыть закрытый список','btn primary');unlock.type='submit';login.append(show,unlock);
  const panel=make('div');panel.hidden=true;
+ const disposePartnerFiles=mountPartnerFileBuilder(panel,{isOwner:()=>vault.isOwner()});
  const connection=make('p','Сервер не подключён. Здесь хранится зашифрованная копия на этом устройстве. Сохранённый статус не подтверждает текущую работу лицензии.','owner-note');
  const onlineButton=make('button','Подключить сервер лицензий');onlineButton.type='button';
  const toolbar=make('div','','owner-actions'),backup=make('button','Скачать зашифрованную копию'),restore=make('input'),restoreLabel=make('label','Восстановить копию','field');backup.type='button';restore.type='file';restore.accept='.json,application/json';restoreLabel.append(restore);toolbar.append(onlineButton,backup,restoreLabel);
@@ -54,5 +56,5 @@ export async function mountOwnerSites(host,{isCurrent=()=>true}={}){
  backup.onclick=()=>{const raw=book.exportEncrypted();if(!raw){message.textContent='Сначала добавьте сайт либо получите список от сервера.';return;}const a=make('a');a.href=URL.createObjectURL(new Blob([raw],{type:'application/json'}));a.download='Syolana-domains-encrypted-'+iso(stamp())+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);message.textContent='Сохраните зашифрованную копию. На другом адресе сайта откройте её тем же ключом владельца.';};
  restore.onchange=async()=>{try{const file=restore.files[0];if(!file)return;if(file.size>1024*1024)throw Error('Файл слишком большой.');if(rows.length&&!confirm('Заменить локальную копию выбранным файлом? Серверные лицензии этим действием не изменяются.'))return;rows=await book.importEncrypted(await file.text());online=false;connection.textContent='Копия восстановлена на устройстве. Подключите сервер отдельно, чтобы проверить актуальные лицензии.';render();message.textContent='Зашифрованная копия восстановлена.';}catch(e){message.textContent=e.message;}finally{restore.value='';}};
  if(vault.isOwner())try{await open();}catch(e){message.textContent=e.message;}
- return()=>{disposed=true;};
+ return()=>{disposed=true;disposePartnerFiles();};
 }

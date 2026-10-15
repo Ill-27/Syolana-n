@@ -9,7 +9,7 @@ FILES.extend(['attribution-guard.js', 'licensed-design.js', 'scene-audio.js', 't
 FILES.extend(['local-course-access.mjs','local-course-ui.mjs'])
 FILES.extend(['partner-periods.mjs','partner-file.mjs','partner-attribution.js','partner-attribution.css'])
 FILES.extend(['avito-dock.js','course-discovery.js'])
-DIRECTORIES.append('course-packages')
+DIRECTORIES.extend(['course-packages','audio-library'])
 def deduplicate_course_bootstrap(text):
  for pattern in (r'<base\s+href="\./"\s*/?>',r'<link\s+rel="stylesheet"\s+href="assets/fonts/fonts\.css"\s*/?>',r'<script\s+type="module"\s+src="course-api-bridge\.js(?:\?[^\"]*)?"\s*>\s*</script>'):
   seen=False

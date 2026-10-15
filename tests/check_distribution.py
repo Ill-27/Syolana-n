@@ -29,8 +29,6 @@ for theme in themes:
     path = (root / 'themes' / theme['module']).resolve()
     assert path.is_relative_to(root) and path.is_file(), theme['module']
     assert theme['preview'].startswith('linear-gradient(')
-for name in ('themes/manifest.json', 'themes/sky-camera.mjs', 'themes/sea-motion.mjs', 'themes/leaf-motion.mjs'):
-    assert (root / name).read_bytes() == (root / 'artivid' / name).read_bytes(), name
 
 manifest = read('owner-vault/manifest.json')
 assert manifest['schema'] == 'syolana.owner-vault.v1' and manifest['iterations'] == 250000

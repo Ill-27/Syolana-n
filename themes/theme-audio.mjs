@@ -1,7 +1,7 @@
 import {SceneAudio} from '../scene-audio.js?v=20261012-bloom-control-1';
 
 const root=new URL('../',import.meta.url);
-const mediaPath=value=>(root.pathname.endsWith('/artivid/')||document.documentElement?.dataset?.localThemeAssets==='true')?value:value.replace(/^audio-library\//,'artivid/audio-library/');
+const mediaPath=value=>value;
 export function audioEntry(raw){
  const entry=typeof raw==='string'?{src:raw}:raw;
  const src=new URL(mediaPath(entry.src),root).href;

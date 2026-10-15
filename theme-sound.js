@@ -1,13 +1,13 @@
 import {SceneAudio} from './scene-audio.js?v=20261012-atmosphere-2';
 
 export const THEME_AUDIO_LIBRARY={
-  forest:{src:'artivid/audio-library/ambience/deep_forest.ogg',loop:true,volume:.18},
-  ocean:{src:'artivid/audio-library/nature/ocean_waves.ogg',fallback:'artivid/audio-library/compatible/nature/ocean_waves.m4a',loop:true,volume:.13},
-  night:{src:'artivid/audio-library/ambience/night_air.ogg',fallback:'artivid/audio-library/compatible/ambience/night_air.m4a',loop:true,volume:.14},
-  glow:{src:'artivid/audio-library/music/synth_mystic_pad.ogg',loop:true,volume:.12},
-  meadow:{src:'artivid/audio-library/nature/forest_morning.ogg',loop:true,volume:.14},
-  breeze:{src:'artivid/audio-library/nature/wind_soft.ogg',loop:true,volume:.09},
-  warm:{src:'artivid/audio-library/music/piano_romantic_soft.ogg',loop:true,volume:.1}
+  forest:{src:'audio-library/ambience/deep_forest.ogg',loop:true,volume:.18},
+  ocean:{src:'audio-library/nature/ocean_waves.ogg',fallback:'audio-library/compatible/nature/ocean_waves.m4a',loop:true,volume:.13},
+  night:{src:'audio-library/ambience/night_air.ogg',fallback:'audio-library/compatible/ambience/night_air.m4a',loop:true,volume:.14},
+  glow:{src:'audio-library/music/synth_mystic_pad.ogg',loop:true,volume:.12},
+  meadow:{src:'audio-library/nature/forest_morning.ogg',loop:true,volume:.14},
+  breeze:{src:'audio-library/nature/wind_soft.ogg',loop:true,volume:.09},
+  warm:{src:'audio-library/music/piano_romantic_soft.ogg',loop:true,volume:.1}
 };
 export const THEME_AUDIO_SCENES={
   'living-sea':'ocean',

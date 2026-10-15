@@ -938,5 +938,3 @@ async function openLesson(key, anchor, token) {
   }
   lessonFrame(key, anchor);
 }
-
-

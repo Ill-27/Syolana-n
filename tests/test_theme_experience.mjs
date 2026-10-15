@@ -81,9 +81,8 @@ for(const theme of [sea,forest,city]){
  if(theme===sea){const before=sources.length,strike=stormStrike(100);native.setWeather({wind:1,rain:1,storm:1,strike:stormStrike(strike.start,1)});for(let attempt=0;attempt<50&&sources.length===before;attempt++)await new Promise(resolve=>setTimeout(resolve,10));assert.equal(sources.length,before+1);assert(sources.at(-1).started>2.5);native.setWeather({wind:1,rain:1,storm:1,strike:stormStrike(strike.start+.02,1)});assert.equal(sources.length,before+1);}
  native.dispose();failOgg=false;
 }
-const redirected=[];const movedFetch=async url=>{redirected.push(String(url));return String(url).includes('/artivid/')?new Response(await fs.readFile(new URL('../audio-library/nature/ocean_waves.ogg',import.meta.url))):Response.json({status:'moved',movedTo:'https://example.test/project/artivid/'});};
-const moved=await fetchSceneAudio('https://example.test/project/audio-library/nature/ocean_waves.ogg',{nativeFetch:movedFetch});assert(Buffer.from(await moved.arrayBuffer()).subarray(0,4).toString()==='OggS');assert(redirected.at(-1).endsWith('/artivid/audio-library/nature/ocean_waves.ogg'));
-const unavailableRoot=async url=>String(url).includes('/artivid/')?new Response(await fs.readFile(new URL('../audio-library/nature/ocean_waves.ogg',import.meta.url))):new Response('',{status:403});
-const recovered=await fetchSceneAudio('https://example.test/project/audio-library/nature/ocean_waves.ogg',{nativeFetch:unavailableRoot});assert(Buffer.from(await recovered.arrayBuffer()).subarray(0,4).toString()==='OggS');
+const requested=[];const sharedFetch=async url=>{requested.push(String(url));return new Response(await fs.readFile(new URL('../audio-library/nature/ocean_waves.ogg',import.meta.url)));};
+const shared=await fetchSceneAudio('https://example.test/project/audio-library/nature/ocean_waves.ogg',{nativeFetch:sharedFetch});assert(Buffer.from(await shared.arrayBuffer()).subarray(0,4).toString()==='OggS');assert.equal(requested.length,1);assert(!requested[0].includes('/artivid/'));
+await assert.rejects(fetchSceneAudio('https://example.test/project/audio-library/missing.ogg',{nativeFetch:async()=>new Response('',{status:404})}),/Audio unavailable/);
 assert(resumes>=7);assert(sources.length>=15);
 console.log('PASS: three selectable ships, smooth steering, delayed storm thunder, five 3D wildflowers, one zen card, hidden navigation and audio start/AAC recovery for all seven themes.');

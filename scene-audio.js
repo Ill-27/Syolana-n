@@ -3,18 +3,7 @@ import { safeURL, notify, getPref, setPref } from "./utils.js";
 export async function fetchSceneAudio(url,{nativeFetch=fetch}={}) {
   const request={signal:AbortSignal.timeout(12000),credentials:'omit'};
   let response=await nativeFetch(url,request);
-  const source=new URL(url),audioIndex=source.pathname.indexOf('/audio-library/');
-  if(!response.ok&&[403,404].includes(response.status)&&audioIndex>=0&&!source.pathname.slice(0,audioIndex).endsWith('/artivid')){
-    source.pathname=source.pathname.slice(0,audioIndex+1)+'artivid'+source.pathname.slice(audioIndex);source.search='';
-    response=await nativeFetch(source.href,request);
-  }
-  if(!response.ok)throw Error('Audio unavailable');
-  if(response.headers?.get('content-type')?.includes('application/json')){
-    const relocation=await response.json(),base=new URL(relocation.movedTo),path=new URL(url).pathname.split('/audio-library/')[1];
-    if(relocation.status!=='moved'||base.protocol!=='https:'||base.username||base.password||!path||path.split('/').includes('..')||!/^[-a-zA-Z0-9_./]+\.(ogg|m4a)$/.test(path))throw Error('Invalid audio location');
-    response=await nativeFetch(new URL('audio-library/'+path,base).href,request);
-    if(!response.ok)throw Error('Audio unavailable');
-  }
+  if(!response.ok||response.headers?.get('content-type')?.includes('application/json'))throw Error('Audio unavailable');
   return response;
 }
 

@@ -81,4 +81,3 @@ test('the website archive includes its calendar dependency and preserves an exis
   assert.ok(files.has('partner-periods.mjs'));assert.ok(requested.some(v=>v.endsWith('/partner-periods.mjs')));assert.deepEqual(JSON.parse(files.get('site-settings.json')).license,license||calendarLicense());assert.equal(requested.some(v=>v.includes('/api/')),false);
  }
 });
-

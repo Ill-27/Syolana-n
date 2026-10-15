@@ -57,10 +57,10 @@ export async function mountSiteCreator(host,{isCurrent=()=>true}={}){
  const root=node('div','','managed-workspace');host.append(root);
  async function open(){
   root.replaceChildren();login(root,open);try{await request('session');}catch(e){if(valid()){const connection=node('aside','','workspace-connection');connection.append(node('p','Демо открывается без сервера. Ключ владельца открывает резервную мастерскую на этом устройстве. Серверная публикация требует восстановления связи.'),action('Повторить подключение',open));root.append(connection);}return;}if(!valid())return;
-  if(!session.canCreateSite)return;root.replaceChildren();if(session.reserve)root.append(node('p','Резервная мастерская владельца. Черновики сохраняются на этом устройстве. Готовый сайт можно скачать и разместить на выбранном хостинге. Серверные проекты остаются на сервере и появятся после восстановления связи.','card'));
+  if(!session.canCreateSite&&!session.canManageSite)return;root.replaceChildren();if(session.reserve)root.append(node('p','Резервная мастерская владельца. Черновики сохраняются на этом устройстве. Готовый сайт можно скачать и разместить на выбранном хостинге. Серверные проекты остаются на сервере и появятся после восстановления связи.','card'));
   const response=await request('studio/projects');if(!valid())return;
   if(response.projects.length){const list=node('section','','card stack');list.append(node('h2','Ваши сайты'));for(const p of response.projects){const row=node('div','','managed-project-row');row.append(node('strong',p.name),node('span',p.local?(p.status==='ready'?'Готов к экспорту':'Черновик на устройстве'):p.status==='published'?'Опубликован':'Черновик','badge'),link('Редактировать','#/site-editor/'+p.id,'btn'));if(p.status==='published'||p.local)row.append(link('Открыть сайт','#/site/'+p.id,'btn'));list.append(row);}root.append(list);}
-  if(!session.owner&&response.projects.length)return;
+  if(!session.canCreateSite||(!session.owner&&response.projects.length))return;
   const card=node('section','','card stack');card.append(node('h2','Создайте новое пространство'));const form=node('form','','form');const name=field(form,'Название сайта','name',{max:100,required:true});name.placeholder='Например, Мастерская света';
   const choices=node('div','','managed-template-choices');let template='portfolio';
   for(const [id,title,text]of [['portfolio','Творчество','Работы, фотографии и новые проекты'],['author','Истории','Тексты, заметки и публикации'],['business','Свое дело','Предложение, преимущества и контакты']]){const label=node('label','','managed-template');const input=node('input');input.type='radio';input.name='template';input.value=id;input.checked=id===template;input.onchange=()=>{template=id;};label.append(input,node('strong',title),node('span',text));choices.append(label);}form.append(choices);
@@ -86,8 +86,14 @@ export async function mountManagedEditor(host,site,{isCurrent=()=>true}={}){
  const root=node('div','','managed-workspace');host.append(root);
  async function open(){
   root.replaceChildren();login(root,open);try{await request('session');}catch(error){root.append(node('p',error.message,'managed-status'));return;}if(!valid())return;
-  if(!session.canCreateSite)return;root.replaceChildren();
+  if(!session.canCreateSite&&!session.canManageSite)return;root.replaceChildren();
   let data;try{data=await request('studio/'+site+'/settings');}catch(error){if(valid())root.append(node('section',error.message,'card managed-status'));return;}if(!valid())return;
+  if(data.readOnly){
+   const archive=node('section','','card stack'),message=status();archive.append(node('p',"Оплаченный период завершён. Ваши материалы сохранены: скачайте сайт или тексты и настройки. Сохранение новых изменений на сервере доступно после продления."),message,
+    action('Скачать готовый сайт',async()=>{try{await downloadSite(await request('studio/'+site+'/export'),site);}catch(error){message.textContent=error.message;}}),
+    action('Скачать тексты и настройки',async()=>{try{const exported=await request('studio/'+site+'/export'),url=URL.createObjectURL(new Blob([JSON.stringify(exported,null,2)],{type:'application/json;charset=utf-8'})),a=link('Скачать',url);a.download='syolana-'+site+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){message.textContent=error.message;}}),
+    action('Выйти из редактора',async()=>{try{await request('logout',{});location.reload();}catch(error){message.textContent=error.message;}}));root.append(archive);return;
+  }
   const local=Boolean(data.local);document.title=data.settings.name+' · Редактор';let revision=data.revision,published=data.project.status==='published';
   const notice=node('section','','managed-share card stack'),state=node('p',local?'Резервная мастерская: изменения сохраняются на этом устройстве. Для публикации скачайте сайт и загрузите его на выбранный хостинг.':data.project.status==='published'?'Сайт опубликован. Последние изменения сохранены на сервере.':'Это черновик. Нажмите «Опубликовать изменения», когда страница будет готова.');const url=new URL('#/site/'+site,location.href).href;
   const live=link(local?'Предпросмотр сохранённого сайта':'Открыть сайт',url,'btn primary');live.hidden=!local&&data.project.status!=='published';const visibility=action(published?'Скрыть сайт':'Вернуть сайт',async()=>{visibility.disabled=true;try{const d=await request('studio/'+site+'/visibility',{visible:!published});published=d.project.status==='published';visibility.textContent=published?'Скрыть сайт':'Вернуть сайт';live.hidden=!published;share.hidden=!published;state.textContent=published?'Сайт снова доступен посетителям.':'Сайт скрыт. Тексты и настройки сохранены; страницу можно вернуть.';}catch(error){state.textContent=error.message;}finally{visibility.disabled=false;}});visibility.hidden=local||data.project.status==='draft';const share=action('Скопировать адрес',async()=>{try{await navigator.clipboard.writeText(url);state.textContent='Адрес сайта скопирован.';}catch{state.textContent='Адрес вашего сайта: '+url;}});share.hidden=local||live.hidden;
@@ -108,3 +114,4 @@ export async function mountManagedEditor(host,site,{isCurrent=()=>true}={}){
 }
 
 async function downloadSite(value,site){if(!value.license){try{const info=await request('session'),registry=await request('admin/partner-registry');const row=registry.sites.find(r=>r.siteId===site);if(row)value.license={partnerId:row.partnerId,domain:row.domain,endpoint:info.partnerLicenseEndpoint};}catch{}}const archive=await createSiteArchive(value),url=URL.createObjectURL(archive),a=link('Скачать',url);a.download='syolana-'+site+'.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+

@@ -12,7 +12,7 @@ const make = (tag, cls = "", text = "") => {
 const central = (path) => new URL(path, CORE_BASE).href;
 
 async function readJSON(path) {
-  const response = await fetch(central(path), { cache: "no-store" });
+  const response = await fetch(central(path), { cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer" });
   if (!response.ok) throw new Error("Central Syolana resource unavailable: " + path);
   return response.json();
 }

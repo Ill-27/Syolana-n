@@ -17,9 +17,9 @@ const mountBrandLogo=brand=>{
  wrap.append(logo);brand.prepend(wrap);
 };
 export async function mountLicensedDesign({settings,license,themes=[],brand=document.getElementById('syolana-attribution')}){
- let live=false,closed=false,checking=false,expiry=0,frame,stop=()=>{};const remote=[];const previousStyle=document.documentElement.getAttribute('style');
+ let live=false,closed=false,checking=false,expiry=0,frame,stop=()=>{};const remote=[];const previousStyle=document.documentElement.getAttribute('style'),previousTheme=document.documentElement.getAttribute('data-theme');
  const controls=document.querySelector('.export-controls');if(controls)controls.hidden=true;
- const lose=()=>{if(closed)return;closed=true;live=false;stop();clearTimeout(expiry);clearInterval(timer);for(const n of remote)n.remove();frame?.remove();document.body.classList.remove('zen');if(controls)controls.hidden=true;if(previousStyle===null)document.documentElement.removeAttribute('style');else document.documentElement.setAttribute('style',previousStyle);};
+ const lose=()=>{if(closed)return;closed=true;live=false;stop();clearTimeout(expiry);clearInterval(timer);for(const n of remote)n.remove();frame?.remove();document.body.classList.remove('zen');if(controls)controls.hidden=true;if(previousStyle===null)document.documentElement.removeAttribute('style');else document.documentElement.setAttribute('style',previousStyle);if(previousTheme===null)document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',previousTheme);};
  const palette=e=>{if(!live||e.source!==frame?.contentWindow||e.origin!=='https://syolana.com'||!e.data?.syolanaThemeState)return;if(/^[-a-z0-9]+$/.test(e.data.theme||''))document.documentElement.dataset.theme=e.data.theme;for(const [key,value]of Object.entries(e.data.vars||{}))if(/^--[a-z0-9-]{1,50}$/.test(key)&&typeof value==='string'&&value.length<250)document.documentElement.style.setProperty(key,value);};
  window.addEventListener('message',palette);
  async function verify(){
@@ -28,12 +28,12 @@ export async function mountLicensedDesign({settings,license,themes=[],brand=docu
    if(!license||!/^p-[a-f0-9]{12}$/.test(license.partnerId)||license.domain!==location.hostname)throw Error('Inactive');
    const endpoint=https(license.endpoint);if(!endpoint)throw Error('Inactive');
    const url=new URL(endpoint);url.searchParams.set('partnerId',license.partnerId);url.searchParams.set('hostname',location.hostname);
-   const response=await fetch(url,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(5000)});if(!response.ok)throw Error('Inactive');const state=await response.json(),until=Date.parse(state.expiresAt);
+   const response=await fetch(url,{cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(5000)});if(!response.ok)throw Error('Inactive');const state=await response.json(),until=Date.parse(state.expiresAt);
    if(state.active!==true||state.partnerId!==license.partnerId||!state.allowedHosts?.includes(location.hostname)||!Number.isFinite(until)||until<=Date.now()||until>Date.now()+15*60*1000+30000)throw Error('Inactive');
    clearTimeout(expiry);expiry=setTimeout(lose,until-Date.now());
    if(!live){
     live=true;for(const path of ['assets/fonts/fonts.css','styles.css']){const link=document.createElement('link');link.rel='stylesheet';link.href='https://syolana.com/'+path;link.dataset.syolanaStyle='true';document.head.append(link);remote.push(link);}
-    frame=document.createElement('iframe');frame.className='export-theme';frame.title='';frame.allow='autoplay';frame.setAttribute('aria-hidden','true');frame.src='https://syolana.com/theme-embed.html?theme='+encodeURIComponent(settings.theme);document.body.prepend(frame);
+    frame=document.createElement('iframe');frame.className='export-theme';frame.title='';frame.allow='autoplay';frame.referrerPolicy='no-referrer';frame.setAttribute('aria-hidden','true');frame.src='https://syolana.com/theme-embed.html?theme='+encodeURIComponent(settings.theme);document.body.prepend(frame);
     if(controls)controls.hidden=false;
     mountBrandLogo(brand);
     stop=protectAttribution(brand,'https://syolana.com/',lose,{watermark:frame});
@@ -48,3 +48,4 @@ export async function mountLicensedDesign({settings,license,themes=[],brand=docu
  const timer=setInterval(verify,10000);const onFocus=()=>{if(!document.hidden)verify();};window.addEventListener('focus',onFocus);document.addEventListener('visibilitychange',onFocus);
  await verify();return{destroy(){lose();window.removeEventListener('message',palette);window.removeEventListener('focus',onFocus);document.removeEventListener('visibilitychange',onFocus);}};
 }
+

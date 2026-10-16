@@ -5,7 +5,7 @@ spec=importlib.util.spec_from_file_location('sync_checked_public',Path(__file__)
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 class MirrorTest(unittest.TestCase):
  def test_public_allowlist_never_touches_private_code_atlas_or_paid_course_data(self):
-  for name in ['../x','/index.html','.github/workflows/a.yml','source/secret.py','personal-atlas/index.html','courses/en-a2/data.json','courses/fr-a2/data.json.gz','hosting.json','key-reserve.json','scripts/x.py','partners/core-version.json','partners/entitlements.json']:
+  for name in ['../x','/index.html','.github/workflows/a.yml','source/secret.py','personal-atlas/index.html','courses/en-a2/data.json','courses/fr-a2/data.json.gz','hosting.json','key-reserve.json','scripts/x.py','partners/core-version.json','partners/entitlements.json','legal-info/index.html']:
    self.assertFalse(m.approved(name),name)
   for name in ['index.html','access-service.json','licensed-design.js','courses/en-a2/course.js','assets/fonts/a.woff2','themes/new-world.mjs']:
    self.assertTrue(m.approved(name),name)
@@ -25,4 +25,14 @@ class MirrorTest(unittest.TestCase):
    with patch.object(m,'get',self.fixture(root)):
     self.assertTrue(m.sync(root));self.assertFalse(m.sync(root))
    self.assertEqual((root/'index.html').read_text(),'new page')
+ def test_disclosure_remains_accessible_without_copying_personal_text_into_the_mirror(self):
+  with tempfile.TemporaryDirectory() as directory:
+   root=Path(directory);calls=[]
+   files={'index.html':b'page','access-service.json':b'{}','licensed-design.js':b'design',m.DISCLOSURE:b'personal disclosure content'}
+   receipt=json.dumps({'sourceCommit':m.FIRST_SOURCE,'files':{name:hashlib.sha256(data).hexdigest() for name,data in files.items()}}).encode()
+   def get(name,*args,**kwargs):
+    calls.append(name);return (receipt if name.startswith('_deploy/') else files[name]),{'Last-Modified':'Fri, 16 Oct 2026 08:00:00 GMT'}
+   with patch.object(m,'get',get):self.assertTrue(m.sync(root))
+   actual=(root/m.DISCLOSURE).read_bytes();self.assertEqual(actual,m.DISCLOSURE_SHELL);self.assertIn(b'noindex',actual);self.assertIn(b'<iframe',actual);self.assertNotIn(b'personal disclosure content',actual);self.assertNotIn(m.DISCLOSURE,calls)
 if __name__=='__main__':unittest.main()
+

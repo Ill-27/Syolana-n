@@ -18,6 +18,9 @@ STATE='_deploy/checked-source.json'
 FOLDERS={'assets','themes','courses','owner-vault','español-songs','partner-demo','partners','legacy-scripts','runtime','partner','studio','editor','course-packages','audio-library'}
 ROOT_TYPES={'.html','.css','.js','.mjs','.json','.txt','.svg','.ico'}
 MAX_FILE=32*1024*1024
+DISCLOSURE='legal-info/index.html'
+# Personal disclosure text is published separately, outside this repository.
+DISCLOSURE_SHELL='<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex"><meta name="googlebot" content="noindex, nofollow, nosnippet, noimageindex"><meta name="yandex" content="noindex, nofollow, noarchive"><meta name="referrer" content="no-referrer"><title>Сведения об исполнителе и политика обработки данных · Syolana</title><style>html,body{height:100%;margin:0;background:#100f19;color:#eee9f5}iframe{display:block;width:100%;height:100%;border:0}</style></head><body><iframe id="legal-frame" title="Сведения об исполнителе и политика обработки персональных данных" src="https://syolana.website.yandexcloud.net/legal-info/index.html" referrerpolicy="no-referrer"><a href="https://syolana.website.yandexcloud.net/legal-info/index.html">Открыть сведения об исполнителе и политику</a></iframe><script>const frame=document.getElementById("legal-frame");function syncSection(){const fragment=location.hash==="#privacy"?"#privacy":location.hash==="#executor"?"#executor":"";const url="https://syolana.website.yandexcloud.net/legal-info/index.html"+fragment;if(frame.src!==url)frame.src=url;}window.addEventListener("hashchange",syncSection);syncSection();</script></body></html>'.encode('utf-8')
 
 def approved(name):
     if name in {"partners/core-version.json","partners/entitlements.json"}:return False
@@ -66,6 +69,8 @@ def sync(root):
     selected={name:value for name,value in hashes.items() if approved(name) and name not in retired}
     if not {'index.html','access-service.json','licensed-design.js'}<=selected.keys():raise ValueError('Incomplete public release')
     if any(not re.fullmatch(r'[0-9a-f]{64}',value) for value in selected.values()):raise ValueError('Invalid public checksum')
+    if DISCLOSURE in hashes and DISCLOSURE not in retired:
+        selected[DISCLOSURE]=hashlib.sha256(DISCLOSURE_SHELL).hexdigest()
     changes={name:value for name,value in selected.items() if digest(root/name)!=value}
     for name in changes:
         previous=old.get('files',{}).get(name)
@@ -76,7 +81,8 @@ def sync(root):
     with tempfile.TemporaryDirectory() as temporary:
         staging=Path(temporary)
         def download(item):
-            name,expected=item;data,_=get(name,revision=expected)
+            name,expected=item
+            data=DISCLOSURE_SHELL if name==DISCLOSURE else get(name,revision=expected)[0]
             if hashlib.sha256(data).hexdigest()!=expected:raise ValueError('Public checksum mismatch: '+name)
             target=staging/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
             return len(data)
@@ -97,3 +103,4 @@ if __name__=='__main__':
     changed=sync(Path.cwd())
     if os.environ.get('GITHUB_OUTPUT'):
         with open(os.environ['GITHUB_OUTPUT'],'a') as output:output.write('changed='+str(changed).lower()+'\n')
+

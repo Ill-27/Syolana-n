@@ -13,6 +13,7 @@ self.addEventListener('activate',event=>event.waitUntil((async()=>{
  await self.clients.claim();
 })()));
 self.addEventListener('fetch',event=>{
+ if(new URL(event.request.url).pathname.startsWith('/legal-info/'))return;
  if(!allowed(event.request))return;
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE),url=new URL(event.request.url);
@@ -22,3 +23,4 @@ self.addEventListener('fetch',event=>{
   catch(error){const cached=await cache.match(event.request);if(cached)return cached;throw error;}
  })());
 });
+

@@ -2558,5 +2558,75 @@
     "For a new design file, the Syolana owner approves the full website address and design code in a private server list. Payment for 2027 is recorded separately. Visitors are not registered in this list. Design checks send the website domain and path without query parameters or fragments; requests use no cookies or Referer. The application does not record visitors’ devices, IP addresses, locations or page views. The hosting provider receives network requests and may keep its own logs. Correspondence, payments and domains that identify an individual need a separate assessment under personal data law.",
     "Para un nuevo archivo de diseño, la titular de Syolana autoriza la dirección completa del sitio y el código de diseño en una lista privada del servidor. El pago de 2027 se registra por separado. Los visitantes no se registran en esta lista. La comprobación envía el dominio y la ruta del sitio sin parámetros de consulta ni fragmentos; las solicitudes no utilizan cookies ni Referer. La aplicación no registra los dispositivos, direcciones IP, ubicaciones ni páginas vistas de los visitantes. El proveedor de alojamiento recibe solicitudes de red y puede mantener sus propios registros. La correspondencia, los pagos y los dominios que permitan identificar a una persona requieren una evaluación independiente según la legislación de protección de datos.",
     "Pour un nouveau fichier de présentation, la propriétaire de Syolana autorise l’adresse complète du site et le code de présentation dans une liste privée du serveur. Le paiement pour 2027 est enregistré séparément. Les visiteurs ne sont pas inscrits dans cette liste. La vérification transmet le domaine et le chemin du site sans paramètres de requête ni fragment ; les requêtes n’utilisent ni cookies ni Referer. L’application n’enregistre pas les appareils, adresses IP, positions ou pages consultées des visiteurs. L’hébergeur reçoit les requêtes réseau et peut conserver ses propres journaux. Les échanges, les paiements et les domaines permettant d’identifier une personne nécessitent une évaluation distincte au regard de la législation sur les données personnelles."
+  ],
+  "Сведения об исполнителе": [
+    "Service provider details",
+    "Datos de la prestadora",
+    "Coordonnées de la prestataire"
+  ],
+  "Политика обработки персональных данных": [
+    "Personal data processing policy",
+    "Política de tratamiento de datos personales",
+    "Politique de traitement des données personnelles"
+  ],
+  "Заказ на Авито": [
+    "Order through Avito",
+    "Pedido a través de Avito",
+    "Commander sur Avito"
+  ],
+  "Заказы и поддержка — через Авито.": [
+    "Orders and support through Avito.",
+    "Pedidos y asistencia a través de Avito.",
+    "Commandes et assistance sur Avito."
+  ],
+  "Заказы и поддержка": [
+    "Orders and support",
+    "Pedidos y asistencia",
+    "Commandes et assistance"
+  ],
+  "Доступ и настройки": [
+    "Access and preferences",
+    "Acceso y ajustes",
+    "Accès et préférences"
+  ],
+  "Полная политика": [
+    "Full policy",
+    "Política completa",
+    "Politique complète"
+  ],
+  "Купить или продлить на Авито": [
+    "Buy or renew on Avito",
+    "Comprar o renovar en Avito",
+    "Acheter ou renouveler sur Avito"
+  ],
+  "Заказ оформляется в личной переписке на Авито. После подтверждения оплаты вы получите готовый ключ доступа; регистрация не требуется.": [
+    "Arrange your order in a private conversation on Avito. Once payment is confirmed, you receive an access key; no registration is needed.",
+    "Acuerda el pedido por mensaje privado en Avito. Una vez confirmado el pago, recibirás una clave de acceso; no necesitas registrarte.",
+    "Passez commande dans une conversation privée sur Avito. Après confirmation du paiement, vous recevez une clé d’accès ; aucune inscription n’est nécessaire."
+  ],
+  "Заказы, оплата и обычная переписка ведутся через официальный профиль на Авито. Сайт не запрашивает имя, телефон, email или банковскую карту для просмотра материалов.": [
+    "Orders, payment and regular messages are handled through the official Avito profile. Viewing materials does not require your name, phone number, email or bank card.",
+    "Los pedidos, el pago y los mensajes habituales se gestionan desde el perfil oficial en Avito. Para ver los materiales no se solicitan nombre, teléfono, correo ni tarjeta bancaria.",
+    "Les commandes, le paiement et les échanges habituels passent par le profil officiel sur Avito. Consulter les contenus ne nécessite ni nom, ni téléphone, ni adresse email, ni carte bancaire."
+  ],
+  "При серверном входе проверяются хеш ключа, случайная сессия, номер заказа и срок доступа. Новый вход завершает прежнюю сессию. Приложение не определяет IP, модель устройства или местонахождение покупателя. Прогресс и настройки хранятся в браузере.": [
+    "Server access checks a key hash, a random session, the order reference and the access period. A new login ends the previous session. The application does not determine the buyer’s IP address, device model or location. Progress and preferences remain in the browser.",
+    "El acceso mediante servidor comprueba el hash de la clave, una sesión aleatoria, la referencia del pedido y el periodo de acceso. Un nuevo inicio cierra la sesión anterior. La aplicación no determina la IP, el modelo del dispositivo ni la ubicación del comprador. El progreso y los ajustes se guardan en el navegador.",
+    "L’accès par serveur vérifie l’empreinte de la clé, une session aléatoire, la référence de commande et la durée d’accès. Une nouvelle connexion ferme la session précédente. L’application ne détermine ni l’adresse IP, ni le modèle d’appareil, ni la localisation de l’acheteur. La progression et les préférences restent dans le navigateur."
+  ],
+  "Хостинг получает технические данные сетевых запросов. Переписка, данные доступа и адреса партнёрских сайтов, позволяющие определить человека, учитываются при обработке персональных данных.": [
+    "The hosting service receives technical network request data. Messages, access records and partner site addresses that can identify a person are considered when processing personal data.",
+    "El alojamiento recibe datos técnicos de las solicitudes de red. Los mensajes, registros de acceso y direcciones de sitios asociados que permitan identificar a una persona se tienen en cuenta al tratar datos personales.",
+    "L’hébergeur reçoit les données techniques des requêtes réseau. Les échanges, les données d’accès et les adresses de sites partenaires permettant d’identifier une personne sont pris en compte dans le traitement des données personnelles."
+  ],
+  "Сведения об исполнителе, цели и основания обработки, сроки, меры защиты и порядок обращений опубликованы на отдельной общедоступной странице.": [
+    "Provider details, processing purposes and legal grounds, retention periods, safeguards and request procedures are published on a separate publicly accessible page.",
+    "Los datos de la prestadora, las finalidades y bases del tratamiento, los plazos, las medidas de protección y las vías de solicitud se publican en una página separada de acceso público.",
+    "Les coordonnées de la prestataire, les finalités et bases du traitement, les délais, les mesures de protection et les modalités de demande figurent sur une page distincte accessible au public."
+  ],
+  "Заказ, сведения об исполнителе, цена, состав, срок и условия возврата согласуются до оплаты в личной переписке на Авито. На сайте нет оформления заказа, приёма оплаты и автоматических списаний. Покупателю выдаётся чек «Мой налог».": [
+    "The order, provider details, price, scope, timing and refund terms are agreed in a private conversation on Avito before payment. This site has no checkout, payment collection or automatic charges. The buyer receives a receipt from the My Tax service.",
+    "El pedido, los datos de la prestadora, el precio, el contenido, el plazo y las condiciones de devolución se acuerdan por mensaje privado en Avito antes del pago. Este sitio no tramita pedidos ni cobra pagos o cargos automáticos. El comprador recibe un recibo del servicio Mi impuesto.",
+    "La commande, les coordonnées de la prestataire, le prix, le contenu, le délai et les conditions de remboursement sont convenus dans une conversation privée sur Avito avant paiement. Le site ne prend ni commandes, ni paiements, ni prélèvements automatiques. L’acheteur reçoit un reçu du service Mon impôt."
   ]
 }

@@ -96,9 +96,8 @@ export function openCoursePurchase(opener) {
 
 export function coursePurchaseButton() {
   installStyle();
-  const button = node('button','Купить месячную подписку на все курсы','btn primary course-buy');
-  button.type='button';button.setAttribute('aria-haspopup','dialog');
-  button.addEventListener('click',()=>openCoursePurchase(button));
+  const button = link('Купить месячную подписку на все курсы',AVITO,'btn primary course-buy');
+  button.target='_blank';button.rel='noopener noreferrer';
   return button;
 }
 

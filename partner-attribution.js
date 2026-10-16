@@ -6,7 +6,7 @@ export function prepareAttribution(link){
  if(!document.querySelector('link[data-syolana-credit-style]')){
   const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('partner-attribution.css',ROOT).href;css.dataset.syolanaCreditStyle='true';css.referrerPolicy='no-referrer';document.head.append(css);
  }
- link.href='https://syolana.com/';link.target='_blank';link.rel='noopener noreferrer';link.classList.add('syolana-credit');
+ link.title='syolana.com — автор оформления';link.href='https://syolana.com/';link.target='_blank';link.rel='noopener noreferrer';link.classList.add('syolana-credit');
  link.replaceChildren();
  const image=document.createElement('img');image.src=new URL('assets/logo.svg?v=20261014-passport-1',BRAND_ROOT).href;image.alt='';image.width=28;image.height=28;image.dataset.syolanaLogo='true';image.decoding='async';
  const text=document.createElement('span');text.textContent=ATTRIBUTION_TEXT;link.append(image,text);return link;

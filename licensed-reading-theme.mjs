@@ -29,7 +29,7 @@ export class ThemeEngine {
   this.baseStyle=document.documentElement.getAttribute('style');
   this.stop();
   this.permission=watchRegisteredDesign({license:this.license,activate:async isCurrent=>{
-   const {ThemeEngine:Engine}=await this.load();if(!isCurrent())return;const engine=new Engine();this.engine=engine;
+   const {ThemeEngine:Engine}=await this.load();if(!isCurrent())return;const engine=new Engine({watermarks:false});this.engine=engine;
    await engine.init();if(this.engine!==engine||!isCurrent()){engine.destroy();return;}
    document.documentElement.dataset.syolanaDesign='active';
    for(const css of document.querySelectorAll('link[data-design-fonts]'))css.disabled=false;
@@ -54,3 +54,4 @@ export class ThemeEngine {
  get flowerSelected(){return this.engine?.flowerSelected||false;}
  destroy(){this.permission?.destroy();this.stop();}
 }
+

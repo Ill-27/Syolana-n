@@ -120,6 +120,7 @@ const FALLBACK_THEMES=[
   }
 ];
 export class ThemeEngine {
+  constructor({watermarks=true}={}){this.watermarks=watermarks;}
   async init() {
     document.querySelectorAll('footer a.platform-credit').forEach(normalizePartnerFooter);
     this.destroyed=false;
@@ -511,7 +512,7 @@ export class ThemeEngine {
     if (this.theme.renderer === "waves" && !this.theme.spatialWaves) this.drawWaves();
     if (this.zen && this.theme.particles !== false) this.drawZenDust(d);
 
-    for (const m of this.marks) {
+    for (const m of (this.watermarks ? this.marks : [])) {
       m.y -= m.speed * d;
       m.phase += d * 0.23;
       m.hue = (m.hue + m.hueSpeed * d) % 360;

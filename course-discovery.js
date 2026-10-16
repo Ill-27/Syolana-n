@@ -3,7 +3,7 @@ import {registerTranslations, tr} from './i18n.js';
 registerTranslations({
   'Испанский A1': ['Spanish A1', 'Español A1', 'Espagnol A1'],
   'Французский A1': ['French A1', 'Francés A1', 'Français A1'],
-  'Купить месячную подписку на все курсы': ['Buy a monthly subscription to all courses', 'Comprar la suscripción mensual a todos los cursos', 'Acheter un abonnement mensuel à tous les cours'],
+  'Купить ежемесячную подписку на все курсы': ['Buy a monthly subscription to all courses', 'Comprar la suscripción mensual a todos los cursos', 'Acheter un abonnement mensuel à tous les cours'],
   'Уже попробовали бесплатный A1?': ['Have you tried the free A1 course?', '¿Ya has probado el curso A1 gratuito?', 'Avez-vous essayé le cours A1 gratuit ?'],
   'Сначала попробуйте бесплатный английский A1. Если методика вам подходит, оформите доступ ко всем платным курсам на Авито.': [
     'Try the free English A1 course first. If the method suits you, get access to all paid courses on Avito.',
@@ -96,7 +96,7 @@ export function openCoursePurchase(opener) {
 
 export function coursePurchaseButton() {
   installStyle();
-  const button = link('Купить месячную подписку на все курсы',AVITO,'btn primary course-buy');
+  const button = link('Купить ежемесячную подписку на все курсы',AVITO,'btn primary course-buy');
   button.target='_blank';button.rel='noopener noreferrer';
   return button;
 }

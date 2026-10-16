@@ -422,10 +422,8 @@ export async function mountPartnerCore(options = {}) {
   if(footer)footer.append(attribution);else{const creditFooter=make("footer");creditFooter.append(attribution);shell.append(creditFooter);}
   const controls = buildTopBar(partner);
   const config = await readJSON("config.json");
-  // Promotional placements require the partner's separate opt-in and a
-  // completed advertising compliance review. Basic attribution is separate.
-  const marketing=partner?.marketing || {};
-  const promotions = features?.marketing === true && marketing.approved === true && /^[A-Za-z0-9_-]{8,200}$/.test(marketing.erid || "") && typeof marketing.advertiserName === "string" && marketing.advertiserName.trim().length>0;
+  // Partner sites use factual authorship only.
+  const promotions = false;
   let zenAction = null;
   if (promotions) {
     const built = buildBanner(config);
@@ -453,7 +451,7 @@ export async function mountPartnerCore(options = {}) {
   ]);
 
   const player = new Player((config.songs || []).map(resolveSong));
-  const theme = new ThemeEngine();
+  const theme = new ThemeEngine({watermarks:false});
   await theme.init();
   const partnerTheme=partner.siteSettings?.theme||partner.theme;
   if(partnerTheme)await theme.select(partnerTheme).catch(()=>{});

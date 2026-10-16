@@ -59,7 +59,7 @@ test('real pointer handlers drag, clamp, collapse, expand and preserve the conta
   }finally{dom.window.close();}
 });
 
-test('songs lead to their actual language and the purchase choice offers free A1 before Avito in every interface language',async()=>{
+test('songs lead to their actual language and purchase links open Avito directly in every interface language',async()=>{
   const dom=new JSDOM('<main></main>',{url:'https://syolana.com/',pretendToBeVisual:true});
   const previous=new Map();
   for(const [key,value]of Object.entries({window:dom.window,document:dom.window.document,localStorage:dom.window.localStorage,CustomEvent:dom.window.CustomEvent})) {previous.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{value,writable:true,configurable:true});}
@@ -73,15 +73,14 @@ test('songs lead to their actual language and the purchase choice offers free A1
       const promo=songCoursePromo(['es','es']),inline=songCourseLink('es');
       assert.equal(promo.querySelectorAll('a').length,2);assert.equal(inline.querySelector('a').getAttribute('href'),'#/lesson/es/a1/course');
       assert(promo.querySelector('a[href="#/lesson/en/a1/course"]'));
-      const button=coursePurchaseButton();d.body.append(button);button.click();const dialog=d.querySelector('dialog');
-      assert(dialog.open);assert(dialog.getAttribute('aria-labelledby'));assert(dialog.textContent.includes('650'));
-      const avito=dialog.querySelector('a[target="_blank"]');assert.equal(avito.href,'https://www.avito.ru/brands/i223140984');
-      const free=dialog.querySelector('a[href="#/lesson/en/a1/course"]');assert(free);assert.equal(d.activeElement,free);
-      if(locale!=='ru')assert(!/[А-Яа-яЁё]/.test(promo.textContent+inline.textContent+button.textContent+dialog.textContent));
-      free.click();await new Promise(resolve=>dom.window.setTimeout(resolve,5));assert(!d.querySelector('dialog'));assert.equal(dom.window.location.hash,'#/lesson/en/a1/course');button.remove();
+      const button=coursePurchaseButton();d.body.append(button);
+      assert.equal(button.tagName,'A');assert.equal(button.href,'https://www.avito.ru/brands/i223140984');assert.equal(button.target,'_blank');assert.match(button.rel,/noopener/);assert.equal(d.querySelector('dialog'),null);
+      if(locale!=='ru')assert(!/[А-Яа-яЁё]/.test(promo.textContent+inline.textContent+button.textContent));
+      button.remove();
     }
     setLocale('ru');
   }finally{
     dom.window.close();for(const [key,descriptor]of previous)if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];
   }
 });
+

@@ -30,10 +30,10 @@ test('the final public pages retain licence terms, session rules and data disclo
   window.location.hash='#/'+route;root.replaceChildren();positionView();
   assert.match(root.textContent,/12 месяцев/);assert.match(root.textContent,/базовая структура сайта остаются у вас/);assert.doesNotMatch(root.textContent,/Ранее согласованные|ранее выдан|Прежние покупки/);assert.match(root.textContent,/Для всех партнёров/);
  }
- assert.match(root.textContent,/650 ₽/);assert.match(root.textContent,/одну активную браузерную сессию/);assert.match(root.textContent,/Платные продажи пока закрыты/);assert.match(root.textContent,/права потребителя сохраняются/);
+ assert.match(root.textContent,/650 ₽/);assert.match(root.textContent,/одну активную браузерную сессию/);assert.match(root.textContent,/На сайте нет оформления заказа/);assert.match(root.textContent,/права потребителя сохраняются/);
  window.location.hash='#/privacy';root.replaceChildren();positionView();
- assert.match(root.textContent,/случайную сессию/);assert.match(root.textContent,/Приложение не определяет/);assert.match(root.textContent,/уведомления Роскомнадзора/);assert.doesNotMatch(root.textContent,/одном активном устройстве/);
- window.location.hash='#/legal';root.replaceChildren();positionView();assert.match(root.textContent,/реальные сведения о продавце/);
+ assert.match(root.textContent,/случайная сессия/);assert.match(root.textContent,/Приложение не определяет/);assert.ok(root.querySelector('a[href="legal-info/index.html#privacy"]'));assert.doesNotMatch(root.textContent,/одном активном устройстве/);
+ window.location.hash='#/legal';root.replaceChildren();positionView();assert.ok(root.querySelector('a[href="legal-info/index.html"]'));
  dom.window.close();
 });
 test('shared Moscow calendar boundaries do not convert a trial into a paid period',()=>{
@@ -87,3 +87,4 @@ test('the website archive includes its calendar dependency and preserves an exis
   assert.ok(files.has('partner-periods.mjs'));assert.ok(requested.some(v=>v.endsWith('/partner-periods.mjs')));const permission=JSON.parse(files.get('site-settings.json')).license;if(license)assert.deepEqual(permission,license);else{assert.equal(permission.mode,'registered');assert.match(permission.partnerId,/^p-[a-f0-9]{12}$/);}assert.equal(requested.some(v=>v.includes('/api/')),false);
  }
 });
+

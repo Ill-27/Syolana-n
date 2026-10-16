@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {JSDOM} from 'jsdom';
 import {mountLicensedDesign} from '../licensed-design.js';
 import {calendarLicense,calendarWindow} from '../partner-periods.mjs';
-import {createCalendarPartnerHTML,mountPartnerFileBuilder} from '../partner-file.mjs';
+import {createCalendarPartnerHTML,createRegisteredPartnerHTML,mountPartnerFileBuilder} from '../partner-file.mjs';
 import {sketchPayload} from '../sketch-model.mjs';
 import {createSiteArchive} from '../site-export.mjs';
 const setup=()=>{const dom=new JSDOM('<!doctype html><body><div class="export-controls"></div><main>Свои тексты и фото</main><a id="syolana-attribution" href="https://syolana.com/">Сайт создан на Syolana</a><dialog id="theme-dialog"></dialog></body>',{url:'https://example.ru/',pretendToBeVisual:true});const w=dom.window;Object.assign(globalThis,{window:w,document:w.document,location:w.location,MutationObserver:w.MutationObserver,getComputedStyle:w.getComputedStyle.bind(w),innerWidth:390,innerHeight:844});w.HTMLElement.prototype.getBoundingClientRect=()=>({width:200,height:22,left:12,top:20,right:212,bottom:42});document.querySelector('a').style.fontSize='12px';return dom;};
@@ -63,14 +63,20 @@ test('expired trial cannot load paid design and generated files carry only a sha
  assert.ok(html.includes('"mode":"calendar","period":"trial-2026"'));assert.ok(html.includes('https://syolana.com/licensed-design.js'));assert.ok(html.includes('name="referrer" content="no-referrer"'));assert.ok(!html.includes('<script>alert(1)</script>'));assert.ok(!/partnerId|licenseEndpoint|api\/course-access|sessionToken/.test(html));
  const paid=createCalendarPartnerHTML({name:'My site'},{period:'paid-2027',now:cutoff});assert.ok(paid.includes('"period":"paid-2027"'));assert.throws(()=>createCalendarPartnerHTML({},{now:cutoff}),/закончился/);
 });
-test('owner prepares free and confirmed paid files locally without sending the sketch',async()=>{
- const actualNow=Date.now;Date.now=()=>Date.parse('2026-10-15T12:00:00+03:00');try{
- const dom=setup(),root=document.createElement('div');document.body.append(root);const saved=[];let owner=false,calls=0;
- globalThis.fetch=async()=>{calls++;throw Error('The sketch stays local');};const dispose=mountPartnerFileBuilder(root,{isOwner:()=>owner,download:(name,html)=>saved.push({name,html})});
+test('owner prepares a pending registered file without uploading the sketch',async()=>{
+ const dom=setup(),root=document.createElement('div');document.body.append(root);const saved=[],prepared=[];let owner=false,calls=0;
+ globalThis.fetch=async()=>{calls++;throw Error('The sketch stays local');};const dispose=mountPartnerFileBuilder(root,{isOwner:()=>owner,download:(name,html)=>saved.push({name,html}),onPrepared:code=>prepared.push(code)});
  const input=root.querySelector('input[type=file]');Object.defineProperty(input,'files',{value:[{size:100,text:async()=>JSON.stringify(sketchPayload({name:'Own project'}))}]});
- const submit=async()=>root.querySelector('form').onsubmit({preventDefault(){}});await submit();assert.equal(saved.length,0);owner=true;await submit();assert.equal(saved.length,1);assert.ok(saved[0].name.includes('trial-2026'));
- const period=root.querySelector('select');period.value='paid-2027';period.onchange();await submit();assert.equal(saved.length,1);root.querySelector('input[type=checkbox]').checked=true;await submit();assert.equal(saved.length,2);assert.ok(saved[1].name.includes('paid-2027'));assert.equal(calls,0);dispose();dom.window.close();
- }finally{Date.now=actualNow;}
+ const submit=async()=>root.querySelector('form').onsubmit({preventDefault(){}});await submit();assert.equal(saved.length,0);owner=true;await submit();assert.equal(saved.length,1);
+ assert.match(prepared[0],/^p-[a-f0-9]{12}$/);assert.ok(saved[0].html.includes('"mode":"registered"'));assert.ok(saved[0].html.includes(prepared[0]));assert.ok(!saved[0].html.includes('"mode":"calendar"'));assert.equal(calls,0);dispose();dom.window.close();
+});
+test('registered file waits for approval, activates, and removes design after revocation',async()=>{
+ const dom=setup();let allowed=false,paths=[];
+ globalThis.fetch=async value=>{const u=new URL(value);paths.push(u);return new Response(JSON.stringify(u.pathname.endsWith('access-service.json')?{ready:true,origin:'https://api.syolana.com'}:allowed?{active:true,partnerId:'p-123456789abc',allowedHosts:['example.ru'],expiresAt:new Date(Date.now()+15000).toISOString()}:{active:false}));};
+ const h=await mountLicensedDesign({settings:{theme:'moon'},license:{mode:'registered',partnerId:'p-123456789abc',configUrl:'https://syolana.com/access-service.json'}});
+ assert.equal(document.querySelector('iframe'),null);allowed=true;window.dispatchEvent(new dom.window.Event('focus'));await new Promise(r=>setTimeout(r,30));assert.ok(document.querySelector('iframe'));
+ assert.equal(paths.at(-1).searchParams.get('pathname'),'/');assert.equal(paths.at(-1).searchParams.has('search'),false);
+ allowed=false;window.dispatchEvent(new dom.window.Event('focus'));await new Promise(r=>setTimeout(r,30));assert.equal(document.querySelector('iframe'),null);assert.equal(document.querySelector('main').textContent,'Свои тексты и фото');h.destroy();dom.window.close();
 });
 test('the website archive includes its calendar dependency and preserves an existing server licence',async()=>{
  const legacy={partnerId:'p-123456789abc',domain:'example.ru',endpoint:'https://api.syolana.com/partner-license'};
@@ -78,6 +84,6 @@ test('the website archive includes its calendar dependency and preserves an exis
   const requested=[],blob=await createSiteArchive({settings:{name:'Own site',theme:'moon',blocks:[]},...(license?{license}:{})},{nativeFetch:async value=>{const url=new URL(value);requested.push(url.pathname);return new Response(url.pathname.endsWith('themes/manifest.json')?JSON.stringify([{id:'moon',name:'Moon'}]):'module source');}});
   const bytes=new Uint8Array(await blob.arrayBuffer()),view=new DataView(bytes.buffer),decoder=new TextDecoder(),files=new Map();let offset=0;
   while(view.getUint32(offset,true)===0x04034b50){const size=view.getUint32(offset+18,true),names=view.getUint16(offset+26,true),extra=view.getUint16(offset+28,true),start=offset+30+names+extra;files.set(decoder.decode(bytes.slice(offset+30,offset+30+names)),decoder.decode(bytes.slice(start,start+size)));offset=start+size;}
-  assert.ok(files.has('partner-periods.mjs'));assert.ok(requested.some(v=>v.endsWith('/partner-periods.mjs')));assert.deepEqual(JSON.parse(files.get('site-settings.json')).license,license||calendarLicense());assert.equal(requested.some(v=>v.includes('/api/')),false);
+  assert.ok(files.has('partner-periods.mjs'));assert.ok(requested.some(v=>v.endsWith('/partner-periods.mjs')));const permission=JSON.parse(files.get('site-settings.json')).license;if(license)assert.deepEqual(permission,license);else{assert.equal(permission.mode,'registered');assert.match(permission.partnerId,/^p-[a-f0-9]{12}$/);}assert.equal(requested.some(v=>v.includes('/api/')),false);
  }
 });

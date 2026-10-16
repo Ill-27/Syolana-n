@@ -5,7 +5,7 @@ spec=importlib.util.spec_from_file_location('sync_checked_public',Path(__file__)
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 class MirrorTest(unittest.TestCase):
  def test_public_allowlist_never_touches_private_code_atlas_or_paid_course_data(self):
-  for name in ['../x','/index.html','.github/workflows/a.yml','source/secret.py','personal-atlas/index.html','courses/en-a2/data.json','courses/fr-a2/data.json.gz','hosting.json','key-reserve.json','scripts/x.py']:
+  for name in ['../x','/index.html','.github/workflows/a.yml','source/secret.py','personal-atlas/index.html','courses/en-a2/data.json','courses/fr-a2/data.json.gz','hosting.json','key-reserve.json','scripts/x.py','partners/core-version.json','partners/entitlements.json']:
    self.assertFalse(m.approved(name),name)
   for name in ['index.html','access-service.json','licensed-design.js','courses/en-a2/course.js','assets/fonts/a.woff2','themes/new-world.mjs']:
    self.assertTrue(m.approved(name),name)

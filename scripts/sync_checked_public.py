@@ -20,6 +20,7 @@ ROOT_TYPES={'.html','.css','.js','.mjs','.json','.txt','.svg','.ico'}
 MAX_FILE=32*1024*1024
 
 def approved(name):
+    if name in {"partners/core-version.json","partners/entitlements.json"}:return False
     path=PurePosixPath(name)
     if not name or path.is_absolute() or '..' in path.parts or str(path)!=name or '\\' in name:return False
     if any(part.startswith('.') for part in path.parts):return False

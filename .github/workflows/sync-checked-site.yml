@@ -1,0 +1,55 @@
+name: Mirror checked public website
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/sync-checked-site.yml
+      - scripts/sync_checked_public.py
+      - scripts/test_sync_checked_public.py
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: checked-public-mirror
+  cancel-in-progress: false
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch only the verified public release
+        id: mirror
+        run: |
+          python scripts/test_sync_checked_public.py
+          python scripts/sync_checked_public.py
+      - uses: actions/setup-node@v4
+        if: steps.mirror.outputs.changed == 'true'
+        with:
+          node-version: '22'
+      - name: Check public boundaries and modules
+        if: steps.mirror.outputs.changed == 'true'
+        run: |
+          python tests/check_distribution.py .
+          python tests/check_distribution.py . --javascript > "$RUNNER_TEMP/public-modules.txt"
+          while IFS= read -r file; do node --check "$file"; done < "$RUNNER_TEMP/public-modules.txt"
+      - name: Publish the checked public snapshot
+        if: steps.mirror.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Publish checked public website'
+          git push origin HEAD:main
+          gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" > "$RUNNER_TEMP/pages-build.json"

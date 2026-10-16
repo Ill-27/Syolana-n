@@ -23,3 +23,4 @@ export async function mountCourseBranding({root=document,course='',personalMark=
   doc.defaultView.addEventListener('message',receive);
   return ()=>{disposed=true;observer.disconnect();overlay.remove();removeProtection();for(const [frame,s] of frames){frame.removeEventListener('load',s.onload);s.dispose?.();}doc.defaultView.removeEventListener('message',receive);};
 }
+

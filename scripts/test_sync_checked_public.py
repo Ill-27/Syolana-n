@@ -13,7 +13,7 @@ class MirrorTest(unittest.TestCase):
   files={'index.html':b'new page','access-service.json':b'{}','licensed-design.js':b'new design'}
   hashes={p:hashlib.sha256(v).hexdigest() for p,v in files.items()}
   manifest=json.dumps({'sourceCommit':m.FIRST_SOURCE,'files':hashes}).encode()
-  def get(name,limit=m.MAX_FILE):
+  def get(name,limit=m.MAX_FILE,**kwargs):
    return (manifest if name.startswith('_deploy/') else b'bad' if broken else files[name]),{'Last-Modified':'Fri, 16 Oct 2026 08:00:00 GMT'}
   return get
  def test_checksum_failure_keeps_existing_files_and_next_release_is_verified(self):

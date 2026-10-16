@@ -30,8 +30,8 @@ def approved(name):
         return path.name in {'access.js','audio.js','course.js','course.css','curriculum.js','presentation.js','trainers.js'}
     return path.suffix in ROOT_TYPES|{'.png','.jpg','.jpeg','.webp','.woff','.woff2','.ogg','.mp3','.m4a','.aac','.wav','.syolicense'}
 
-def get(name,limit=MAX_FILE):
-    url=ORIGIN+urllib.parse.quote(name,safe='/')
+def get(name,limit=MAX_FILE,revision=""):
+    url=ORIGIN+urllib.parse.quote(name,safe='/')+('?v='+urllib.parse.quote(revision,safe='') if revision else '')
     req=urllib.request.Request(url,headers={'Accept-Encoding':'identity','Cache-Control':'no-cache'})
     with urllib.request.urlopen(req,timeout=40) as response:
         if urllib.parse.urlsplit(response.url).netloc!=urllib.parse.urlsplit(ORIGIN).netloc:raise ValueError('Unexpected redirect')
@@ -60,7 +60,9 @@ def sync(root):
     if old and modified<=old['lastModified']:return False
     hashes=manifest.get('files')
     if not isinstance(hashes,dict) or len(hashes)>5000:raise ValueError('Invalid public manifest')
-    selected={name:value for name,value in hashes.items() if approved(name)}
+    cleanup=manifest.get('cleanup',{})
+    retired=set(manifest.get('retired',[])+manifest.get('retiredThemeFiles',[])+cleanup.get('deleted',[])+cleanup.get('replaced',[]))
+    selected={name:value for name,value in hashes.items() if approved(name) and name not in retired}
     if not {'index.html','access-service.json','licensed-design.js'}<=selected.keys():raise ValueError('Incomplete public release')
     if any(not re.fullmatch(r'[0-9a-f]{64}',value) for value in selected.values()):raise ValueError('Invalid public checksum')
     changes={name:value for name,value in selected.items() if digest(root/name)!=value}
@@ -73,8 +75,8 @@ def sync(root):
     with tempfile.TemporaryDirectory() as temporary:
         staging=Path(temporary)
         def download(item):
-            name,expected=item;data,_=get(name)
-            if hashlib.sha256(data).hexdigest()!=expected:raise ValueError('Public checksum mismatch')
+            name,expected=item;data,_=get(name,revision=expected)
+            if hashlib.sha256(data).hexdigest()!=expected:raise ValueError('Public checksum mismatch: '+name)
             target=staging/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
             return len(data)
         with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:

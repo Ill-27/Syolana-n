@@ -129,21 +129,6 @@
     "El primer libro contemporáneo se publicará tras llegar a un acuerdo con su autor. La suscripción a la colección llegará junto con un catálogo disponible y condiciones claras. Actualmente no se aceptan pagos.",
     "Le premier livre contemporain sera publié après accord avec son auteur. L’abonnement à la collection sera proposé avec un catalogue disponible et des conditions claires. Aucun paiement n’est accepté actuellement."
   ],
-  "Для авторов и правообладателей": [
-    "For authors and rights holders",
-    "Para autores y titulares de derechos",
-    "Pour les auteurs et titulaires de droits"
-  ],
-  "Хотите предложить первую книгу для Артивида? Обсудим права на текст, работу со сценами, условия подписки и вознаграждение до публикации. Права на ваше произведение остаются у вас.": [
-    "Would you like to propose the first book for Artivid? We will discuss text rights, scene design, subscription terms and remuneration before publication. You retain the rights to your work.",
-    "¿Quieres proponer el primer libro para Artivid? Antes de publicarlo, hablaremos de los derechos sobre el texto, el diseño de las escenas, las condiciones de suscripción y la remuneración. Conservas los derechos sobre tu obra.",
-    "Vous souhaitez proposer le premier livre pour Artivid ? Nous discuterons des droits sur le texte, du travail sur les scènes, des conditions d’abonnement et de la rémunération avant publication. Vous conservez les droits sur votre œuvre."
-  ],
-  "Обсудить книгу на Авито": [
-    "Discuss a book on Avito",
-    "Hablar de un libro en Avito",
-    "Discuter d’un livre sur Avito"
-  ],
   "Этот сайт создан на Syolana": [
     "This website was created with Syolana",
     "Este sitio se ha creado con Syolana",
@@ -168,11 +153,6 @@
     "Reading terms",
     "Condiciones de lectura",
     "Conditions de lecture"
-  ],
-  "Авторам и читателям": [
-    "For authors and readers",
-    "Para autores y lectores",
-    "Pour les auteurs et lecteurs"
   ],
   "Для чтения и звуковых сцен включите JavaScript.": [
     "Enable JavaScript for reading and sound scenes.",
@@ -309,11 +289,6 @@
     "Consultas y comunicaciones",
     "Demandes et notifications"
   ],
-  "Вопросы о проекте и сотрудничестве — в официальном профиле Syolana на Авито. Заявления о нарушении прав: syolana@yandex.ru. Артивид — отдельный книжный проект на шаблоне Syolana.": [
-    "Project and collaboration enquiries go through the official Syolana profile on Avito. Rights-related notices: syolana@yandex.ru. Artivid is a separate book project using a Syolana template.",
-    "Las consultas sobre el proyecto y la colaboración se gestionan a través del perfil oficial de Syolana en Avito. Comunicaciones sobre vulneraciones de derechos: syolana@yandex.ru. Artivid es un proyecto de libros independiente que utiliza una plantilla de Syolana.",
-    "Les demandes concernant le projet et les collaborations passent par le profil officiel Syolana sur Avito. Notifications d’atteinte aux droits : syolana@yandex.ru. Artivid est un projet de livres distinct utilisant un modèle Syolana."
-  ],
   "Вернуться к книгам": [
     "Back to books",
     "Volver a los libros",
@@ -383,5 +358,30 @@
     "Cover: Демон",
     "Portada: Демон",
     "Couverture : Демон"
+  ],
+  "Артивид и Syolana": [
+    "Artivid and Syolana",
+    "Artivid y Syolana",
+    "Artivid et Syolana"
+  ],
+  "Артивид — самостоятельный книжный проект и партнёр Syolana. Syolana предоставляет оформление сайта. Вопросы о книгах, авторах и публикациях решает владелец Артивида.": [
+    "Artivid is an independent book project and a Syolana partner. Syolana provides the website design. Artivid’s owner handles books, authors and publication enquiries.",
+    "Artivid es un proyecto de libros independiente y un socio de Syolana. Syolana proporciona el diseño del sitio. El propietario de Artivid atiende las consultas sobre libros, autores y publicaciones.",
+    "Artivid est un projet de livres indépendant et un partenaire de Syolana. Syolana fournit le design du site. Le propriétaire d’Artivid traite les demandes concernant les livres, les auteurs et les publications."
+  ],
+  "Об оформлении Syolana": [
+    "About Syolana design",
+    "Sobre el diseño de Syolana",
+    "À propos du design Syolana"
+  ],
+  "Оформление Syolana": [
+    "Syolana design",
+    "Diseño de Syolana",
+    "Design Syolana"
+  ],
+  "Артивид — самостоятельный книжный проект и партнёр Syolana. Контакты Syolana на Авито и syolana@yandex.ru относятся только к оформлению. Вопросы о книгах и публикациях решает владелец Артивида.": [
+    "Artivid is an independent book project and a Syolana partner. Syolana’s Avito profile and syolana@yandex.ru handle design enquiries only. Artivid’s owner handles books and publications.",
+    "Artivid es un proyecto de libros independiente y un socio de Syolana. El perfil de Syolana en Avito y syolana@yandex.ru atienden solo consultas sobre el diseño. El propietario de Artivid se ocupa de los libros y las publicaciones.",
+    "Artivid est un projet de livres indépendant et un partenaire de Syolana. Le profil Avito de Syolana et syolana@yandex.ru traitent uniquement les questions de design. Le propriétaire d’Artivid gère les livres et les publications."
   ]
 }

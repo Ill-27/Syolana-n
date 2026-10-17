@@ -17,6 +17,9 @@ FIRST_SOURCE='1f24cf42c8d0e8edf5b5cd8a2c960bbd52e4c7b8'
 STATE='_deploy/checked-source.json'
 FOLDERS={'assets','themes','courses','owner-vault','español-songs','partner-demo','partners','legacy-scripts','runtime','partner','studio','editor','course-packages','audio-library'}
 ROOT_TYPES={'.html','.css','.js','.mjs','.json','.txt','.svg','.ico'}
+MIRROR_POLICY_VERSION=2
+SHARED_COURSE_FILES={'subscription-access.js','payment-ui.js','single-tab.js','partner-registry-ui.js'}
+PAID_COURSES={'en-a2','es-a1','es-a2','fr-a1','fr-a2'}
 MAX_FILE=32*1024*1024
 DISCLOSURE='legal-info/index.html'
 # Personal disclosure text is published separately, outside this repository.
@@ -30,8 +33,10 @@ def approved(name):
     if len(path.parts)==1:
         return path.suffix in ROOT_TYPES and name not in {'key-reserve.json','hosting.json','package.json','package-lock.json'}
     if path.parts[0] not in FOLDERS:return False
-    if path.parts[0]=='courses' and (len(path.parts)<3 or path.parts[1]!='en-a1'):
-        return path.name in {'access.js','audio.js','course.js','course.css','curriculum.js','presentation.js','trainers.js'}
+    if path.parts[0]=='courses':
+        if len(path.parts)==2:return path.name in SHARED_COURSE_FILES
+        if path.parts[1]!='en-a1':
+            return len(path.parts)==3 and path.parts[1] in PAID_COURSES and path.name in {'access.js','audio.js','course.js','course.css','curriculum.js','presentation.js','trainers.js'}
     return path.suffix in ROOT_TYPES|{'.png','.jpg','.jpeg','.webp','.woff','.woff2','.ogg','.mp3','.m4a','.aac','.wav','.syolicense'}
 
 def get(name,limit=MAX_FILE,revision=""):
@@ -58,10 +63,12 @@ def sync(root):
     source=manifest.get('sourceCommit','')
     if not re.fullmatch(r'[0-9a-f]{40}',source):raise ValueError('Missing checked source')
     modified=int(email.utils.parsedate_to_datetime(headers['Last-Modified']).timestamp())
-    if old.get('sourceCommit')==source:return False
+    same_source=old.get('sourceCommit')==source
+    policy_upgrade=old.get('mirrorPolicyVersion')!=MIRROR_POLICY_VERSION
+    if same_source and not policy_upgrade:return False
     if not old and source!=FIRST_SOURCE:
         print('Waiting for the first reviewed source to finish publication.');return False
-    if old and modified<=old['lastModified']:return False
+    if old and (modified<old['lastModified'] or (modified==old['lastModified'] and not (same_source and policy_upgrade))):return False
     hashes=manifest.get('files')
     if not isinstance(hashes,dict) or len(hashes)>5000:raise ValueError('Invalid public manifest')
     cleanup=manifest.get('cleanup',{})
@@ -95,7 +102,7 @@ def sync(root):
         for name in changes:
             target=root/name;target.parent.mkdir(parents=True,exist_ok=True);os.replace(staging/name,target)
     state_path.parent.mkdir(exist_ok=True)
-    state_path.write_text(json.dumps({'sourceCommit':source,'lastModified':modified,'files':selected},sort_keys=True)+'\n')
+    state_path.write_text(json.dumps({'sourceCommit':source,'lastModified':modified,'mirrorPolicyVersion':MIRROR_POLICY_VERSION,'files':selected},sort_keys=True)+'\n')
     print('Checked public release prepared:',source,'files:',len(changes))
     return True
 

@@ -19,3 +19,5 @@ body #footer .partner-footer-credit{margin:0;padding-top:16px;border-top:1px sol
 .syolana-credit{background:linear-gradient(130deg,rgba(255,255,255,.085),rgba(224,211,255,.025))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.12);transition:background-color .18s ease,border-color .18s ease}
 .syolana-credit:hover{background-color:rgba(224,211,255,.08)!important;border-color:color-mix(in srgb,var(--panel-label,#eee8fa) 40%,transparent)!important}
 @media(prefers-reduced-motion:reduce){.syolana-credit{transition:none}}
+
+.syolana-credit::before,.syolana-credit::after{content:none!important;animation:none!important}

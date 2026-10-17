@@ -1,4 +1,4 @@
-import {createCourseAccess} from '../subscription-access.js?v=20261014-local-1';
+import {createCourseAccess} from '../subscription-access.js?v=20261017-owner-1';
 export function validateCourse(d){
   if(!d||d.schema!=='syolana.course.v1'||d.courseId!=='fr-a1')throw new Error('Выберите приватный файл французского A1 Syolana.');
   for(const k of ['rules','vocabulary','groups','alphabet','phonetics','practice','variants','repetition'])if(!Array.isArray(d[k]))throw new Error('В файле не хватает раздела: '+k+'.');

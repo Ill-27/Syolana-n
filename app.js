@@ -3,7 +3,7 @@ import {PARTNER_CALENDAR_TERMS} from './partner-periods.mjs';
 import initialConfig from './config.json' with {type:'json'};
 import initialFeed from './feed.json' with {type:'json'};
 import songDetails from './song-details.json' with {type:'json'};
-import {getLocale,tr} from './i18n.js';
+import {getLocale,tr,registerTranslations} from './i18n.js';
 import {coursePurchaseButton,songLanguage,songCourseLink,songCoursePromo} from './course-discovery.js';
 import {finishUI} from './render-ui.js';
 import {positionView,clearPositionView} from './positioning.js';
@@ -31,6 +31,8 @@ import { lessons } from "./content.js";
 
 import { renderFeed, feedEditor } from "./feed.js";
 import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
+
+registerTranslations({'Ключи и подписки':['Keys and subscriptions','Claves y suscripciones','Clés et abonnements']});
 
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
@@ -758,13 +760,13 @@ function lessonFrame(key, anchor = "") {
     document.body.classList.add("course-reading");
     frame.classList.add("english-course-frame");
   }
-  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261009-platform-fr-a1-1" : "") + (!anchor && /\/(rules|words|practice)$/.test(key) ? "#"+({rules:"grammar",words:"vocabulary",practice:"practice"}[key.split("/").at(-1)]) : "");
+  frame.src = filename + "?embed=1" + (englishCourse ? "&v=20261017-owner-1" : "") + (!anchor && /\/(rules|words|practice)$/.test(key) ? "#"+({rules:"grammar",words:"vocabulary",practice:"practice"}[key.split("/").at(-1)]) : "");
   const status = el("p", "loading", "Открываем учебный материал…");
   if (englishCourse) status.hidden = true;
   $("page").append(status, frame);
   let active = true,
     anchored = false;
-  let courseBar = null, courseLabel = null, courseStatus = null, courseProgress = null, courseAudio = null, courseTOC = null;
+  let courseBar = null, courseLabel = null, courseStatus = null, courseProgress = null, courseAudio = null, courseTOC = null, courseOwner = null;
   function fitCourse() {
     if (!englishCourse || !active) return;
     const dock = $("music-dock")?.getBoundingClientRect();
@@ -784,7 +786,8 @@ function lessonFrame(key, anchor = "") {
     courseLabel = el("strong", "", "Озвучка курса");courseStatus = el("small", "", "Режим, скорость и голоса");copy.append(courseLabel,courseStatus);
     courseProgress = el("progress");courseProgress.max=1;courseProgress.value=0;courseProgress.setAttribute("aria-label", "Прогресс прослушивания");
     courseAudio.append(icon,copy,courseProgress);courseAudio.addEventListener("click", () => send({openPlayer:true}));
-    courseBar.append(courseTOC,courseAudio);document.body.append(courseBar);
+    courseOwner=el("button","course-controls-owner","Ключи и подписки");courseOwner.type="button";courseOwner.hidden=true;courseOwner.addEventListener("click",()=>send({openOwner:true}));
+    courseBar.append(courseOwner,courseTOC,courseAudio);document.body.append(courseBar);
     window.addEventListener("resize", fitCourse);
     window.addEventListener("scroll", fitCourse, {passive:true});
     if ($("music-dock")) courseObserver?.observe($("music-dock"));
@@ -839,6 +842,7 @@ function lessonFrame(key, anchor = "") {
       });
     }
     if (data.audio) player.pause();
+    if(englishCourse&&Object.hasOwn(data,"courseOwner")){courseOwner.hidden=data.courseOwner!==true;courseBar.classList.toggle("has-owner",data.courseOwner===true);if(data.courseOwner===true)courseBar.hidden=false;}
     if (englishCourse && data.courseAudio) {
       courseBar.hidden = false;
       const audio = data.courseAudio;

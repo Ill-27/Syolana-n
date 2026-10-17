@@ -1,5 +1,5 @@
 import {mountCourseBranding} from '../../course-branding.js?v=20261007-language-marks-3';
-import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261014-local-1';
+import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261017-owner-1';
 import {SpeechPlayer,secondsFor} from './audio.js?v=20261008-es-a1-2';
 import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261008-es-a1-2';
 import {trainerGroups} from './trainers.js?v=20261008-es-a1-2';
@@ -119,7 +119,7 @@ async function init(){
   }
   const bulk=new SpeechPlayer({voices:()=>voices,settings:()=>cfg,onUnit:showCurrent,onChange:updatePlayer,onProgress:()=>{saveProgress();updatePlayer();}});
   const clip=new SpeechPlayer({voices:()=>voices,settings:()=>cfg,onUnit:showCurrent,onChange:updatePlayer});
-  mountAccountPanel(toc,()=>{bulk.dispose();clip.dispose();});
+  const openOwnerPanel=mountAccountPanel(toc,()=>{bulk.dispose();clip.dispose();},{actions:headerActions,reveal:()=>{setTOC(true);pageScroll(0);}});
   watchSession(()=>{bulk.dispose();clip.dispose();});
   function playClip(p,mode){bulk.pause();clipSelected=true;post({audio:true});clip.start([{pair:p}],{mode,repeat:1});}
   function saveProgress(){if(lastQueue)storage.write('progress',{...bulk.snapshot(),version:data.version,label:bulkLabel,mode:bulk.mode,repeat:bulk.repeat});}
@@ -295,7 +295,7 @@ async function init(){
   updatePlayer();show(decodeURIComponent(location.hash.slice(1))||storage.read('view','days'));
   window.speechSynthesis?.addEventListener?.('voiceschanged',refreshVoices);const tick=setInterval(()=>{if(bulk.status==='playing'||clip.status==='playing')updatePlayer();},1000);
   window.addEventListener('pagehide',()=>{bulk.pause();clip.dispose();saveProgress();clearInterval(tick);});
-  window.addEventListener('message',e=>{if(e.source!==window.parent||e.origin!==location.origin||!e.data?.syolanaHost)return;const x=e.data;if(x.pauseAudio){bulk.pause();clip.stop(false);clipSelected=false;updatePlayer();}if(x.anchor)go(x.anchor);if(Number.isFinite(x.courseScroll))pageOffset=Math.max(0,x.courseScroll);if(x.openPlayer)setPlayer(overlay!=='player');if(x.openTOC)setTOC(overlay!=='toc');});
+  window.addEventListener('message',e=>{if(e.source!==window.parent||e.origin!==location.origin||!e.data?.syolanaHost)return;const x=e.data;if(x.pauseAudio){bulk.pause();clip.stop(false);clipSelected=false;updatePlayer();}if(x.anchor)go(x.anchor);if(Number.isFinite(x.courseScroll))pageOffset=Math.max(0,x.courseScroll);if(x.openPlayer)setPlayer(overlay!=='player');if(x.openTOC)setTOC(overlay!=='toc');if(x.openOwner)openOwnerPanel?.();});
   app.hidden=false;document.getElementById('loading').hidden=true;const resize=new ResizeObserver(()=>post({height:Math.ceil(shell.getBoundingClientRect().height)}));resize.observe(shell);post({ready:true,height:Math.ceil(shell.getBoundingClientRect().height)});
 }
 init().catch(e=>{const loading=document.getElementById('loading');loading.replaceChildren(el('strong','','Курс пока не загрузился'),el('p','',e.message),button('Попробовать снова',()=>location.reload()));post({ready:true,height:450});});

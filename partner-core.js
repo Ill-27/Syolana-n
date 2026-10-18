@@ -437,10 +437,6 @@ export async function mountPartnerCore(options = {}) {
   const nav = buildMainNav();
   shell.prepend(nav);
 
-  // The visual shell is complete at this point. Reveal it immediately while
-  // the selected 3D theme finishes initializing in the background.
-  window.dispatchEvent(new CustomEvent("syolana:shell-ready"));
-
   const themeDialog = buildThemeDialog();
   const playerUI = buildPlayerUI();
   buildToast();
@@ -456,6 +452,7 @@ export async function mountPartnerCore(options = {}) {
   const partnerTheme=partner.siteSettings?.theme||partner.theme;
   const access=options.themeAccess;const theme = new ThemeEngine({watermarks:'authorship',initialTheme:access?.theme||partnerTheme,rememberTheme:true,allowedThemes:access?.allowedThemes||null});
   await theme.init();
+  window.dispatchEvent(new CustomEvent("syolana:shell-ready"));
   const contacts=ensureContactDock();
   const onPartnerTheme=e=>{if(e.detail?.theme)theme.select(e.detail.theme).catch(()=>{});};
   window.addEventListener("syolana:partner-theme",onPartnerTheme);

@@ -6,6 +6,11 @@ const YANDEX_URL = "https://syolana.website.yandexcloud.net/";
 const AVITO_URL = "https://www.avito.ru/brands/i223140984";
 
 registerTranslations({
+  "Я также могу отвечать с официальной почты syolana@yandex.ru. По этому адресу принимаются и юридически значимые заявления. Не отправляйте по почте пароли, ключи доступа и реквизиты карты.": [
+    "I may also reply from the official email address syolana@yandex.ru. This address also accepts formal legal notices. Do not email passwords, access keys or card details.",
+    "También puedo responder desde el correo oficial syolana@yandex.ru. Esta dirección también recibe comunicaciones legales. No envíes contraseñas, claves de acceso ni datos de tarjetas por correo.",
+    "Je peux aussi répondre depuis l’adresse officielle syolana@yandex.ru. Elle reçoit également les notifications juridiques. N’envoyez pas de mots de passe, de clés d’accès ni de coordonnées de carte par e-mail."
+  ],
   "Проверка подлинности": ["Authenticity check", "Verificación de autenticidad", "Vérification d’authenticité"],
   "Официальные адреса Syolana": ["Official Syolana addresses", "Direcciones oficiales de Syolana", "Adresses officielles de Syolana"],
   "Используйте только два официальных адреса Syolana, указанных ниже.": [
@@ -13,20 +18,20 @@ registerTranslations({
     "Utiliza únicamente las dos direcciones oficiales de Syolana indicadas abajo.",
     "Utilisez uniquement les deux adresses officielles de Syolana indiquées ci-dessous."
   ],
-  "Общение по заказам, доступам к курсам, дизайну и согласованию оплаты ведётся только через официальный профиль Syolana на Авито.": [
-    "All communication about orders, course access, design services and payment arrangements takes place only through Syolana’s official Avito profile.",
-    "Toda comunicación sobre pedidos, acceso a cursos, servicios de diseño y acuerdos de pago se realiza únicamente a través del perfil oficial de Syolana en Avito.",
-    "Tous les échanges concernant les commandes, l’accès aux cours, les services de design et les modalités de paiement passent uniquement par le profil officiel Syolana sur Avito."
+  "Заказы и согласование оплаты — в официальном профиле Syolana на Авито. Ответить на вопросы я также могу с почты syolana@yandex.ru.": [
+    "Orders and payment arrangements go through Syolana’s official Avito profile. I may also answer questions from syolana@yandex.ru.",
+    "Los pedidos y las condiciones de pago se acuerdan en el perfil oficial de Syolana en Avito. También puedo responder preguntas desde syolana@yandex.ru.",
+    "Les commandes et modalités de paiement sont convenues sur le profil officiel Syolana sur Avito. Je peux aussi répondre depuis syolana@yandex.ru."
   ],
-  "Любые другие сайты, аккаунты, сообщения, письма, чаты, мессенджеры и ссылки не являются официальными каналами Syolana.": [
-    "Any other websites, accounts, messages, emails, chats, messengers or links are not official Syolana channels.",
-    "Cualquier otro sitio, cuenta, mensaje, correo, chat, mensajería o enlace no es un canal oficial de Syolana.",
-    "Tout autre site, compte, message, e-mail, chat, messagerie ou lien n’est pas un canal officiel de Syolana."
+  "Официальная почта Syolana — только syolana@yandex.ru. Всегда проверяйте полный адрес отправителя.": [
+    "Syolana’s only official email address is syolana@yandex.ru. Always check the full sender address.",
+    "La única dirección de correo oficial de Syolana es syolana@yandex.ru. Comprueba siempre la dirección completa del remitente.",
+    "La seule adresse e-mail officielle de Syolana est syolana@yandex.ru. Vérifiez toujours l’adresse complète de l’expéditeur."
   ],
-  "Если кто-либо пишет от имени Syolana вне официального профиля на Авито или предлагает оплату другим способом, такое обращение не относится к официальной работе Syolana.": [
-    "If anyone contacts you in Syolana’s name outside the official Avito profile or proposes another payment method, that contact is not part of Syolana’s official activity.",
-    "Si alguien se pone en contacto contigo en nombre de Syolana fuera del perfil oficial de Avito o propone otro método de pago, ese contacto no forma parte de la actividad oficial de Syolana.",
-    "Si quelqu’un vous contacte au nom de Syolana en dehors du profil officiel Avito ou propose un autre mode de paiement, ce contact ne relève pas de l’activité officielle de Syolana."
+  "Сообщения с других адресов и аккаунтов проверяйте через официальный профиль Syolana на Авито до оплаты.": [
+    "Before paying, verify messages from other addresses or accounts through Syolana’s official Avito profile.",
+    "Antes de pagar, verifica los mensajes de otras direcciones o cuentas a través del perfil oficial de Syolana en Avito.",
+    "Avant de payer, vérifiez les messages provenant d’autres adresses ou comptes via le profil officiel Syolana sur Avito."
   ],
   "Syolana не просит переводить оплату на личные карты, по реквизитам из сторонних сообщений или через сторонние ссылки.": [
     "Syolana does not ask you to send payment to personal bank cards, to details received in third-party messages, or through third-party links.",
@@ -127,9 +132,9 @@ function renderNotice() {
     <h2 class="syolana-trust-title">${title}</h2>
     <div class="syolana-trust-copy">
       <p>${t("Используйте только два официальных адреса Syolana, указанных ниже.")}</p>
-      <p><strong>${t("Общение по заказам, доступам к курсам, дизайну и согласованию оплаты ведётся только через официальный профиль Syolana на Авито.")}</strong></p>
-      <p>${t("Любые другие сайты, аккаунты, сообщения, письма, чаты, мессенджеры и ссылки не являются официальными каналами Syolana.")}</p>
-      <p class="syolana-trust-warning">${t("Если кто-либо пишет от имени Syolana вне официального профиля на Авито или предлагает оплату другим способом, такое обращение не относится к официальной работе Syolana.")}</p>
+      <p><strong>${t("Заказы и согласование оплаты — в официальном профиле Syolana на Авито. Ответить на вопросы я также могу с почты syolana@yandex.ru.")}</strong></p>
+      <p>${t("Официальная почта Syolana — только syolana@yandex.ru. Всегда проверяйте полный адрес отправителя.")}</p>
+      <p class="syolana-trust-warning">${t("Сообщения с других адресов и аккаунтов проверяйте через официальный профиль Syolana на Авито до оплаты.")}</p>
       <p>${t("Syolana не просит переводить оплату на личные карты, по реквизитам из сторонних сообщений или через сторонние ссылки.")}</p>
     </div>
     <div class="syolana-trust-addresses" aria-label="${title}">

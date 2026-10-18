@@ -1,4 +1,7 @@
-import {normalizePartnerFooter} from './partner-attribution.js';
+import {tr,registerTranslations} from './i18n.js';
+registerTranslations({'Веб-дизайн и оформление':['Web design and styling','Diseño web y estilo','Design et habillage web']});
+import {normalizePartnerFooter,prepareAttribution,mountDesignMarks} from './partner-attribution.js';
+import {protectAttribution} from './attribution-guard.js';
 import themeManifest from './themes/manifest.json' with {type:'json'};
 import {themeLoaders} from './theme-loaders.js';
 import { getPref, setPref, notify } from "./utils.js";
@@ -120,10 +123,13 @@ const FALLBACK_THEMES=[
   }
 ];
 export class ThemeEngine {
-  constructor({watermarks=true,initialTheme='',rememberTheme=false}={}){this.watermarks=watermarks;this.initialTheme=initialTheme;this.rememberTheme=rememberTheme;}
+  constructor({watermarks='authorship',initialTheme='',rememberTheme=false,allowedThemes=null}={}){this.watermarks=watermarks;this.initialTheme=initialTheme;this.rememberTheme=rememberTheme;this.allowedThemes=allowedThemes;}
   async init() {
     document.querySelectorAll('footer a.platform-credit').forEach(normalizePartnerFooter);
     this.destroyed=false;
+    if(this.watermarks==='authorship'){this.authorship?.destroy();this.authorship=mountDesignMarks({translate:tr});}
+    const own=/^(?:www\.)?syolana\.com$|^syolana(?:-pilot-[a-z0-9]+)?\.website\.yandexcloud\.net$/.test(location.hostname);
+    if(own&&![...document.querySelectorAll('a.platform-credit,.syolana-credit,#syolana-attribution')].some(n=>!n.closest('[data-syolana-design-marks]'))){const footer=document.getElementById('footer');if(footer){const row=document.createElement('p');row.className='partner-footer-credit';const link=prepareAttribution(document.createElement('a'));link.classList.add('platform-credit');row.append(link);footer.append(row);}}
     this.events?.abort();this.events=new AbortController();
     const listen=(target,event,handler,options={})=>target?.addEventListener(event,handler,{...options,signal:this.events.signal});
     if(!document.getElementById('syolana-scene-softness')){const style=document.createElement('style');style.id='syolana-scene-softness';style.textContent=SOFT_SCENE_CSS;document.head.append(style);}
@@ -143,6 +149,8 @@ export class ThemeEngine {
     this.themeBase = themeBase;
     this.manifest = themeManifest;
     if(!Array.isArray(this.manifest)||!this.manifest.length)this.manifest=FALLBACK_THEMES;
+    if(Array.isArray(this.allowedThemes))this.manifest=this.manifest.filter(t=>this.allowedThemes.includes(t.id));
+    if(!this.manifest.length)throw Error('Нет разрешённой темы.');
     const old = getPref("theme", "");
     const requested = this.initialTheme || new URLSearchParams(location.search).get("theme") || window.__syolanaInitialTheme || (this.rememberTheme?old:'');
     if (requested && this.manifest.some((t) => t.id === requested)) {
@@ -211,6 +219,7 @@ export class ThemeEngine {
     document.fonts?.ready.then(() => this.draw(0));
   }
   async select(id,{force=false}={}) {
+    if(Array.isArray(this.allowedThemes)&&!this.allowedThemes.includes(id))return;
     if(this.destroyed)return;
     if(!force&&this.id===id&&this.theme)return;
     const seq = ++this.sequence;
@@ -266,6 +275,7 @@ export class ThemeEngine {
     document.documentElement.removeAttribute('data-theme-pending');
     previousRenderer?.dispose?.();
     this.updateChoices();
+    this.authorship?.update(item.name);
     this.sync();
     this.selectedObject=null;this.updateFlightHint();
     window.dispatchEvent(new CustomEvent("syolana:theme"));
@@ -517,7 +527,7 @@ export class ThemeEngine {
     if (this.theme.renderer === "waves" && !this.theme.spatialWaves) this.drawWaves();
     if (this.zen && this.theme.particles !== false) this.drawZenDust(d);
 
-    if(this.watermarks==='authorship')this.drawAuthorship();
+
     for (const m of (this.watermarks===true ? this.marks : [])) {
       m.y -= m.speed * d;
       m.phase += d * 0.23;
@@ -876,17 +886,14 @@ export class ThemeEngine {
     };draw(0);
   }
 
-  drawAuthorship(){
-    const ctx=this.ctx,label='/* © syolana.com, 2026 · '+(this.manifest.find(item=>item.id===this.id)?.name||'Оформление')+' */';
-    const span=this.h+80,y=((this.h*.8-this.phase*4)%span+span)%span-20;
-    ctx.save();ctx.globalAlpha=.24;ctx.font='500 12px ui-monospace,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=this.theme.markDark?'#51415e':'#e5d8f4';
-    ctx.fillText(label,this.w/2+Math.sin(this.phase*.08)*12,y,Math.max(100,this.w-36));ctx.restore();
+  protectIdentity(onLost){
+    const credit=[...document.querySelectorAll('a.syolana-credit')].find(n=>!n.closest('[data-syolana-design-marks]'));
+    return protectAttribution(credit,'https://syolana.com/',onLost,{watermark:this.canvas,marks:this.authorship?.nodes||[]});
   }
   destroy() {
     if(this.destroyed)return;this.destroyed=true;++this.sequence;
     cancelAnimationFrame(this.frame);cancelAnimationFrame(this.previewFrame);clearTimeout(this.resizeTimer);
-    this.events?.abort();this.sceneEvents?.abort();
+    this.events?.abort();this.sceneEvents?.abort();this.authorship?.destroy();this.authorship=null;
     if(this.themeToggle?.onclick===this.openThemes)this.themeToggle.onclick=null;
     this.custom?.dispose?.();this.custom=null;this.sceneAudio?.stop?.();
   }

@@ -67,6 +67,7 @@ async function entitlement(config) {
     const url = new URL(endpoint);
     url.searchParams.set("partnerId", config.partnerId || "");
     url.searchParams.set("hostname", location.hostname);
+    url.searchParams.set("pathname",location.pathname);
 
     const response = await fetch(url, {
       cache: "no-store",
@@ -191,6 +192,7 @@ async function bootIntegration() {
         partner: partner || {},
         partnerId: config.partnerId || "",
         features: access.features || config.features || {},
+        themeAccess:access.themeAccess||null,
         version: access.version,
         assetBase: access.assetBase,
       });
@@ -225,7 +227,7 @@ async function bootIntegration() {
               "visibilitychange",
               onVisibility,
             );
-          } else scheduleExpiry(next);
+          } else {scheduleExpiry(next);await handle?.updateThemeAccess?.(next.themeAccess||null);}
         } catch {
           // A transient network failure does not destroy a working shell.
         } finally {

@@ -1,12 +1,13 @@
 import {createSketchHTML,normalizeSketch,parseSketchFile} from './sketch-model.mjs';
-import {calendarLicense,calendarWindow,PARTNER_CALENDAR_TERMS} from './partner-periods.mjs';
+import {calendarLicense,calendarWindow,PARTNER_CALENDAR_TERMS,TRIAL_THEME_CHOICES,TRIAL_THEME_IDS} from './partner-periods.mjs';
 
-const THEMES=[['aurora','Северное сияние'],['golden','Золотые струны'],['moon','Лунный сад'],['amber-forest','Янтарный лес'],['living-sea','Море странствий'],['white-ocean-city','Белый город'],['violet-bloom','Фиолетовое цветение']].map(([id,name])=>({id,name}));
+const THEMES=TRIAL_THEME_CHOICES;
 const json=value=>JSON.stringify(value).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
 export function createCalendarPartnerHTML(value,{period='trial-2026',now=Date.now()}={}){
  const license=calendarLicense(period),window=calendarWindow(period,now);
  if(!Number.isFinite(now)||window.until<=now)throw Error('Этот период оформления уже закончился.');
- return createPartnerHTML(value,license);
+ const project=normalizeSketch(value);if(period==='trial-2026'&&!TRIAL_THEME_IDS.includes(project.theme))throw Error('Выберите одну из семи тем 2026 года.');
+ return createPartnerHTML(project,license);
 }
 function createPartnerHTML(value,license){
  const project=normalizeSketch(value);
@@ -34,7 +35,7 @@ export function mountPartnerFileBuilder(host,{isOwner,download,onPrepared}={}){
   const source=file.files?.[0];if(!source||source.size>1000000)throw Error('Выберите файл эскиза не больше 1 МБ.');
   const project=parseSketchFile(await source.text());if(disposed||!isOwner())return;
   const partnerId='p-'+crypto.randomUUID().replaceAll('-','').slice(0,12);
-  save('Syolana-'+partnerId+'.html',createRegisteredPartnerHTML(project,{partnerId}));onPrepared?.(partnerId);
+  save('Syolana-'+partnerId+'.html',createRegisteredPartnerHTML(project,{partnerId}));onPrepared?.(partnerId,project.theme);
   message.textContent='Файл готов. Код оформления: '+partnerId+'. Партнёр переименовывает его в index.html и сообщает адрес сайта. Затем внесите адрес в форму ниже; оформление включится после подтверждения сервером.';
  }catch(error){if(!disposed)message.textContent=error.message;}finally{if(!disposed)button.disabled=false;}};
  return()=>{disposed=true;if(url)URL.revokeObjectURL(url);box.remove();};

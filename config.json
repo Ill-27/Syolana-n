@@ -22,7 +22,7 @@
   "languageProgram": {
     "status": "published",
     "freeCourse": "en/A1",
-    "subscription": {"plan": "languages", "priceRub": 690, "days": 30, "autoRenew": false, "allPublishedPaidCourses": true, "partnerIncluded": false},
+    "subscription": {"plan": "languages", "priceRub": 650, "days": 30, "autoRenew": false, "allPublishedPaidCourses": true, "partnerIncluded": false},
     "publishedPaidCourses": ["en-a2", "es-a1", "es-a2", "fr-a1"]
   },
   "partnerBanner": {
@@ -56,6 +56,6 @@
   "salesMode": "external-inquiry",
   "commercialReady": false,
   "legalContactEmail": "syolana@yandex.ru",
-  "subscription": {"plan": "languages", "priceRub": 690, "days": 30, "autoRenew": false, "allPublishedPaidCourses": true, "partnerIncluded": false},
+  "subscription": {"plan": "languages", "priceRub": 650, "days": 30, "autoRenew": false, "allPublishedPaidCourses": true, "partnerIncluded": false},
   "artividUrl": "https://ill-27.github.io/Immersivebooks/"
 }

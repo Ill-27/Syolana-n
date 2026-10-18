@@ -1,6 +1,6 @@
 const secureURL=value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.hash?u:null;}catch{return null;}};
 
-export function watchRegisteredDesign({license,activate,deactivate,nativeFetch=fetch,page=location,clock=Date.now,interval=10000,schedule=setTimeout,cancel=clearTimeout}) {
+export function watchRegisteredDesign({license,activate,deactivate,nativeFetch=fetch,page=location,clock=Date.now,interval=10000,schedule=setTimeout,cancel=clearTimeout,update=()=>{}}) {
  let destroyed=false,checking=false,active=false,generation=0,timer,expiry,nextCheck=interval,approvedUntil=0;
  const lose=()=>{active=false;approvedUntil=0;nextCheck=interval;generation++;cancel(expiry);deactivate();};
  async function verify(){
@@ -14,9 +14,10 @@ export function watchRegisteredDesign({license,activate,deactivate,nativeFetch=f
    if(state.active!==true||state.partnerId!==license.partnerId||!state.allowedHosts?.includes(page.hostname)||!Number.isFinite(until)||until<=stamp||until>stamp+30000)throw Error('Inactive');
    approvedUntil=until;cancel(expiry);expiry=schedule(lose,until-stamp);
    nextCheck=Math.min(interval,Math.max(1000,(until-stamp)/2));
+   if(update(state)===false)active=false;
    if(!active){
     active=true;const version=++generation,isCurrent=()=>!destroyed&&active&&version===generation;
-    activation=Promise.resolve().then(()=>{if(isCurrent())return activate(isCurrent);}).catch(()=>{if(isCurrent())lose();});
+    activation=Promise.resolve().then(()=>{if(isCurrent())return activate(isCurrent,state);}).catch(()=>{if(isCurrent())lose();});
    }
   }catch{if(!destroyed){if(transportFailure&&active&&approvedUntil>clock())nextCheck=Math.max(1,Math.min(1000,(approvedUntil-clock())/2));else lose();}}finally{
    checking=false;cancel(timer);
@@ -47,24 +48,28 @@ export function prepareDesignFonts({timeout=1800}={}){
 }
 
 export class ThemeEngine {
- constructor({license=window.__syolanaDesignLicense,load=()=>import('https://syolana.com/themes.js?v=20261018-domain-1')}={}){this.license=license;this.load=load;this.engine=null;this.selected='';}
+ constructor({license=window.__syolanaDesignLicense,load=()=>import('https://syolana.com/themes.js?v=20261018-identity-1')}={}){this.license=license;this.load=load;this.engine=null;this.selected='';}
  async init(){
   this.baseStyle=document.documentElement.getAttribute('style');
   this.baseTheme=document.documentElement.getAttribute('data-theme');
+  void import('https://syolana.com/partner-attribution.js?v=20261018-identity-1').then(m=>{this.baseView=m;m.setPlainSite(document.documentElement.dataset.syolanaDesign!=='active');}).catch(()=>{});
   this.stop();
-  this.permission=watchRegisteredDesign({license:this.license,activate:async isCurrent=>{
+  this.permission=watchRegisteredDesign({license:this.license,update:state=>{const key=JSON.stringify(state.themeAccess||null);const changed=this.engine&&this.themeAccessKey!==key;if(changed)this.stop();this.themeAccessKey=key;return !changed;},activate:async (isCurrent,state)=>{
    const fonts=prepareDesignFonts();this.fonts=fonts;
    const {ThemeEngine:Engine}=await this.load();if(!isCurrent())return;
-   const engine=new Engine({watermarks:'authorship',initialTheme:this.selected,rememberTheme:true});this.engine=engine;
+   const access=state.themeAccess;const engine=new Engine({watermarks:'authorship',initialTheme:access?.theme||this.selected,rememberTheme:true,allowedThemes:access?.allowedThemes||null});this.engine=engine;
    await Promise.all([engine.init(),fonts.ready]);if(this.engine!==engine||!isCurrent()){engine.destroy();return;}
    document.documentElement.dataset.syolanaDesign='active';
+   document.documentElement.removeAttribute('data-syolana-plain');this.baseView?.setPlainSite(false);
+   this.guard=engine.protectIdentity?.(()=>{this.permission?.destroy();this.stop();});
+   void import('https://syolana.com/avito-dock.js?v=20261018-identity-1').then(m=>{if(isCurrent())this.contacts=m.ensureContactDock();}).catch(()=>{});
    engine.resize?.();
   },deactivate:()=>this.stop()});
   await this.permission.ready;
  }
  stop(){
   if(this.engine?.id)this.selected=this.engine.id;
-  this.engine?.destroy();this.engine=null;this.fonts?.cancel();this.fonts=null;document.documentElement.dataset.syolanaDesign='off';
+  this.guard?.();this.guard=null;this.contacts?.destroy();this.contacts=null;this.engine?.destroy();this.engine=null;this.fonts?.cancel();this.fonts=null;document.documentElement.dataset.syolanaDesign='off';document.documentElement.setAttribute('data-syolana-plain','');this.baseView?.setPlainSite(true);
   if(this.baseTheme===null)document.documentElement.removeAttribute('data-theme');else if(this.baseTheme!==undefined)document.documentElement.setAttribute('data-theme',this.baseTheme);
   if(this.baseStyle===null)document.documentElement.removeAttribute('style');else if(this.baseStyle!==undefined)document.documentElement.setAttribute('style',this.baseStyle);
   document.body.classList.remove('zen');const content=document.getElementById('content-shell');if(content)content.inert=false;

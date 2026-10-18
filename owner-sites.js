@@ -1,3 +1,4 @@
+import {TRIAL_THEME_CHOICES} from './partner-periods.mjs';
 import {createOwnerVault} from './owner-vault.mjs';
 import {createDomainBook,validateDomainRow} from './owner-registry-store.mjs';
 import {installAPITransport} from './api-transport.js';
@@ -24,7 +25,7 @@ export async function mountOwnerSites(host,{isCurrent=()=>true}={}){
  const show=make('button','Показать ключ');show.type='button';show.onclick=()=>{key.type=key.type==='password'?'text':'password';show.textContent=key.type==='password'?'Показать ключ':'Скрыть ключ';};
  const unlock=make('button','Открыть закрытый список','btn primary');unlock.type='submit';login.append(show,unlock);
  const panel=make('div');panel.hidden=true;
- const disposePartnerFiles=mountPartnerFileBuilder(panel,{isOwner:()=>vault.isOwner(),onPrepared:code=>{partnerId.value=code;details.open=true;}});
+ const disposePartnerFiles=mountPartnerFileBuilder(panel,{isOwner:()=>vault.isOwner(),onPrepared:(code,theme)=>{partnerId.value=code;if(TRIAL_THEME_CHOICES.some(t=>t.id===theme))trialTheme.value=theme;details.open=true;}});
  const connection=make('p','Сервер не подключён. Здесь хранится зашифрованная копия на этом устройстве. Сохранённый статус не подтверждает текущую работу лицензии.','owner-note');
  const onlineButton=make('button','Подключить сервер лицензий');onlineButton.type='button';
  const toolbar=make('div','','owner-actions'),backup=make('button','Скачать зашифрованную копию'),restore=make('input'),restoreLabel=make('label','Восстановить копию','field');backup.type='button';restore.type='file';restore.accept='.json,application/json';restoreLabel.append(restore);toolbar.append(onlineButton,backup,restoreLabel);
@@ -33,6 +34,7 @@ export async function mountOwnerSites(host,{isCurrent=()=>true}={}){
  const details=make('details');details.append(make('summary','Ввести домен и включить оформление'));
  const form=make('form'),partnerId=input(form,'Код оформления из выданного файла (p-...)','text','partnerId',true),url=input(form,'Полный адрес сайта партнёра с HTTPS','url','siteUrl',true);
  partnerId.pattern='p-[a-f0-9]{12}';partnerId.placeholder='p-123456789abc';url.placeholder='https://example.ru/';
+ const themeField=make('label','Одна тема бесплатного сайта','field'),trialTheme=make('select');trialTheme.name='trialTheme';for(const t of TRIAL_THEME_CHOICES){const o=make('option',t.name);o.value=t.id;trialTheme.append(o);}trialTheme.value='aurora';themeField.append(trialTheme);form.append(themeField);
  const paymentLabel=make('label','Оплата за 2027 год проверена, индивидуальная цена и состав согласованы','field'),payment=make('input');payment.type='checkbox';payment.name='paymentVerified';paymentLabel.prepend(payment);
  const add=make('button','Подтвердить адрес и включить оформление','btn primary');add.type='submit';form.append(make('p','Без отметки оплаты: бесплатный тест до 1 января 2027, 00:00 МСК. С отметкой: продолжение до 1 января 2028, 00:00 МСК. Платёж автоматически не списывается. Не вводите имена, телефоны и данные посетителей.','owner-note'),paymentLabel,add);details.append(form);panel.append(details);
  section.append(login,panel,message);host.append(section);
@@ -43,7 +45,7 @@ export async function mountOwnerSites(host,{isCurrent=()=>true}={}){
    const actions=make('div','','owner-actions'),checked=make('button','Проверено мной');checked.type='button';checked.onclick=async()=>{try{if(online&&row.serverConfirmed)await change(row,{publicChecked:true});else{row.lastPublicCheck=stamp();rows=await book.write(rows);render();message.textContent='Личная проверка отмечена в зашифрованной копии.';}}catch(e){message.textContent=e.message;}};actions.append(checked);
    if(row.serverConfirmed){
     const pause=make('button',row.status==='active'?'Приостановить оформление':'Возобновить оформление');pause.type='button';pause.disabled=!online||state==='expired'||row.status==='ended';pause.onclick=()=>change(row,{status:row.status==='active'?'suspended':'active',reason:'owner-review'});actions.append(pause);
-    if(!row.paid2027){const renew=make('button','Оплата проверена: включить 2027 год');renew.type='button';renew.disabled=!online||Date.now()>=Date.parse('2028-01-01T00:00:00+03:00');renew.onclick=()=>{if(confirm('Цена и состав согласованы, оплата за 2027 год проверена для '+row.domain+'? Оформление продолжится до 1 января 2028, 00:00 МСК.'))change(row,{status:'active',paid2027:true,paymentVerified:true});};actions.append(renew);}
+    if(!row.paid2027){const themeLabel=make('label','Тема бесплатного сайта','field'),select=make('select');for(const t of TRIAL_THEME_CHOICES){const o=make('option',t.name);o.value=t.id;select.append(o);}select.value=row.trialTheme||'aurora';select.disabled=!online;themeLabel.append(select);item.append(themeLabel);const saveTheme=make('button','Сохранить выбранную тему');saveTheme.type='button';saveTheme.disabled=!online;saveTheme.onclick=()=>change(row,{trialTheme:select.value});actions.append(saveTheme);const renew=make('button','Оплата проверена: включить 2027 год');renew.type='button';renew.disabled=!online||Date.now()>=Date.parse('2028-01-01T00:00:00+03:00');renew.onclick=()=>{if(confirm('Цена и состав согласованы, оплата за 2027 год проверена для '+row.domain+'? Оформление продолжится до 1 января 2028, 00:00 МСК.'))change(row,{status:'active',paid2027:true,paymentVerified:true});};actions.append(renew);}
     else item.append(make('p','2027 год включён. Общее окончание: 1 января 2028, 00:00 МСК.'));
    }
    item.append(actions);list.append(item);
@@ -58,7 +60,7 @@ export async function mountOwnerSites(host,{isCurrent=()=>true}={}){
  form.onsubmit=async e=>{e.preventDefault();add.disabled=true;try{
   if(!online)throw Error('Сначала подключите сервер лицензий кнопкой выше.');
   if(!/^p-[a-f0-9]{12}$/.test(partnerId.value.trim()))throw Error('Укажите код оформления из выданного файла.');
-  const result=await api('admin/partner-registry',{partnerId:partnerId.value.trim(),siteUrl:url.value,paid2027:payment.checked,paymentVerified:payment.checked,status:'active'});
+  const result=await api('admin/partner-registry',{partnerId:partnerId.value.trim(),siteUrl:url.value,trialTheme:trialTheme.value,paid2027:payment.checked,paymentVerified:payment.checked,status:'active'});
   if(!result.site)throw Error('Сервер не подтвердил разрешение.');
   const saved=validateDomainRow({...result.site,serverConfirmed:true,serverCheckedAt:stamp()});rows=await book.write([...rows.filter(r=>r.partnerId!==saved.partnerId),saved]);render();url.value='';partnerId.value='';payment.checked=false;details.open=false;message.textContent='Адрес разрешён сервером. На сайте партнёра оформление включится при следующей проверке, обычно в течение 10 секунд.';
  }catch(e){message.textContent=e.message;}finally{add.disabled=false;}};

@@ -1,4 +1,5 @@
-import {prepareAttribution} from './partner-attribution.js';
+import {ensureContactDock} from './avito-dock.js';
+import {prepareAttribution,setPlainSite} from './partner-attribution.js';
 import {ATTRIBUTION_TEXT,protectAttribution} from './attribution-guard.js';
 const CORE_BASE = new URL("./", import.meta.url);
 let mounted = null;
@@ -393,6 +394,7 @@ export async function mountPartnerCore(options = {}) {
   const features = options.features || {};
   const version = String(options.version || Date.now());
 
+  setPlainSite(false);
   document.documentElement.classList.add("syolana-active");
   document.body.classList.add("partner-site", "syolana-active");
 
@@ -452,8 +454,9 @@ export async function mountPartnerCore(options = {}) {
 
   const player = new Player((config.songs || []).map(resolveSong));
   const partnerTheme=partner.siteSettings?.theme||partner.theme;
-  const theme = new ThemeEngine({watermarks:'authorship',initialTheme:partnerTheme,rememberTheme:true});
+  const access=options.themeAccess;const theme = new ThemeEngine({watermarks:'authorship',initialTheme:access?.theme||partnerTheme,rememberTheme:true,allowedThemes:access?.allowedThemes||null});
   await theme.init();
+  const contacts=ensureContactDock();
   const onPartnerTheme=e=>{if(e.detail?.theme)theme.select(e.detail.theme).catch(()=>{});};
   window.addEventListener("syolana:partner-theme",onPartnerTheme);
 
@@ -489,14 +492,17 @@ export async function mountPartnerCore(options = {}) {
   document.addEventListener("keydown", escape);
 
   let stopAttribution=()=>{};
-  let destroyed=false;
+  let destroyed=false,themeAccessKey=JSON.stringify(options.themeAccess||null);
   mounted = {
     get active(){return !destroyed;},
     theme,
     player,
+    async updateThemeAccess(access){
+      const key=JSON.stringify(access||null);if(destroyed||key===themeAccessKey)return;themeAccessKey=key;stopAttribution();stopAttribution=()=>{};theme.destroy();theme.allowedThemes=access?.allowedThemes||null;theme.initialTheme=access?.theme||theme.id;await theme.init();if(!destroyed)stopAttribution=protectAttribution(attributionLink,"https://syolana.com/",()=>{mounted?.destroy();window.dispatchEvent(new CustomEvent("syolana:attribution-lost"));},{watermark:document.getElementById("starCanvas"),marks:theme.authorship?.nodes||[]});
+    },
     setZen,
     destroy() {
-      if(destroyed)return;destroyed=true;stopAttribution();
+      if(destroyed)return;destroyed=true;stopAttribution();contacts.destroy();setPlainSite(true);
       setZen(false);
       unwireFullscreen();
       document.removeEventListener("keydown", escape);
@@ -523,6 +529,6 @@ export async function mountPartnerCore(options = {}) {
   };
 
   const handle=mounted;
-  stopAttribution=protectAttribution(attributionLink,"https://syolana.com/",()=>{handle.destroy();window.dispatchEvent(new CustomEvent("syolana:attribution-lost"));},{watermark:document.getElementById("starCanvas")});
+  stopAttribution=protectAttribution(attributionLink,"https://syolana.com/",()=>{handle.destroy();window.dispatchEvent(new CustomEvent("syolana:attribution-lost"));},{watermark:document.getElementById("starCanvas"),marks:theme.authorship?.nodes||[]});
   return handle;
 }

@@ -1,8 +1,9 @@
+import {startDesignLoading,finishDesignLoading} from './design-start.js';
 const secureURL=value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.hash?u:null;}catch{return null;}};
 
 export function watchRegisteredDesign({license,activate,deactivate,nativeFetch=fetch,page=location,clock=Date.now,interval=10000,schedule=setTimeout,cancel=clearTimeout,update=()=>{}}) {
  let destroyed=false,checking=false,active=false,generation=0,timer,expiry,nextCheck=interval,approvedUntil=0;
- const lose=()=>{active=false;approvedUntil=0;nextCheck=interval;generation++;cancel(expiry);deactivate();};
+ const lose=(reason='inactive')=>{active=false;approvedUntil=0;nextCheck=interval;generation++;cancel(expiry);deactivate(reason);};
  async function verify(){
   if(destroyed||checking)return;checking=true;let activation,transportFailure=false;nextCheck=interval;
   try{
@@ -12,14 +13,14 @@ export function watchRegisteredDesign({license,activate,deactivate,nativeFetch=f
    let response;try{response=await nativeFetch(endpoint.href,{cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(5000)});}catch(error){transportFailure=true;throw error;}
    if(!response.ok){transportFailure=response.status>=500||response.status===429;throw Error('Inactive');}const state=await response.json(),until=Date.parse(state.expiresAt),stamp=clock();if(destroyed)return;
    if(state.active!==true||state.partnerId!==license.partnerId||!state.allowedHosts?.includes(page.hostname)||!Number.isFinite(until)||until<=stamp||until>stamp+30000)throw Error('Inactive');
-   approvedUntil=until;cancel(expiry);expiry=schedule(lose,until-stamp);
+   approvedUntil=until;cancel(expiry);expiry=schedule(()=>lose('unavailable'),until-stamp);
    nextCheck=Math.min(interval,Math.max(1000,(until-stamp)/2));
    if(update(state)===false)active=false;
    if(!active){
     active=true;const version=++generation,isCurrent=()=>!destroyed&&active&&version===generation;
-    activation=Promise.resolve().then(()=>{if(isCurrent())return activate(isCurrent,state);}).catch(()=>{if(isCurrent())lose();});
+    activation=Promise.resolve().then(()=>{if(isCurrent())return activate(isCurrent,state);}).catch(()=>{if(isCurrent())lose('unavailable');});
    }
-  }catch{if(!destroyed){if(transportFailure&&active&&approvedUntil>clock())nextCheck=Math.max(1,Math.min(1000,(approvedUntil-clock())/2));else lose();}}finally{
+  }catch{if(!destroyed){if(transportFailure&&active&&approvedUntil>clock())nextCheck=Math.max(1,Math.min(1000,(approvedUntil-clock())/2));else lose(transportFailure?'unavailable':'inactive');}}finally{
    checking=false;cancel(timer);
    if(!destroyed)timer=schedule(()=>{void verify();},nextCheck);
   }
@@ -52,9 +53,10 @@ export class ThemeEngine {
  async init(){
   this.baseStyle=document.documentElement.getAttribute('style');
   this.baseTheme=document.documentElement.getAttribute('data-theme');
-  void import('https://syolana.com/partner-attribution.js?v=20261018-identity-1').then(m=>{this.baseView=m;m.setPlainSite(document.documentElement.dataset.syolanaDesign!=='active');}).catch(()=>{});
-  this.stop();
-  this.permission=watchRegisteredDesign({license:this.license,update:state=>{const key=JSON.stringify(state.themeAccess||null);const changed=this.engine&&this.themeAccessKey!==key;if(changed)this.stop();this.themeAccessKey=key;return !changed;},activate:async (isCurrent,state)=>{
+  void import('https://syolana.com/partner-attribution.js?v=20261018-identity-1').then(m=>{this.baseView=m;m.setPlainSite(document.documentElement.dataset.syolanaDesign==='off');}).catch(()=>{});
+  this.stop({pending:true});
+  this.permission=watchRegisteredDesign({license:this.license,update:state=>{const key=JSON.stringify(state.themeAccess||null);const changed=this.engine&&this.themeAccessKey!==key;if(changed)this.stop({pending:true});this.themeAccessKey=key;return !changed;},activate:async (isCurrent,state)=>{
+   startDesignLoading(state.themeAccess?.theme||this.selected);
    const fonts=prepareDesignFonts();this.fonts=fonts;
    const {ThemeEngine:Engine}=await this.load();if(!isCurrent())return;
    const access=state.themeAccess;const engine=new Engine({watermarks:'authorship',initialTheme:access?.theme||this.selected,rememberTheme:true,allowedThemes:access?.allowedThemes||null});this.engine=engine;
@@ -64,12 +66,14 @@ export class ThemeEngine {
    this.guard=engine.protectIdentity?.(()=>{this.permission?.destroy();this.stop();});
    void import('https://syolana.com/avito-dock.js?v=20261018-identity-1').then(m=>{if(isCurrent())this.contacts=m.ensureContactDock();}).catch(()=>{});
    engine.resize?.();
-  },deactivate:()=>this.stop()});
+   finishDesignLoading(engine.id);
+  },deactivate:reason=>this.stop({pending:reason==='unavailable'})});
   await this.permission.ready;
  }
- stop(){
+ stop({pending=false}={}){
+  if(pending)startDesignLoading(this.engine?.id||this.selected);else finishDesignLoading();
   if(this.engine?.id)this.selected=this.engine.id;
-  this.guard?.();this.guard=null;this.contacts?.destroy();this.contacts=null;this.engine?.destroy();this.engine=null;this.fonts?.cancel();this.fonts=null;document.documentElement.dataset.syolanaDesign='off';document.documentElement.setAttribute('data-syolana-plain','');this.baseView?.setPlainSite(true);
+  this.guard?.();this.guard=null;this.contacts?.destroy();this.contacts=null;this.engine?.destroy();this.engine=null;this.fonts?.cancel();this.fonts=null;document.documentElement.dataset.syolanaDesign=pending?'pending':'off';document.documentElement.toggleAttribute('data-syolana-plain',!pending);this.baseView?.setPlainSite(!pending);
   if(this.baseTheme===null)document.documentElement.removeAttribute('data-theme');else if(this.baseTheme!==undefined)document.documentElement.setAttribute('data-theme',this.baseTheme);
   if(this.baseStyle===null)document.documentElement.removeAttribute('style');else if(this.baseStyle!==undefined)document.documentElement.setAttribute('style',this.baseStyle);
   document.body.classList.remove('zen');const content=document.getElementById('content-shell');if(content)content.inert=false;

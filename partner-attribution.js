@@ -43,11 +43,11 @@ export function mountDesignMarks({translate=value=>value}={}){
 .syolana-copyright-corner{position:fixed;z-index:2;left:max(20px,env(safe-area-inset-left));top:var(--syolana-mark-top,116px);max-width:min(230px,54vw);animation:syolanaAuthorDrift 19s ease-in-out infinite}body.zen .syolana-copyright-corner{z-index:70}
 [data-syolana-copyright]{display:grid;gap:3px;font:500 11px/1.4 system-ui,sans-serif;letter-spacing:.015em;opacity:.72}
 [data-syolana-copyright] span:first-child{font-weight:650;letter-spacing:.035em}[data-syolana-copyright] span:last-child{font-size:10px}
-[data-syolana-signature]{position:fixed;z-index:420;right:max(24px,env(safe-area-inset-right));bottom:var(--syolana-mark-bottom,28px);font:400 clamp(28px,4vw,38px)/1.3 "Syolana Script",cursive;letter-spacing:.025em;opacity:.96;color:#fff8ff;text-shadow:0 1px 2px rgba(0,0,0,.88),0 0 8px rgba(0,0,0,.45);animation:syolanaSignatureDrift 23s ease-in-out infinite;white-space:nowrap}
+[data-syolana-signature]{position:fixed;z-index:420;right:max(24px,env(safe-area-inset-right));bottom:var(--syolana-mark-bottom,28px);font:400 clamp(28px,4vw,38px)/1.3 "Syolana Script",cursive;letter-spacing:.025em;opacity:.96;color:#fff8ff;text-shadow:0 1px 2px rgba(0,0,0,.88),0 0 8px rgba(0,0,0,.45);white-space:nowrap}[data-syolana-signature]>span{display:block;animation:syolanaSignatureDrift 23s ease-in-out infinite;transform-origin:center}
 .syolana-mark-credit{display:none!important;pointer-events:auto;margin-top:10px!important}body.zen .syolana-mark-credit{display:inline-flex!important;min-height:34px!important;font-size:11px!important;padding:4px 8px!important;background:transparent!important}.syolana-mark-credit img{width:22px!important;height:22px!important}
 @keyframes syolanaAuthorDrift{0%,100%{transform:translate3d(0,0,0)}30%{transform:translate3d(3px,-2px,0)}65%{transform:translate3d(-2px,3px,0)}}
 @keyframes syolanaSignatureDrift{0%,100%{transform:translate3d(0,0,0) rotate(-2deg)}35%{transform:translate3d(-3px,2px,0) rotate(-1deg)}70%{transform:translate3d(2px,-3px,0) rotate(-2.5deg)}}
-@media(prefers-reduced-motion:reduce){.syolana-copyright-corner,[data-syolana-signature]{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.syolana-copyright-corner,[data-syolana-signature]>span{animation:none!important}}
 @media print{[data-syolana-design-marks]{display:none}}
 `;document.head.append(style);
  }
@@ -55,7 +55,7 @@ export function mountDesignMarks({translate=value=>value}={}){
  const corner=document.createElement('div');corner.className='syolana-copyright-corner';
  const copyright=document.createElement('div');copyright.dataset.syolanaCopyright='true';
  const lines=['© syolana.com','Веб-дизайн и оформление','2026'];for(const text of lines){const span=document.createElement('span');span.textContent=text;copyright.append(span);}
- const signature=document.createElement('div');signature.dataset.syolanaSignature='true';signature.textContent='Syolana';
+ const signature=document.createElement('div');signature.dataset.syolanaSignature='true';const handwriting=document.createElement('span');handwriting.textContent='Syolana';signature.append(handwriting);
  const credit=prepareAttribution(document.createElement('a'));credit.classList.add('syolana-mark-credit');
  corner.append(copyright,credit);root.append(corner,signature);document.body.append(root);
  let themeName='',stopped=false,frame=0,observed=[];
@@ -70,9 +70,10 @@ export function mountDesignMarks({translate=value=>value}={}){
   if(nodes.length!==observed.length||nodes.some((n,i)=>n!==observed[i])){resize?.disconnect();nodes.forEach(n=>resize?.observe(n));observed=nodes;}
   const view=window.visualViewport,screenHeight=window.innerHeight,viewport={top:view?.offsetTop||0,bottom:(view?.offsetTop||0)+(view?.height||screenHeight),right:document.documentElement.clientWidth||window.innerWidth};
   const obstacles=nodes.slice(1).filter(visible).map(n=>n.getBoundingClientRect()).filter(r=>r.width&&r.height&&r.bottom>viewport.top&&r.top<viewport.bottom);
-  const rect=signature.getBoundingClientRect(),height=rect.height||46,width=rect.width||160;
+  const rect=signature.getBoundingClientRect(),height=signature.offsetHeight||rect.height||46,width=signature.offsetWidth||rect.width||160;
   const placement=signaturePlacement({viewport,width,height,obstacles,gap:20});
-  const bottom=Math.max(16,screenHeight-placement.top-height)+'px';if(root.style.getPropertyValue('--syolana-mark-bottom')!==bottom)root.style.setProperty('--syolana-mark-bottom',bottom);
+  const bottom=Math.ceil(Math.max(16,screenHeight-placement.top-height))+'px';if(root.style.getPropertyValue('--syolana-mark-bottom')!==bottom)root.style.setProperty('--syolana-mark-bottom',bottom);
+  signature.dataset.contactTop=String(screenHeight-parseFloat(bottom)-height);signature.dataset.contactHeight=String(height);
   let top=116;const brand=document.querySelector('.top-actions .brand,.brand-link,.reader-home');if(brand){const r=brand.getBoundingClientRect();if(r.bottom>0&&r.bottom<180)top=Math.max(top,r.bottom+16);}const value=top+'px';if(root.style.getPropertyValue('--syolana-mark-top')!==value)root.style.setProperty('--syolana-mark-top',value);
  }
  const changes=new window.MutationObserver(schedule);changes.observe(document.body,{childList:true,subtree:true});
@@ -80,7 +81,7 @@ export function mountDesignMarks({translate=value=>value}={}){
  for(const event of ['resize','orientationchange','syolana:scene-ready'])window.addEventListener(event,schedule);
  window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);
  const yearText=()=> '2026'+(themeName?' • '+translate(themeName):'');const updateText=()=>{copyright.children[1].textContent=translate(lines[1]);copyright.lastElementChild.textContent=yearText();schedule();};window.addEventListener('syolana:locale',updateText);document.fonts?.ready?.then(schedule);layout();
- return{root,nodes:[{node:copyright,expected:()=>lines[0]+translate(lines[1])+yearText()},{node:signature,expected:()=> 'Syolana'},{node:credit,expected:()=>ATTRIBUTION_TEXT,href:'https://syolana.com/',when:()=>document.body.classList.contains('zen')}],update(name){themeName=name;updateText();},destroy(){stopped=true;cancelFrame(frame);resize?.disconnect();changes.disconnect();mode.disconnect();for(const event of ['resize','orientationchange','syolana:scene-ready'])window.removeEventListener(event,schedule);window.visualViewport?.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('scroll',schedule);window.removeEventListener('syolana:locale',updateText);root.remove();}};
+ return{root,nodes:[{node:copyright,expected:()=>lines[0]+translate(lines[1])+yearText()},{node:handwriting,expected:()=> 'Syolana'},{node:credit,expected:()=>ATTRIBUTION_TEXT,href:'https://syolana.com/',when:()=>document.body.classList.contains('zen')}],update(name){themeName=name;updateText();},destroy(){stopped=true;cancelFrame(frame);resize?.disconnect();changes.disconnect();mode.disconnect();for(const event of ['resize','orientationchange','syolana:scene-ready'])window.removeEventListener(event,schedule);window.visualViewport?.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('scroll',schedule);window.removeEventListener('syolana:locale',updateText);root.remove();}};
 }
 
 export function setPlainSite(active){

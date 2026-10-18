@@ -120,13 +120,18 @@ export function mountAvitoDock(link) {
       if (!n.matches('.flight-planet')) layout.observe(n, {attributes:true, attributeFilter:['style','hidden','class']});
     }
   }
+  function reservedRect(node) {
+    const r=node.getBoundingClientRect();
+    if(node.hasAttribute('data-syolana-signature')){const top=Number(node.dataset.contactTop),height=Number(node.dataset.contactHeight);if(Number.isFinite(top)&&height>0)return {...r,left:r.left,right:r.right,width:r.width,top,bottom:top+height,height};}
+    return r;
+  }
   function measure() {
     raf = 0;if(doc.body.classList.contains('zen'))return;
     const tops = [...doc.querySelectorAll(TOP)], bottoms = [...doc.querySelectorAll(BOTTOM)], middle = [...doc.querySelectorAll(MIDDLE)];
     track([...tops, ...bottoms, ...middle]);
     const view = win.visualViewport;
     const viewport = {top:view?.offsetTop || 0, bottom:(view?.offsetTop || 0) + (view?.height || win.innerHeight), right:doc.documentElement.clientWidth || win.innerWidth};
-    const rects = nodes => nodes.filter(visible).map(n => n.getBoundingClientRect());
+    const rects = nodes => nodes.filter(visible).map(reservedRect);
     const top = rects(tops), bottom = rects(bottoms), obstacles = rects(middle);
     // Reserve the tallest zen row, including inactive cards, so changing offers never moves the contact.
     if (doc.body.classList.contains('zen')) {
@@ -202,10 +207,9 @@ export function mountAvitoDock(link) {
   structure.observe(doc.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','open']});
   layout.observe(doc.body,{attributes:true,attributeFilter:['style']});
   for (const event of ['resize','orientationchange','pageshow','syolana:locale']) win.addEventListener(event,schedule);
-  win.addEventListener('scroll',schedule,{passive:true,capture:true});
   viewEvents(win.visualViewport);
-  function viewEvents(view) {view?.addEventListener('resize',schedule);view?.addEventListener('scroll',schedule);}
-  const controller = {refresh:schedule,destroy(){if(destroyed)return;destroyed=true;resize?.disconnect();layout.disconnect();structure.disconnect();win.cancelAnimationFrame(raf);for(const event of ['resize','orientationchange','pageshow','syolana:locale'])win.removeEventListener(event,schedule);win.removeEventListener('scroll',schedule,true);win.visualViewport?.removeEventListener('resize',schedule);win.visualViewport?.removeEventListener('scroll',schedule);mounted.delete(link);shell.remove();}}; mounted.set(link,controller);
+  function viewEvents(view) {view?.addEventListener('resize',schedule);}
+  const controller = {refresh:schedule,destroy(){if(destroyed)return;destroyed=true;resize?.disconnect();layout.disconnect();structure.disconnect();win.cancelAnimationFrame(raf);for(const event of ['resize','orientationchange','pageshow','syolana:locale'])win.removeEventListener(event,schedule);win.visualViewport?.removeEventListener('resize',schedule);mounted.delete(link);shell.remove();}}; mounted.set(link,controller);
   measure(); doc.fonts?.ready?.then(schedule);
   return controller;
 }

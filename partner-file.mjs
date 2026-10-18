@@ -1,3 +1,4 @@
+import {designStartHead} from './design-start.js';
 import {createSketchHTML,normalizeSketch,parseSketchFile} from './sketch-model.mjs';
 import {calendarLicense,calendarWindow,PARTNER_CALENDAR_TERMS,TRIAL_THEME_CHOICES,TRIAL_THEME_IDS} from './partner-periods.mjs';
 
@@ -14,7 +15,7 @@ function createPartnerHTML(value,license){
  const controls='<nav class="export-controls" hidden><button id="theme-toggle" type="button">Тема</button><button id="sound-toggle" type="button">Звук темы</button><button id="zen-toggle" type="button">Созерцание</button></nav><footer class="export-attribution"><a id="syolana-attribution" href="https://syolana.com/" target="_blank" rel="noopener noreferrer">Сайт создан на Syolana</a></footer><dialog id="theme-dialog"><button id="close-theme" type="button">Закрыть</button><div id="theme-list" class="theme-list"></div></dialog>';
  const style='<style>.export-controls{position:fixed;top:16px;right:16px;z-index:90;display:flex;gap:8px}.export-controls[hidden]{display:none!important}.export-controls button,dialog button{font:inherit;padding:10px;border:1px solid #aaa;border-radius:10px}.export-theme{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:-1}.export-attribution{position:static;display:flex;justify-content:center;margin:24px 16px;padding:0;background:transparent}.export-attribution a{padding:0!important;border:0!important;color:#fff!important;font:12px/1.4 system-ui!important;text-decoration:none}.export-attribution a:focus-visible{outline:2px solid white}body{isolation:isolate}body.zen #page{visibility:hidden}body.zen .export-theme{z-index:50}dialog{width:min(500px,88vw);max-height:85dvh;overflow:auto}html[data-theme] body{background:transparent}</style>';
  const script='<script type="module">import {mountLicensedDesign} from "https://syolana.com/licensed-design.js";await mountLicensedDesign('+json({settings:{theme:project.theme},license,themes:THEMES})+');</script>';
- return createSketchHTML(project).replace('<head>','<head><meta name="referrer" content="no-referrer">').replace('</head>',style+'</head>').replace('<main>','<main id="page">').replace(/<(header|section)>/g,'<$1 class="card">').replace('</body>',controls+script+'</body>');
+ return createSketchHTML(project).replace('<head>','<head><meta name="referrer" content="no-referrer">'+designStartHead(project.theme)).replace('</head>',style+'</head>').replace('<main>','<main id="page">').replace(/<(header|section)>/g,'<$1 class="card">').replace('</body>',controls+script+'</body>');
 }
 
 export function createRegisteredPartnerHTML(value,{partnerId='p-'+crypto.randomUUID().replaceAll('-','').slice(0,12)}={}){

@@ -73,7 +73,6 @@ export function mountDesignMarks({translate=value=>value}={}){
   const rect=signature.getBoundingClientRect(),height=signature.offsetHeight||rect.height||46,width=signature.offsetWidth||rect.width||160;
   const placement=signaturePlacement({viewport,width,height,obstacles,gap:20});
   const bottom=Math.ceil(Math.max(16,screenHeight-placement.top-height))+'px';if(root.style.getPropertyValue('--syolana-mark-bottom')!==bottom)root.style.setProperty('--syolana-mark-bottom',bottom);
-  signature.dataset.contactTop=String(screenHeight-parseFloat(bottom)-height);signature.dataset.contactHeight=String(height);
   let top=116;const brand=document.querySelector('.top-actions .brand,.brand-link,.reader-home');if(brand){const r=brand.getBoundingClientRect();if(r.bottom>0&&r.bottom<180)top=Math.max(top,r.bottom+16);}const value=top+'px';if(root.style.getPropertyValue('--syolana-mark-top')!==value)root.style.setProperty('--syolana-mark-top',value);
  }
  const changes=new window.MutationObserver(schedule);changes.observe(document.body,{childList:true,subtree:true});

@@ -120,18 +120,13 @@ export function mountAvitoDock(link) {
       if (!n.matches('.flight-planet')) layout.observe(n, {attributes:true, attributeFilter:['style','hidden','class']});
     }
   }
-  function reservedRect(node) {
-    const r=node.getBoundingClientRect();
-    if(node.hasAttribute('data-syolana-signature')){const top=Number(node.dataset.contactTop),height=Number(node.dataset.contactHeight);if(Number.isFinite(top)&&height>0)return {...r,left:r.left,right:r.right,width:r.width,top,bottom:top+height,height};}
-    return r;
-  }
   function measure() {
     raf = 0;if(doc.body.classList.contains('zen'))return;
     const tops = [...doc.querySelectorAll(TOP)], bottoms = [...doc.querySelectorAll(BOTTOM)], middle = [...doc.querySelectorAll(MIDDLE)];
     track([...tops, ...bottoms, ...middle]);
     const view = win.visualViewport;
     const viewport = {top:view?.offsetTop || 0, bottom:(view?.offsetTop || 0) + (view?.height || win.innerHeight), right:doc.documentElement.clientWidth || win.innerWidth};
-    const rects = nodes => nodes.filter(visible).map(reservedRect);
+    const rects = nodes => nodes.filter(visible).map(n=>n.getBoundingClientRect());
     const top = rects(tops), bottom = rects(bottoms), obstacles = rects(middle);
     // Reserve the tallest zen row, including inactive cards, so changing offers never moves the contact.
     if (doc.body.classList.contains('zen')) {

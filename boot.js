@@ -5,7 +5,9 @@ import './language-switcher.js';
 import './theme-sound.js';
 import {installAPITransport} from './api-transport.js';
 import {tr} from './i18n.js';
+import {prepareStartupTypography,finishStartupUI} from './startup-ui.js';
 installAPITransport();
+const startupTypography=prepareStartupTypography(document);
 if(/^#\/lesson\//.test(location.hash))document.body.classList.add('course-reading');
 if(/^\/(?:partner|studio|editor)\/?$/.test(location.pathname))location.replace(new URL('./#/create-site',document.baseURI).href);
 let previousHash=location.hash,savedY=0;
@@ -25,7 +27,7 @@ try {await import('./app.js');}catch(error){
   const p=document.createElement('p');p.className='notice';p.textContent=tr('Не удалось загрузить основной модуль. Проверьте соединение и попробуйте ещё раз — уже открытые части сайта не затрагиваются.');
   const retry=document.createElement('button');retry.className='btn';retry.textContent=tr('Попробовать снова');retry.onclick=()=>location.reload();page.replaceChildren(p,retry);
  }
-}
+}finally{await finishStartupUI(document,startupTypography);}
 if('serviceWorker' in navigator&&location.protocol==='https:'){
  const register=()=>navigator.serviceWorker.register(new URL('./sw.js',document.baseURI),{scope:new URL('./',document.baseURI).pathname,updateViaCache:'none'}).catch(()=>{});
  if('requestIdleCallback' in window)requestIdleCallback(register,{timeout:10000});else setTimeout(register,2500);

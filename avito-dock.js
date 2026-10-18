@@ -92,7 +92,7 @@ export function mountAvitoDock(link) {
   link.draggable = false;
   link.setAttribute('aria-keyshortcuts', 'ArrowUp ArrowDown ArrowLeft ArrowRight Home End');
   let destroyed=false, raf = 0, drag = null, suppressClick = false, bounds = null, currentTop = 0, compact = preference.compact;
-  let observed = [];
+  let observed = [], railHeight=200, signatureAnchor=null;
   const resize = typeof win.ResizeObserver === 'function' ? new win.ResizeObserver(schedule) : null;
   const layout = new win.MutationObserver(schedule);
   function schedule() { if (!destroyed && !raf) raf = win.requestAnimationFrame(measure); }
@@ -128,6 +128,8 @@ export function mountAvitoDock(link) {
     const viewport = {top:view?.offsetTop || 0, bottom:(view?.offsetTop || 0) + (view?.height || win.innerHeight), right:doc.documentElement.clientWidth || win.innerWidth};
     const rects = nodes => nodes.filter(visible).map(n=>n.getBoundingClientRect());
     const top = rects(tops), bottom = rects(bottoms), obstacles = rects(middle);
+    const signature=middle.find(n=>n.matches('[data-syolana-signature]')&&n.closest('[data-syolana-layout-anchor="shared-bottom"]')&&visible(n));
+    signatureAnchor=signature?.getBoundingClientRect()||null;
     // Reserve the tallest zen row, including inactive cards, so changing offers never moves the contact.
     if (doc.body.classList.contains('zen')) {
       const reserved = parseFloat(doc.body.style.getPropertyValue('--zen-contact-bottom'));
@@ -137,7 +139,8 @@ export function mountAvitoDock(link) {
     function calculate() {
       const rect = link.getBoundingClientRect();
       const height=rect.height+(mail.getBoundingClientRect().height||56)+(vk.getBoundingClientRect().height||56)+2*(parseFloat(win.getComputedStyle(shell).gap)||GAP);
-      return contactBounds({viewport,width:horizontal?rect.width+144:rect.width+(compact?44:0),height:horizontal?rect.height:height,right:parseFloat(win.getComputedStyle(shell).right) || GAP,top,bottom,obstacles});
+      railHeight=horizontal?rect.height:height;
+      return contactBounds({viewport,width:horizontal?rect.width+144:rect.width+(compact?44:0),height:railHeight,right:parseFloat(win.getComputedStyle(shell).right) || GAP,top,bottom,obstacles});
     }
     bounds = calculate();
     if (!bounds.fits && !compact) { setCompact(true); bounds = calculate(); }
@@ -147,7 +150,15 @@ export function mountAvitoDock(link) {
     const next = drag?.moving ? drag.desired : bounds.min + preference.position * (bounds.max - bounds.min);
     place(snap(next,bounds));
   }
-  function place(value) { currentTop = value; const css = Math.round(value * 2) / 2 + 'px'; if (shell.style.top !== css) shell.style.top = css; }
+  function place(value) {
+    currentTop=value;
+    const pixels=n=>Math.round(n*2)/2+'px';
+    // Both fixed elements must move together while mobile browser chrome resizes.
+    const css=signatureAnchor
+      ?'calc(var(--syolana-signature-bottom,28px) + var(--syolana-signature-height,'+pixels(signatureAnchor.height)+') + '+pixels(signatureAnchor.top-value-railHeight)+')'
+      :pixels(win.innerHeight-value-railHeight);
+    if(shell.style.bottom!==css)shell.style.bottom=css;
+  }
   function remember() { try { win.localStorage.setItem(STORAGE, JSON.stringify(preference)); } catch {} }
   function savePosition() {
     if (bounds?.fits && bounds.max > bounds.min) preference.position = clamp((currentTop - bounds.min) / (bounds.max - bounds.min), 0, 1);
@@ -201,10 +212,11 @@ export function mountAvitoDock(link) {
   });
   structure.observe(doc.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','open']});
   layout.observe(doc.body,{attributes:true,attributeFilter:['style']});
-  for (const event of ['resize','orientationchange','pageshow','syolana:locale']) win.addEventListener(event,schedule);
+  const events=['resize','orientationchange','pageshow','syolana:locale','syolana:marks-layout'];
+  for (const event of events) win.addEventListener(event,schedule);
   viewEvents(win.visualViewport);
   function viewEvents(view) {view?.addEventListener('resize',schedule);}
-  const controller = {refresh:schedule,destroy(){if(destroyed)return;destroyed=true;resize?.disconnect();layout.disconnect();structure.disconnect();win.cancelAnimationFrame(raf);for(const event of ['resize','orientationchange','pageshow','syolana:locale'])win.removeEventListener(event,schedule);win.visualViewport?.removeEventListener('resize',schedule);mounted.delete(link);shell.remove();}}; mounted.set(link,controller);
+  const controller = {refresh:schedule,destroy(){if(destroyed)return;destroyed=true;resize?.disconnect();layout.disconnect();structure.disconnect();win.cancelAnimationFrame(raf);for(const event of events)win.removeEventListener(event,schedule);win.visualViewport?.removeEventListener('resize',schedule);mounted.delete(link);shell.remove();}}; mounted.set(link,controller);
   measure(); doc.fonts?.ready?.then(schedule);
   return controller;
 }

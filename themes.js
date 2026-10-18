@@ -120,10 +120,12 @@ const FALLBACK_THEMES=[
   }
 ];
 export class ThemeEngine {
-  constructor({watermarks=true}={}){this.watermarks=watermarks;}
+  constructor({watermarks=true,initialTheme='',rememberTheme=false}={}){this.watermarks=watermarks;this.initialTheme=initialTheme;this.rememberTheme=rememberTheme;}
   async init() {
     document.querySelectorAll('footer a.platform-credit').forEach(normalizePartnerFooter);
     this.destroyed=false;
+    this.events?.abort();this.events=new AbortController();
+    const listen=(target,event,handler,options={})=>target?.addEventListener(event,handler,{...options,signal:this.events.signal});
     if(!document.getElementById('syolana-scene-softness')){const style=document.createElement('style');style.id='syolana-scene-softness';style.textContent=SOFT_SCENE_CSS;document.head.append(style);}
     this.canvas = document.querySelector("#starCanvas");
     this.ctx = this.canvas.getContext("2d");
@@ -141,8 +143,8 @@ export class ThemeEngine {
     this.themeBase = themeBase;
     this.manifest = themeManifest;
     if(!Array.isArray(this.manifest)||!this.manifest.length)this.manifest=FALLBACK_THEMES;
-    const requested = new URLSearchParams(location.search).get("theme") || window.__syolanaInitialTheme;
     const old = getPref("theme", "");
+    const requested = this.initialTheme || new URLSearchParams(location.search).get("theme") || window.__syolanaInitialTheme || (this.rememberTheme?old:'');
     if (requested && this.manifest.some((t) => t.id === requested)) {
       await this.select(requested);
     } else {
@@ -153,8 +155,10 @@ export class ThemeEngine {
         ].id,
       );
     }
+    if(this.destroyed)return;
     const dialog = document.querySelector("#theme-dialog");
     const list = document.querySelector("#theme-list");
+    list.replaceChildren();
     this.manifest.forEach((t) => {
       const b = document.createElement("button");
       b.className = "theme-option";
@@ -182,27 +186,28 @@ export class ThemeEngine {
       list.append(b);
     });
     this.updateChoices();
-    document.querySelector("#theme-toggle").onclick = () => {
+    this.themeToggle=document.querySelector("#theme-toggle");
+    this.themeToggle.onclick = this.openThemes = () => {
       dialog.showModal();
       this.startPreviews();
     };
-    dialog.addEventListener("close", () =>
+    listen(dialog,"close", () =>
       cancelAnimationFrame(this.previewFrame),
     );
-    this.reduced.addEventListener("change", () => this.sync());
-    window.addEventListener('syolana:scene-ready',()=>this.draw(0));
+    listen(this.reduced,"change", () => this.sync());
+    listen(window,'syolana:scene-ready',()=>this.draw(0));
     this.sync();
-    document.addEventListener("visibilitychange", () => this.sync());
+    listen(document,"visibilitychange", () => this.sync());
     this.resizeTimer = 0;
     const scheduleResize = (delay = 0) => {
       clearTimeout(this.resizeTimer);
       this.resizeTimer = setTimeout(() => this.resize(), delay);
     };
-    window.addEventListener("resize", () => scheduleResize(innerWidth <= 800 ? 150 : 0), { passive: true });
+    listen(window,"resize", () => scheduleResize(innerWidth <= 800 ? 150 : 0), { passive: true });
     if (innerWidth > 800)
-      window.visualViewport?.addEventListener("resize", () => scheduleResize(120), { passive: true });
-    window.addEventListener("pageshow", () => this.sync());
-    window.addEventListener("pagehide", () => cancelAnimationFrame(this.frame));
+      listen(window.visualViewport,"resize", () => scheduleResize(120), { passive: true });
+    listen(window,"pageshow", () => this.sync());
+    listen(window,"pagehide", () => cancelAnimationFrame(this.frame));
     document.fonts?.ready.then(() => this.draw(0));
   }
   async select(id,{force=false}={}) {
@@ -297,8 +302,8 @@ export class ThemeEngine {
   resize(force = false) {
     if (!this.ctx || !this.theme) return;
     const bounds = this.canvas.getBoundingClientRect();
-    const w = Math.max(1, bounds.width),
-      h = Math.max(1, bounds.height),
+    const w = Math.max(1, bounds.width || window.innerWidth),
+      h = Math.max(1, bounds.height || window.innerHeight),
       ratio = Math.min(devicePixelRatio || 1, w <= 700 ? 1.75 : 2);
     const addressBarOnly =
       !force &&
@@ -512,7 +517,8 @@ export class ThemeEngine {
     if (this.theme.renderer === "waves" && !this.theme.spatialWaves) this.drawWaves();
     if (this.zen && this.theme.particles !== false) this.drawZenDust(d);
 
-    for (const m of (this.watermarks ? this.marks : [])) {
+    if(this.watermarks==='authorship')this.drawAuthorship();
+    for (const m of (this.watermarks===true ? this.marks : [])) {
       m.y -= m.speed * d;
       m.phase += d * 0.23;
       m.hue = (m.hue + m.hueSpeed * d) % 360;
@@ -870,9 +876,18 @@ export class ThemeEngine {
     };draw(0);
   }
 
+  drawAuthorship(){
+    const ctx=this.ctx,label='© Syolana, 2026 · '+(this.manifest.find(item=>item.id===this.id)?.name||'Оформление');
+    const span=this.h+80,y=((this.h*.8-this.phase*4)%span+span)%span-20;
+    ctx.save();ctx.globalAlpha=.24;ctx.font='500 12px ui-monospace,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle=this.theme.markDark?'#51415e':'#e5d8f4';
+    ctx.fillText(label,this.w/2+Math.sin(this.phase*.08)*12,y,Math.max(100,this.w-36));ctx.restore();
+  }
   destroy() {
     if(this.destroyed)return;this.destroyed=true;++this.sequence;
     cancelAnimationFrame(this.frame);cancelAnimationFrame(this.previewFrame);clearTimeout(this.resizeTimer);
+    this.events?.abort();this.sceneEvents?.abort();
+    if(this.themeToggle?.onclick===this.openThemes)this.themeToggle.onclick=null;
     this.custom?.dispose?.();this.custom=null;this.sceneAudio?.stop?.();
   }
   sync() {

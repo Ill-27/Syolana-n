@@ -451,10 +451,9 @@ export async function mountPartnerCore(options = {}) {
   ]);
 
   const player = new Player((config.songs || []).map(resolveSong));
-  const theme = new ThemeEngine({watermarks:false});
-  await theme.init();
   const partnerTheme=partner.siteSettings?.theme||partner.theme;
-  if(partnerTheme)await theme.select(partnerTheme).catch(()=>{});
+  const theme = new ThemeEngine({watermarks:'authorship',initialTheme:partnerTheme,rememberTheme:true});
+  await theme.init();
   const onPartnerTheme=e=>{if(e.detail?.theme)theme.select(e.detail.theme).catch(()=>{});};
   window.addEventListener("syolana:partner-theme",onPartnerTheme);
 

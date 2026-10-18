@@ -47,7 +47,7 @@ export function prepareDesignFonts({timeout=1800}={}){
 }
 
 export class ThemeEngine {
- constructor({license=window.__syolanaDesignLicense,load=()=>import('https://syolana.com/themes.js?v=20261018-partner-1')}={}){this.license=license;this.load=load;this.engine=null;this.selected='';}
+ constructor({license=window.__syolanaDesignLicense,load=()=>import('https://syolana.com/themes.js?v=20261018-domain-1')}={}){this.license=license;this.load=load;this.engine=null;this.selected='';}
  async init(){
   this.baseStyle=document.documentElement.getAttribute('style');
   this.baseTheme=document.documentElement.getAttribute('data-theme');

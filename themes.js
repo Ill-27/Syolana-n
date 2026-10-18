@@ -877,7 +877,7 @@ export class ThemeEngine {
   }
 
   drawAuthorship(){
-    const ctx=this.ctx,label='© Syolana, 2026 · '+(this.manifest.find(item=>item.id===this.id)?.name||'Оформление');
+    const ctx=this.ctx,label='/* © syolana.com, 2026 · '+(this.manifest.find(item=>item.id===this.id)?.name||'Оформление')+' */';
     const span=this.h+80,y=((this.h*.8-this.phase*4)%span+span)%span-20;
     ctx.save();ctx.globalAlpha=.24;ctx.font='500 12px ui-monospace,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillStyle=this.theme.markDark?'#51415e':'#e5d8f4';

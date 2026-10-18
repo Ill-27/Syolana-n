@@ -10,6 +10,7 @@ registerTranslations({
   ]
 });
 
+const ASSETS=new URL(new URL(import.meta.url).pathname.includes('/runtime/')?'../assets/contacts/':'./assets/contacts/',import.meta.url);
 const STORAGE = 'syolana.avito-dock.v1';
 const GAP = 16, MOTION = 6;
 const TOP = '.top-actions,.syolana-lang,.syolana-lang-menu,.reader-topbar';
@@ -57,8 +58,8 @@ function installStyle(doc) {
 .syolana-avito-fold:focus-visible{outline:2px solid var(--accent,#e5d6ff);outline-offset:2px}
 
 .syolana-contact-circle{position:relative;display:grid;place-items:center;box-sizing:border-box;flex:0 0 56px;width:56px;height:56px;min-width:56px;min-height:56px;padding:0;border:1px solid var(--panel-border,rgba(255,255,255,.18));border-radius:50%;background:var(--panel-bg,rgba(12,16,30,.9));color:var(--panel-text,#fff);box-shadow:0 18px 48px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.09);backdrop-filter:blur(18px) saturate(130%);text-decoration:none;cursor:grab;touch-action:none;-webkit-user-drag:none}
-.syolana-avito-shell[data-row]{flex-direction:row;align-items:center}.syolana-avito-shell[data-row] .syolana-avito-fold{display:none}.zen .syolana-contact-circle{opacity:.76}
-.syolana-contact-circle svg{width:28px;height:28px;pointer-events:none}.syolana-contact-circle::after,.syolana-avito-shell .syolana-avito-float::after{content:'';position:absolute;inset:-6px;border:1px solid color-mix(in srgb,var(--accent,#e5d6ff) 22%,transparent);border-radius:inherit;opacity:.65;pointer-events:none}.syolana-contact-circle:focus-visible{outline:2px solid var(--accent,#e5d6ff);outline-offset:5px}.syolana-contact-circle:hover{filter:brightness(1.1)}
+.syolana-avito-shell[data-row]{flex-direction:row;align-items:center}.syolana-avito-shell[data-row] .syolana-avito-fold{display:none}.zen .syolana-avito-shell{display:none!important}
+.syolana-contact-circle svg,.syolana-contact-circle img{display:block;width:28px;height:28px;pointer-events:none}.syolana-contact-circle::after,.syolana-avito-shell .syolana-avito-float::after{content:'';position:absolute;inset:-6px;border:1px solid color-mix(in srgb,var(--accent,#e5d6ff) 22%,transparent);border-radius:inherit;opacity:.65;pointer-events:none}.syolana-contact-circle:focus-visible{outline:2px solid var(--accent,#e5d6ff);outline-offset:5px}.syolana-contact-circle:hover{filter:brightness(1.1)}
 @keyframes syolanaAvitoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @media(prefers-reduced-motion:reduce){.syolana-avito-shell{animation:none!important}}
 @media print{.syolana-avito-shell{display:none!important}}
@@ -83,8 +84,8 @@ export function mountAvitoDock(link) {
   fold.className = 'syolana-avito-fold'; fold.type = 'button';
   fold.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   shell.append(fold);
-  const mail=doc.createElement('a');mail.className='syolana-contact-circle';mail.draggable=false;mail.dataset.contact='email';mail.href='mailto:syolana@yandex.ru';mail.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="26" height="21" rx="6" fill="#fff"/><path d="m5 9 11 9L27 9" fill="none" stroke="#fc3f1d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 13h-2.2c-2 0-3.3-1-3.3-2.6S14.7 8 16.7 8H21v13h-2v-6h-1.3l-3.4 6h-2.5l3.8-6.5" fill="#fc3f1d" transform="translate(0 3) scale(.8)"/></svg>';
-  const vk=doc.createElement('button');vk.type='button';vk.className='syolana-contact-circle';vk.dataset.contact='vk';vk.setAttribute('aria-disabled','true');vk.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="2" width="28" height="28" rx="9" fill="#0077ff"/><path d="M8 10h4c.3 5 2 7.2 3.4 7.7V10h3.7v4.4c1.5-.2 3.1-2.3 3.7-4.4h3.7c-.5 2.8-2.4 4.8-3.7 5.7 1.3.8 3.5 2.5 4.3 5.3h-4c-.7-2-2.2-3.6-4-3.8V21h-.5C12 21 8.6 17.4 8 10Z" fill="#fff"/></svg>';
+  const mail=doc.createElement('a');mail.className='syolana-contact-circle';mail.draggable=false;mail.dataset.contact='email';mail.href='mailto:syolana@yandex.ru';mail.innerHTML='<img src="'+new URL('yandex-mail.svg',ASSETS).href+'" alt="" width="28" height="28" draggable="false" loading="lazy" decoding="async">';
+  const vk=doc.createElement('button');vk.type='button';vk.className='syolana-contact-circle';vk.dataset.contact='vk';vk.setAttribute('aria-disabled','true');vk.innerHTML='<img src="'+new URL('vk.svg',ASSETS).href+'" alt="" width="28" height="28" draggable="false" loading="lazy" decoding="async">';
   shell.prepend(mail,vk);
   function labels(){mail.setAttribute('aria-label',tr('Написать на почту')+': syolana@yandex.ru');mail.title=mail.getAttribute('aria-label');vk.setAttribute('aria-label',tr('ВКонтакте — ссылка скоро появится'));vk.title=vk.getAttribute('aria-label');}
   labels();
@@ -120,7 +121,7 @@ export function mountAvitoDock(link) {
     }
   }
   function measure() {
-    raf = 0;
+    raf = 0;if(doc.body.classList.contains('zen'))return;
     const tops = [...doc.querySelectorAll(TOP)], bottoms = [...doc.querySelectorAll(BOTTOM)], middle = [...doc.querySelectorAll(MIDDLE)];
     track([...tops, ...bottoms, ...middle]);
     const view = win.visualViewport;

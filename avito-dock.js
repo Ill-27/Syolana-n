@@ -1,4 +1,5 @@
 import {registerTranslations, tr} from './i18n.js';
+import {floatingViewport,floatingRect} from './floating-layout.mjs';
 
 registerTranslations({
   'Свернуть кнопку Авито': ['Collapse the Avito button', 'Contraer el botón de Avito', 'Réduire le bouton Avito'],
@@ -61,6 +62,7 @@ function installStyle(doc) {
 .syolana-avito-shell[data-row]{flex-direction:row;align-items:center}.syolana-avito-shell[data-row] .syolana-avito-fold{display:none}.zen .syolana-avito-shell{display:none!important}
 .syolana-contact-circle svg,.syolana-contact-circle img{display:block;width:28px;height:28px;pointer-events:none}.syolana-contact-circle::after,.syolana-avito-shell .syolana-avito-float::after{content:'';position:absolute;inset:-6px;border:1px solid color-mix(in srgb,var(--accent,#e5d6ff) 22%,transparent);border-radius:inherit;opacity:.65;pointer-events:none}.syolana-contact-circle:focus-visible{outline:2px solid var(--accent,#e5d6ff);outline-offset:5px}.syolana-contact-circle:hover{filter:brightness(1.1)}
 @keyframes syolanaAvitoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media(min-width:800px){.syolana-avito-shell{animation:none!important;transform:translate3d(0,0,0);will-change:transform;backface-visibility:hidden}}
 @media(prefers-reduced-motion:reduce){.syolana-avito-shell{animation:none!important}}
 @media print{.syolana-avito-shell{display:none!important}}
 `;
@@ -96,11 +98,11 @@ export function mountAvitoDock(link) {
   const resize = typeof win.ResizeObserver === 'function' ? new win.ResizeObserver(schedule) : null;
   const layout = new win.MutationObserver(schedule);
   function schedule() { if (!destroyed && !raf) raf = win.requestAnimationFrame(measure); }
-  function visible(node) {
+  function visible(node,viewport=floatingViewport(win)) {
     if (node.hidden || node.closest('[hidden]')) return false;
     const css = win.getComputedStyle(node);
-    const r=node.getBoundingClientRect(),v=win.visualViewport,top=v?.offsetTop||0;
-    return css.display !== 'none' && css.visibility !== 'hidden' && r.height > 0 && r.bottom > top && r.top < top+(v?.height||win.innerHeight);
+    const r=floatingRect(node,viewport);
+    return css.display !== 'none' && css.visibility !== 'hidden' && r.height > 0 && r.bottom > viewport.top && r.top < viewport.bottom;
   }
   function setCompact(value) {
     compact = value; shell.toggleAttribute('data-compact', value);
@@ -124,12 +126,11 @@ export function mountAvitoDock(link) {
     raf = 0;if(doc.body.classList.contains('zen'))return;
     const tops = [...doc.querySelectorAll(TOP)], bottoms = [...doc.querySelectorAll(BOTTOM)], middle = [...doc.querySelectorAll(MIDDLE)];
     track([...tops, ...bottoms, ...middle]);
-    const view = win.visualViewport;
-    const viewport = {top:view?.offsetTop || 0, bottom:(view?.offsetTop || 0) + (view?.height || win.innerHeight), right:doc.documentElement.clientWidth || win.innerWidth};
-    const rects = nodes => nodes.filter(visible).map(n=>n.getBoundingClientRect());
+    const viewport = floatingViewport(win);
+    const rects = nodes => nodes.filter(n=>visible(n,viewport)).map(n=>floatingRect(n,viewport));
     const top = rects(tops), bottom = rects(bottoms), obstacles = rects(middle);
     const signature=middle.find(n=>n.matches('[data-syolana-signature]')&&n.closest('[data-syolana-layout-anchor="shared-bottom"]')&&visible(n));
-    signatureAnchor=signature?.getBoundingClientRect()||null;
+    signatureAnchor=signature?floatingRect(signature,viewport):null;
     // Reserve the tallest zen row, including inactive cards, so changing offers never moves the contact.
     if (doc.body.classList.contains('zen')) {
       const reserved = parseFloat(doc.body.style.getPropertyValue('--zen-contact-bottom'));

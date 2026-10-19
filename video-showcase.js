@@ -9,6 +9,12 @@ registerTranslations({
  'Открыть видео':['Open video','Abrir vídeo','Ouvrir la vidéo'],
  'Видео':['Video','Vídeo','Vidéo'],
  'Обсудить видео':['Discuss a video','Consultar un vídeo','Parler de votre vidéo']
+ ,'САЙТЫ И ВИДЕО':['WEBSITES AND VIDEO','SITIOS Y VÍDEOS','SITES ET VIDÉOS']
+ ,'Сайты и видео по вашей идее':['Websites and videos inspired by your idea','Sitios y vídeos a partir de tu idea','Sites et vidéos à partir de votre idée']
+ ,'Живые темы, видеобаннеры, клипы и мультфильмы — для бренда или в подарок близкому.':['Living themes, video banners, music videos and animated films — for your brand or a gift for someone you love.','Temas animados, videobanners, videoclips y cortos de animación: para tu marca o como regalo para alguien especial.','Thèmes animés, bannières vidéo, clips et films d’animation : pour votre marque ou pour offrir à un proche.']
+ ,'Стоимость и сроки согласуем под вашу задачу.':['We agree on the price and delivery time for your project.','Acordamos el precio y los plazos según tu proyecto.','Nous convenons du prix et des délais selon votre projet.']
+ ,'Заказать видео':['Order a video','Encargar un vídeo','Commander une vidéo']
+ ,'Оформить сайт':['Design my website','Diseñar mi sitio','Créer mon site']
 });
 
 const selections=new WeakMap(),documents=new WeakMap();
@@ -17,7 +23,7 @@ const SOUND='<path d="M16 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>';
 const MUTE='<path d="m17 9 5 6m0-6-5 6"/>';
 const svg=paths=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+paths+'</svg>';
 
-export function selectBannerVariant(random=Math.random){return ['none','short','long'][Math.max(0,Math.min(2,Math.floor(random()*3)))];}
+export function selectBannerVariant(random=Math.random){return random()<.5?'short':'long';}
 export function chooseVideoSource(entry,win){
  const connection=win.navigator?.connection;
  const compact=win.innerWidth<800||connection?.saveData||Number(connection?.downlink)<6||/^(slow-2g|2g|3g)$/.test(connection?.effectiveType||'');
@@ -36,7 +42,22 @@ function installStyle(doc){
 .syolana-video .video-play{top:50%;left:50%;transform:translate(-50%,-50%);width:62px;height:62px;padding:17px}
 .syolana-video button svg{display:block;width:100%;height:100%;pointer-events:none}.syolana-video button:hover{background:rgba(20,29,47,.85)}.syolana-video button:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .syolana-video [hidden]{display:none!important}.syolana-video .video-open{position:absolute;z-index:3;inset:auto 12px 12px;display:block;padding:10px 14px;text-align:center;color:#fff;background:#080e20da;border-radius:12px;font:600 14px/1.5 system-ui,sans-serif}
-#banner .banner-copy>.banner-video{max-width:640px;margin:16px 0 0}
+#banner.showcase-hero{position:relative;display:block!important;isolation:isolate;width:100%;padding:0!important;min-height:0!important;overflow:hidden;border-radius:clamp(18px,2.5vw,28px);background:rgba(8,10,20,.26)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:1px solid rgba(255,255,255,.22);box-shadow:0 18px 54px #0002}
+#banner.showcase-hero::before,#banner.showcase-hero::after{display:none!important}
+#banner.showcase-hero>.showcase-film{position:relative;width:100%;max-width:none;margin:0;border-radius:0;background:#030309}
+#banner.showcase-hero .showcase-copy{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:14px 26px;padding:clamp(18px,2.4vw,30px);overflow:hidden;background:linear-gradient(115deg,rgba(8,10,20,.78),rgba(8,10,20,.64));color:#fff}
+#banner.showcase-hero .showcase-copy::before{content:'';position:absolute;inset:-35px;z-index:-1;background:var(--showcase-backdrop) center/cover no-repeat;filter:blur(24px) saturate(.8);opacity:.34;pointer-events:none}
+#banner.showcase-hero .showcase-kicker{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 12px;color:#e7e9f2;font:600 11px/1.4 system-ui,sans-serif;letter-spacing:.12em}
+#banner.showcase-hero .banner-brandmark{margin:0;padding:5px 9px 5px 6px;min-height:28px;letter-spacing:.12em}#banner.showcase-hero .banner-brandmark img{width:20px;height:20px}
+#banner.showcase-hero .showcase-title{max-width:none;margin:0 0 10px;color:#fff!important;font:400 clamp(1.8rem,3.1vw,2.75rem)/1.12 "Syolana Script",cursive;letter-spacing:0;text-shadow:0 2px 12px #0004;text-wrap:balance}
+#banner.showcase-hero .showcase-description{max-width:650px;margin:0;color:#f0f0f6!important;font:400 clamp(.94rem,1.25vw,1.02rem)/1.55 system-ui,sans-serif}
+#banner.showcase-hero .showcase-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-self:end}
+#banner.showcase-hero .showcase-actions .btn{display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;min-height:48px;margin:0;padding:12px 18px!important;border-radius:999px;border:1px solid #ffffff50;background:rgba(255,255,255,.07);color:#fff!important;font:650 14px/1.3 system-ui,sans-serif;text-align:center;text-decoration:none;white-space:normal;box-shadow:none;transition:background-color .18s ease,transform .18s ease}
+#banner.showcase-hero .showcase-actions .primary{background:#f6f3fc!important;color:#171323!important;border-color:transparent!important}
+#banner.showcase-hero .showcase-actions .btn:hover{transform:translateY(-1px);background-color:rgba(255,255,255,.16)}
+#banner.showcase-hero .showcase-note{grid-column:1/-1;margin:0;color:#d6d9e4!important;font:400 13px/1.5 system-ui,sans-serif}
+@media(max-width:760px){#banner.showcase-hero .showcase-copy{grid-template-columns:minmax(0,1fr);gap:16px}#banner.showcase-hero .showcase-actions{width:100%;grid-column:1}#banner.showcase-hero .showcase-note{margin-top:-6px}#banner.showcase-hero .showcase-kicker{margin-bottom:10px}#banner.showcase-hero .showcase-actions .btn{padding-inline:12px!important}}
+@media(prefers-reduced-motion:reduce){#banner.showcase-hero .showcase-actions .btn{transition:none}}
 .feed-post>.syolana-video{margin:20px 0!important}
 @supports not (aspect-ratio:16/9){.syolana-video{height:0;padding-top:56.25%}}
 `;doc.head.append(style);
@@ -104,15 +125,23 @@ export function createShowcaseVideo(entry,{doc=document,priority=false}={}){
 }
 
 export function showcaseEntry(id){return catalog.videos.find(video=>video.id===id);}
-export function mountShowcaseBanner(banner,{random=Math.random}={}){
+export function mountShowcaseBanner(banner,{random=Math.random,contactURL='https://www.avito.ru/brands/i223140984'}={}){
  const doc=banner.ownerDocument;
  if(!selections.has(doc))selections.set(doc,selectBannerVariant(random));
  const selected=selections.get(doc);banner.dataset.videoVariant=selected;
- if(selected==='none')return selected;
  if(banner.querySelector('[data-showcase-video]'))return selected;
- const description=banner.querySelector('.banner-description');
- if(!description)return selected;
- const player=createShowcaseVideo(showcaseEntry(selected),{doc,priority:true});
- if(player){player.classList.add('banner-video');description.replaceWith(player);}
+ const entry=showcaseEntry(selected),player=createShowcaseVideo(entry,{doc,priority:true});
+ if(!player)return selected;
+ const make=(tag,className,text)=>{const node=doc.createElement(tag);node.className=className;if(text)node.textContent=tr(text);return node;};
+ const copy=make('div','showcase-copy'),words=make('div','showcase-words'),kicker=make('div','showcase-kicker');
+ const brand=make('div','banner-brandmark syolana-passport-button'),logo=doc.createElement('img');logo.src=new URL('assets/logo.svg',doc.baseURI).href;logo.width=20;logo.height=20;logo.alt='';logo.decoding='async';brand.append(logo,make('span','','SYOLANA'));
+ kicker.append(brand,make('span','','САЙТЫ И ВИДЕО'));
+ words.append(kicker,make('h2','showcase-title','Сайты и видео по вашей идее'),make('p','showcase-description','Живые темы, видеобаннеры, клипы и мультфильмы — для бренда или в подарок близкому.'));
+ const actions=make('div','showcase-actions'),order=make('a','btn primary','Заказать видео'),site=make('a','btn banner-secondary','Оформить сайт');
+ try{const url=new URL(contactURL);order.href=url.protocol==='https:'&&!url.username&&!url.password?url.href:'https://www.avito.ru/brands/i223140984';}catch{order.href='https://www.avito.ru/brands/i223140984';}
+ order.target='_blank';order.rel='noopener noreferrer';site.href='#/create-site';actions.append(order,site);
+ copy.append(words,actions,make('p','showcase-note','Стоимость и сроки согласуем под вашу задачу.'));
+ player.classList.add('showcase-film');banner.classList.add('showcase-hero');banner.style.setProperty('--showcase-backdrop','url("'+mediaURL(entry.poster)+'")');
+ banner.replaceChildren(player,copy);
  return selected;
 }

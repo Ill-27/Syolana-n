@@ -1,3 +1,4 @@
+import {floatingViewport,floatingRect} from './floating-layout.mjs';
 export const ATTRIBUTION_TEXT='Сайт создан на Syolana';
 const ROOT=new URL(new URL(import.meta.url).pathname.includes('/runtime/')?'../':'./',import.meta.url);
 const BRAND_ROOT=/^(?:www\.)?syolana\.com$|^syolana(?:-pilot-[a-z0-9]+)?\.website\.yandexcloud\.net$/.test(ROOT.hostname)?ROOT:new URL('https://syolana.com/');
@@ -47,6 +48,7 @@ export function mountDesignMarks({translate=value=>value}={}){
 .syolana-mark-credit{display:none!important;pointer-events:auto;margin-top:10px!important}body.zen .syolana-mark-credit{display:inline-flex!important;min-height:34px!important;font-size:11px!important;padding:4px 8px!important;background:transparent!important}.syolana-mark-credit img{width:22px!important;height:22px!important}
 @keyframes syolanaAuthorDrift{0%,100%{transform:translate3d(0,0,0)}30%{transform:translate3d(3px,-2px,0)}65%{transform:translate3d(-2px,3px,0)}}
 @keyframes syolanaSignatureDrift{0%,100%{transform:translate3d(0,0,0) rotate(-2deg)}35%{transform:translate3d(-3px,2px,0) rotate(-1deg)}70%{transform:translate3d(2px,-3px,0) rotate(-2.5deg)}}
+@media(min-width:800px){[data-syolana-signature]{transform:translate3d(0,0,0);will-change:transform;backface-visibility:hidden}[data-syolana-signature]>span{will-change:transform}}
 @media(prefers-reduced-motion:reduce){.syolana-copyright-corner,[data-syolana-signature]>span{animation:none!important}}
 @media print{[data-syolana-design-marks]{display:none}}
 `;document.head.append(style);
@@ -68,8 +70,8 @@ export function mountDesignMarks({translate=value=>value}={}){
   frame=0;if(stopped)return;
   const nodes=[signature,...document.querySelectorAll(controls)];
   if(nodes.length!==observed.length||nodes.some((n,i)=>n!==observed[i])){resize?.disconnect();nodes.forEach(n=>resize?.observe(n));observed=nodes;}
-  const view=window.visualViewport,screenHeight=window.innerHeight,viewport={top:view?.offsetTop||0,bottom:(view?.offsetTop||0)+(view?.height||screenHeight),right:document.documentElement.clientWidth||window.innerWidth};
-  const obstacles=nodes.slice(1).filter(visible).map(n=>n.getBoundingClientRect()).filter(r=>r.width&&r.height&&r.bottom>viewport.top&&r.top<viewport.bottom);
+  const screenHeight=window.innerHeight,viewport=floatingViewport(window);
+  const obstacles=nodes.slice(1).filter(visible).map(n=>floatingRect(n,viewport)).filter(r=>r.width&&r.height&&r.bottom>viewport.top&&r.top<viewport.bottom);
   const rect=signature.getBoundingClientRect(),height=signature.offsetHeight||rect.height||46,width=signature.offsetWidth||rect.width||160;
   const placement=signaturePlacement({viewport,width,height,obstacles,gap:20});
   const shared=document.documentElement.style,bottom=Math.ceil(Math.max(16,screenHeight-placement.top-height))+'px',size=height+'px';

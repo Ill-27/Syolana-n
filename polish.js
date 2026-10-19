@@ -15,7 +15,7 @@ function polishNetworkNotice(){
 function keepGlobalNavigation(){
  const partnerView=document.body.classList.contains('managed-site-view'),nav=document.getElementById('main-nav'),banner=document.getElementById('banner');
  if(nav&&!partnerView){nav.hidden=false;set(nav.querySelector('[data-nav="join"]'),'Сайт');}
- if(banner&&!partnerView&&!document.body.classList.contains('information-view')){banner.hidden=false;set(banner.querySelector('h1,h2,h3,strong'),'Сделаем вам сайт на Syolana');}
+ if(banner&&!banner.classList.contains('showcase-hero')&&!partnerView&&!document.body.classList.contains('information-view')){banner.hidden=false;set(banner.querySelector('h1,h2,h3,strong'),'Сделаем вам сайт на Syolana');}
 }
 function polishLanguageIntro(){
  const box=document.querySelector('.language-intro');if(!box)return;set(box.querySelector('h2'),'Сначала попробуйте методику — бесплатно');

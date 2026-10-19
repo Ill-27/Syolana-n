@@ -13,36 +13,12 @@ registerTranslations({
   ],
   "Проверка подлинности": ["Authenticity check", "Verificación de autenticidad", "Vérification d’authenticité"],
   "Официальные адреса Syolana": ["Official Syolana addresses", "Direcciones oficiales de Syolana", "Adresses officielles de Syolana"],
-  "Используйте только два официальных адреса Syolana, указанных ниже.": [
-    "Use only the two official Syolana addresses shown below.",
-    "Utiliza únicamente las dos direcciones oficiales de Syolana indicadas abajo.",
-    "Utilisez uniquement les deux adresses officielles de Syolana indiquées ci-dessous."
-  ],
-  "Заказы и согласование оплаты — в официальном профиле Syolana на Авито. Ответить на вопросы я также могу с почты syolana@yandex.ru.": [
-    "Orders and payment arrangements go through Syolana’s official Avito profile. I may also answer questions from syolana@yandex.ru.",
-    "Los pedidos y las condiciones de pago se acuerdan en el perfil oficial de Syolana en Avito. También puedo responder preguntas desde syolana@yandex.ru.",
-    "Les commandes et modalités de paiement sont convenues sur le profil officiel Syolana sur Avito. Je peux aussi répondre depuis syolana@yandex.ru."
-  ],
-  "Официальная почта Syolana — только syolana@yandex.ru. Всегда проверяйте полный адрес отправителя.": [
-    "Syolana’s only official email address is syolana@yandex.ru. Always check the full sender address.",
-    "La única dirección de correo oficial de Syolana es syolana@yandex.ru. Comprueba siempre la dirección completa del remitente.",
-    "La seule adresse e-mail officielle de Syolana est syolana@yandex.ru. Vérifiez toujours l’adresse complète de l’expéditeur."
-  ],
-  "Сообщения с других адресов и аккаунтов проверяйте через официальный профиль Syolana на Авито до оплаты.": [
-    "Before paying, verify messages from other addresses or accounts through Syolana’s official Avito profile.",
-    "Antes de pagar, verifica los mensajes de otras direcciones o cuentas a través del perfil oficial de Syolana en Avito.",
-    "Avant de payer, vérifiez les messages provenant d’autres adresses ou comptes via le profil officiel Syolana sur Avito."
-  ],
-  "Syolana не просит переводить оплату на личные карты, по реквизитам из сторонних сообщений или через сторонние ссылки.": [
-    "Syolana does not ask you to send payment to personal bank cards, to details received in third-party messages, or through third-party links.",
-    "Syolana no solicita pagos a tarjetas bancarias personales, a datos enviados en mensajes de terceros ni mediante enlaces externos.",
-    "Syolana ne demande pas de paiement vers des cartes bancaires personnelles, des coordonnées reçues dans des messages tiers ou via des liens externes."
-  ],
-  "Перед заказом или оплатой сверяйте адрес сайта и официальный профиль Syolana на Авито. Ключи доступа вводите только на двух официальных адресах выше.": [
-    "Before ordering or paying, verify the website address and Syolana’s official Avito profile. Enter access keys only on the two official addresses above.",
-    "Antes de realizar un pedido o pagar, comprueba la dirección del sitio y el perfil oficial de Syolana en Avito. Introduce las claves de acceso únicamente en las dos direcciones oficiales indicadas arriba.",
-    "Avant toute commande ou paiement, vérifiez l’adresse du site et le profil officiel Syolana sur Avito. Saisissez les clés d’accès uniquement sur les deux adresses officielles ci-dessus."
-  ],
+  "У Syolana два сайта: основной и резервный на Яндексе. Оба указаны ниже.": ["Syolana has two websites: the main site and a backup on Yandex. Both are listed below.", "Syolana tiene dos sitios: el principal y una copia de respaldo en Yandex. Ambos figuran abajo.", "Syolana possède deux sites : le site principal et un site de secours sur Yandex. Ils sont indiqués ci-dessous."],
+  "Вопросы и заказы — через кнопки справа: почта, ВКонтакте и Авито.": ["For questions and orders, use the buttons on the right: email, VK and Avito.", "Para consultas y pedidos, utiliza los botones de la derecha: correo, VK y Avito.", "Pour vos questions et commandes, utilisez les boutons à droite : e-mail, VK et Avito."],
+  "Мы пишем только с syolana@yandex.ru, из сообщества ВКонтакте и профиля Авито, на которые ведут эти кнопки.": ["We contact you only from syolana@yandex.ru, the VK community and the Avito profile linked by these buttons.", "Solo escribimos desde syolana@yandex.ru, la comunidad de VK y el perfil de Avito a los que llevan estos botones.", "Nous vous écrivons uniquement depuis syolana@yandex.ru, la communauté VK et le profil Avito accessibles par ces boutons."],
+  "Другие сайты и аккаунты к Syolana не относятся. Проверяйте полный адрес отправителя, а не только имя или логотип.": ["Other websites and accounts do not belong to Syolana. Check the full sender address, not just the name or logo.", "Otros sitios y cuentas no pertenecen a Syolana. Comprueba la dirección completa del remitente, no solo el nombre o el logotipo.", "Les autres sites et comptes n’appartiennent pas à Syolana. Vérifiez l’adresse complète de l’expéditeur, pas seulement son nom ou son logo."],
+  "Не оплачивайте заказы по сообщениям с посторонних адресов.": ["Do not pay for orders based on messages from other addresses.", "No pagues pedidos a partir de mensajes de otras direcciones.", "Ne payez pas de commandes sur la base de messages provenant d’autres adresses."],
+  "ВКонтакте — закрытое сообщество для клиентов и партнёров. Ключи доступа вводите только на двух сайтах выше.": ["VK is a private community for clients and partners. Enter access keys only on the two websites above.", "VK es una comunidad privada para clientes y colaboradores. Introduce las claves de acceso únicamente en los dos sitios indicados arriba.", "VK est une communauté privée réservée aux clients et partenaires. Saisissez vos clés d’accès uniquement sur les deux sites ci-dessus."],
   "Основной сайт": ["Main website", "Sitio principal", "Site principal"],
   "Резервный адрес": ["Backup address", "Dirección alternativa", "Adresse de secours"],
   "Открыть официальный сайт": ["Open official website", "Abrir el sitio oficial", "Ouvrir le site officiel"],
@@ -131,11 +107,11 @@ function renderNotice() {
     </div>
     <h2 class="syolana-trust-title">${title}</h2>
     <div class="syolana-trust-copy">
-      <p>${t("Используйте только два официальных адреса Syolana, указанных ниже.")}</p>
-      <p><strong>${t("Заказы и согласование оплаты — в официальном профиле Syolana на Авито. Ответить на вопросы я также могу с почты syolana@yandex.ru.")}</strong></p>
-      <p>${t("Официальная почта Syolana — только syolana@yandex.ru. Всегда проверяйте полный адрес отправителя.")}</p>
-      <p class="syolana-trust-warning">${t("Сообщения с других адресов и аккаунтов проверяйте через официальный профиль Syolana на Авито до оплаты.")}</p>
-      <p>${t("Syolana не просит переводить оплату на личные карты, по реквизитам из сторонних сообщений или через сторонние ссылки.")}</p>
+      <p>${t("У Syolana два сайта: основной и резервный на Яндексе. Оба указаны ниже.")}</p>
+      <p><strong>${t("Вопросы и заказы — через кнопки справа: почта, ВКонтакте и Авито.")}</strong></p>
+      <p>${t("Мы пишем только с syolana@yandex.ru, из сообщества ВКонтакте и профиля Авито, на которые ведут эти кнопки.")}</p>
+      <p class="syolana-trust-warning">${t("Другие сайты и аккаунты к Syolana не относятся. Проверяйте полный адрес отправителя, а не только имя или логотип.")}</p>
+      <p>${t("Не оплачивайте заказы по сообщениям с посторонних адресов.")}</p>
     </div>
     <div class="syolana-trust-addresses" aria-label="${title}">
       <a class="syolana-trust-address" href="${MAIN_URL}" rel="home" aria-label="${t("Открыть официальный сайт")}: syolana.com">
@@ -149,7 +125,7 @@ function renderNotice() {
         ${arrowMark()}
       </a>
     </div>
-    <p class="syolana-trust-foot">${t("Перед заказом или оплатой сверяйте адрес сайта и официальный профиль Syolana на Авито. Ключи доступа вводите только на двух официальных адресах выше.")}</p>`;
+    <p class="syolana-trust-foot">${t("ВКонтакте — закрытое сообщество для клиентов и партнёров. Ключи доступа вводите только на двух сайтах выше.")}</p>`;
 }
 
 function renderFloatingButton() {

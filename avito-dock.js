@@ -85,9 +85,9 @@ export function mountAvitoDock(link) {
   fold.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   shell.append(fold);
   const mail=doc.createElement('a');mail.className='syolana-contact-circle';mail.draggable=false;mail.dataset.contact='email';mail.href='mailto:syolana@yandex.ru';mail.innerHTML='<img src="'+new URL('yandex-mail.svg',ASSETS).href+'" alt="" width="28" height="28" draggable="false" loading="lazy" decoding="async">';
-  const vk=doc.createElement('button');vk.type='button';vk.className='syolana-contact-circle';vk.dataset.contact='vk';vk.setAttribute('aria-disabled','true');vk.innerHTML='<img src="'+new URL('vk.svg',ASSETS).href+'" alt="" width="28" height="28" draggable="false" loading="lazy" decoding="async">';
+  const vk=doc.createElement('a');vk.href='https://vk.ru/club242389282';vk.target='_blank';vk.rel='noopener noreferrer';vk.draggable=false;vk.className='syolana-contact-circle';vk.dataset.contact='vk';vk.innerHTML='<img src="'+new URL('vk.svg',ASSETS).href+'" alt="" width="28" height="28" draggable="false" loading="lazy" decoding="async">';
   shell.prepend(mail,vk);
-  function labels(){mail.setAttribute('aria-label',tr('Написать на почту')+': syolana@yandex.ru');mail.title=mail.getAttribute('aria-label');vk.setAttribute('aria-label',tr('ВКонтакте — ссылка скоро появится'));vk.title=vk.getAttribute('aria-label');}
+  function labels(){mail.setAttribute('aria-label',tr('Написать на почту')+': syolana@yandex.ru');mail.title=mail.getAttribute('aria-label');vk.setAttribute('aria-label',tr('Сообщество Syolana во ВКонтакте'));vk.title=vk.getAttribute('aria-label');}
   labels();
   link.draggable = false;
   link.setAttribute('aria-keyshortcuts', 'ArrowUp ArrowDown ArrowLeft ArrowRight Home End');
@@ -226,6 +226,6 @@ export function ensureContactDock(){
  if(!link){link=document.createElement('a');link.id='syolana-avito-float';link.className='syolana-avito-float';link.href='https://www.avito.ru/brands/i223140984';link.target='_blank';link.rel='noopener noreferrer';link.innerHTML='<svg class="syolana-avito-mark" viewBox="0 0 28 28" aria-hidden="true"><circle cx="8" cy="8" r="5.2" fill="#00aaff"/><circle cx="20" cy="7" r="4.3" fill="#ff4053"/><circle cx="8" cy="20" r="4.3" fill="#97cf26"/><circle cx="20" cy="20" r="5.2" fill="#a169f7"/></svg><span class="syolana-avito-float-label">'+tr('Написать на Авито')+'</span>';document.body.append(link);}
  return mountAvitoDock(link);
 }
-registerTranslations({'Написать на почту':['Send an email','Enviar un correo','Envoyer un e-mail'],'ВКонтакте — ссылка скоро появится':['VK — link coming soon','VK — enlace próximamente','VK — lien bientôt disponible'],'Написать на Авито':['Contact on Avito','Contactar en Avito','Contacter sur Avito']});
+registerTranslations({'Написать на почту':['Send an email','Enviar un correo','Envoyer un e-mail'],'Сообщество Syolana во ВКонтакте':['Syolana’s VK community','Comunidad de Syolana en VK','Communauté Syolana sur VK'],'Написать на Авито':['Contact on Avito','Contactar en Avito','Contacter sur Avito']});
 
 if(typeof document!=='undefined'&&document.querySelector('script[data-syolana-contact-dock]'))ensureContactDock();

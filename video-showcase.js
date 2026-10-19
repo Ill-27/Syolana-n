@@ -36,8 +36,8 @@ function installStyle(doc){
 .syolana-video .video-play{top:50%;left:50%;transform:translate(-50%,-50%);width:62px;height:62px;padding:17px}
 .syolana-video button svg{display:block;width:100%;height:100%;pointer-events:none}.syolana-video button:hover{background:rgba(20,29,47,.85)}.syolana-video button:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .syolana-video [hidden]{display:none!important}.syolana-video .video-open{position:absolute;z-index:3;inset:auto 12px 12px;display:block;padding:10px 14px;text-align:center;color:#fff;background:#080e20da;border-radius:12px;font:600 14px/1.5 system-ui,sans-serif}
-#banner.video-banner{display:block!important;padding:0!important;min-height:0!important;overflow:hidden}#banner.video-banner:before,#banner.video-banner:after{display:none!important}#banner.video-banner>.syolana-video{border-radius:inherit}
-.feed-post>.syolana-video{margin:20px 0!important}.zen #banner.video-banner{display:none!important}
+#banner .banner-copy>.banner-video{max-width:640px;margin:16px 0 0}
+.feed-post>.syolana-video{margin:20px 0!important}
 @supports not (aspect-ratio:16/9){.syolana-video{height:0;padding-top:56.25%}}
 `;doc.head.append(style);
 }
@@ -110,7 +110,9 @@ export function mountShowcaseBanner(banner,{random=Math.random}={}){
  const selected=selections.get(doc);banner.dataset.videoVariant=selected;
  if(selected==='none')return selected;
  if(banner.querySelector('[data-showcase-video]'))return selected;
+ const description=banner.querySelector('.banner-description');
+ if(!description)return selected;
  const player=createShowcaseVideo(showcaseEntry(selected),{doc,priority:true});
- if(player){banner.classList.add('video-banner');banner.replaceChildren(player);}
+ if(player){player.classList.add('banner-video');description.replaceWith(player);}
  return selected;
 }

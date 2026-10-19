@@ -1,8 +1,8 @@
 import {secondsFor} from './audio.js?v=20261008-es-a1-2';
 import {trainerGroups} from './trainers.js?v=20261008-es-a1-2';
 
-export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={}) {
-  const units=[],map=new Map(),rules=[],groups=trainerGroups(data);
+export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={},preparedGroups) {
+  const units=[],map=new Map(),rules=[],groups=preparedGroups??trainerGroups(data);
   function unit(pair,kind,section,explanation='',owner='') {
     if(map.has(pair.id))return map.get(pair.id);
     const u={pair,kind,section,explanation,owner};map.set(pair.id,u);units.push(u);return u;
@@ -57,6 +57,13 @@ export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={}) {
   for(const bundle of extras){const seconds=bundle.reduce((s,u)=>s+duration(u),0),day=lessons.find(d=>d.seconds+seconds<=target)||lessons.at(-1);day.extras.push(...bundle);day.units.push(...bundle);day.seconds+=seconds;}
   return {map,days:lessons,all:lessons.flatMap(d=>d.units),totalSeconds:total,rate,repeat};
 }
+const remainingCache=new WeakMap();
 export function remainingSeconds(player,rate=1){
-  let n=0;for(let i=player.unitIndex;i<player.units.length;i++)n+=secondsFor(player.units[i],rate,player.mode,player.repeat);return n;
+  const units=player.units;let cached=remainingCache.get(units);
+  if(!cached||cached.rate!==rate||cached.mode!==player.mode||cached.repeat!==player.repeat||cached.length!==units.length){
+    const seconds=new Float64Array(units.length+1);
+    for(let i=units.length-1;i>=0;i--)seconds[i]=seconds[i+1]+secondsFor(units[i],rate,player.mode,player.repeat);
+    cached={rate,mode:player.mode,repeat:player.repeat,length:units.length,seconds};remainingCache.set(units,cached);
+  }
+  return cached.seconds[player.unitIndex]??0;
 }

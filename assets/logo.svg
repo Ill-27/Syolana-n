@@ -8,7 +8,7 @@
       <stop offset="63%" stop-color="#dff7ff"/>
       <stop offset="82%" stop-color="#ffffff"/>
       <stop offset="100%" stop-color="#ffffff"/>
-      <animateTransform attributeName="gradientTransform" type="translate" values="210 0;-260 0" dur="8s" repeatCount="indefinite"/>
+      <animateTransform attributeName="gradientTransform" type="translate" values="210 0;-260 0;210 0" dur="16s" calcMode="spline" keyTimes="0;.5;1" keySplines=".42 0 .58 1;.42 0 .58 1" repeatCount="indefinite"/>
     </linearGradient>
   </defs>
   <style>@media(prefers-reduced-motion:reduce){.syolana-logo-outline{stroke:#c5a4ff}.syolana-logo-word{fill:white}}</style>

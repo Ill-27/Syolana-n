@@ -25,7 +25,7 @@ export class SceneAudio {
     this.mediaNode=document.getElementById('audio');
     this.onMediaPlay=()=>this.stop();this.onPageHide=()=>this.stop();
     this.onVisibility=()=>{if(!document.hidden&&this.enabled)this.context?.resume().catch(()=>{});};
-    this.mediaNode?.addEventListener('play',this.onMediaPlay);window.addEventListener('pagehide',this.onPageHide);document.addEventListener('visibilitychange',this.onVisibility);
+    this.mediaNode?.addEventListener('play',this.onMediaPlay);window.addEventListener('syolana:foreground-media',this.onMediaPlay);window.addEventListener('pagehide',this.onPageHide);document.addEventListener('visibilitychange',this.onVisibility);
   }
   emit(message = "") {
     window.dispatchEvent(new CustomEvent("syolana:sceneaudio", { detail: { enabled: this.enabled, message, controller: this.controller || "reader" } }));
@@ -217,7 +217,7 @@ export class SceneAudio {
     if (this.tracks.get(url) === state) this.tracks.delete(url);
   }
   dispose() {
-    this.stop();this.mediaNode?.removeEventListener('play',this.onMediaPlay);
+    this.stop();this.mediaNode?.removeEventListener('play',this.onMediaPlay);window.removeEventListener('syolana:foreground-media',this.onMediaPlay);
     window.removeEventListener('pagehide',this.onPageHide);document.removeEventListener('visibilitychange',this.onVisibility);
     this.context?.close().catch(()=>{});
   }

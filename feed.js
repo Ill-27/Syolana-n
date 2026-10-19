@@ -8,6 +8,7 @@ import {
   getPref,
   setPref,
 } from "./utils.js";
+import {createShowcaseVideo,showcaseEntry} from './video-showcase.js';
 export function renderFeed(root, posts, { slug } = {}) {
   if (!posts.length) {
     root.append(el("p", "empty", "Публикаций в этом разделе пока нет."));
@@ -32,6 +33,11 @@ export function renderFeed(root, posts, { slug } = {}) {
     for (const media of (
       post.media || [post.cover, post.mediaUrl].filter(Boolean)
     ).slice(0, 6)) {
+      if(typeof media==='object'&&media.showcase){
+        const player=createShowcaseVideo(showcaseEntry(media.showcase),{doc:root.ownerDocument});
+        if(player)article.append(player);
+        continue;
+      }
       const src = safeURL(typeof media === "string" ? media : media.src, {
         media: true,
       });

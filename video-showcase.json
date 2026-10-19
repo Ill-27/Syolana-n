@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "videos": [
+    {
+      "id": "short",
+      "duration": 32.766666,
+      "width": 1920,
+      "height": 1080,
+      "poster": "https://storage.yandexcloud.net/syolana-pilot-b1gugflkb4qcgf2vftor/assets/showcase/syolana-short-poster-b037f6e76b71.jpg",
+      "posterBackup": "https://cc945967.tw1.ru/assets/showcase/syolana-short-poster.jpg",
+      "sources": [
+        {
+          "width": 1280,
+          "src": "https://storage.yandexcloud.net/syolana-pilot-b1gugflkb4qcgf2vftor/assets/showcase/syolana-short-1280-f6f6fa74c0c0.mp4",
+          "backup": "https://cc945967.tw1.ru/assets/showcase/syolana-short-1280-f6f6fa74c0c0.mp4"
+        },
+        {
+          "width": 1920,
+          "src": "https://storage.yandexcloud.net/syolana-pilot-b1gugflkb4qcgf2vftor/assets/showcase/syolana-short-1920-e56161c7e233.mp4",
+          "backup": "https://cc945967.tw1.ru/assets/showcase/syolana-short-1920-e56161c7e233.mp4"
+        }
+      ]
+    },
+    {
+      "id": "long",
+      "duration": 57.333333,
+      "width": 1920,
+      "height": 1080,
+      "poster": "https://storage.yandexcloud.net/syolana-pilot-b1gugflkb4qcgf2vftor/assets/showcase/syolana-long-poster-b6e1838a92e3.jpg",
+      "posterBackup": "https://cc945967.tw1.ru/assets/showcase/syolana-long-poster.jpg",
+      "sources": [
+        {
+          "width": 1280,
+          "src": "https://storage.yandexcloud.net/syolana-pilot-b1gugflkb4qcgf2vftor/assets/showcase/syolana-long-1280-f437343c600f.mp4",
+          "backup": "https://cc945967.tw1.ru/assets/showcase/syolana-long-1280-f437343c600f.mp4"
+        },
+        {
+          "width": 1920,
+          "src": "https://storage.yandexcloud.net/syolana-pilot-b1gugflkb4qcgf2vftor/assets/showcase/syolana-long-1920-26b9267f5e4e.mp4",
+          "backup": "https://cc945967.tw1.ru/assets/showcase/syolana-long-1920-26b9267f5e4e.mp4"
+        }
+      ]
+    }
+  ]
+}

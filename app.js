@@ -30,6 +30,7 @@ import { API } from "./api.js";
 import { lessons } from "./content.js";
 
 import { renderFeed, feedEditor } from "./feed.js";
+import {mountShowcaseBanner} from './video-showcase.js';
 import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
 
 registerTranslations({'Ключи и подписки':['Keys and subscriptions','Claves y suscripciones','Clés et abonnements']});
@@ -253,6 +254,7 @@ function renderBanner() {
   );
 
   $("banner").replaceChildren(visual, txt);
+  mountShowcaseBanner($("banner"));
 }
 renderBanner();
 function heading(kicker, title, text) {

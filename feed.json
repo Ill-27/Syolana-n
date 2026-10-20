@@ -239,7 +239,10 @@
     "linkLabel": "Собрать эскиз бесплатно",
     "media": [
       {
-        "showcase": "service-site"
+        "src": "assets/services/site-still-3e2204d0a688.jpg",
+        "width": 1536,
+        "height": 1152,
+        "alt": "Сайт с живой темой Syolana — бесплатный запуск до 31 декабря 2026 года"
       }
     ],
     "detailMedia": [
@@ -311,15 +314,7 @@
     "text": "Хотите, чтобы сайт узнавали с первого взгляда? Создадим для него новую индивидуальную анимированную 3D-тему под ваш бренд или деятельность.\n\nПродумываем вместе образ, цвета, свет, глубину и движение. Морской мир для вашего проекта, необычный город или совсем новая сцена — начнём с того, какое впечатление вы хотите оставить.\n\nЭто отдельный заказ: стоимость, состав, сроки и условия использования рассчитываем индивидуально. Создание такой темы не входит в общий пакет.\n\nРасскажите, чем вы занимаетесь, и пришлите логотип или несколько примеров настроения — обсудим ваш будущий мир.",
     "href": "https://www.avito.ru/brands/i223140984",
     "linkLabel": "Обсудить мою 3D-тему",
-    "media": [
-      {
-        "src": "themes/previews/white-ocean-city.jpg",
-        "width": 960,
-        "height": 540,
-        "alt": "Общая тема «Белый город над океаном» — пример атмосферы Syolana",
-        "caption": "Пример одной из общих тем Syolana. Вашу индивидуальную сцену создаём отдельно."
-      }
-    ],
+    "media": [],
     "translations": {
       "en": {
         "title": "Your brand, a living world",
@@ -366,7 +361,10 @@
     "linkLabel": "Заказать баннер",
     "media": [
       {
-        "showcase": "service-banner"
+        "src": "assets/services/banner-still-a794af0f33b9.jpg",
+        "width": 1536,
+        "height": 1152,
+        "alt": "Живой баннер для сайта — 10 000 рублей"
       }
     ],
     "detailMedia": [
@@ -395,7 +393,7 @@
           }
         ],
         "detailsLabel": "Formats, cover and revisions",
-        "mediaNote": "This animated cover illustrates the visual style. The commissioned banner for 10,000 ₽ is one 10-second scene."
+        "mediaNote": "Visual concept. A commissioned banner for 10,000 ₽ includes one 10-second scene."
       },
       "es": {
         "title": "10 segundos que dan vida a tu sitio",
@@ -412,7 +410,7 @@
           }
         ],
         "detailsLabel": "Formatos, portada y cambios",
-        "mediaNote": "Esta portada animada ilustra el estilo visual. El banner por encargo de 10 000 ₽ incluye una escena de 10 segundos."
+        "mediaNote": "Concepto visual. El banner por encargo de 10 000 ₽ incluye una escena de 10 segundos."
       },
       "fr": {
         "title": "10 secondes pour donner vie à votre site",
@@ -429,11 +427,11 @@
           }
         ],
         "detailsLabel": "Formats, couverture et corrections",
-        "mediaNote": "Cette couverture animée illustre le style visuel. La bannière commandée à 10 000 ₽ comprend une scène de 10 secondes."
+        "mediaNote": "Concept visuel. La bannière commandée à 10 000 ₽ comprend une scène de 10 secondes."
       }
     },
     "publishedAt": "2026-10-19T17:12:25.178686+00:00",
-    "mediaNote": "Анимация обложки — пример визуального стиля. Заказной баннер за 10 000 ₽: один сюжет на 10 секунд."
+    "mediaNote": "Визуальная концепция. Заказной баннер за 10 000 ₽: один сюжет на 10 секунд."
   },
   {
     "id": "video-your-world",
@@ -582,7 +580,10 @@
     "linkLabel": "Помочь с публикацией",
     "media": [
       {
-        "showcase": "service-publishing"
+        "src": "assets/services/publishing-still-a0ead5636e72.jpg",
+        "width": 1536,
+        "height": 1152,
+        "alt": "Помощь с размещением сайта — 2 900 рублей за работу"
       }
     ],
     "translations": {
@@ -628,7 +629,10 @@
     "linkLabel": "Проверить мою ленту",
     "media": [
       {
-        "showcase": "service-feed"
+        "src": "assets/services/feed-still-c04e85268cb0.jpg",
+        "width": 1536,
+        "height": 1152,
+        "alt": "Лента публикаций на сайте — 5 000 рублей"
       }
     ],
     "translations": {
@@ -774,7 +778,10 @@
     "linkLabel": "Начать английский A1 бесплатно",
     "media": [
       {
-        "showcase": "service-english"
+        "src": "assets/services/english-still-cf2a30784da9.jpg",
+        "width": 1536,
+        "height": 1152,
+        "alt": "Английский A1 — бесплатно"
       }
     ],
     "translations": {
@@ -818,14 +825,7 @@
     "text": "В музыкальной библиотеке Syolana картины, стихи и любимые истории становятся песнями. Создаём музыку с помощью ИИ и указываем источник вдохновения.\n\nПесня по проекту партнёра возможна по отдельной творческой договорённости. Это не обязательный подарок и не часть базового сайта.\n\nПослушайте наши работы — возможно, здесь уже есть ваше настроение.",
     "href": "#/songs",
     "linkLabel": "Послушать песни",
-    "media": [
-      {
-        "src": "themes/previews/moon.jpg",
-        "width": 1280,
-        "height": 720,
-        "alt": "Лунный сад Syolana — иллюстрация настроения музыкальной библиотеки"
-      }
-    ],
+    "media": [],
     "translations": {
       "en": {
         "title": "Stories you want to hear",

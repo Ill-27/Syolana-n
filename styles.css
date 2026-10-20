@@ -2181,6 +2181,15 @@ strong {
   margin: 20px 0;
   background: #070711;
 }
+.feed-post img.feed-media {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  padding: 0;
+  background: transparent;
+}
 .reader-text {
   font-size: var(--reader-size);
   line-height: 1.9;

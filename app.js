@@ -677,11 +677,22 @@ function lessonFrame(key, anchor = "") {
   let active = true,
     anchored = false;
   let courseBar = null, courseLabel = null, courseStatus = null, courseProgress = null, courseAudio = null, courseTOC = null, courseOwner = null;
+  let courseLayoutFrame = 0, previousCourseScroll = null;
   function fitCourse() {
-    if (!englishCourse || !active) return;
+    if (!englishCourse || !active || courseLayoutFrame) return;
+    courseLayoutFrame = requestAnimationFrame(measureCourse);
+  }
+  function measureCourse() {
+    courseLayoutFrame = 0;
+    if (!active) return;
     const dock = $("music-dock")?.getBoundingClientRect();
-    if (courseBar) courseBar.style.bottom = (dock?.height ? Math.max(16, window.innerHeight - dock.top + 12) : 16) + "px";
-    send({courseScroll:Math.max(0, window.scrollY - (window.scrollY + frame.getBoundingClientRect().top - 110))});
+    const bottom = (dock?.height ? Math.max(16, window.innerHeight - dock.top + 12) : 16) + "px";
+    const courseScroll = Math.max(0, 110 - frame.getBoundingClientRect().top);
+    if (courseBar && courseBar.style.bottom !== bottom) courseBar.style.bottom = bottom;
+    if (courseScroll !== previousCourseScroll) {
+      previousCourseScroll = courseScroll;
+      send({courseScroll});
+    }
   }
   const courseObserver = englishCourse && typeof ResizeObserver !== "undefined"
     ? new ResizeObserver(fitCourse) : null;
@@ -701,7 +712,7 @@ function lessonFrame(key, anchor = "") {
     window.addEventListener("resize", fitCourse);
     window.addEventListener("scroll", fitCourse, {passive:true});
     if ($("music-dock")) courseObserver?.observe($("music-dock"));
-    requestAnimationFrame(fitCourse);
+    fitCourse();
   }
   function send(data) {
     frame.contentWindow?.postMessage(
@@ -734,6 +745,7 @@ function lessonFrame(key, anchor = "") {
       status.hidden = true;
     }
     if (data.ready) {
+      previousCourseScroll = null;
       palette();
       fitCourse();
       if (anchor && !anchored) {
@@ -783,7 +795,11 @@ function lessonFrame(key, anchor = "") {
       else location.hash = url.hash.startsWith("#/") ? url.hash : "#/";
     }
   }
-  frame.addEventListener("load", palette);
+  frame.addEventListener("load", () => {
+    previousCourseScroll = null;
+    palette();
+    fitCourse();
+  });
   const pauseLesson = () => send({ pauseAudio: true });
   window.addEventListener("message", message);
   window.addEventListener("syolana:theme", palette);
@@ -795,6 +811,7 @@ function lessonFrame(key, anchor = "") {
   }, 12000);
   cleanup = () => {
     active = false;
+    cancelAnimationFrame(courseLayoutFrame);
     if (englishCourse) document.body.classList.remove("course-reading");
     window.removeEventListener("resize", fitCourse);
     window.removeEventListener("scroll", fitCourse);

@@ -1,101 +1,77 @@
 <!doctype html>
-<html lang="ru" data-atmosphere="0">
+<html lang="ru" data-light="rose">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta name="theme-color" content="#281d2f">
-  <meta name="description" content="Персональный эскиз мира Кары Кросс: музыка, съёмки и тёплые истории в оформлении Syolana.">
-  <title>Кара Кросс · Персональный мир Syolana</title>
-  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+  <meta name="description" content="Персональный эскиз сайта для Кары Кросс. Предложение к обсуждению: оформление, материалы и движения выбираете вы.">
+  <title>Кара Кросс · Персональный эскиз</title>
   <link rel="preload" href="/assets/fonts/syolana-script.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="/partner-demo/kara-kross/assets/camera-a-v2.jpg" as="image">
   <link rel="stylesheet" href="/assets/fonts/fonts.css">
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/partner-demo/kara-kross/world.css?v=20261020-cinema-1">
-  <link rel="preload" href="/partner-demo/kara-kross/assets/scene-poster.jpg" as="image">
-  <link rel="stylesheet" href="/partner-demo/kara-kross/cinema.css?v=20261020-cinema-1">
+  <link rel="stylesheet" href="/partner-demo/kara-kross/proposal.css?v=20261020-4">
 </head>
-<body class="kara-world-page">
-  <div class="kk-backdrop" aria-hidden="true"></div>
-  <div class="kk-cinema" id="kk-cinema" aria-hidden="true">
-    <video class="kk-media is-visible" id="kk-idle" muted loop playsinline preload="auto" poster="/partner-demo/kara-kross/assets/scene-poster.jpg"><source src="/partner-demo/kara-kross/assets/idle-01.mp4" type="video/mp4"></video>
-    <video class="kk-media" id="kk-orbit" muted playsinline preload="metadata" poster="/partner-demo/kara-kross/assets/scene-poster.jpg"><source src="/partner-demo/kara-kross/assets/orbit-04.mp4" type="video/mp4"></video>
+<body class="kara-proposal">
+  <div class="kp-backdrop" aria-hidden="true"></div>
+  <div class="kp-stage" id="kp-stage" aria-hidden="true">
+    <video class="kp-media is-visible" id="kp-route" muted playsinline preload="auto" poster="/partner-demo/kara-kross/assets/camera-a-v2.jpg"><source src="/partner-demo/kara-kross/assets/camera-route-v2.mp4" type="video/mp4"></video>
+    <div class="kp-light kp-light-evening"></div><div class="kp-light kp-light-soft"></div>
   </div>
-  <div class="kk-shade" aria-hidden="true"></div>
-  <a class="skip-link" href="#kk-content">К содержанию</a>
-  <header class="top-bar kk-header" data-kk-chrome>
-    <a class="brand glass syolana-passport-button" href="/" aria-label="Syolana — главная">
-      <img src="/assets/logo.svg" width="47" height="47" alt="">
-      <span><strong>Syolana</strong><small>ПЕРСОНАЛЬНЫЙ МИР</small></span>
-    </a>
-    <div class="top-actions">
-      <button type="button" class="icon-btn glass" aria-label="Выбрать атмосферу" data-kk-dialog="#kk-atmosphere-dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z"/></svg></button>
-      <button type="button" id="ambient-toggle" class="icon-btn glass" aria-label="Звук атмосферы" aria-pressed="false" title="Звук атмосферы"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4V5ZM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg></button>
-      <button type="button" id="zen-toggle" class="icon-btn glass" aria-label="Режим созерцания" aria-pressed="false" title="Режим созерцания"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-      <button type="button" id="fullscreen" class="icon-btn glass" aria-label="На весь экран" aria-pressed="false" title="На весь экран"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></svg></button>
+  <div class="kp-shade" aria-hidden="true"></div>
+  <a class="skip-link" href="#kp-content">К содержанию</a>
+  <header class="kp-header" data-proposal-chrome data-contact-obstacle>
+    <a class="kp-partner-mark" href="#kp-content"><strong>Кара Кросс</strong><small>Место для вашего логотипа</small></a>
+    <div class="kp-top-actions">
+      <button type="button" class="kp-icon" data-open="#kp-light-dialog" aria-label="Выбрать свет"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z"/></svg></button>
+      <button type="button" class="kp-icon" id="kp-sound" aria-label="Звук атмосферы" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4V5ZM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg></button>
+      <button type="button" class="kp-icon" id="kp-zen" aria-label="Созерцание" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button type="button" class="kp-icon" id="kp-fullscreen" aria-label="На весь экран" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></svg></button>
     </div>
   </header>
-  <main class="kk-page" id="kk-content" data-kk-chrome>
-    <section class="kk-hero" aria-labelledby="kk-title">
-      <div class="kk-intro">
-        <span class="kk-eyebrow">Syolana · Персональный эскиз</span>
-        <h1 id="kk-title">Кара Кросс</h1>
-        <p>Музыка, характер и тёплые истории.<br>Мир, в котором всё связано с ней.</p>
-        <div class="kk-actions"><button type="button" class="btn primary" id="kk-enter">Войти в её мир</button><a class="btn" href="#kk-journal">Открыть ленту ↓</a></div>
-        <div class="kk-cinema-actions"><button type="button" class="btn kk-orbit-button" data-cinema-orbit aria-pressed="false">Сменить ракурс</button><button type="button" class="btn" data-cinema-pause aria-pressed="false">Пауза</button></div>
-        <p class="kk-cinema-hint">Побудьте рядом или осмотрите павильон.</p>
-        <p class="kk-demo-note">Неофициальный эскиз Syolana для личного предложения. Не является официальным сайтом Кары Кросс.</p>
+  <main class="kp-page" id="kp-content" data-proposal-chrome>
+    <section class="kp-hero" aria-labelledby="kp-title">
+      <div class="kp-intro">
+        <span class="kp-eyebrow">Персональный эскиз · Предложение к обсуждению</span>
+        <h1 id="kp-title">Кара Кросс</h1>
+        <p class="kp-lead">Так может выглядеть ваш будущий сайт.</p>
+        <p class="kp-subtitle">Тексты, материалы, разделы и движения — по вашему выбору.</p>
+        <div class="kp-actions"><button type="button" class="btn primary" id="kp-enter">Посмотреть пространство</button><a class="btn" href="#kp-discuss">Обсудить эскиз ↓</a></div>
+        <div class="kp-camera-inline" role="group" aria-label="Камера"><button type="button" class="btn" data-camera="left">← Повернуть камеру</button><button type="button" class="btn" data-camera="right" disabled>Вернуться →</button><button type="button" class="kp-text-button" data-pause aria-pressed="false">Пауза</button></div>
+        <p class="kp-draft-note">Это предварительное предложение. Всё на странице можно изменить по вашим пожеланиям.</p>
       </div>
-      <div class="kk-scene-caption"><b data-scene-name>Розовое золото</b><span id="kk-cinema-label">Павильон · Живой портрет</span></div>
+      <p class="kp-scene-label"><span class="kp-live-dot" aria-hidden="true"></span><span data-view-label>Павильон над водой</span></p>
     </section>
-    <nav class="main-nav glass kk-nav" aria-label="Разделы персонального мира"><a href="#kk-about">О Каре</a><a href="#kk-journal">Лента</a><a href="#kk-music">Музыка</a><a href="#kk-life">Личное</a></nav>
-    <section class="kk-world-strip glass" aria-labelledby="kk-world-title">
-      <div class="kk-strip-top"><h2 id="kk-world-title">Выберите настроение</h2><button type="button" class="btn small" data-kk-dialog="#kk-help-dialog">Как осмотреть мир</button></div>
-      <div class="kk-choice-row"><button type="button" class="btn" data-scene="0" aria-pressed="true">Розовое золото</button><button type="button" class="btn" data-scene="1" aria-pressed="false">Лавандовый свет</button><button type="button" class="btn" data-scene="2" aria-pressed="false">Тёплый свет</button></div>
-      <div class="kk-view-settings"><button type="button" class="btn kk-orbit-button" data-cinema-orbit aria-pressed="false">Сменить ракурс</button><button type="button" class="btn" data-cinema-home>Общий план</button><button type="button" class="btn" id="kk-pause" data-cinema-pause aria-pressed="false">Пауза</button><span>Звук атмосферы включается значком сверху.</span></div>
+    <nav class="main-nav kp-nav" aria-label="Разделы эскиза"><a href="#kp-idea">Идея</a><a href="#kp-sections">Ваши разделы</a><a href="#kp-materials">Материалы</a><a href="#kp-discuss">Обсудить</a></nav>
+    <section class="kp-panel kp-light-picker" aria-labelledby="kp-light-title">
+      <div><span class="kp-eyebrow">Варианты для эскиза</span><h2 id="kp-light-title">Выберите свет</h2><p>Какое настроение вам ближе? Оттенки и оформление подберём вместе.</p></div>
+      <div class="kp-light-options" role="group" aria-label="Свет эскиза"><button type="button" data-light="rose" aria-pressed="true"><i class="kp-swatch kp-swatch-rose" aria-hidden="true"></i>Розовое золото</button><button type="button" data-light="evening" aria-pressed="false"><i class="kp-swatch kp-swatch-evening" aria-hidden="true"></i>Мягкий вечер</button><button type="button" data-light="soft" aria-pressed="false"><i class="kp-swatch kp-swatch-soft" aria-hidden="true"></i>Жемчужный свет</button></div>
     </section>
-    <section class="kk-section" id="kk-about" aria-labelledby="kk-about-title">
-      <div class="kk-section-head"><span class="kk-eyebrow">Знакомство</span><h2 id="kk-about-title">Один человек. Много граней.</h2><p>Кара Кросс — блогер, певица, актриса и телеведущая. В этом эскизе её творческие направления встречаются с узнаваемым оформлением Syolana.</p></div>
-      <div class="kk-about">
-        <article class="card glass"><span class="kk-eyebrow">Творчество</span><h3>На сцене и в кадре</h3><p>Песни, клипы, съёмки и развлекательные проекты. Здесь — пространство для творческих работ Кары и историй, стоящих за ними.</p></article>
-        <article class="card glass"><span class="kk-eyebrow">Ближе</span><h3>Вне софитов</h3><p>Домашнее тепло, любимая собака и живые моменты. В основе этого настроения — фотографии, выбранные для персонального эскиза.</p></article>
-      </div>
+    <section class="kp-section" id="kp-idea" aria-labelledby="kp-idea-title">
+      <span class="kp-eyebrow">Идея · Для обсуждения</span><h2 id="kp-idea-title">Пространство по вашему замыслу</h2><p class="kp-section-intro">Показываем направление оформления, а не готовый сайт. Вы можете выбрать другую атмосферу, композицию, цвета и поведение камеры.</p>
+      <div class="kp-grid kp-grid-three"><article class="kp-panel"><span class="kp-step">01</span><h3>Ваше оформление</h3><p>Поставим выбранный вами логотип. Подберём заголовки, кнопки и расположение блоков.</p></article><article class="kp-panel"><span class="kp-step">02</span><h3>Ваши материалы</h3><p>Добавим те тексты, фотографии, видео и публикации, которые вы захотите показать.</p></article><article class="kp-panel"><span class="kp-step">03</span><h3>Ваше пространство</h3><p>Согласуем движения камеры и персонажей. В этом эскизе пока можно попробовать один маршрут.</p></article></div>
     </section>
-    <section class="kk-section" id="kk-journal" aria-labelledby="kk-journal-title">
-      <div class="kk-section-head"><span class="kk-eyebrow">Музыка · Съёмки · Личное</span><h2 id="kk-journal-title">Её пространство</h2><p>Творческие работы, образы и моменты из жизни.</p></div>
-      <div class="kk-filters" role="group" aria-label="Фильтр ленты"><button type="button" class="btn" data-filter="all" aria-pressed="true">Всё</button><button type="button" class="btn" data-filter="music" aria-pressed="false">Музыка</button><button type="button" class="btn" data-filter="images" aria-pressed="false">Образы</button><button type="button" class="btn" data-filter="life" aria-pressed="false">Личное</button></div>
-      <div class="kk-feed">
-        <article id="kk-music" data-category="music">
-          <div class="kk-post-text"><span class="kk-post-tag">Музыка · Kara Kross</span><h3>Истории, ставшие песнями</h3><p>Сольные песни и совместные работы Кары Кросс — часть её творческого мира. Лавандовый свет добавляет павильону мягкое вечернее настроение.</p><div class="kk-actions"><button type="button" class="btn small" data-scene="1" aria-pressed="false">Лавандовое настроение</button><a class="btn small" href="https://music.apple.com/ru/artist/kara-kross/1451991008" target="_blank" rel="noopener noreferrer">Слушать музыку ↗</a></div></div>
-        </article>
-        <article data-category="images">
-          <figure><button type="button" class="kk-photo-open" data-photo="portrait.jpg" data-photo-title="Образ в розовом золоте" aria-label="Открыть фотографию: образ в розовом золоте"><img src="/partner-demo/kara-kross/assets/portrait.jpg" alt="Кара Кросс в светлом платье с розовыми и золотыми деталями" loading="lazy" width="709" height="1536"><span>Открыть фотографию ↗</span></button></figure>
-          <div class="kk-post-text"><span class="kk-post-tag">Образы</span><h3>Розовое золото</h3><p>Светлые волны волос, тонкий блеск платья и мягкие розовые оттенки. Эти детали фотографии продолжаются в свете, металле и отражениях персональной сцены.</p><div class="kk-actions"><button type="button" class="btn small" data-scene="0" aria-pressed="true">Выбрать это настроение</button></div></div>
-        </article>
-        <article data-category="images">
-          <figure><button type="button" class="kk-photo-open" data-photo="portrait-evening.jpg" data-photo-title="Контрастный образ" aria-label="Открыть фотографию: контрастный образ"><img src="/partner-demo/kara-kross/assets/portrait-evening.jpg" alt="Кара Кросс в тёмном костюме, с длинными светлыми волосами" loading="lazy" width="709" height="1536"><span>Открыть фотографию ↗</span></button></figure>
-          <div class="kk-post-text"><span class="kk-post-tag">Образы</span><h3>Характер в деталях</h3><p>Тёмный костюм и мягкий свет создают другое настроение. В персональном мире остаётся место и для сильного сценического образа, и для спокойных личных историй.</p></div>
-        </article>
-        <article id="kk-life" data-category="life">
-          <div class="kk-post-text"><span class="kk-post-tag">Личное · По выбранному референсу</span><h3>Самое тёплое — рядом</h3><p>В домашнем кадре Кара рядом со своей собакой. Эту тихую сторону жизни продолжает тёплая атмосфера: мягкий золотой свет и медленное движение воды.</p><div class="kk-actions"><button type="button" class="btn small" data-scene="2" aria-pressed="false">Добавить тёплый свет</button><button type="button" class="btn small" data-photo="home.jpg" data-photo-title="Домашний кадр с собакой">Посмотреть референс</button></div></div>
-        </article>
-      </div>
+    <section class="kp-section" id="kp-sections" aria-labelledby="kp-sections-title">
+      <span class="kp-eyebrow">Пример структуры · Можно изменить</span><h2 id="kp-sections-title">Какие разделы нужны вам?</h2><p class="kp-section-intro">Названия и тексты ниже — примеры для обсуждения. Содержание будущего сайта определяете вы.</p>
+      <div class="kp-grid kp-section-cards"><article class="kp-panel"><span class="kp-placeholder-label">Место для вашего текста</span><h3>Приветствие</h3><p>Здесь может быть короткое обращение к посетителям — вашими словами и в вашем стиле.</p></article><article class="kp-panel"><span class="kp-placeholder-label">Место для ваших публикаций</span><h3>Лента</h3><p>Выберите посты, фото или видео. Подписи, порядок и внешний вид карточек согласуем с вами.</p></article><article class="kp-panel"><span class="kp-placeholder-label">Место для выбранных материалов</span><h3>Проекты и ссылки</h3><p>Добавим нужные вам разделы, кнопки и ссылки. Их состав можно полностью изменить.</p></article><article class="kp-panel kp-open-card"><span class="kp-placeholder-label">Ваш вариант</span><h3>Что добавить ещё?</h3><p>Расскажите, что вы хотели бы видеть на сайте. Покажите примеры, которые вам нравятся.</p><a class="kp-inline-link" href="#kp-discuss">Рассказать о пожеланиях ↗</a></article></div>
     </section>
-    <section class="kk-links glass" aria-labelledby="kk-links-title"><h2 id="kk-links-title">Мир продолжается</h2><p>Фотографии сохранены как референсы. Новостная лента в этом эскизе не синхронизирована с аккаунтами Кары; тексты не выдаются за её личные публикации.</p><div class="kk-actions"><button type="button" class="btn primary" data-kk-dialog="#kk-atmosphere-dialog">Вернуться в её мир</button><a class="btn" href="/">Открыть Syolana</a></div></section>
-    <footer class="kk-footer"><a href="/">Syolana</a><p>Персональный неофициальный эскиз для Кары Кросс. Оформление и интерактивное окружение — Syolana. Персонажи представлены в анимированной видеосцене с подготовленными ракурсами.</p><p>© Syolana. Все права на оформление защищены.</p><div class="kk-footer-links"><a href="/legal-info/index.html">Сведения об исполнителе</a><a href="/legal-info/index.html#privacy">Конфиденциальность</a><a href="/#/offer">Единые условия</a></div></footer>
+    <section class="kp-section" id="kp-materials" aria-labelledby="kp-materials-title">
+      <span class="kp-eyebrow">Следующий шаг · После обсуждения</span><h2 id="kp-materials-title">Пришлите то, что хотите разместить</h2>
+      <div class="kp-panel kp-materials-panel"><p>Можно начать с нескольких материалов. Мы предложим расположение блоков и покажем обновлённый эскиз.</p><ul><li>Логотип или желаемый вариант написания имени.</li><li>Тексты, фотографии, видео и выбранные посты.</li><li>Ссылки, названия разделов и пожелания к оформлению.</li><li>Идеи для пространства и движений персонажей.</li></ul><p class="kp-muted">Материалы и изменения добавляем после согласования с вами.</p></div>
+    </section>
+    <section class="kp-panel kp-discuss" id="kp-discuss" aria-labelledby="kp-discuss-title"><span class="kp-eyebrow">Персональный эскиз · Для рассмотрения</span><h2 id="kp-discuss-title">Что вам хочется изменить?</h2><p>Расскажите, какие тексты и разделы вы хотите, пришлите выбранные материалы или просто опишите впечатления. Всё подстроим под ваше решение.</p><p>Для обсуждения используйте удобную кнопку связи справа.</p><button type="button" class="btn" data-open="#kp-help-dialog">Как попробовать камеру</button></section>
+    <footer class="kp-footer"><p>Персональный эскиз · Предложение к обсуждению</p><a class="syolana-credit kp-credit" href="https://syolana.com/" target="_blank" rel="noopener noreferrer"><img src="/partner-demo/kara-kross/assets/syolana-partner-logo.svg" width="28" height="28" alt=""><span>Сайт создан на Syolana</span></a></footer>
   </main>
-  <a class="kk-signature" href="/" aria-label="Syolana — автор оформления" data-syolana-signature>Syolana</a>
-  <div class="kk-credit"><span>© syolana.com<br>Веб-дизайн и оформление · 2026<br><span data-scene-name>Розовое золото</span></span><a href="/" aria-label="Сайт создан на Syolana">Сайт создан на Syolana</a></div>
-  <div class="kk-marquee" aria-hidden="true"><span>syolana.com · персональные миры · syolana.com · персональные миры · syolana.com · персональные миры · syolana.com · персональные миры · syolana.com · персональные миры · syolana.com · персональные миры · syolana.com · персональные миры · syolana.com · персональные миры · syolana.com · персональные миры · syolana.com · персональные миры · </span></div>
-  <button type="button" class="btn kk-exit" id="kk-exit" hidden>Вернуть интерфейс ×</button>
-  <aside class="kk-flight" id="kk-flight" aria-label="Управление просмотром" hidden><h2>Кара Кросс · <span data-scene-name>Розовое золото</span></h2><p>Проведите влево, чтобы осмотреть павильон. Вправо — вернуться.</p><div class="kk-flight-actions"><button type="button" class="btn kk-orbit-button" data-cinema-orbit aria-pressed="false">Сменить ракурс</button><button type="button" class="btn" data-cinema-home>Общий план</button><button type="button" class="btn" data-cinema-pause aria-pressed="false">Пауза</button></div></aside>
-  <dialog class="kk-dialog" id="kk-atmosphere-dialog"><div class="dialog-head"><h2>Её мир</h2><button type="button" class="icon-btn" data-close aria-label="Закрыть">×</button></div><p>Выберите свет и настроение сцены.</p><div class="kk-choice-row"><button type="button" class="btn" data-scene="0" aria-pressed="true">Розовое золото</button><button type="button" class="btn" data-scene="1" aria-pressed="false">Лавандовый свет</button><button type="button" class="btn" data-scene="2" aria-pressed="false">Тёплый свет</button></div></dialog>
-  <dialog class="kk-dialog" id="kk-help-dialog"><div class="dialog-head"><h2>Побудьте в её мире</h2><button type="button" class="icon-btn" data-close aria-label="Закрыть">×</button></div><p>«Сменить ракурс» запускает короткий облёт павильона. Затем мягкий переход возвращает живой портрет. «Пауза» останавливает движение.</p><p>«Войти в её мир» скрывает интерфейс. В этом режиме проведите пальцем влево, чтобы осмотреть павильон, вправо — вернуться. «Вернуть интерфейс» или Escape открывают страницу. Звук атмосферы включается отдельно.</p></dialog>
-  <dialog class="kk-dialog" id="kk-photo-dialog"><div class="dialog-head"><h2 id="kk-photo-title">Фотография</h2><button type="button" class="icon-btn" data-close aria-label="Закрыть фотографию">×</button></div><img id="kk-photo" alt=""></dialog>
-  <div id="kk-status" class="sr-only" role="status" aria-live="polite"></div>
-  <button type="button" class="btn kk-play-prompt" id="kk-play-prompt" hidden>Оживить мир ▶</button>
-  <noscript><p class="kk-world-strip glass">Для просмотра анимации и выбора атмосферы включите JavaScript. Фотографии и тексты доступны на странице.</p></noscript>
+  <div class="kp-watermark-rail" aria-hidden="true"><div class="kp-marquee"><span>syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · </span></div></div>
+  <button type="button" class="btn kp-exit" id="kp-exit" hidden>Вернуть интерфейс ×</button>
+  <aside class="kp-camera-panel" id="kp-camera-panel" aria-label="Управление камерой" hidden><p>Ведите пальцем или мышью влево и вправо.</p><div class="kp-camera-buttons"><button type="button" class="btn" data-camera="left" aria-label="Повернуть камеру влево">←</button><button type="button" class="btn" data-pause aria-pressed="false">Пауза</button><button type="button" class="btn" data-camera="home">Начальный ракурс</button><button type="button" class="btn" data-camera="right" aria-label="Вернуть камеру вправо" disabled>→</button></div><small>Камера возвращается по вашей команде.</small></aside>
+  <button type="button" class="btn kp-play-prompt" id="kp-play-prompt" hidden>Продолжить движение ▶</button>
+  <dialog class="kp-dialog" id="kp-light-dialog"><div class="kp-dialog-head"><h2>Свет эскиза</h2><button type="button" class="kp-icon" data-close aria-label="Закрыть">×</button></div><p>Выберите настроение. Цвета будущего сайта можно подобрать по вашим пожеланиям.</p><div class="kp-light-options" role="group" aria-label="Выбрать свет"><button type="button" data-light="rose" aria-pressed="true"><i class="kp-swatch kp-swatch-rose" aria-hidden="true"></i>Розовое золото</button><button type="button" data-light="evening" aria-pressed="false"><i class="kp-swatch kp-swatch-evening" aria-hidden="true"></i>Мягкий вечер</button><button type="button" data-light="soft" aria-pressed="false"><i class="kp-swatch kp-swatch-soft" aria-hidden="true"></i>Жемчужный свет</button></div></dialog>
+  <dialog class="kp-dialog" id="kp-help-dialog"><div class="kp-dialog-head"><h2>Попробуйте пространство</h2><button type="button" class="kp-icon" data-close aria-label="Закрыть">×</button></div><p>«Посмотреть пространство» скрывает интерфейс. Ведите пальцем или мышью влево и вправо, чтобы менять положение камеры. Стрелки запускают плавное движение по доступному маршруту.</p><p>«Пауза» останавливает движение. Обратное движение начинается только по нажатию правой стрелки или по вашему жесту. На клавиатуре работают стрелки, пробел, Home и Escape.</p><p>В этом эскизе показан один маршрут. Остальные направления, движения и реакции подберём вместе с вами.</p></dialog>
+  <div class="sr-only" id="kp-status" role="status" aria-live="polite"></div>
+  <noscript><p class="kp-panel">Для движения камеры включите JavaScript. Тексты эскиза доступны на странице.</p></noscript>
   <script type="module" data-syolana-contact-dock src="/avito-dock.js"></script>
-  <script type="module" src="/partner-demo/kara-kross/cinema.js?v=20261020-cinema-2"></script>
+  <script type="module" src="/partner-demo/kara-kross/proposal.js?v=20261020-4"></script>
 </body>
 </html>

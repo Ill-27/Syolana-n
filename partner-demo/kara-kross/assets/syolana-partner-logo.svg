@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Syolana">
+  <defs>
+    <linearGradient id="syolana-passport-ink" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="260" y2="70">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="18%" stop-color="#dff7ff"/>
+      <stop offset="37%" stop-color="#f7e8ff"/>
+      <stop offset="50%" stop-color="#fff1cb"/>
+      <stop offset="63%" stop-color="#dff7ff"/>
+      <stop offset="82%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+      <animateTransform attributeName="gradientTransform" type="translate" values="210 0;-260 0" dur="8s" repeatCount="indefinite"/>
+    </linearGradient>
+  </defs>
+  <style>@media(prefers-reduced-motion:reduce){.syolana-logo-outline{stroke:#c5a4ff}.syolana-logo-word{fill:white}}</style>
+  <g class="syolana-logo-outline" stroke="url(#syolana-passport-ink)" stroke-width="1.6" fill="#aa7bea" fill-opacity=".15">
+    <path d="M50 15C60 28 65 42 50 50C35 42 40 28 50 15Z"/>
+    <path d="M50 50C65 42 85 32 90 47C80 57 65 57 50 50Z"/>
+    <path d="M50 50C35 42 15 32 10 47C20 57 35 57 50 50Z"/>
+    <path d="M50 50C65 60 75 80 60 90C50 80 50 65 50 50Z"/>
+    <path d="M50 50C35 60 25 80 40 90C50 80 50 65 50 50Z"/>
+  </g>
+  <text x="50" y="59" font-family="Georgia,serif" font-size="29" font-weight="600" class="syolana-logo-word" fill="url(#syolana-passport-ink)" text-anchor="middle">SY</text>
+</svg>

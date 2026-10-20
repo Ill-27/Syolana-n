@@ -4,6 +4,7 @@ import {normalizePartnerFooter,prepareAttribution,mountDesignMarks} from './part
 import {protectAttribution} from './attribution-guard.js';
 import themeManifest from './themes/manifest.json' with {type:'json'};
 import {themeLoaders} from './theme-loaders.js';
+import {createFrameClock} from './themes/scene-motion.mjs';
 import { getPref, setPref, notify } from "./utils.js";
 import {themeTypography} from "./themes/theme-typography.mjs?v=20261012-bloom-control-1";
 const SOFT_SCENE_CSS=`
@@ -913,11 +914,12 @@ export class ThemeEngine {
       return;
     }
     let sampleFrames=0,sampleStart=0;
+    const clock=createFrameClock();
     const tick = t => {
       if(this.destroyed)return;
-      const elapsed=this.last?(t-this.last)/1000:1/60;
-      if(this.last&&t-this.last<(document.body.classList.contains("zen")?1000/60:1000/30)){this.frame=requestAnimationFrame(tick);return;}
-      this.last=t;this.draw(Math.min(elapsed,.1));
+      const elapsed=clock.step(t,document.body.classList.contains("zen")?60:30);
+      if(elapsed===null){this.frame=requestAnimationFrame(tick);return;}
+      this.last=t;this.draw(elapsed);
       if(!sampleStart)sampleStart=t;sampleFrames++;
       if(t-sampleStart>2400){
         const fps=sampleFrames*1000/(t-sampleStart),previous=this.qualityScale||1;

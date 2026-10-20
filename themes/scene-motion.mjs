@@ -1,4 +1,17 @@
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+// Keep the fractional frame budget instead of losing it at every display tick.
+export function createFrameClock(){
+ let next=null,previous=null,rate=null;
+ return {step(time,fps){
+  const interval=1000/fps;
+  if(next===null||rate!==fps||time<previous){next=time;rate=fps;}
+  if(time+.1<next)return null;
+  const dt=previous===null?1/60:clamp((time-previous)/1000,0,.1);
+  previous=time;
+  next+=interval*(Math.floor(Math.max(0,time-next)/interval)+1);
+  return dt;
+ }};
+}
 // Integrate travel instead of multiplying total elapsed time by the current
 // mode's speed. Switching modes therefore preserves the exact current pose.
 export function createSceneMotion({rest=.4,flight=2.45,xLimit=1.45,yLimit=1}={}){

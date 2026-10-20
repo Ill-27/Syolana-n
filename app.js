@@ -31,9 +31,11 @@ import { lessons } from "./content.js";
 
 import { renderFeed, feedEditor } from "./feed.js";
 import {mountShowcaseBanner} from './video-showcase.js';
+import {registerFeedCopy,renderServices,mountServicesNavigation} from './services.js';
 import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
 
 registerTranslations({'Ключи и подписки':['Keys and subscriptions','Claves y suscripciones','Clés et abonnements']});
+registerFeedCopy(initialFeed);
 
 document.querySelector(".skip-link").onclick = (e) => {
   e.preventDefault();
@@ -153,6 +155,7 @@ document.addEventListener("fullscreenchange", fullUpdate);
 document.addEventListener("webkitfullscreenchange", fullUpdate);
 function renderBanner() {
   mountShowcaseBanner($("banner"), {contactURL:config.contactChannels?.general?.url});
+  mountServicesNavigation($("banner"),$("main-nav"));
 }
 renderBanner();
 function heading(kicker, title, text) {
@@ -225,11 +228,14 @@ function platformPromo(kind = "themes") {
 }
 
 async function home(token) {
+  const pinned=renderServices(initialFeed.find(post=>post.pinned));
+  $("banner").after(pinned);
+  cleanup=()=>pinned.remove();
   $("page").append(
     heading(
-      "САЙТЫ · ДИЗАЙН · ЯЗЫКИ",
-      "Место для вашего проекта",
-      "Сайты на общем шаблоне с живыми темами и языковые курсы по подписке. Новое в Syolana — здесь.",
+      "САЙТЫ · ВИДЕО · ТВОРЧЕСТВО",
+      "Идеи, примеры и услуги",
+      "Посмотрите, что можно создать вместе с Syolana. В каждом посте — результат, условия и простой следующий шаг.",
     ),
   );
   const tabs = el("div", "feed-filters");
@@ -240,21 +246,10 @@ async function home(token) {
     list.replaceChildren();
     renderFeed(
       list,
-      items.filter((p) => selected === "Все" || p.category === selected),
+      items.filter((p) => !p.pinned && (selected === "Все" || p.category === selected)),
     );
-
-    if (selected === "Все") {
-      const posts = [...list.querySelectorAll(".feed-post")];
-      const themePromo = platformPromo("themes");
-
-      if (posts[0]?.nextSibling)
-        list.insertBefore(themePromo, posts[0].nextSibling);
-      else list.append(themePromo);
-
-      list.append(platformPromo("features"));
-    }
   }
-  ["Все", "Дизайн", "Языки", "Песни"].forEach((name) => {
+  ["Все", "Дизайн", "Видео", "Языки", "Песни"].forEach((name) => {
     const b = button(
       name,
       () => {
@@ -295,6 +290,18 @@ async function home(token) {
     button("Остаться в этом мире", () => zen(true), "btn"),
   );
   $("page").append(explore);
+}
+function servicesPage(){
+  const pinned=renderServices(initialFeed.find(post=>post.pinned),{standalone:true});
+  $("banner").after(pinned);cleanup=()=>pinned.remove();
+  $("page").append(link('Назад в ленту','#/','text-link'));
+}
+function feedPostPage(id){
+  const post=initialFeed.find(post=>!post.pinned&&post.id===id);
+  $("page").append(link('Услуги и цены','#/services','text-link'));
+  if(!post){$("page").append(el('p','empty','Публикация не найдена.'));return;}
+  const list=el('div','feed-list single-post');renderFeed(list,[post],{single:true});
+  $("page").append(list,link('Назад в ленту','#/','text-link'));
 }
 function languages(lang = "en") {
   if (!lessons[lang]) lang = "en";
@@ -578,6 +585,7 @@ async function route() {
     report: "Обращения о нарушениях", contact: "Контакты",
     'site':'Авторский сайт','site-editor':'Мастерская сайта','create-site':'Создать сайт',
     'song':'История песни','owner-sites':'Мои партнёрские сайты',
+    services:'Услуги и цены',post:'Подробнее об услуге',
   };
   const informationView = Boolean(informationTitles[view]);
   $("banner").hidden = informationView;
@@ -595,6 +603,8 @@ async function route() {
     else if(view==='site'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) {const {mountManagedSite}=await import('./managed-sites.js');await mountManagedSite($('page'),a,{isCurrent:()=>token===routeToken,selectTheme:id=>theme.select(id)});}
     else if(view==='owner-sites'){const {mountOwnerSites}=await import('./owner-sites.js');const next=await mountOwnerSites($('page'),{isCurrent:()=>token===routeToken});if(token===routeToken)cleanup=next;else next?.();}
     else if (view === "home") await home(token);
+    else if (view === "services") servicesPage();
+    else if (view === "post") feedPostPage(a);
     else if (view === "library" || view === "book") { location.replace((config.artividUrl || "https://ill-27.github.io/Immersivebooks/") + (view === "book" ? "#/book/"+encodeURIComponent(a)+"/"+(Number(b)||0) : "#/")); return; }
     else if (view === "languages") languages(a, b);
     else if (view === "songs") songsPage();

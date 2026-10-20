@@ -9,13 +9,14 @@ import {
   setPref,
 } from "./utils.js";
 import {createShowcaseVideo,showcaseEntry} from './video-showcase.js';
-export function renderFeed(root, posts, { slug } = {}) {
+export function renderFeed(root, posts, { slug, single = false } = {}) {
   if (!posts.length) {
     root.append(el("p", "empty", "Публикаций в этом разделе пока нет."));
     return;
   }
   for (const post of [...posts].sort((a, b) => stamp(b) - stamp(a))) {
     const article = el("article", "feed-post glass");
+    if(post.id)article.dataset.postId=post.id;
     const meta = el("div", "row between feed-meta");
     meta.append(
       el(
@@ -24,17 +25,43 @@ export function renderFeed(root, posts, { slug } = {}) {
         post.category || (post.kind === "music" ? "Песни" : "Лента"),
       ),
     );
-    article.append(meta, el("h2", "", post.title || "Публикация"));
+    article.append(meta, el(single?"h1":"h2", "", post.title || "Публикация"));
     const body = el("div", "feed-body");
     const text = post.text || post.description || "";
     for (const p of text.split(/\n\s*\n/).filter(Boolean))
       body.append(el("p", "", p));
     article.append(body);
-    for (const media of (
+    appendMedia(article,(
       post.media || [post.cover, post.mediaUrl].filter(Boolean)
-    ).slice(0, 6)) {
+    ).slice(0, 6),post,root.ownerDocument);
+    if(post.mediaNote)article.append(el('p','feed-caption',post.mediaNote));
+    if(post.detailMedia?.length){
+      const details=el('details','feed-details');
+      details.append(el('summary','',post.detailsLabel||'Подробнее'));
+      appendMedia(details,post.detailMedia.slice(0,6),post,root.ownerDocument);
+      article.append(details);
+    }
+    const actions = el("div", "row");
+    if (post.href)
+      actions.append(
+        link(post.linkLabel || "Подробнее", post.href, "btn small"),
+      );
+    if (slug && post.id)
+      actions.append(
+        link(
+          "Открыть публикацию",
+          "#/s/" + slug + "/book/" + post.id + "/0",
+          "text-link",
+        ),
+      );
+    article.append(actions);
+    root.append(article);
+  }
+}
+function appendMedia(article,mediaItems,post,doc){
+    for (const media of mediaItems) {
       if(typeof media==='object'&&media.showcase){
-        const player=createShowcaseVideo(showcaseEntry(media.showcase),{doc:root.ownerDocument});
+        const player=createShowcaseVideo(showcaseEntry(media.showcase),{doc});
         if(player)article.append(player);
         continue;
       }
@@ -69,26 +96,19 @@ export function renderFeed(root, posts, { slug } = {}) {
           "Иллюстрация публикации";
         m.loading = "lazy";
         m.decoding = "async";
+        if(typeof media==='object'){
+          if(Number(media.width)>0&&Number(media.height)>0){m.width=media.width;m.height=media.height;}
+          const small=safeURL(media.smallSrc,{media:true});
+          if(small&&/\.(?:webp|avif|jpe?g|png)(?:[?#]|$)/i.test(small)&&Number(media.width)>768){
+            m.srcset=small+' 768w, '+src+' '+Number(media.width)+'w';
+            m.sizes='(max-width: 760px) calc(100vw - 80px), 746px';
+          }
+        }
       }
       m.addEventListener("error", () => m.remove(), { once: true });
       article.append(m);
+      if(typeof media==='object'&&media.caption)article.append(el('p','feed-caption',media.caption));
     }
-    const actions = el("div", "row");
-    if (post.href)
-      actions.append(
-        link(post.linkLabel || "Подробнее", post.href, "btn small"),
-      );
-    if (slug && post.id)
-      actions.append(
-        link(
-          "Открыть публикацию",
-          "#/s/" + slug + "/book/" + post.id + "/0",
-          "text-link",
-        ),
-      );
-    article.append(actions);
-    root.append(article);
-  }
 }
 function stamp(p) {
   const v = p.publishedAt || p.updated || p.date;

@@ -1,66 +1,863 @@
 [
   {
-    "id": "video-brand-story",
-    "title": "Ваш сайт начинается с истории",
-    "category": "Видео",
-    "publishedAt": "2026-10-19T10:32:21+03:00",
-    "text": "Создадим видеобаннер специально для вашего проекта: с вашими героями, цветами, окружением и настроением. От спокойной красивой сцены до динамичного трейлера.\n\nФормат, длительность, стоимость и сроки согласуем под вашу задачу.\n\nРасскажите об идее через кнопки связи справа.",
+    "id": "services-and-prices",
+    "category": "Услуги",
+    "title": "Что создадим для вас?",
+    "text": "Сайт с живой темой — бесплатно до 31.12.2026. Оформление с общими темами на 2027 год — 12 000 ₽.\n\nАнимированный баннер на 10 секунд — 10 000 ₽. Клипы, мультфильмы и личные видеоподарки — цена по задаче.\n\nНовая индивидуальная анимированная 3D-тема под ваш бренд — стоимость по проекту.\n\nДополнительно: помощь с размещением — 2 900 ₽, подключение ленты — 5 000 ₽, помощь с доменом — 1 000 ₽. Домен и хостинг оплачиваются отдельно.\n\nАнглийский A1 — бесплатно. Все опубликованные платные языковые курсы — 650 ₽ за 30 дней.\n\nНапишите, что хотите создать. Состав, цену и срок согласуем до оплаты.",
     "href": "https://www.avito.ru/brands/i223140984",
-    "linkLabel": "Обсудить видео",
+    "linkLabel": "Обсудить проект",
+    "pinned": true,
+    "lead": "Для своего дела, творческого проекта или подарка близкому.",
+    "offers": [
+      {
+        "post": "welcome-design",
+        "title": "Сайт с живой темой",
+        "price": "Бесплатно до 31.12.2026",
+        "summary": "Одна страница, ваши материалы и готовый файл сайта."
+      },
+      {
+        "post": "video-brand-story",
+        "title": "Анимированный баннер",
+        "price": "10 000 ₽",
+        "summary": "10 секунд, плавный повтор и версии для телефона и компьютера."
+      },
+      {
+        "post": "video-your-world",
+        "title": "Клипы и мультфильмы",
+        "price": "Цена по задаче",
+        "summary": "История для бренда, клип на песню или личный видеоподарок."
+      },
+      {
+        "post": "individual-3d-theme",
+        "title": "Индивидуальная 3D-тема",
+        "price": "Стоимость по проекту",
+        "summary": "Новый живой мир сайта — под характер, цвета и идею вашего бренда.",
+        "featured": true
+      }
+    ],
+    "extras": [
+      {
+        "post": "site-2027",
+        "title": "Сайт и общие темы на 2027 год",
+        "price": "12 000 ₽"
+      },
+      {
+        "post": "site-publishing",
+        "title": "Помощь с размещением",
+        "price": "2 900 ₽"
+      },
+      {
+        "post": "site-feed",
+        "title": "Подключение ленты",
+        "price": "5 000 ₽"
+      },
+      {
+        "post": "site-domain",
+        "title": "Помощь с доменом",
+        "price": "1 000 ₽"
+      }
+    ],
+    "note": "Домен и хостинг — отдельно. Платные дополнения — по желанию. Состав и срок согласуем до оплаты.",
+    "translations": {
+      "en": {
+        "title": "What shall we create for you?",
+        "text": "A website with a living theme is free until 31 December 2026. Site styling with shared themes for 2027 costs 12,000 ₽.\n\nA 10-second animated banner costs 10,000 ₽. Music videos, animated films and personal video gifts are quoted to your brief.\n\nA new animated 3D theme designed for your brand is priced per project.\n\nOptional help: publishing — 2,900 ₽; connecting a feed — 5,000 ₽; domain assistance — 1,000 ₽. Domain and hosting fees are separate.\n\nEnglish A1 is free. All published paid language courses cost 650 ₽ for 30 days.\n\nTell us what you would like to create. Scope, price and delivery time are agreed before payment.",
+        "linkLabel": "Discuss my project",
+        "lead": "For your business, a creative project or a gift for someone you love.",
+        "offers": [
+          {
+            "post": "welcome-design",
+            "title": "A website with a living theme",
+            "price": "Free until 31 Dec 2026",
+            "summary": "One page, your content and a ready website file."
+          },
+          {
+            "post": "video-brand-story",
+            "title": "An animated banner",
+            "price": "10 000 ₽",
+            "summary": "10 seconds, a smooth loop, and phone and desktop versions."
+          },
+          {
+            "post": "video-your-world",
+            "title": "Music videos and animated films",
+            "price": "Quoted to your brief",
+            "summary": "A brand story, a music video or a personal video gift."
+          },
+          {
+            "post": "individual-3d-theme",
+            "title": "A custom 3D theme",
+            "price": "Priced per project",
+            "summary": "A new living world for your website, shaped around your brand.",
+            "featured": true
+          }
+        ],
+        "extras": [
+          {
+            "post": "site-2027",
+            "title": "Site styling and shared themes for 2027",
+            "price": "12 000 ₽"
+          },
+          {
+            "post": "site-publishing",
+            "title": "Help publishing your site",
+            "price": "2 900 ₽"
+          },
+          {
+            "post": "site-feed",
+            "title": "Connect a feed",
+            "price": "5 000 ₽"
+          },
+          {
+            "post": "site-domain",
+            "title": "Domain assistance",
+            "price": "1 000 ₽"
+          }
+        ],
+        "note": "Domain and hosting fees are separate. Paid extras are optional. Scope and delivery time are agreed before payment."
+      },
+      "es": {
+        "title": "¿Qué creamos para ti?",
+        "text": "Un sitio con tema vivo es gratis hasta el 31/12/2026. El diseño con temas compartidos para 2027 cuesta 12 000 ₽.\n\nUn banner animado de 10 segundos cuesta 10 000 ₽. Videoclips, cortos de animación y regalos en vídeo: precio según el encargo.\n\nUn nuevo tema 3D animado para tu marca se presupuesta por proyecto.\n\nServicios opcionales: publicación, 2 900 ₽; conexión del feed, 5 000 ₽; ayuda con el dominio, 1 000 ₽. Dominio y alojamiento se pagan aparte.\n\nInglés A1 es gratis. Todos los cursos de pago publicados cuestan 650 ₽ por 30 días.\n\nCuéntanos qué quieres crear. Alcance, precio y plazo se acuerdan antes del pago.",
+        "linkLabel": "Hablar de mi proyecto",
+        "lead": "Para tu negocio, tu proyecto creativo o un regalo especial.",
+        "offers": [
+          {
+            "post": "welcome-design",
+            "title": "Un sitio con tema vivo",
+            "price": "Gratis hasta el 31/12/2026",
+            "summary": "Una página, tu contenido y el archivo listo."
+          },
+          {
+            "post": "video-brand-story",
+            "title": "Un banner animado",
+            "price": "10 000 ₽",
+            "summary": "10 segundos, un bucle suave y versiones para móvil y ordenador."
+          },
+          {
+            "post": "video-your-world",
+            "title": "Videoclips y animación",
+            "price": "Precio según el encargo",
+            "summary": "La historia de tu marca, un videoclip o un regalo en vídeo."
+          },
+          {
+            "post": "individual-3d-theme",
+            "title": "Un tema 3D a medida",
+            "price": "Presupuesto por proyecto",
+            "summary": "Un nuevo mundo vivo para tu sitio, inspirado en tu marca.",
+            "featured": true
+          }
+        ],
+        "extras": [
+          {
+            "post": "site-2027",
+            "title": "Diseño y temas compartidos para 2027",
+            "price": "12 000 ₽"
+          },
+          {
+            "post": "site-publishing",
+            "title": "Ayuda para publicar tu sitio",
+            "price": "2 900 ₽"
+          },
+          {
+            "post": "site-feed",
+            "title": "Conectar el feed",
+            "price": "5 000 ₽"
+          },
+          {
+            "post": "site-domain",
+            "title": "Ayuda con el dominio",
+            "price": "1 000 ₽"
+          }
+        ],
+        "note": "Dominio y alojamiento se pagan aparte. Los extras son opcionales. Alcance y plazo se acuerdan antes del pago."
+      },
+      "fr": {
+        "title": "Que créons-nous pour vous ?",
+        "text": "Un site avec thème vivant est gratuit jusqu’au 31/12/2026. L’habillage avec les thèmes communs pour 2027 coûte 12 000 ₽.\n\nUne bannière animée de 10 secondes coûte 10 000 ₽. Clips, films d’animation et cadeaux vidéo : tarif selon votre projet.\n\nUn nouveau thème 3D animé conçu pour votre marque est chiffré sur mesure.\n\nEn option : mise en ligne, 2 900 ₽ ; connexion du fil, 5 000 ₽ ; aide au domaine, 1 000 ₽. Domaine et hébergement se paient séparément.\n\nL’anglais A1 est gratuit. Tous les cours payants publiés coûtent 650 ₽ pour 30 jours.\n\nDites-nous ce que vous souhaitez créer. Contenu, prix et délai sont convenus avant paiement.",
+        "linkLabel": "Parler de mon projet",
+        "lead": "Pour votre activité, un projet créatif ou un cadeau à un proche.",
+        "offers": [
+          {
+            "post": "welcome-design",
+            "title": "Un site avec thème vivant",
+            "price": "Gratuit jusqu’au 31/12/2026",
+            "summary": "Une page, vos contenus et un fichier prêt à publier."
+          },
+          {
+            "post": "video-brand-story",
+            "title": "Une bannière animée",
+            "price": "10 000 ₽",
+            "summary": "10 secondes, une boucle fluide et des versions mobile et ordinateur."
+          },
+          {
+            "post": "video-your-world",
+            "title": "Clips et films d’animation",
+            "price": "Tarif selon votre projet",
+            "summary": "Une histoire de marque, un clip musical ou un cadeau vidéo."
+          },
+          {
+            "post": "individual-3d-theme",
+            "title": "Un thème 3D sur mesure",
+            "price": "Devis sur mesure",
+            "summary": "Un nouvel univers vivant pour votre site, à l’image de votre marque.",
+            "featured": true
+          }
+        ],
+        "extras": [
+          {
+            "post": "site-2027",
+            "title": "Habillage et thèmes communs pour 2027",
+            "price": "12 000 ₽"
+          },
+          {
+            "post": "site-publishing",
+            "title": "Aide à la mise en ligne",
+            "price": "2 900 ₽"
+          },
+          {
+            "post": "site-feed",
+            "title": "Connexion d’un fil",
+            "price": "5 000 ₽"
+          },
+          {
+            "post": "site-domain",
+            "title": "Aide au nom de domaine",
+            "price": "1 000 ₽"
+          }
+        ],
+        "note": "Domaine et hébergement se paient séparément. Les options payantes sont facultatives. Contenu et délai sont convenus avant paiement."
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:28.178686+00:00"
+  },
+  {
+    "id": "welcome-design",
+    "category": "Дизайн",
+    "title": "Ваше дело — на красивом живом сайте",
+    "text": "Базовый сайт — бесплатно до 31 декабря 2026 года по Москве. Для мастера, небольшого бизнеса, творческого проекта или портфолио.\n\nОдна страница до 6 блоков: услуги, работы, о вас и кнопка связи. Добавим ваши материалы — до 6 000 знаков и 10 изображений — и одну из текущих тем. Передадим готовый HTML-файл с инструкцией. Включён один собранный список правок по согласованной структуре.\n\nПродолжение оформления на 2027 год — по желанию, за 12 000 ₽. Новые темы в бесплатный вариант не входят. Домен, хостинг и дополнительные работы оплачиваются отдельно.\n\nПришлите название проекта, тексты и фотографии — или начните с бесплатного эскиза.",
+    "href": "#/create-site",
+    "linkLabel": "Собрать эскиз бесплатно",
+    "media": [
+      {
+        "showcase": "service-site"
+      }
+    ],
+    "detailMedia": [
+      {
+        "src": "assets/services/site-scope.webp",
+        "smallSrc": "assets/services/site-scope-768.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Что входит в базовый сайт Syolana"
+      }
+    ],
+    "detailsLabel": "Что входит в бесплатный сайт",
+    "translations": {
+      "en": {
+        "title": "A living website for your business",
+        "text": "A basic site is free until 31 December 2026, Moscow time. For an independent professional, a small business, a creative project or a portfolio.\n\nOne page with up to 6 sections: services, work, about you and a contact button. We add your content — up to 6,000 characters and 10 images — and one current theme. You receive a ready HTML file and instructions. One consolidated revision list within the agreed structure is included.\n\nContinuing the styling in 2027 is optional and costs 12,000 ₽. New themes are not included in the free option. Domain, hosting and extra work are charged separately.\n\nSend your project name, text and photos, or start with a free sketch.",
+        "linkLabel": "Create a free sketch",
+        "media": [
+          {
+            "alt": "A website for your business: free launch until 31 December 2026"
+          }
+        ],
+        "detailMedia": [
+          {
+            "alt": "What the basic Syolana site includes"
+          }
+        ],
+        "detailsLabel": "What the free site includes"
+      },
+      "es": {
+        "title": "Un sitio vivo para tu negocio",
+        "text": "El sitio básico es gratis hasta el 31 de diciembre de 2026, hora de Moscú. Para profesionales, pequeños negocios, proyectos creativos o portafolios.\n\nUna página de hasta 6 bloques: servicios, trabajos, presentación y botón de contacto. Añadimos tu contenido — hasta 6 000 caracteres y 10 imágenes — y un tema actual. Recibes el archivo HTML listo e instrucciones. Se incluye una lista conjunta de cambios dentro de la estructura acordada.\n\nContinuar con el diseño en 2027 es opcional y cuesta 12 000 ₽. Los temas nuevos no forman parte de la opción gratuita. Dominio, alojamiento y trabajos extra se pagan aparte.\n\nEnvía el nombre de tu proyecto, textos y fotos, o empieza con un boceto gratis.",
+        "linkLabel": "Crear un boceto gratis",
+        "media": [
+          {
+            "alt": "Un sitio para tu negocio: lanzamiento gratis hasta el 31 de diciembre de 2026"
+          }
+        ],
+        "detailMedia": [
+          {
+            "alt": "Qué incluye el sitio básico Syolana"
+          }
+        ],
+        "detailsLabel": "Qué incluye el sitio gratis"
+      },
+      "fr": {
+        "title": "Un site vivant pour votre activité",
+        "text": "Le site de base est gratuit jusqu’au 31 décembre 2026, heure de Moscou. Pour un indépendant, une petite entreprise, un projet créatif ou un portfolio.\n\nUne page de 6 sections maximum : services, réalisations, présentation et bouton de contact. Nous intégrons vos contenus — 6 000 caractères et 10 images maximum — et un thème actuel. Vous recevez un fichier HTML prêt et des instructions. Une liste regroupée de corrections dans la structure convenue est incluse.\n\nPoursuivre l’habillage en 2027 est facultatif et coûte 12 000 ₽. Les nouveaux thèmes ne sont pas inclus dans l’offre gratuite. Domaine, hébergement et travaux supplémentaires se paient séparément.\n\nEnvoyez le nom du projet, vos textes et photos, ou commencez par une esquisse gratuite.",
+        "linkLabel": "Créer une esquisse gratuite",
+        "media": [
+          {
+            "alt": "Un site pour votre activité : lancement gratuit jusqu’au 31 décembre 2026"
+          }
+        ],
+        "detailMedia": [
+          {
+            "alt": "Ce que comprend le site Syolana de base"
+          }
+        ],
+        "detailsLabel": "Ce que comprend le site gratuit"
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:27.178686+00:00"
+  },
+  {
+    "id": "individual-3d-theme",
+    "category": "Дизайн",
+    "title": "Ваш бренд — целый живой мир",
+    "text": "Хотите, чтобы сайт узнавали с первого взгляда? Создадим для него новую индивидуальную анимированную 3D-тему под ваш бренд или деятельность.\n\nПродумываем вместе образ, цвета, свет, глубину и движение. Морской мир для вашего проекта, необычный город или совсем новая сцена — начнём с того, какое впечатление вы хотите оставить.\n\nЭто отдельный заказ: стоимость, состав, сроки и условия использования рассчитываем индивидуально. Создание такой темы не входит в общий пакет.\n\nРасскажите, чем вы занимаетесь, и пришлите логотип или несколько примеров настроения — обсудим ваш будущий мир.",
+    "href": "https://www.avito.ru/brands/i223140984",
+    "linkLabel": "Обсудить мою 3D-тему",
+    "media": [
+      {
+        "src": "themes/previews/white-ocean-city.jpg",
+        "width": 960,
+        "height": 540,
+        "alt": "Общая тема «Белый город над океаном» — пример атмосферы Syolana",
+        "caption": "Пример одной из общих тем Syolana. Вашу индивидуальную сцену создаём отдельно."
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Your brand, a living world",
+        "text": "Want a website people recognise at first glance? We create a new animated 3D theme around your brand or activity.\n\nTogether we shape the scene, colours, light, depth and movement. An ocean world, an unusual city or a completely new setting: we begin with the impression you want to make.\n\nThis is a separate commission. Price, scope, delivery time and usage terms are agreed individually. Creating this theme is not part of the shared package.\n\nTell us what you do and send your logo or a few mood references. We will discuss your future world.",
+        "linkLabel": "Discuss my 3D theme",
+        "media": [
+          {
+            "alt": "The shared White City over the Ocean theme, an example of Syolana’s atmosphere",
+            "caption": "An example of a shared Syolana theme. Your custom scene is created separately."
+          }
+        ]
+      },
+      "es": {
+        "title": "Tu marca, todo un mundo vivo",
+        "text": "¿Quieres que tu sitio se reconozca a primera vista? Creamos un nuevo tema 3D animado inspirado en tu marca o actividad.\n\nDefinimos juntos la escena, los colores, la luz, la profundidad y el movimiento. Un mundo marino, una ciudad singular o una escena totalmente nueva: empezamos por la impresión que quieres transmitir.\n\nEs un encargo independiente. Precio, alcance, plazo y condiciones de uso se acuerdan de forma individual. Crear este tema no forma parte del paquete compartido.\n\nCuéntanos a qué te dedicas y envía tu logotipo o algunas referencias de ambiente. Hablaremos de tu futuro mundo.",
+        "linkLabel": "Hablar de mi tema 3D",
+        "media": [
+          {
+            "alt": "El tema compartido Ciudad blanca sobre el océano, un ejemplo del ambiente Syolana",
+            "caption": "Ejemplo de un tema compartido Syolana. Tu escena a medida se crea por separado."
+          }
+        ]
+      },
+      "fr": {
+        "title": "Votre marque, tout un univers vivant",
+        "text": "Vous souhaitez un site que l’on reconnaît au premier regard ? Nous créons un nouveau thème 3D animé pour votre marque ou votre activité.\n\nNous imaginons ensemble la scène, les couleurs, la lumière, la profondeur et le mouvement. Un monde marin, une ville singulière ou un décor inédit : tout commence par l’impression que vous souhaitez laisser.\n\nIl s’agit d’une commande distincte. Prix, contenu, délais et conditions d’utilisation sont convenus individuellement. Sa création ne fait pas partie de l’offre de thèmes communs.\n\nPrésentez votre activité et envoyez votre logo ou quelques inspirations. Parlons de votre futur univers.",
+        "linkLabel": "Parler de mon thème 3D",
+        "media": [
+          {
+            "alt": "Le thème commun Ville blanche sur l’océan, un exemple d’ambiance Syolana",
+            "caption": "Exemple d’un thème commun Syolana. Votre scène personnalisée est créée séparément."
+          }
+        ]
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:26.178686+00:00"
+  },
+  {
+    "id": "video-brand-story",
+    "category": "Видео",
+    "title": "10 секунд, которые оживят ваш сайт",
+    "text": "Анимированный баннер — 10 000 ₽. Один сюжет на 10 секунд с плавным повтором: для первого экрана сайта, презентации или страницы проекта.\n\nВключены две согласованные пропорции для телефона и компьютера, статичная обложка и два собранных списка правок по утверждённой идее. Вы получаете самостоятельные видеофайлы: продлевать общую тему для их использования не нужно.\n\nСначала согласуем идею, форматы и срок. Сложные сюжеты и другая длительность рассчитываются отдельно.",
+    "href": "https://www.avito.ru/brands/i223140984",
+    "linkLabel": "Заказать баннер",
+    "media": [
+      {
+        "showcase": "service-banner"
+      }
+    ],
+    "detailMedia": [
+      {
+        "src": "assets/services/banner-scope.webp",
+        "smallSrc": "assets/services/banner-scope-768.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Состав заказа анимированного баннера на 10 секунд"
+      }
+    ],
+    "detailsLabel": "Форматы, обложка и правки",
+    "translations": {
+      "en": {
+        "title": "10 seconds that bring your site to life",
+        "text": "An animated banner costs 10,000 ₽. One 10-second scene with a smooth loop, for a website’s opening screen, a presentation or a project page.\n\nTwo agreed aspect ratios for phone and desktop, a still cover and two consolidated revision lists within the approved idea are included. You receive standalone video files; renewing a shared theme is not required to use them.\n\nWe agree on the idea, formats and delivery time first. Complex scenes and other durations are quoted separately.",
+        "linkLabel": "Order a banner",
+        "media": [
+          {
+            "alt": "A living banner for your website — 10,000 rubles"
+          }
+        ],
+        "detailMedia": [
+          {
+            "alt": "What a 10-second animated banner order includes"
+          }
+        ],
+        "detailsLabel": "Formats, cover and revisions",
+        "mediaNote": "This animated cover illustrates the visual style. The commissioned banner for 10,000 ₽ is one 10-second scene."
+      },
+      "es": {
+        "title": "10 segundos que dan vida a tu sitio",
+        "text": "Un banner animado cuesta 10 000 ₽. Una escena de 10 segundos en bucle suave, para la portada de tu sitio, una presentación o una página de proyecto.\n\nIncluye dos proporciones acordadas para móvil y ordenador, una portada estática y dos listas conjuntas de cambios sobre la idea aprobada. Recibes archivos de vídeo independientes: no necesitas renovar un tema compartido para usarlos.\n\nPrimero acordamos la idea, los formatos y el plazo. Las escenas complejas y otras duraciones se presupuestan aparte.",
+        "linkLabel": "Encargar un banner",
+        "media": [
+          {
+            "alt": "Un banner vivo para tu sitio — 10 000 rublos"
+          }
+        ],
+        "detailMedia": [
+          {
+            "alt": "Qué incluye un banner animado de 10 segundos"
+          }
+        ],
+        "detailsLabel": "Formatos, portada y cambios",
+        "mediaNote": "Esta portada animada ilustra el estilo visual. El banner por encargo de 10 000 ₽ incluye una escena de 10 segundos."
+      },
+      "fr": {
+        "title": "10 secondes pour donner vie à votre site",
+        "text": "Une bannière animée coûte 10 000 ₽. Une scène de 10 secondes en boucle fluide, pour l’accueil d’un site, une présentation ou une page de projet.\n\nDeux formats convenus pour mobile et ordinateur, une couverture fixe et deux listes regroupées de corrections sur l’idée validée sont inclus. Vous recevez des fichiers vidéo indépendants : leur utilisation ne nécessite pas de renouveler un thème commun.\n\nNous convenons d’abord de l’idée, des formats et du délai. Les scènes complexes et les autres durées sont chiffrées séparément.",
+        "linkLabel": "Commander une bannière",
+        "media": [
+          {
+            "alt": "Une bannière vivante pour votre site — 10 000 roubles"
+          }
+        ],
+        "detailMedia": [
+          {
+            "alt": "Ce que comprend une bannière animée de 10 secondes"
+          }
+        ],
+        "detailsLabel": "Formats, couverture et corrections",
+        "mediaNote": "Cette couverture animée illustre le style visuel. La bannière commandée à 10 000 ₽ comprend une scène de 10 secondes."
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:25.178686+00:00",
+    "mediaNote": "Анимация обложки — пример визуального стиля. Заказной баннер за 10 000 ₽: один сюжет на 10 секунд."
+  },
+  {
+    "id": "video-your-world",
+    "category": "Видео",
+    "title": "Ваша идея — как маленькое кино",
+    "text": "Клип на песню, мультфильм, ролик о бренде или видеопрезентация — создадим историю по вашему заданию. Для своего дела, творчества или важного события.\n\nПоможем с идеей, подберём визуальный стиль и соберём ролик. Стоимость зависит от длительности, сюжета и сложности; цену, форматы, правки и срок согласуем до начала работы.\n\nПришлите песню, краткую задумку или пример того, что вам нравится. С этого и начнём.",
+    "href": "https://www.avito.ru/brands/i223140984",
+    "linkLabel": "Обсудить мой ролик",
     "media": [
       {
         "showcase": "short"
       }
-    ]
+    ],
+    "mediaNote": "Пример визуального стиля. Формат и длительность вашего ролика согласуем отдельно.",
+    "translations": {
+      "en": {
+        "title": "Your idea, brought to life on screen",
+        "text": "A music video, an animated film, a brand story or a video presentation: we create a story to your brief. For your business, creative work or an important occasion.\n\nWe help develop the idea, choose a visual style and produce the video. Cost depends on length, story and complexity; price, formats, revisions and delivery time are agreed before work begins.\n\nSend a song, a short idea or an example you like. That is where we start.",
+        "linkLabel": "Discuss my video",
+        "media": [
+          {}
+        ],
+        "mediaNote": "An example of the visual style. Your video’s format and length are agreed separately."
+      },
+      "es": {
+        "title": "Tu idea, convertida en una pequeña película",
+        "text": "Un videoclip, un corto de animación, una historia de marca o una presentación en vídeo: creamos la historia según tu encargo. Para tu negocio, tu creatividad o una ocasión importante.\n\nTe ayudamos con la idea, elegimos el estilo visual y montamos el vídeo. El coste depende de la duración, el guion y la complejidad; precio, formatos, cambios y plazo se acuerdan antes de empezar.\n\nEnvía una canción, una idea breve o un ejemplo que te guste. Empezamos por ahí.",
+        "linkLabel": "Hablar de mi vídeo",
+        "media": [
+          {}
+        ],
+        "mediaNote": "Ejemplo de estilo visual. El formato y la duración de tu vídeo se acuerdan por separado."
+      },
+      "fr": {
+        "title": "Votre idée prend vie à l’écran",
+        "text": "Un clip musical, un film d’animation, une histoire de marque ou une présentation vidéo : nous créons un récit selon votre demande. Pour votre activité, votre création ou une occasion importante.\n\nNous développons l’idée, choisissons le style visuel et réalisons la vidéo. Le tarif dépend de la durée, du scénario et de la complexité ; prix, formats, corrections et délai sont convenus avant le début du travail.\n\nEnvoyez une chanson, une idée en quelques mots ou un exemple qui vous plaît. C’est notre point de départ.",
+        "linkLabel": "Parler de ma vidéo",
+        "media": [
+          {}
+        ],
+        "mediaNote": "Exemple de style visuel. Le format et la durée de votre vidéo sont convenus séparément."
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:24.178686+00:00"
   },
   {
-    "id": "video-your-world",
-    "title": "Ваша идея — как маленькое кино",
+    "id": "video-personal-gift",
     "category": "Видео",
-    "publishedAt": "2026-10-19T10:32:20+03:00",
-    "text": "Клипы, мультфильмы, презентационные и праздничные ролики — по индивидуальному заданию. Для бренда, компании, личного проекта или особенного события.\n\nПридумаем историю и подберём визуальный стиль. Длительность, формат, стоимость и сроки обсудим заранее.\n\nНапишите через кнопки справа — начнём с вашей идеи.",
+    "title": "Подарите близкому главную роль",
+    "text": "Ваша история знакомства, семейное приключение или любимый человек в сказочном мире — создадим персональный мультфильм или видеопоздравление.\n\nДля дня рождения, годовщины, свадьбы или просто тёплого сюрприза. Пришлите историю и материалы, которые можно использовать, — вместе найдём красивую идею.\n\nЦена по задаче. Длительность, формат, состав и срок согласуем заранее.",
     "href": "https://www.avito.ru/brands/i223140984",
-    "linkLabel": "Обсудить видео",
+    "linkLabel": "Хочу видеоподарок",
     "media": [
       {
         "showcase": "long"
       }
-    ]
+    ],
+    "mediaNote": "Пример атмосферы и анимации. Сюжет подарка создаём по вашей истории.",
+    "translations": {
+      "en": {
+        "title": "Give someone you love the starring role",
+        "text": "The story of how you met, a family adventure or someone you love in a fantasy world: we create a personalised animated film or video greeting.\n\nFor a birthday, an anniversary, a wedding or simply a thoughtful surprise. Send your story and material we may use, and we will find a beautiful idea together.\n\nQuoted to your brief. Length, format, scope and delivery time are agreed in advance.",
+        "linkLabel": "I would like a video gift",
+        "media": [
+          {}
+        ],
+        "mediaNote": "An example of atmosphere and animation. Your gift’s story is created around your own."
+      },
+      "es": {
+        "title": "Regala a alguien especial el papel protagonista",
+        "text": "La historia de cómo os conocisteis, una aventura familiar o un ser querido en un mundo de fantasía: creamos una animación o felicitación personalizada.\n\nPara un cumpleaños, un aniversario, una boda o simplemente una sorpresa con cariño. Envía tu historia y materiales que podamos utilizar: encontraremos juntos una idea bonita.\n\nPrecio según el encargo. Duración, formato, alcance y plazo se acuerdan de antemano.",
+        "linkLabel": "Quiero un regalo en vídeo",
+        "media": [
+          {}
+        ],
+        "mediaNote": "Ejemplo de ambiente y animación. El regalo se crea a partir de tu historia."
+      },
+      "fr": {
+        "title": "Offrez le premier rôle à un être cher",
+        "text": "L’histoire de votre rencontre, une aventure en famille ou un être cher dans un monde merveilleux : nous créons un film d’animation ou un message vidéo personnalisé.\n\nPour un anniversaire, un mariage ou simplement une belle surprise. Envoyez votre histoire et les éléments que nous pouvons utiliser : imaginons ensemble une belle idée.\n\nTarif selon votre projet. Durée, format, contenu et délai sont convenus à l’avance.",
+        "linkLabel": "Je souhaite un cadeau vidéo",
+        "media": [
+          {}
+        ],
+        "mediaNote": "Exemple d’ambiance et d’animation. Le scénario du cadeau s’inspire de votre histoire."
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:23.178686+00:00"
   },
   {
-    "id": "video-personal-gift",
-    "title": "Подарите близкому главную роль",
-    "category": "Видео",
-    "publishedAt": "2026-10-19T10:32:19+03:00",
-    "text": "Ваша история знакомства, семейное приключение или любимый человек в сказочном мире — создадим персональный мультфильм или видеопоздравление.\n\nДля дня рождения, годовщины, свадьбы или просто тёплого сюрприза.\n\nФормат, длительность, стоимость и сроки согласуем индивидуально. Расскажите, кого хотите порадовать, — кнопки связи справа.",
-    "href": "https://www.avito.ru/brands/i223140984",
-    "linkLabel": "Обсудить видео"
-  },
-  {
-    "id": "welcome-design",
-    "title": "Ваш проект — в живом дизайне",
+    "id": "site-2027",
     "category": "Дизайн",
-    "publishedAt": "2026-09-30T09:00:00+03:00",
-    "text": "Соберите эскиз сами или пришлите материалы. Syolana превращает их в дизайнерский шаблон с живыми темами и передаёт готовый HTML-файл. Вы сами выбираете хостинг и домен.\n\nЕсли вам нужны обновления публикаций на сайте, их можно подключить к вашему открытому каналу или группе — если источник поддерживает такое подключение. Вы продолжаете публиковать только там, где привыкли, а сайт автоматически показывает новые доступные записи.",
-    "href": "#/create-site",
-    "linkLabel": "Собрать эскиз"
+    "title": "Живое оформление на 2027 год",
+    "text": "Сайт и все общие темы Syolana на 2027 год — 12 000 ₽. Меняйте атмосферу сайта под настроение и выбирайте новые общие темы после их выхода.\n\nЭто отдельное продолжение по вашему желанию. Общий период заканчивается 31 декабря 2027 года по Москве; при подключении в течение года оставшийся срок и индивидуальную цену согласуем заранее. Автоматических списаний нет.\n\nТемы используются вместе с подписью Syolana и не передаются в исключительную собственность. Новая индивидуальная 3D-тема заказывается отдельно.",
+    "href": "https://www.avito.ru/brands/i223140984",
+    "linkLabel": "Выбрать оформление на 2027 год",
+    "media": [
+      {
+        "src": "assets/services/site-terms.webp",
+        "smallSrc": "assets/services/site-terms-768.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Условия пробного оформления и пакет на 2027 год за 12 000 рублей"
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Living site styling for 2027",
+        "text": "Site styling and all shared Syolana themes for 2027 cost 12,000 ₽. Change your site’s atmosphere and choose new shared themes as they are released.\n\nContinuing is a separate, optional choice. The shared period ends on 31 December 2027, Moscow time. If you join during the year, we agree on the remaining period and an individual price in advance. There are no automatic charges.\n\nThemes are used with the Syolana credit and are not transferred into exclusive ownership. A new custom 3D theme is commissioned separately.",
+        "linkLabel": "Choose styling for 2027",
+        "media": [
+          {
+            "alt": "Trial styling terms and the 2027 package for 12,000 rubles"
+          }
+        ]
+      },
+      "es": {
+        "title": "Diseño vivo para 2027",
+        "text": "El diseño y todos los temas compartidos Syolana para 2027 cuestan 12 000 ₽. Cambia el ambiente de tu sitio y elige los nuevos temas compartidos cuando se publiquen.\n\nContinuar es una decisión opcional e independiente. El periodo común termina el 31 de diciembre de 2027, hora de Moscú. Si te incorporas durante el año, acordamos antes el tiempo restante y un precio individual. No hay cobros automáticos.\n\nLos temas se usan con la firma Syolana y no se transfieren en propiedad exclusiva. Un nuevo tema 3D a medida se encarga aparte.",
+        "linkLabel": "Elegir diseño para 2027",
+        "media": [
+          {
+            "alt": "Condiciones de prueba y paquete 2027 por 12 000 rublos"
+          }
+        ]
+      },
+      "fr": {
+        "title": "Un habillage vivant pour 2027",
+        "text": "L’habillage et tous les thèmes communs Syolana pour 2027 coûtent 12 000 ₽. Changez l’ambiance de votre site et choisissez les nouveaux thèmes communs dès leur sortie.\n\nLa poursuite est une décision distincte et facultative. La période commune se termine le 31 décembre 2027, heure de Moscou. En cas de souscription en cours d’année, la durée restante et un tarif individuel sont convenus à l’avance. Aucun prélèvement automatique.\n\nLes thèmes s’utilisent avec la signature Syolana et ne sont pas cédés en propriété exclusive. Un nouveau thème 3D sur mesure fait l’objet d’une commande séparée.",
+        "linkLabel": "Choisir l’habillage pour 2027",
+        "media": [
+          {
+            "alt": "Conditions d’essai et offre 2027 à 12 000 roubles"
+          }
+        ]
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:22.178686+00:00"
+  },
+  {
+    "id": "site-publishing",
+    "category": "Дизайн",
+    "title": "Поможем вашему сайту выйти в интернет",
+    "text": "Помощь с размещением — 2 900 ₽ за работу. Для тех, кто получил готовый файл и хочет, чтобы сайт открывался по ссылке.\n\nСогласуем выбранный хостинг и поможем с публикацией. Уже купленный домен подключаем в рамках этого пакета при технической возможности — без повторной оплаты настройки.\n\nДомен, хостинг и их продление оплачиваются отдельно. Учётные записи и доступы остаются у вас; необходимые действия подтверждает владелец.",
+    "href": "https://www.avito.ru/brands/i223140984",
+    "linkLabel": "Помочь с публикацией",
+    "media": [
+      {
+        "showcase": "service-publishing"
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Let us help put your site online",
+        "text": "Help publishing your site costs 2,900 ₽ for the work. For anyone who has a ready file and wants the site to open from a link.\n\nWe agree on your chosen hosting and help with publication. An existing domain is connected within this package where technically possible, without charging twice for setup.\n\nDomain, hosting and renewals are paid separately. Accounts and access remain yours; the owner confirms any necessary actions.",
+        "linkLabel": "Help me publish",
+        "media": [
+          {
+            "alt": "Help publishing a site — 2,900 rubles for the work; domain and hosting separate"
+          }
+        ]
+      },
+      "es": {
+        "title": "Te ayudamos a publicar tu sitio",
+        "text": "La ayuda para publicar cuesta 2 900 ₽ por el trabajo. Para quienes ya tienen el archivo listo y quieren que el sitio se abra desde un enlace.\n\nAcordamos el alojamiento elegido y ayudamos con la publicación. Conectamos un dominio ya comprado dentro del paquete, si es técnicamente posible, sin cobrar dos veces la configuración.\n\nDominio, alojamiento y renovaciones se pagan aparte. Las cuentas y accesos siguen siendo tuyos; el propietario confirma las acciones necesarias.",
+        "linkLabel": "Ayúdame a publicar",
+        "media": [
+          {
+            "alt": "Ayuda para publicar — 2 900 rublos por el trabajo; dominio y alojamiento aparte"
+          }
+        ]
+      },
+      "fr": {
+        "title": "Nous vous aidons à mettre votre site en ligne",
+        "text": "L’aide à la mise en ligne coûte 2 900 ₽ pour le travail. Pour les personnes qui ont leur fichier prêt et souhaitent un site accessible par un lien.\n\nNous convenons de l’hébergement choisi et aidons à publier le site. Un domaine déjà acheté est connecté dans ce forfait lorsque la technique le permet, sans double facturation de la configuration.\n\nDomaine, hébergement et renouvellements se paient séparément. Les comptes et accès restent les vôtres ; le propriétaire confirme les actions nécessaires.",
+        "linkLabel": "M’aider à publier",
+        "media": [
+          {
+            "alt": "Aide à la mise en ligne — 2 900 roubles pour le travail ; domaine et hébergement séparés"
+          }
+        ]
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:21.178686+00:00"
+  },
+  {
+    "id": "site-feed",
+    "category": "Дизайн",
+    "title": "Один пост — и новости уже на сайте",
+    "text": "Подключение ленты — 5 000 ₽. Публикуйте в привычном открытом канале или группе, а сайт будет показывать новые доступные записи.\n\nСначала проверим совместимость источника и согласуем, что можно перенести: тексты, изображения, ссылки и доступные медиа. Возможности зависят от правил и технического доступа самой площадки.\n\nПришлите ссылку на открытый источник — проверим подключение до начала работы.",
+    "href": "https://www.avito.ru/brands/i223140984",
+    "linkLabel": "Проверить мою ленту",
+    "media": [
+      {
+        "showcase": "service-feed"
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "One post, and your website has the news",
+        "text": "Connecting a feed costs 5,000 ₽. Publish in your usual public channel or group, and your website shows the new posts that are available.\n\nWe first check source compatibility and agree on what can be displayed: text, images, links and available media. Features depend on the platform’s rules and technical access.\n\nSend a public source link so we can check connectivity before work starts.",
+        "linkLabel": "Check my feed",
+        "media": [
+          {
+            "alt": "Connect posts from a compatible public source — 5,000 rubles"
+          }
+        ]
+      },
+      "es": {
+        "title": "Una publicación y tu sitio ya tiene noticias",
+        "text": "Conectar el feed cuesta 5 000 ₽. Publica en tu canal o grupo abierto habitual y el sitio mostrará las nuevas publicaciones disponibles.\n\nPrimero comprobamos la compatibilidad y acordamos qué se puede mostrar: textos, imágenes, enlaces y medios disponibles. Las funciones dependen de las reglas y el acceso técnico de la plataforma.\n\nEnvía el enlace a una fuente abierta para comprobar la conexión antes de empezar.",
+        "linkLabel": "Comprobar mi feed",
+        "media": [
+          {
+            "alt": "Conectar publicaciones de una fuente abierta compatible — 5 000 rublos"
+          }
+        ]
+      },
+      "fr": {
+        "title": "Une publication et votre site affiche les nouvelles",
+        "text": "La connexion d’un fil coûte 5 000 ₽. Publiez dans votre canal ou groupe public habituel ; votre site affiche les nouvelles publications disponibles.\n\nNous vérifions d’abord la compatibilité de la source et convenons des contenus affichables : textes, images, liens et médias accessibles. Les possibilités dépendent des règles et des accès techniques de la plateforme.\n\nEnvoyez le lien de la source publique afin de vérifier la connexion avant le début du travail.",
+        "linkLabel": "Vérifier mon fil",
+        "media": [
+          {
+            "alt": "Connexion des publications d’une source publique compatible — 5 000 roubles"
+          }
+        ]
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:20.178686+00:00"
+  },
+  {
+    "id": "site-domain",
+    "category": "Дизайн",
+    "title": "Красивый адрес для вашего проекта",
+    "text": "Помощь с доменом — 1 000 ₽ за работу. Предложим до 5 вариантов имени, поможем с регистрацией и стандартными настройками для одного сайта при технической возможности.\n\nДомен оформляется на вас. Его регистрацию и продление вы оплачиваете напрямую регистратору.\n\nЕсли домен уже куплен и вы заказываете размещение за 2 900 ₽, его подключение входит в этот пакет — отдельно за ту же настройку платить не нужно.",
+    "href": "https://www.avito.ru/brands/i223140984",
+    "linkLabel": "Подобрать адрес сайта",
+    "media": [
+      {
+        "src": "assets/services/domain.webp",
+        "smallSrc": "assets/services/domain-768.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Помощь с доменом — 1 000 рублей; регистрация и продление оплачиваются отдельно"
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "A memorable address for your project",
+        "text": "Domain assistance costs 1,000 ₽ for the work. We suggest up to 5 names and help with registration and standard settings for one website where technically possible.\n\nThe domain is registered in your name. You pay registration and renewal fees directly to the registrar.\n\nIf you already own a domain and order publishing help for 2,900 ₽, connecting it is included in that package. You do not pay again for the same setup.",
+        "linkLabel": "Find my website address",
+        "media": [
+          {
+            "alt": "Domain assistance — 1,000 rubles; registration and renewal fees are separate"
+          }
+        ]
+      },
+      "es": {
+        "title": "Una dirección fácil de recordar",
+        "text": "La ayuda con el dominio cuesta 1 000 ₽ por el trabajo. Proponemos hasta 5 nombres y ayudamos con el registro y la configuración estándar de un sitio, si es técnicamente posible.\n\nEl dominio se registra a tu nombre. Pagas el registro y la renovación directamente al registrador.\n\nSi ya tienes dominio y pides ayuda para publicar por 2 900 ₽, conectarlo está incluido. No pagas otra vez por la misma configuración.",
+        "linkLabel": "Elegir mi dirección web",
+        "media": [
+          {
+            "alt": "Ayuda con el dominio — 1 000 rublos; registro y renovación aparte"
+          }
+        ]
+      },
+      "fr": {
+        "title": "Une adresse mémorable pour votre projet",
+        "text": "L’aide au nom de domaine coûte 1 000 ₽ pour le travail. Nous proposons jusqu’à 5 noms et aidons à l’enregistrement et à la configuration standard d’un site lorsque la technique le permet.\n\nLe domaine est enregistré à votre nom. Vous payez directement au bureau d’enregistrement les frais de création et de renouvellement.\n\nSi vous avez déjà un domaine et commandez l’aide à la mise en ligne à 2 900 ₽, sa connexion est incluse. Vous ne payez pas deux fois la même configuration.",
+        "linkLabel": "Choisir mon adresse web",
+        "media": [
+          {
+            "alt": "Aide au domaine — 1 000 roubles ; enregistrement et renouvellement séparés"
+          }
+        ]
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:19.178686+00:00"
+  },
+  {
+    "id": "your-site-stays",
+    "category": "Дизайн",
+    "title": "Ваши материалы остаются у вас",
+    "text": "Готовый HTML-файл можно сохранить и перенести. Ваши тексты, фотографии и базовая структура остаются в переданной копии сайта.\n\nЕсли не продолжать фирменное оформление после окончания периода, отключатся живые темы, фирменные шрифты и обновления Syolana. Сами ваши материалы из файла не удаляются.\n\nВнешняя лента зависит от источника: для архива сетевых публикаций нужна отдельная копия. Состав, срок и условия использования фиксируем до начала работы.",
+    "href": "#/terms",
+    "linkLabel": "Как получить сайт",
+    "media": [
+      {
+        "src": "assets/services/your-materials.webp",
+        "smallSrc": "assets/services/your-materials-768.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "После окончания фирменного оформления ваш файл, тексты, фотографии и основа остаются у вас"
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Your content stays yours",
+        "text": "You can save and move the ready HTML file. Your text, photos and basic structure remain in the copy delivered to you.\n\nIf you choose not to continue the branded styling after the period ends, living themes, branded fonts and Syolana updates switch off. Your own material is not deleted from the file.\n\nAn external feed depends on its source; archiving online posts requires a separate copy. Scope, period and usage terms are recorded before work begins.",
+        "linkLabel": "How to get your site",
+        "media": [
+          {
+            "alt": "After branded styling ends, your file, text, photos and basic structure remain yours"
+          }
+        ]
+      },
+      "es": {
+        "title": "Tus materiales siguen contigo",
+        "text": "Puedes guardar y trasladar el archivo HTML listo. Tus textos, fotos y estructura básica permanecen en la copia entregada.\n\nSi no continúas con el diseño al acabar el periodo, se desactivan los temas vivos, las fuentes de marca y las actualizaciones Syolana. Tus propios materiales no se borran del archivo.\n\nUn feed externo depende de su fuente; para archivar publicaciones en línea se necesita una copia aparte. Alcance, periodo y condiciones de uso se fijan antes de empezar.",
+        "linkLabel": "Cómo obtener tu sitio",
+        "media": [
+          {
+            "alt": "Al terminar el diseño de marca, conservas tu archivo, textos, fotos y estructura"
+          }
+        ]
+      },
+      "fr": {
+        "title": "Vos contenus restent les vôtres",
+        "text": "Vous pouvez conserver et déplacer le fichier HTML prêt. Vos textes, photos et structure de base restent dans la copie livrée.\n\nSi vous ne poursuivez pas l’habillage à la fin de la période, les thèmes vivants, les polices de marque et les mises à jour Syolana sont désactivés. Vos propres contenus ne sont pas supprimés du fichier.\n\nUn fil externe dépend de sa source ; l’archivage des publications en ligne nécessite une copie distincte. Contenu, période et conditions d’utilisation sont fixés avant le travail.",
+        "linkLabel": "Comment obtenir votre site",
+        "media": [
+          {
+            "alt": "À la fin de l’habillage, vous conservez fichier, textes, photos et structure"
+          }
+        ]
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:18.178686+00:00"
   },
   {
     "id": "languages-start",
-    "title": "Сначала попробуйте методику бесплатно",
     "category": "Языки",
-    "publishedAt": "2026-09-29T18:00:00+03:00",
-    "text": "Английский A1 открыт бесплатно. Пройдите его до оформления подписки: методика, структура уроков и принцип практики едины для всех языков Syolana.\n\nНе покупайте подписку, пока не убедитесь, что этот формат вам действительно подходит. После этого одна подписка открывает все опубликованные платные языковые курсы на 30 дней без автоматических списаний.",
+    "title": "Английский A1 — начните бесплатно",
+    "text": "Правила, примеры, слова, практика и озвучка — проходите курс самостоятельно, в своём темпе. Английский A1 открыт бесплатно.\n\nСначала попробуйте этот формат. Если он вам подходит, одна подписка за 650 ₽ открывает все опубликованные платные курсы на 30 дней: английский A2, испанский A1 и A2, французский A1 и A2.\n\nПродление — по вашему решению, без автоматических списаний. Это самостоятельная практика, без занятий с преподавателем и сертификата; озвучка зависит от устройства.",
     "href": "#/lesson/en/a1/course",
-    "linkLabel": "Попробовать английский A1"
+    "linkLabel": "Начать английский A1 бесплатно",
+    "media": [
+      {
+        "showcase": "service-english"
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "English A1: start for free",
+        "text": "Rules, examples, vocabulary, practice and audio: study independently at your own pace. English A1 is free.\n\nTry the format first. If it suits you, one subscription for 650 ₽ unlocks all published paid courses for 30 days: English A2, Spanish A1 and A2, and French A1 and A2.\n\nRenew only if you choose, with no automatic charges. This is self-study, without teacher-led classes or a certificate; audio depends on your device.",
+        "linkLabel": "Start English A1 for free",
+        "media": [
+          {
+            "alt": "English A1 for free: examples, practice and audio"
+          }
+        ]
+      },
+      "es": {
+        "title": "Inglés A1: empieza gratis",
+        "text": "Reglas, ejemplos, vocabulario, práctica y audio: estudia por tu cuenta y a tu ritmo. Inglés A1 es gratis.\n\nPrueba primero el formato. Si te gusta, una suscripción de 650 ₽ abre durante 30 días todos los cursos de pago publicados: inglés A2, español A1 y A2, francés A1 y A2.\n\nRenuevas solo si quieres, sin cobros automáticos. Es práctica autónoma, sin clases con profesor ni certificado; el audio depende del dispositivo.",
+        "linkLabel": "Empezar inglés A1 gratis",
+        "media": [
+          {
+            "alt": "Inglés A1 gratis: ejemplos, práctica y audio"
+          }
+        ]
+      },
+      "fr": {
+        "title": "Anglais A1 : commencez gratuitement",
+        "text": "Règles, exemples, vocabulaire, exercices et audio : avancez en autonomie, à votre rythme. L’anglais A1 est gratuit.\n\nEssayez d’abord ce format. S’il vous convient, un abonnement à 650 ₽ ouvre tous les cours payants publiés pendant 30 jours : anglais A2, espagnol A1 et A2, français A1 et A2.\n\nVous renouvelez uniquement si vous le souhaitez, sans prélèvement automatique. Il s’agit de pratique autonome, sans cours avec professeur ni certificat ; l’audio dépend de l’appareil.",
+        "linkLabel": "Commencer l’anglais A1 gratuitement",
+        "media": [
+          {
+            "alt": "Anglais A1 gratuit : exemples, pratique et audio"
+          }
+        ]
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:17.178686+00:00"
   },
   {
     "id": "songs-stories",
-    "title": "Ваше творчество может зазвучать",
     "category": "Песни",
-    "publishedAt": "2026-09-29T17:00:00+03:00",
-    "text": "Проект, картина или любимая история иногда вдохновляют нас на песню. Мы создаём музыку с помощью ИИ и публикуем записи со ссылкой на источник вдохновения.\n\nПесня или новая тема для партнёра могут стать творческим подарком по отдельной договорённости. Это возможность, которая зависит от идеи и подготовки, а не обязательный подарок каждому.",
+    "title": "Истории, которые хочется услышать",
+    "text": "В музыкальной библиотеке Syolana картины, стихи и любимые истории становятся песнями. Создаём музыку с помощью ИИ и указываем источник вдохновения.\n\nПесня по проекту партнёра возможна по отдельной творческой договорённости. Это не обязательный подарок и не часть базового сайта.\n\nПослушайте наши работы — возможно, здесь уже есть ваше настроение.",
     "href": "#/songs",
-    "linkLabel": "Открыть мир песен"
+    "linkLabel": "Послушать песни",
+    "media": [
+      {
+        "src": "themes/previews/moon.jpg",
+        "width": 1280,
+        "height": 720,
+        "alt": "Лунный сад Syolana — иллюстрация настроения музыкальной библиотеки"
+      }
+    ],
+    "translations": {
+      "en": {
+        "title": "Stories you want to hear",
+        "text": "In Syolana’s music library, paintings, poems and favourite stories become songs. We create music with AI and credit the source of inspiration.\n\nA song inspired by a partner’s project may be arranged separately as a creative collaboration. It is not a guaranteed gift or part of the basic site.\n\nListen to our work. You may find your mood here already.",
+        "linkLabel": "Listen to the songs",
+        "media": [
+          {
+            "alt": "Syolana’s Moon Garden, an illustration of the music library’s mood"
+          }
+        ]
+      },
+      "es": {
+        "title": "Historias que apetece escuchar",
+        "text": "En la biblioteca musical Syolana, cuadros, poemas e historias se convierten en canciones. Creamos música con IA e indicamos la fuente de inspiración.\n\nUna canción inspirada en el proyecto de un colaborador puede acordarse aparte. No es un regalo garantizado ni parte del sitio básico.\n\nEscucha nuestros trabajos: quizá tu estado de ánimo ya esté aquí.",
+        "linkLabel": "Escuchar las canciones",
+        "media": [
+          {
+            "alt": "Jardín lunar Syolana, ilustración del ambiente de la biblioteca musical"
+          }
+        ]
+      },
+      "fr": {
+        "title": "Des histoires que l’on veut entendre",
+        "text": "Dans la bibliothèque musicale Syolana, tableaux, poèmes et histoires deviennent des chansons. Nous créons la musique avec l’IA et citons la source d’inspiration.\n\nUne chanson inspirée du projet d’un partenaire peut faire l’objet d’un accord créatif distinct. Ce n’est ni un cadeau garanti ni une partie du site de base.\n\nÉcoutez nos réalisations : votre humeur se trouve peut-être déjà ici.",
+        "linkLabel": "Écouter les chansons",
+        "media": [
+          {
+            "alt": "Le Jardin lunaire Syolana, une illustration de l’ambiance musicale"
+          }
+        ]
+      }
+    },
+    "publishedAt": "2026-10-19T17:12:16.178686+00:00"
   }
 ]

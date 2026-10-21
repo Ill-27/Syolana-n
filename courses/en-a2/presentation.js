@@ -1,8 +1,8 @@
 // Display and navigation helpers do not own or interrupt the speech queue.
 export const COURSE_VIEWS = [
-  ['days', 'Курс по дням'], ['reading', 'Чтение и звуки'],
+  ['days', 'Курс по дням'], ['reading', 'Произношение в связной речи'],
   ['grammar', 'Правила и конструкции'], ['vocabulary', 'Словарь'],
-  ['variants', 'Британия и США'], ['trainers', 'Повторение до автоматизма'],
+  ['variants', 'Британия и США'], ['trainers', 'Закрепление A2'],
   ['practice', 'Говорите, читайте и пишите'], ['coverage', 'Что входит в A2']
 ];
 
@@ -26,7 +26,7 @@ export function dayDescription(day, groups) {
   const ids = [...new Set(day.words.map(w => w.group))];
   const vocabulary = ids.map(id => groups.find(g => g.id === id)?.title).filter(Boolean);
   return {
-    title: day.number === 1 ? 'Сначала — чтение и звуки' : topics[0] || 'Закрепляем слова и фразы',
+    title: day.number === 1 ? 'Сокращения, ритм и новые слова' : topics[0] || 'Закрепляем слова и фразы',
     topics, vocabulary,
     extras: [...new Set(day.extras.map(u => u.kind === 'comparison' ? 'сравнение британского и американского вариантов' : 'бытовые ситуации'))]
   };

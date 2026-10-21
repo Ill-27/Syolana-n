@@ -1,11 +1,11 @@
-import {secondsFor} from './audio.js?v=20261006-a2-1';
-import {trainerGroups} from './trainers.js?v=20261006-a2-1';
+import {secondsFor} from './audio.js?v=20261021-a2-review-1';
+import {trainerGroups} from './trainers.js?v=20261021-a2-review-1';
 
 export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={},preparedGroups) {
   const units=[],map=new Map(),rules=[],groups=preparedGroups??trainerGroups(data);
-  function unit(pair,kind,section,explanation='',owner='') {
+  function unit(pair,kind,section,explanation='',owner='',explanationSegments) {
     if(map.has(pair.id))return map.get(pair.id);
-    const u={pair,kind,section,explanation,owner};map.set(pair.id,u);units.push(u);return u;
+    const u={pair,kind,section,explanation,owner,...(explanationSegments?{explanationSegments}:{})};map.set(pair.id,u);units.push(u);return u;
   }
   const duration=u=>secondsFor(u,rate,'en',repeat);
   function repetition(ids){
@@ -18,11 +18,11 @@ export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={},preparedGro
   for(const section of data.rules){
     const list=[];
     for(const item of section.items){
-      if(item.instruction)list.push(unit(item.instruction,'rule',section.id,item.body));
+      if(item.instruction)list.push(unit(item.instruction,'rule',section.id,item.body,'',item.bodySpeech));
       for(const p of item.pairs)list.push(unit(p,'rule',section.id));
     }
     if(section.id==='read-alphabet')for(const p of data.alphabet)list.push(unit(p,'rule',section.id));
-    if(['read-vowels','read-consonants'].includes(section.id))for(const p of data.phonetics.filter(p=>section.id==='read-consonants'?p.type==='Согласный':p.type!=='Согласный'))list.push(unit(p.example,'rule',section.id,p.mouth));
+    if(['read-vowels','read-consonants'].includes(section.id))for(const p of data.phonetics.filter(p=>section.id==='read-consonants'?p.type==='Согласный':p.type!=='Согласный'))list.push(unit(p.example,'rule',section.id,p.mouth,'',p.mouthSpeech));
     rules.push({section,units:list});
     if(section.id==='numbers')repetition(['numbers','ordinals','time','calendar','dates','prices','measurements']);
     if(section.id==='contacts')repetition(['contacts','address-a2']);
@@ -31,10 +31,10 @@ export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={},preparedGro
     if(section.id==='verb-gerund')repetition(['verb-patterns']);
     if(section.id==='comparison')repetition(['comparison-patterns']);
   }
-  const words=data.vocabulary.map(w=>({word:w,units:[unit(w.head,'word','vocabulary',w.note,w.id),...w.forms.map(p=>unit(p,'word','vocabulary','',w.id)),...w.examples.map(p=>unit(p,'word','vocabulary','',w.id))]}));
+  const words=data.vocabulary.map(w=>({word:w,units:[unit(w.head,'word','vocabulary',w.note,w.id,w.noteSpeech),...w.forms.map(p=>unit(p,'word','vocabulary','',w.id)),...w.examples.map(p=>unit(p,'word','vocabulary','',w.id))]}));
   const extras=[];
   // Keep each UK/US comparison and each conversation together in one day.
-  for(const v of data.variants)extras.push([unit(v.uk,'comparison','variants',v.note),unit(v.us,'comparison','variants')]);
+  for(const v of data.variants)extras.push([unit(v.uk,'comparison','variants',v.note,'',v.noteSpeech),unit(v.us,'comparison','variants')]);
   for(const p of data.practice)extras.push([...p.pairs,...(p.model?[p.model]:[])].map(pair=>unit(pair,'practice','practice')));
   const total=units.reduce((s,u)=>s+duration(u),0),count=Math.max(2,Math.ceil(total/target));
   const lessons=Array.from({length:count},(_,i)=>({id:'day-'+(i+1),number:i+1,rules:[],words:[],extras:[],units:[],seconds:0}));
@@ -64,4 +64,20 @@ export function remainingSeconds(player,rate=1){
     cached={rate,mode:player.mode,repeat:player.repeat,length:units.length,seconds};remainingCache.set(units,cached);
   }
   return cached.seconds[player.unitIndex]??0;
+}
+
+export function restoreListening(data,curriculum,queue,progress){
+  if(!queue||!progress||queue.version!==progress.version||!Array.isArray(queue.ids))return null;
+  const changed=queue.version!==data.version;
+  if(changed&&!data.progressCompatibility?.versions?.includes(queue.version))return null;
+  const retired=new Set(data.progressCompatibility?.retiredPairIds||[]),units=[];
+  const index=Math.max(0,Math.min(queue.ids.length,Number(progress.unitIndex)||0));let unitIndex=0;
+  for(let i=0;i<queue.ids.length;i++){
+    const id=queue.ids[i],unit=curriculum.map.get(id);
+    if(!unit){if(changed&&retired.has(id))continue;return null;}
+    if(i<index)unitIndex++;
+    units.push(unit);
+  }
+  if(unitIndex>=units.length)return null;
+  return {units,unitIndex,segmentIndex:changed?0:Math.max(0,Number(progress.segmentIndex)||0)};
 }

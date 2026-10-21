@@ -1,9 +1,9 @@
 import {mountCourseBranding} from '../../course-branding.js?v=20261007-language-marks-2';
-import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261017-owner-1';
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-a2-1';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-a2-1';
-import {trainerGroups} from './trainers.js?v=20261006-a2-1';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-a2-1';
+import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261021-a2-review-1';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261021-a2-review-1';
+import {makeCurriculum,remainingSeconds,restoreListening} from './curriculum.js?v=20261021-a2-review-1';
+import {trainerGroups} from './trainers.js?v=20261021-a2-review-1';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261021-a2-review-1';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
@@ -27,7 +27,7 @@ async function init(){
   const data=await loadCourse(), trainers=trainerGroups(data), saved=storage.read('settings',{});
   mountCourseBranding({course:'Английский A2',personalMark:sessionMark()});
   post({courseAttribution:sessionMark()});
-  const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
+  const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',accent:saved.accent==='en-US'?'en-US':'en-GB',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
   let curriculum=makeCurriculum(data,cfg,trainers),bulkLabel='Курс',activePair=null,lastQueue=null,clipSelected=false;
   let voices=window.speechSynthesis?.getVoices()||[],voiceControls={},currentKey='',returnKey='days',pageOffset=0,overlay=null,overlayOffset=0;
   const learned=new Set(storage.read('learned',[]));
@@ -40,7 +40,7 @@ async function init(){
     const content=el('div','pair-content'),en=el('div','en',p.en);en.lang=p.lang;
     const ip=el('div','ipa',displayIPA(p.ipa));ip.setAttribute('aria-label',p.ipaLabel||'Транскрипция');
     const ru=el('div','ru',p.ru);ru.lang='ru';content.append(en,ip,ru);card.append(content);
-    if(actions){const a=el('div','pair-actions');a.append(button(p.lang==='en-US'?'▶ США':'▶ Британия',()=>playClip(p,'en'),'listen-small'),button('С переводом',()=>playClip(p,cfg.mode==='ru-en'?'ru-en':'en-ru'),'listen-small'));card.append(a);}
+    if(actions){const a=el('div','pair-actions');a.append(button(p.fixedAccent?(p.lang==='en-US'?'▶ США':'▶ Британия'):'▶ Слушать',()=>playClip(p,'en'),'listen-small'),button('С переводом',()=>playClip(p,cfg.mode==='ru-en'?'ru-en':'en-ru'),'listen-small'));card.append(a);}
     return card;
   }
   const header=el('header','course-header'),home=button('Английский A2',()=>go('days'),'course-brand');
@@ -79,19 +79,20 @@ async function init(){
   const error=el('div','error');error.setAttribute('role','status');error.hidden=true;
   const settings=el('details','audio-settings');settings.append(el('summary','','Режим, скорость, повторы и голоса'));const settingsGrid=el('div','setting-grid');
   const mode=select([['en','Только английский'],['en-ru','Английский → русский'],['ru-en','Русский → английский']]);mode.value=cfg.mode;
+  const accent=select([['en-GB','Британский'],['en-US','Американский']]);accent.value=cfg.accent;
   const rate=select([[.6,'0,6 × — очень медленно'],[.75,'0,75 × — медленно'],[.9,'0,9 ×'],[1,'1 × — обычно'],[1.15,'1,15 ×'],[1.3,'1,3 ×'],[1.5,'1,5 ×']]);rate.value=String(cfg.rate);if(!rate.value){cfg.rate=1;rate.value='1';}
   const repeat=select([[1,'Один раз'],[2,'Каждую пару дважды'],[3,'Каждую пару трижды']]);repeat.value=cfg.repeat;
   const change=()=>{
     const openScreen=overlay,readingOffset=overlayOffset;
     bulk.pause();clip.stop(false);clipSelected=false;
-    cfg.mode=mode.value;cfg.rate=+rate.value;cfg.repeat=+repeat.value;bulk.mode=cfg.mode;bulk.repeat=cfg.repeat;bulk.segmentIndex=0;
+    cfg.mode=mode.value;cfg.accent=accent.value;cfg.rate=+rate.value;cfg.repeat=+repeat.value;bulk.mode=cfg.mode;bulk.repeat=cfg.repeat;bulk.segmentIndex=0;
     storage.write('settings',cfg);curriculum=makeCurriculum(data,cfg,trainers);renderDays();
     for(const [key,node] of views)if(key.startsWith('day-')){node.remove();views.delete(key);scrollPositions.delete(key);}
     if(currentKey.startsWith('day-')){const key=currentKey;currentKey='';show(key);if(openScreen){setOverlay(openScreen);overlayOffset=readingOffset;}}
     saveProgress();updatePlayer();
   };
-  mode.addEventListener('change',change);rate.addEventListener('change',change);repeat.addEventListener('change',change);
-  settingsGrid.append(field('Что слушать',mode),field('Скорость',rate),field('Повтор слова или фразы',repeat));
+  mode.addEventListener('change',change);accent.addEventListener('change',change);rate.addEventListener('change',change);repeat.addEventListener('change',change);
+  settingsGrid.append(field('Что слушать',mode),field('Обычное произношение',accent),field('Скорость',rate),field('Повтор слова или фразы',repeat));
   for(const [lang,title] of [['en-GB','Британский голос'],['en-US','Американский голос'],['ru-RU','Русский голос']]){
     const s=el('select');s.setAttribute('aria-label',title);voiceControls[lang]=s;
     s.addEventListener('change',()=>{bulk.pause();clip.stop(false);clipSelected=false;cfg.voices[lang]=s.value;storage.write('settings',cfg);updatePlayer();});settingsGrid.append(field(title,s));
@@ -212,7 +213,7 @@ async function init(){
       tocDayList.append(button('День '+day.number+' · '+info.title,()=>go(day.id),'toc-link'));
     }
   }
-  const reading=screen('reading','Сначала — чтение и звуки','Буква и звук — разные вещи. Идите от алфавита к сочетаниям и окончаниям, слушайте примеры и произносите их вслух.');pendingViews.set('reading',()=>{
+  const reading=screen('reading','Произношение в связной речи','Узнавайте сокращения новых конструкций, выделяйте важные слова и делите длинные фразы на смысловые группы.');pendingViews.set('reading',()=>{
 topicIndex(reading,data.rules.filter(s=>s.area==='reading'));
   });
   
@@ -254,7 +255,7 @@ renderVocabulary(data.vocabulary);
   const variantList=el('div','variant-grid');for(const v of data.variants){const c=el('article','variant-card');c.append(el('span','card-label','Великобритания'),pairNode(v.uk),el('span','card-label','США'),pairNode(v.us),el('p','',v.note));variantList.append(c);}variants.append(variantList,el('p','muted','Внутри каждой страны есть разные акценты. Здесь сравниваются учебный британский и общеамериканский варианты.'));
   
   });
-  const repetition=screen('trainers','Повторение до автоматизма','Готовые списки без ввода ответов. Читайте по порядку, повторяйте вслух, слушайте весь список или отдельную запись.');pendingViews.set('trainers',()=>{
+  const repetition=screen('trainers','Закрепление A2','Новые конструкции, сочетания и глаголы A2. Читайте по порядку, повторяйте вслух, слушайте весь список или отдельную запись.');pendingViews.set('trainers',()=>{
 
   const trainerList=el('div','trainer-list');for(const group of trainers){const c=el('article','trainer-card');c.append(el('h2','',group.title),el('p','',group.description));const actions=el('div','actions');actions.append(button('Открыть список →',()=>go('repeat-'+group.id),'primary'),button('▶ Слушать список',()=>start(unitsFor(group.pairs),group.title)));c.append(actions);trainerList.append(c);}repetition.append(trainerList);
   
@@ -270,14 +271,14 @@ renderVocabulary(data.vocabulary);
       const day=view.day,info=dayDescription(day,data.groups),node=screen(view.key,info.title,'Сначала разберите темы ниже. Затем переходите к словам и их примерам. Озвучка читает материал в том же порядке.','ДЕНЬ '+day.number+' · ≈ '+duration(day.seconds)+' АНГЛИЙСКОЙ РЕЧИ');
       const actions=el('div','actions');actions.append(button('▶ Слушать день '+day.number,()=>start(day.units,'День '+day.number),'primary'));node.append(actions);
       const outline=el('details','day-outline');outline.append(el('summary','','Что входит в этот день'));const contents=el('ul');info.topics.forEach(t=>contents.append(el('li','',t)));info.vocabulary.forEach(t=>contents.append(el('li','','Слова: '+t)));outline.append(contents);node.append(outline);
-      if(day.rules.length){node.append(el('h2','section-label',day.number===1?'Правила чтения':'Сначала — правила и повторение'));
+      if(day.rules.length){node.append(el('h2','section-label',day.number===1?'Произношение в связной речи':'Сначала — правила и закрепление'));
         day.rules.forEach((r,i)=>{if(r.section.area==='repetition'){const d=el('details','lesson');d.append(el('summary','',r.section.title));const body=el('div','lesson-body pairs');body.append(...r.units.map(u=>pairNode(u.pair)));d.append(body);node.append(d);}else node.append(ruleDisclosure(r.section,i===0));});
       }
       if(day.words.length){node.append(el('h2','section-label','Затем — слова и четыре примера'));for(const gid of [...new Set(day.words.map(w=>w.group))]){const words=day.words.filter(w=>w.group===gid),group=el('details','word-group');group.append(el('summary','',(data.groups.find(g=>g.id===gid)?.title||'Слова')+' · '+words.length));let ready=false;group.addEventListener('toggle',()=>{if(group.open&&!ready){ready=true;const body=el('div','group-body');body.append(...words.map(w=>wordNode(w)));group.append(body);}});node.append(group);}}
       if(day.extras.length){node.append(el('h2','section-label','В конце — сравнение вариантов и бытовые фразы'));const extras=el('div','pairs');extras.append(...day.extras.map(u=>pairNode(u.pair)));node.append(extras);}
       const turns=el('nav','page-turns');turns.setAttribute('aria-label','Переход между днями');if(day.number>1)turns.append(button('← День '+(day.number-1),()=>go('day-'+(day.number-1))));turns.append(button('Ко всем дням',()=>go('days')));if(day.number<curriculum.days.length)turns.append(button('День '+(day.number+1)+' →',()=>go('day-'+(day.number+1))));node.append(turns);if(day.number===curriculum.days.length)node.append(nextLevel());
     }else if(view.type==='trainer'){
-      const group=view.trainer,node=screen(view.key,group.title,group.description,'ПОВТОРЕНИЕ ДО АВТОМАТИЗМА');const actions=el('div','actions');actions.append(button('▶ Слушать весь список',()=>start(unitsFor(group.pairs),group.title),'primary'));node.append(actions);if(group.note)node.append(el('p','explanation',group.note));
+      const group=view.trainer,node=screen(view.key,group.title,group.description,'ЗАКРЕПЛЕНИЕ A2');const actions=el('div','actions');actions.append(button('▶ Слушать весь список',()=>start(unitsFor(group.pairs),group.title),'primary'));node.append(actions);if(group.note)node.append(el('p','explanation',group.note));
       if(group.entries){for(const w of group.entries){const c=el('article','verb-row');c.append(pairNode(w.head));const forms=el('div','forms');forms.append(pairNode(w.forms[2]));if(w.word==='be')forms.append(...w.forms.filter(p=>p.en==='were').map(p=>pairNode(p)));forms.append(pairNode(w.forms[3]));c.append(forms);node.append(c);}}
       else{const list=el('div',group.id==='alphabet'?'alphabet':'pairs repetition-list');list.append(...group.pairs.map(p=>pairNode(p)));node.append(list);}
     }else if(view.type==='word'){const node=screen(view.key,'Словарная статья','');node.append(wordNode(view.word,{open:true}));}
@@ -295,10 +296,10 @@ renderVocabulary(data.vocabulary);
   function nextLevel(){const note=el('aside','next-level');note.append(el('h2','','Проверяйте навык в живой речи'),el('p','','После каждого блока перескажите ситуацию своими словами, напишите короткое сообщение и поговорите с собеседником. Возвращайтесь к темам, где пока трудно понять или ответить.'),el('p','','Знание карточек помогает, а уверенный A2 появляется, когда вы используете язык в чтении, письме, разговоре и понимании на слух.'));return note;}
   days.append(authorAdvice(),nextLevel());
 
-  const coverage=screen('coverage','Что вы отрабатываете на A2','Уровень описывает то, что человек умеет делать с языком. У CEFR нет единого обязательного списка английских слов; здесь собраны основные навыки и темы, лексика A2 дополнена отдельным повторением A1. Ориентиры — CEFR, Cambridge A2 Key и British Council / Eaquals.');pendingViews.set('coverage',()=>{
+  const coverage=screen('coverage','Что вы отрабатываете на A2','Уровень описывает то, что человек умеет делать с языком. У CEFR нет единого обязательного списка английских слов; здесь собраны основные навыки и темы, курс продолжает A1: новые слова, конструкции и речевые задачи A2. Отдельных карточек и разделов повторения A1 здесь нет. Ориентиры — CEFR, Cambridge A2 Key и British Council / Eaquals.');pendingViews.set('coverage',()=>{
 
   const coverageGrid=el('div','coverage');for(const [title,text,ids] of [
-    ['Чтение и произношение','Буквы, диктовка, ударение, гласные, согласные, сочетания, окончания и частые исключения.',['reading']],
+    ['Чтение и произношение','Сокращения Present Perfect и будущих конструкций, ударение новых слов, смысловые группы и уточнение голосом.',['reading']],
     ['Понимание на слух','Главная мысль и детали ясного объявления, короткого диалога и сообщения; числа, отрицания, причины и условия.',['trainers','practice']],
     ['Разговор с собеседником','Представиться, спросить и ответить, заказать, купить, попросить помощь и повторение.',['practice']],
     ['Рассказ о себе','Семья, дом, город, работа, учёба, распорядок, предпочтения и планы.',['grammar','practice']],
@@ -313,7 +314,8 @@ renderVocabulary(data.vocabulary);
   });
   renderDays();refreshVoices();
   const savedQueue=storage.read('queue',null),savedProgress=storage.read('progress',null);
-  if(savedQueue&&savedProgress&&savedQueue.version===savedProgress.version&&savedQueue.version===data.version){const units=savedQueue.ids.map(id=>curriculum.map.get(id));if(units.length&&units.every(Boolean)&&savedProgress.unitIndex<units.length){bulk.units=units;bulkLabel=savedProgress.label||savedQueue.label;lastQueue={...savedQueue,version:data.version};storage.write('queue',lastQueue);bulk.unitIndex=savedProgress.unitIndex;bulk.segmentIndex=savedProgress.segmentIndex||0;bulk.activeMs=(savedProgress.elapsed||0)*1000;bulk.mode=savedProgress.mode||cfg.mode;bulk.repeat=savedProgress.repeat||cfg.repeat;bulk.status='paused';}}
+  const restored=restoreListening(data,curriculum,savedQueue,savedProgress);
+  if(restored){bulk.units=restored.units;bulkLabel=savedProgress.label||savedQueue.label;lastQueue={...savedQueue,ids:restored.units.map(u=>u.pair.id),version:data.version};storage.write('queue',lastQueue);bulk.unitIndex=restored.unitIndex;bulk.segmentIndex=restored.segmentIndex;bulk.activeMs=(savedProgress.elapsed||0)*1000;bulk.mode=savedProgress.mode||cfg.mode;bulk.repeat=savedProgress.repeat||cfg.repeat;bulk.status='paused';saveProgress();}
   updatePlayer();show(decodeURIComponent(location.hash.slice(1))||storage.read('view','days'));
   window.speechSynthesis?.addEventListener?.('voiceschanged',refreshVoices);const progressTick=()=>{if(bulk.status==='playing'||clip.status==='playing')updatePlayer();};let tick=setInterval(progressTick,1000);
   window.addEventListener('pageshow',e=>{if(e.persisted){clearInterval(tick);tick=setInterval(progressTick,1000);updatePlayer();}});

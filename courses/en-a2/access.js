@@ -2,7 +2,7 @@ import {createCourseAccess} from '../subscription-access.js?v=20261017-owner-1';
 export function validateCourse(d){
   if(!d||d.schema!=='syolana.course.v1'||d.courseId!=='en-a2')throw new Error('Выберите приватный файл английского A2 Syolana.');
   for(const k of ['rules','vocabulary','groups','alphabet','phonetics','practice','variants','repetition'])if(!Array.isArray(d[k]))throw new Error('В файле не хватает раздела: '+k+'.');
-  if(!d.phonemeDictionary||!d.statistics||d.alphabet.length!==26||d.phonetics.length!==44||d.vocabulary.length>5000)throw new Error('Структура курса повреждена.');
+  if(!d.phonemeDictionary||!d.statistics||(d.scope==='A2-only'?(d.alphabet.length!==0||d.phonetics.length!==0):(d.alphabet.length!==26||d.phonetics.length!==44))||d.vocabulary.length>5000)throw new Error('Структура курса повреждена.');
   const ids=new Set();let count=0;
   function visit(x,depth=0){
     if(depth>25)throw new Error('Некорректная вложенность файла.');if(!x||typeof x!=='object')return;

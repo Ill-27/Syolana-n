@@ -64,7 +64,7 @@ cleaner|ˈkliːnə|уборщик
 hairdresser|ˈheədresə|парикмахер
 secretary|ˈsekrətri|секретарь
 receptionist|rɪˈsepʃənɪst|администратор
-businessperson|ˈbɪznəspɜːsən|предприниматель
+businessperson|ˈbɪznəspɜːsən|деловой человек; предприниматель
 artist|ˈɑːtɪst|художник
 writer|ˈraɪtə|писатель
 actor|ˈæktə|актёр
@@ -82,14 +82,14 @@ freelancer|ˈfriːlɑːnsə|фрилансер
 house|haʊs|дом
 flat|flæt|квартира
 home|həʊm|жилище; дом
-room|ruːm|комната
+room|ruːm|комната; номер; свободное место
 bedroom|ˈbedruːm|спальня
 bathroom|ˈbɑːθruːm|ванная комната
 kitchen|ˈkɪtʃɪn|кухня
 living room|ˈlɪvɪŋ ruːm|гостиная
 dining room|ˈdaɪnɪŋ ruːm|столовая
-hall|hɔːl|прихожая; зал
-garage|ˈɡærɑːʒ|гараж
+hall|hɔːl|прихожая; зал; коридор
+garage|ˈɡærɑːʒ|гараж; автосервис
 garden|ˈɡɑːdən|сад
 balcony|ˈbælkəni|балкон
 basement|ˈbeɪsmənt|подвал
@@ -130,7 +130,7 @@ village|ˈvɪlɪdʒ|деревня
 town|taʊn|город
 city|ˈsɪti|большой город
 capital|ˈkæpɪtl|столица
-country|ˈkʌntri|страна
+country|ˈkʌntri|страна; сельская местность
 street|striːt|улица
 road|rəʊd|дорога
 square|skweə|площадь
@@ -183,21 +183,21 @@ blanket|ˈblæŋkɪt|одеяло
 pillow|ˈpɪləʊ|подушка
 sheet|ʃiːt|простыня; лист
 bin|bɪn|мусорное ведро
-brush|brʌʃ|щётка
+brush|brʌʃ|щётка; кисть
 comb|kəʊm|расчёска
 toothbrush|ˈtuːθbrʌʃ|зубная щётка
 plate|pleɪt|тарелка
 bowl|bəʊl|миска
-cup|kʌp|чашка
+cup|kʌp|чашка; кубок
 mug|mʌɡ|кружка
-glass|ɡlɑːs|стакан
+glass|ɡlɑːs|стакан; бокал
 bottle|ˈbɒtl|бутылка
 fork|fɔːk|вилка
 knife|naɪf|нож
 spoon|spuːn|ложка
 pan|pæn|сковорода
-pot|pɒt|кастрюля
-box|bɒks|коробка
+pot|pɒt|кастрюля; горшок; чайник
+box|bɒks|коробка; поле для отметки
 bag|bæɡ|сумка; пакет
 basket|ˈbɑːskɪt|корзина
 toy|tɔɪ|игрушка
@@ -221,11 +221,11 @@ hoodie|ˈhʊdi|толстовка с капюшоном
 suit|suːt|костюм
 hat|hæt|шляпа; головной убор
 cap|kæp|кепка
-scarf|skɑːf|шарф
+scarf|skɑːf|шарф; платок
 glove|ɡlʌv|перчатка
 sock|sɒk|носок
 shoe|ʃuː|туфля; ботинок
-boot|buːt|сапог
+boot|buːt|сапог; ботинок
 trainer|ˈtreɪnə|кроссовка
 belt|belt|ремень
 tie|taɪ|галстук
@@ -246,7 +246,7 @@ shorts|ʃɔːts|шорты
 tights|taɪts|колготки
 pyjamas|pəˈdʒɑːməz|пижама
 glasses|ˈɡlɑːsɪz|очки
-sunglasses|ˈsʌnɡlɑːsɪz|солнечные очки
+sunglasses|ˈsʌnɡlɑːsɪz|солнцезащитные очки
 [food|Еда: то, что можно посчитать|food]
 apple|ˈæpl|яблоко
 banana|bəˈnɑːnə|банан
@@ -353,7 +353,7 @@ cold|kəʊld|простуда
 cough|kɒf|кашель
 temperature|ˈtemprətʃə|температура
 appointment|əˈpɔɪntmənt|назначенная встреча; приём
-accident|ˈæksɪdənt|несчастный случай
+accident|ˈæksɪdənt|несчастный случай; авария; случайность
 problem|ˈprɒbləm|проблема
 emergency|ɪˈmɜːdʒənsi|чрезвычайная ситуация
 pharmacy|ˈfɑːməsi|аптека
@@ -503,13 +503,13 @@ answer|ˈɑːnsə|ответ
 example|ɪɡˈzɑːmpl|пример
 exercise|ˈeksəsaɪz|упражнение
 lesson|ˈlesn|урок
-class|klɑːs|занятие; класс
+class|klɑːs|занятие; класс; группа
 course|kɔːs|курс
-subject|ˈsʌbdʒɪkt|учебный предмет
+subject|ˈsʌbdʒɪkt|учебный предмет; тема
 exam|ɪɡˈzæm|экзамен
-test|test|тест
+test|test|тест; проверка; анализ
 mistake|mɪˈsteɪk|ошибка
-mark|mɑːk|оценка; отметка
+mark|mɑːk|оценка; отметка; след
 language|ˈlæŋɡwɪdʒ|язык
 [digital|Связь и цифровые вещи|object]
 phone|fəʊn|телефон
@@ -523,7 +523,7 @@ screen|skriːn|экран
 mouse|maʊs|компьютерная мышь
 printer|ˈprɪntə|принтер
 website|ˈwebsaɪt|сайт
-email|ˈiːmeɪl|электронное письмо
+email|ˈiːmeɪl|электронное письмо; электронная почта
 message|ˈmesɪdʒ|сообщение
 text|tekst|текст; сообщение
 password|ˈpɑːswɜːd|пароль
@@ -532,8 +532,8 @@ file|faɪl|файл
 folder|ˈfəʊldə|папка
 link|lɪŋk|ссылка
 video|ˈvɪdiəʊ|видео
-radio|ˈreɪdiəʊ|радио
-television|ˈtelɪvɪʒən|телевизор
+radio|ˈreɪdiəʊ|радио; радиоприёмник
+television|ˈtelɪvɪʒən|телевизор; телевидение
 TV|ˌtiːˈviː|телевизор
 charger|ˈtʃɑːdʒə|зарядное устройство
 battery|ˈbætri|батарея
@@ -628,8 +628,8 @@ large|lɑːdʒ|крупный
 little|ˈlɪtl|маленький; немного
 long|lɒŋ|длинный
 short|ʃɔːt|короткий
-tall|tɔːl|высокий; о человеке
-high|haɪ|высокий; об уровне
+tall|tɔːl|высокий; о росте и вытянутых предметах
+high|haɪ|высокий; об уровне и положении
 low|ləʊ|низкий
 wide|waɪd|широкий
 narrow|ˈnærəʊ|узкий
@@ -690,7 +690,7 @@ flat|flæt|плоский
 deep|diːp|глубокий
 real|rɪəl|настоящий
 [feelings|Состояния и характер|feeling]
-happy|ˈhæpi|счастливый
+happy|ˈhæpi|счастливый; довольный
 sad|sæd|грустный
 angry|ˈæŋɡri|сердитый
 tired|ˈtaɪəd|уставший
@@ -840,13 +840,13 @@ walking|ˈwɔːkɪŋ|ходьба
 dancing|ˈdɑːnsɪŋ|танцы
 singing|ˈsɪŋɪŋ|пение
 reading|ˈriːdɪŋ|чтение
-writing|ˈraɪtɪŋ|письмо
-drawing|ˈdrɔːɪŋ|рисование
-painting|ˈpeɪntɪŋ|живопись
+writing|ˈraɪtɪŋ|письмо как навык; почерк
+drawing|ˈdrɔːɪŋ|рисование; рисунок
+painting|ˈpeɪntɪŋ|живопись; картина; покраска
 cooking|ˈkʊkɪŋ|готовка
 fishing|ˈfɪʃɪŋ|рыбалка
 shopping|ˈʃɒpɪŋ|покупки
-camping|ˈkæmpɪŋ|кемпинг
+camping|ˈkæmpɪŋ|отдых с палатками
 yoga|ˈjəʊɡə|йога
 maths|mæθs|математика
 science|ˈsaɪəns|естественные науки
@@ -871,7 +871,7 @@ then|ðen|тогда; затем
 today|təˈdeɪ|сегодня
 tomorrow|təˈmɒrəʊ|завтра
 yesterday|ˈjestədeɪ|вчера
-tonight|təˈnaɪt|сегодня вечером
+tonight|təˈnaɪt|сегодня вечером; сегодня ночью
 here|hɪə|здесь
 there|ðeə|там
 everywhere|ˈevriweə|везде
@@ -959,7 +959,7 @@ stay|steɪ|оставаться; жить временно|at a hotel~в оте�
 live|lɪv|жить|in London~в Лондоне
 leave|liːv|уходить; оставлять|the house~из дома
 arrive|əˈraɪv|прибывать|at the station~на станцию
-return|rɪˈtɜːn|возвращаться|home~домой
+return|rɪˈtɜːn|возвращаться; возвращать|home~домой
 travel|ˈtrævl|путешествовать|by train~на поезде
 visit|ˈvɪzɪt|посещать|my aunt~мою тётю
 drive|draɪv|водить|a car~машину
@@ -994,7 +994,7 @@ feel|fiːl|чувствовать себя|happy~счастливым
 help|help|помогать|my sister~моей сестре
 work|wɜːk|работать|at home~дома
 play|pleɪ|играть|football~в футбол
-practise|ˈpræktɪs|практиковать|English~английский
+practise|ˈpræktɪs|практиковаться; тренироваться|English~английский
 try|traɪ|пробовать|this food~эту еду
 choose|tʃuːz|выбирать|a book~книгу
 decide|dɪˈsaɪd|решать|to stay~остаться
@@ -1042,8 +1042,8 @@ offer|ˈɒfə|предлагать|some help~помощь
 order|ˈɔːdə|заказывать|a coffee~чашку кофе
 book|bʊk|бронировать|a room~комнату
 rent|rent|арендовать|a flat~квартиру
-borrow|ˈbɒrəʊ|брать взаймы|a book~книгу
-lend|lend|давать взаймы|you a pen~тебе ручку
+borrow|ˈbɒrəʊ|брать на время; брать взаймы|a book~книгу
+lend|lend|давать на время; давать взаймы|you a pen~тебе ручку
 look for|lʊk fɔː|искать|my keys~мои ключи
 look after|lʊk ˈɑːftə|присматривать за|my cat~моей кошкой
 get up|ɡet ʌp|вставать|early~рано
@@ -1060,10 +1060,10 @@ come back|kʌm bæk|возвращаться|soon~скоро
 find out|faɪnd aʊt|выяснять|the price~цену
 grow|ɡrəʊ|расти; выращивать|flowers~цветы
 feed|fiːd|кормить|the cat~кошку
-hurt|hɜːt|причинять боль|my hand~мою руку
+hurt|hɜːt|болеть; причинять боль; повреждать|my hand~мою руку
 let|let|позволять|you go~тебе уйти
 mean|miːn|значить; иметь в виду|this~это
-sell out|sel aʊt|распродавать|the tickets~билеты
+sell out|sel aʊt|распродавать всё; полностью распродаваться|the tickets~билеты
 save|seɪv|сохранять; экономить|some money~немного денег
 add|æd|добавлять|some milk~немного молока
 mix|mɪks|смешивать|the milk and eggs~молоко и яйца
@@ -1074,7 +1074,7 @@ upload|ˌʌpˈləʊd|загружать|a photo~фотографию
 click|klɪk|нажимать|on the link~на ссылку
 print|prɪnt|печатать на принтере|the page~страницу
 type|taɪp|набирать|a message~сообщение
-charge|tʃɑːdʒ|заряжать|my phone~мой телефон
+charge|tʃɑːdʒ|заряжать; взимать плату|my phone~мой телефон
 [moreNouns|Полезные дополнения к A1|concept]
 breakfast|ˈbrekfəst|завтрак
 lunch|lʌntʃ|обед
@@ -1089,7 +1089,7 @@ accent|ˈæksənt|акцент
 vowel|ˈvaʊəl|гласный звук
 consonant|ˈkɒnsənənt|согласный звук
 syllable|ˈsɪləbl|слог
-stress|stres|ударение
+stress|stres|ударение; стресс
 translation|trænzˈleɪʃən|перевод
 meaning|ˈmiːnɪŋ|значение
 form|fɔːm|форма; бланк
@@ -1114,23 +1114,23 @@ decision|dɪˈsɪʒən|решение
 result|rɪˈzʌlt|результат
 success|səkˈses|успех
 experience|ɪkˈspɪəriəns|опыт; впечатление
-memory|ˈmeməri|воспоминание
+memory|ˈmeməri|воспоминание; память
 dream|driːm|сон; мечта
 joke|dʒəʊk|шутка
 smile|smaɪl|улыбка
 feeling|ˈfiːlɪŋ|чувство
 hope|həʊp|надежда
 wish|wɪʃ|желание
-rest|rest|отдых
-space|speɪs|место; пространство
+rest|rest|отдых; остаток; остальное
+space|speɪs|место; пространство; космос; пробел
 area|ˈeəriə|район; область
 side|saɪd|сторона
 corner|ˈkɔːnə|угол
 centre|ˈsentə|центр
 end|end|конец
 beginning|bɪˈɡɪnɪŋ|начало
-top|tɒp|верх
-bottom|ˈbɒtəm|низ
+top|tɒp|верх; крышка; предмет одежды для верхней части тела
+bottom|ˈbɒtəm|низ; дно
 distance|ˈdɪstəns|расстояние
 direction|dəˈrekʃən|направление
 height|haɪt|высота
@@ -1168,7 +1168,7 @@ sky|skaɪ|небо
 earth|ɜːθ|Земля; почва
 fire|ˈfaɪə|огонь
 ice|aɪs|лёд
-heat|hiːt|тепло
+heat|hiːt|тепло; жара; нагрев
 energy|ˈenədʒi|энергия
 health|helθ|здоровье
 pain|peɪn|боль
@@ -1190,9 +1190,9 @@ flight|flaɪt|рейс
 arrival|əˈraɪvl|прибытие
 departure|dɪˈpɑːtʃə|отправление
 booking|ˈbʊkɪŋ|бронирование
-reception|rɪˈsepʃən|стойка регистрации
+reception|rɪˈsepʃən|стойка регистрации; приём сигнала
 single room|ˈsɪŋɡl ruːm|одноместный номер
-double room|ˈdʌbl ruːm|двухместный номер
+double room|ˈdʌbl ruːm|двухместный номер с двуспальной кроватью
 ground floor|ˌɡraʊnd ˈflɔː|первый этаж по российскому счёту
 first floor|ˌfɜːst ˈflɔː|второй этаж в британском счёте
 queue|kjuː|очередь
@@ -1254,7 +1254,7 @@ all|ɔːl|все
 enough|ɪˈnʌf|достаточный
 several|ˈsevrəl|несколько
 [coreExtras|Ещё полезные слова A1|object]
-pool|puːl|бассейн
+pool|puːl|бассейн; лужа
 line|laɪn|линия
 path|pɑːθ|тропа
 noise|nɔɪz|шум
@@ -1285,7 +1285,7 @@ company|ˈkʌmpəni|компания
 document|ˈdɒkjəmənt|документ
 favour|ˈfeɪvə|услуга; одолжение
 task|tɑːsk|задание
-view|vjuː|вид; пейзаж
+view|vjuː|вид; пейзаж; мнение
 [moreObjects|Ещё предметы|object]
 diamond|ˈdaɪəmənd|бриллиант
 [morePeople|Человек|person]

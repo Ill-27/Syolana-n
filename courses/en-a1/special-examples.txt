@@ -10,11 +10,11 @@ still|I still live here.~Я всё ещё живу здесь.||She is still sle
 yet|Is dinner ready yet?~Ужин уже готов?||I am not ready yet.~Я ещё не готов(а).||Has she arrived yet?~Она уже приехала?||We have not finished yet.~Мы ещё не закончили.
 just|I have just arrived.~Я только что приехал(а).||It is just a game.~Это всего лишь игра.||Can I have just one?~Можно мне только одну штуку?||She just called.~Она только что позвонила.
 now|I am working now.~Я сейчас работаю.||Can we go now?~Мы можем сейчас идти?||The shop is closed now.~Магазин сейчас закрыт.||Now I understand.~Теперь я понимаю.
-then|First we eat, then we go.~Сначала мы едим, потом идём.||I was at school then.~Тогда я был(а) в школе.||See you then.~Тогда до встречи.||Turn left, then go straight on.~Поверни налево, затем иди прямо.
+then|First we eat. Then we go.~Сначала мы едим, потом идём.||I was at school then.~Тогда я был(а) в школе.||See you then.~Тогда до встречи.||Turn left, then go straight on.~Поверни налево, затем иди прямо.
 today|I am free today.~Я сегодня свободен(-на).||What are you doing today?~Что ты сегодня делаешь?||The shop is closed today.~Магазин сегодня закрыт.||We met earlier today.~Мы встретились сегодня чуть раньше.
 tomorrow|I am working tomorrow.~Я работаю завтра.||Can you come tomorrow?~Ты можешь прийти завтра?||See you tomorrow.~Увидимся завтра.||Tomorrow is my birthday.~Завтра мой день рождения.
 yesterday|I worked yesterday.~Я работал(а) вчера.||Where were you yesterday?~Где ты был(а) вчера?||It was cold yesterday.~Вчера было холодно.||We did not meet yesterday.~Мы вчера не встречались.
-tonight|I am going out tonight.~Я сегодня вечером иду куда-то.||Are you free tonight?~Ты свободен(-на) сегодня вечером?||We are having dinner together tonight.~Сегодня вечером мы вместе ужинаем.||I am not working tonight.~Сегодня вечером я не работаю.
+tonight|I am going out tonight.~Сегодня вечером я собираюсь куда-нибудь сходить.||Are you free tonight?~Ты свободен(-на) сегодня вечером?||We are having dinner together tonight.~Сегодня вечером мы вместе ужинаем.||I am not working tonight.~Сегодня вечером я не работаю.
 here|I live here.~Я живу здесь.||Can I sit here?~Можно мне сесть здесь?||Come here, please.~Подойди сюда, пожалуйста.||It is quiet here.~Здесь тихо.
 there|My bag is there.~Моя сумка там.||Can we go there?~Мы можем пойти туда?||I worked there last year.~Я работал(а) там в прошлом году.||There is a café there.~Там есть кафе.
 everywhere|I looked everywhere.~Я искал(а) повсюду.||There are flowers everywhere.~Повсюду цветы.||Is there snow everywhere?~Снег лежит везде?||We see these shops everywhere.~Мы видим эти магазины повсюду.
@@ -26,7 +26,7 @@ outside|I am waiting outside.~Я жду снаружи.||Can we eat outside?~М�
 upstairs|My room is upstairs.~Моя комната наверху.||Go upstairs, please.~Поднимись наверх, пожалуйста.||Is the bathroom upstairs?~Ванная наверху?||I heard a noise upstairs.~Я услышал(а) шум наверху.
 downstairs|The kitchen is downstairs.~Кухня внизу.||Come downstairs, please.~Спустись вниз, пожалуйста.||Are they downstairs?~Они внизу?||We had breakfast downstairs.~Мы позавтракали внизу.
 away|Go away, please.~Пожалуйста, уйди.||The station is far away.~Станция далеко.||Is your sister away?~Твоя сестра сейчас в отъезде?||We were away last week.~На прошлой неделе нас не было дома.
-adverbs:back|Please come back soon.~Пожалуйста, возвращайся скорее.||Can I have my book back?~Можно мне вернуть мою книгу?||I will be back at six.~Я вернусь в шесть.||We came back yesterday.~Мы вернулись вчера.
+adverbs:back|Please come back soon.~Пожалуйста, возвращайся скорее.||Can I have my book back?~Можно получить мою книгу обратно?||I will be back at six.~Я вернусь в шесть.||We came back yesterday.~Мы вернулись вчера.
 together|We live together.~Мы живём вместе.||Can we work together?~Мы можем работать вместе?||Let us have lunch together.~Давай вместе пообедаем.||They went home together.~Они пошли домой вместе.
 apart|We live far apart.~Мы живём далеко друг от друга.||Keep the two dogs apart.~Держи двух собак отдельно друг от друга.||Their birthdays are a week apart.~Их дни рождения разделяет неделя.||Can you tell them apart?~Ты можешь их различить?
 quickly|She walks quickly.~Она быстро ходит.||Can you finish quickly?~Ты можешь быстро закончить?||Please come quickly.~Пожалуйста, приходи скорее.||We ate quickly and left.~Мы быстро поели и ушли.
@@ -90,12 +90,12 @@ verbs:ask|Can I ask a question?~Можно задать вопрос?||Ask the t
 verbs:paint|I can paint a picture.~Я могу нарисовать картину красками.||Can you paint the wall?~Можешь покрасить стену?||I painted a picture yesterday.~Вчера я нарисовал(а) картину красками.||She is going to paint the room.~Она собирается покрасить комнату.
 verbs:pick|Please pick a colour.~Пожалуйста, выбери цвет.||Can I pick this flower?~Можно сорвать этот цветок?||I picked the red one.~Я выбрал(а) красный вариант.||Pick up your bag, please.~Подними свою сумку, пожалуйста.
 verbs:enjoy|I enjoy reading.~Я люблю читать.||Did you enjoy the film?~Тебе понравился фильм?||We enjoyed our holiday.~Мы хорошо провели отпуск.||Enjoy your meal.~Приятного аппетита.
-verbs:hope|I hope to see you soon.~Я надеюсь скоро тебя увидеть.||I hope you are well.~Надеюсь, у тебя всё хорошо.||We hoped to go by train.~Мы надеялись поехать на поезде.||I hope it is not too late.~Надеюсь, ещё не слишком поздно.
+verbs:hope|I hope to see you soon.~Я надеюсь скоро тебя увидеть.||I hope you are well.~Надеюсь, у тебя всё хорошо.||We hoped to go by train.~Мы надеялись поехать на поезде.||Hope for the best.~Надейся на лучшее.
 mass:weather|The weather is nice.~Погода хорошая.||What is the weather like?~Какая погода?||We had bad weather yesterday.~Вчера погода была плохая.||I like warm weather.~Я люблю тёплую погоду.
 mass:news|The news is good.~Новости хорошие.||Have you heard the news?~Ты слышал(а) новости?||I watch the news every day.~Я смотрю новости каждый день.||Is there any news?~Есть новости?
 mass:fun|This is fun.~Это весело.||Did you have fun?~Ты хорошо повеселился(-ась)?||Have fun at the party.~Хорошо повеселись на вечеринке.||We had a lot of fun.~Мы очень весело провели время.
 descriptions:same|We have the same book.~У нас одна и та же книга.||Is it the same price?~Цена такая же?||My bag is the same colour.~Моя сумка такого же цвета.||We went to the same school.~Мы учились в одной школе.
-descriptions:little|He is a little boy.~Он маленький мальчик.||This is a little house.~Это маленький домик.||Have you got a little bag?~У тебя есть маленькая сумка?||I saw a little bird.~Я увидел(а) маленькую птичку.
+descriptions:little|He is a little boy.~Он маленький мальчик.||This is a little house.~Это маленький домик.||Have you got a little time to help?~У тебя есть немного времени, чтобы помочь?||I saw a little bird.~Я увидел(а) маленькую птичку.
 feelings:afraid|I am afraid of dogs.~Я боюсь собак.||Are you afraid of the dark?~Ты боишься темноты?||She was afraid to go out.~Она боялась выходить.||Do not be afraid.~Не бойся.
 feelings:well|I am well, thank you.~У меня всё хорошо, спасибо.||Are you feeling well?~Ты хорошо себя чувствуешь?||She is not well today.~Она сегодня плохо себя чувствует.||I slept well.~Я хорошо спал(а).
 feelings:interested|I am interested in art.~Я интересуюсь искусством.||Are you interested in this course?~Тебе интересен этот курс?||She is interested in music.~Она интересуется музыкой.||We were interested in the story.~Нам был интересен рассказ.
@@ -103,7 +103,7 @@ feelings:married|I am married.~Я женат / замужем.||Are you married?
 feelings:single|I am single.~Я не женат / не замужем.||Are you single?~Вы не состоите в браке?||She was single then.~Тогда она не была замужем.||My brother is single.~Мой брат не женат.
 feelings:alone|I live alone.~Я живу один / одна.||Are you alone?~Ты один / одна?||She does not like being alone.~Ей не нравится быть одной.||I was alone at home.~Я был(а) дома один / одна.
 moreAdj:own|This is my own room.~Это моя собственная комната.||Have you got your own car?~У тебя есть собственная машина?||She works on her own.~Она работает самостоятельно.||I made it on my own.~Я сделал(а) это самостоятельно.
-moreAdj:next|The next train leaves at six.~Следующий поезд отправляется в шесть.||Who is next?~Кто следующий?||Can we meet next week?~Можем встретиться на следующей неделе?||Take the next road on the left.~Поверни на следующую дорогу налево.
+moreAdj:next|The next train leaves at six.~Следующий поезд отправляется в шесть.||Who is next?~Кто следующий?||Can we meet next week?~Можем встретиться на следующей неделе?||Take the next road on the left.~Сверни налево на следующую дорогу.
 moreAdj:last|The last bus leaves at ten.~Последний автобус отправляется в десять.||What did you do last weekend?~Что ты делал(а) в прошлые выходные?||This is the last page.~Это последняя страница.||I saw her last night.~Я видел(а) её прошлой ночью.
 moreAdj:other|Where is the other shoe?~Где второй ботинок?||Do you have any other colours?~У вас есть другие цвета?||The other room is bigger.~Другая комната больше.||I talked to the other students.~Я поговорил(а) с другими студентами.
 moreAdj:another|Can I have another cup?~Можно мне ещё одну чашку?||Let us try another way.~Давай попробуем другой способ.||I need another minute.~Мне нужна ещё одна минута.||We went to another shop.~Мы пошли в другой магазин.

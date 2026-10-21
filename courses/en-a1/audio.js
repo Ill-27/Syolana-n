@@ -3,7 +3,7 @@ export const LANGUAGES = ['en-GB', 'en-US', 'ru-RU'];
 export function cleanSpeech(text, lang) {
   let s = String(text || '').normalize('NFC');
   if (lang === 'ru-RU') {
-    s = s.replace(/\bA1\b/g, 'начальный уровень').replace(/\bA2\b/g, 'следующий уровень')
+    s = s.replace(/\bA1\b/g, 'А один').replace(/\bA2\b/g, 'А два')
       .replace(/\bIPA\b/g, 'фонетическая транскрипция')
       .replace(/([а-яё]+)\(([^)]*)\)/gi, '$1')
       .replace(/([а-яё]+)\(-[^)]*\)/gi, '$1')
@@ -30,15 +30,20 @@ export function voiceFor(lang, voices, selectedURI = '') {
   }
   return exact.find(v => v.localService) || exact[0] || null;
 }
-export function segmentsFor(unit, mode = 'en', repeat = 1) {
+export function segmentsFor(unit, mode = 'en', repeat = 1, accent = 'en-GB') {
   const p = unit.pair;
-  const en = p?.en ? { text: cleanSpeech(p.speak || p.en, p.lang || 'en-GB'), lang: p.lang || 'en-GB', pair: p } : null;
-  const ru = p?.ru ? { text: cleanSpeech(p.ruSpeak || p.ru, 'ru-RU'), lang: 'ru-RU', pair: p } : null;
-  const content = mode === 'en' ? [en] : mode === 'en-ru' ? [en, ru] : [ru, en];
+  const fixed = p?.fixedAccent || unit.kind === 'comparison';
+  const language = lang => lang === 'ru-RU' ? lang : fixed || lang === 'en-US' ? lang : accent === 'en-US' ? 'en-US' : 'en-GB';
+  const segment = (text, lang, explanation = false) => ({ text: cleanSpeech(text, language(lang)), lang: language(lang), pair: p, ...(explanation ? { explanation: true } : {}) });
+  const en = p?.en ? segment(p.speak || p.en, p.lang || 'en-GB') : null;
+  const ru = mode === 'en' || !p?.ru ? [] : p.ruSpeak ? [segment(p.ruSpeak, 'ru-RU')] : p.ruSegments ? p.ruSegments.map(s => segment(s.text, s.lang)) : [segment(p.ru, 'ru-RU')];
+  const content = mode === 'en' ? [en] : mode === 'en-ru' ? [en, ...ru] : [...ru, en];
   const base = content.filter(x => x?.text);
   const list = Array.from({ length: Math.min(3, Math.max(1, repeat)) }, () => base).flat();
-  // Russian explanatory paragraphs have their own language and never enter EN-only listening.
-  if (mode !== 'en' && unit.explanation) list.push({ text: cleanSpeech(unit.explanation, 'ru-RU'), lang: 'ru-RU', pair: p, explanation: true });
+  if (mode !== 'en') {
+    if (unit.explanationSegments) list.push(...unit.explanationSegments.map(s => segment(s.text, s.lang, true)));
+    else if (unit.explanation) list.push(segment(unit.explanation, 'ru-RU', true));
+  }
   return list;
 }
 export function secondsFor(unit, rate = 1, mode = 'en', repeat = 1) {
@@ -65,13 +70,8 @@ export class SpeechPlayer {
     this.units = units; this.mode = mode; this.loop = loop; this.repeat = repeat ?? this.settings().repeat ?? 1;
     this.unitIndex = Math.min(Math.max(0, unitIndex), units.length);
     this.segmentIndex = Math.max(0, segmentIndex); this.activeMs = elapsed * 1000; this.error = '';
-    try {
-      const required = new Set(units.flatMap(u => segmentsFor(u, mode, this.repeat).map(s => s.lang)));
-      const missing = [...required].filter(lang => !voiceFor(lang, this.voices(), this.settings().voices?.[lang]));
-      if (missing.length) { this.fail('Не найден ' + missing.map(l => ({ 'en-GB': 'британский', 'en-US': 'американский', 'ru-RU': 'русский' })[l] + ' голос').join(', ') + '. Добавьте нужный голос в настройках речи устройства и нажмите «Обновить голоса».'); return false; }
-    } catch (e) { this.fail(e.message); return false; }
     if (!units.length || this.unitIndex === units.length) { this.status = 'ended'; this.emit(); return true; }
-    this.status = 'playing'; this.activeStart = this.now(); this.emit(); this.next(); return true;
+    this.status = 'playing'; this.activeStart = this.now(); this.emit(); this.next(); return this.status !== 'error';
   }
   next() {
     if (this.status !== 'playing') return;
@@ -81,11 +81,14 @@ export class SpeechPlayer {
     }
     const unit = this.units[this.unitIndex];
     let segments;
-    try { segments = segmentsFor(unit, this.mode, this.repeat); } catch (e) { this.fail(e.message); return; }
+    try { segments = segmentsFor(unit, this.mode, this.repeat, this.settings().accent); } catch (e) { this.fail(e.message); return; }
     if (this.segmentIndex >= segments.length) { this.unitIndex++; this.segmentIndex = 0; this.onProgress(this.snapshot()); this.next(); return; }
     const segment = segments[this.segmentIndex], cfg = this.settings();
     const voice = voiceFor(segment.lang, this.voices(), cfg.voices?.[segment.lang]);
-    if (!voice) { this.fail('Нужный голос стал недоступен. Обновите список голосов.'); return; }
+    if (!voice) {
+      const name = { 'en-GB': 'британский', 'en-US': 'американский', 'ru-RU': 'русский' }[segment.lang];
+      this.fail('Не найден ' + name + ' голос для этой фразы. Добавьте его в настройках речи устройства, нажмите «Обновить голоса» и продолжите с этого места.'); return;
+    }
     const token = ++this.token, u = new this.Utterance(segment.text);
     this.utterance = u; u.lang = segment.lang; u.voice = voice; u.rate = Math.max(0.55, Math.min(1.5, cfg.rate || 1)); u.pitch = 1; u.volume = 1;
     this.onUnit(unit, this.unitIndex, segment); this.emit();
@@ -102,7 +105,8 @@ export class SpeechPlayer {
     this.timer = setTimeout(() => {
       if (token === this.token && this.status === 'playing') this.fail('Голос перестал отвечать. Место сохранено. Нажмите «Продолжить», чтобы повторить текущую фразу.');
     }, Math.min(180, estimated * 2 + 15) * 1000);
-    this.synth.speak(u);
+    try { this.synth.speak(u); }
+    catch { this.fail('Не удалось запустить голос. Место сохранено; нажмите «Продолжить», чтобы повторить фразу.'); }
   }
   pause() {
     if (this.status !== 'playing') return;

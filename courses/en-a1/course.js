@@ -1,8 +1,8 @@
 import {mountCourseBranding} from '../../course-branding.js?v=20261007-language-marks-2';
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261006-6';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261006-6';
-import {trainerGroups} from './trainers.js?v=20261006-6';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261006-6';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261020-1';
+import {makeCurriculum,remainingSeconds,restoreListening} from './curriculum.js?v=20261020-1';
+import {trainerGroups} from './trainers.js?v=20261020-1';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261020-1';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
@@ -23,11 +23,11 @@ function applyTheme(theme){
 window.addEventListener('message',e=>{if(e.source===window.parent&&e.origin===location.origin&&e.data?.syolanaHost&&e.data.theme)applyTheme(e.data.theme);});
 
 async function init(){
-  const response=await fetch(new URL('./data.json?v=20261006-6',import.meta.url));
+  const response=await fetch(new URL('./data.json?v=20261020-1',import.meta.url));
   if(!response.ok)throw new Error('Не удалось загрузить материал курса.');
   const data=await response.json(), trainers=trainerGroups(data), saved=storage.read('settings',{});
   mountCourseBranding({course:'Английский A1'});
-  const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
+  const cfg={mode:['en','en-ru','ru-en'].includes(saved.mode)?saved.mode:'en',accent:saved.accent==='en-US'?'en-US':'en-GB',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
   let curriculum=makeCurriculum(data,cfg,trainers),bulkLabel='Курс',activePair=null,lastQueue=null,clipSelected=false;
   let voices=window.speechSynthesis?.getVoices()||[],voiceControls={},currentKey='',returnKey='days',pageOffset=0,overlay=null,overlayOffset=0;
   const learned=new Set(storage.read('learned',[]));
@@ -40,7 +40,7 @@ async function init(){
     const content=el('div','pair-content'),en=el('div','en',p.en);en.lang=p.lang;
     const ip=el('div','ipa',displayIPA(p.ipa));ip.setAttribute('aria-label',p.ipaLabel||'Транскрипция');
     const ru=el('div','ru',p.ru);ru.lang='ru';content.append(en,ip,ru);card.append(content);
-    if(actions){const a=el('div','pair-actions');a.append(button(p.lang==='en-US'?'▶ США':'▶ Британия',()=>playClip(p,'en'),'listen-small'),button('С переводом',()=>playClip(p,cfg.mode==='ru-en'?'ru-en':'en-ru'),'listen-small'));card.append(a);}
+    if(actions){const a=el('div','pair-actions');a.append(button(p.lang==='en-US'?'▶ США':p.fixedAccent?'▶ Британия':'▶ Слушать',()=>playClip(p,'en'),'listen-small'),button('С переводом',()=>playClip(p,cfg.mode==='ru-en'?'ru-en':'en-ru'),'listen-small'));card.append(a);}
     return card;
   }
   const header=el('header','course-header'),home=button('Английский A1',()=>go('days'),'course-brand');
@@ -79,26 +79,27 @@ async function init(){
   const error=el('div','error');error.setAttribute('role','status');error.hidden=true;
   const settings=el('details','audio-settings');settings.append(el('summary','','Режим, скорость, повторы и голоса'));const settingsGrid=el('div','setting-grid');
   const mode=select([['en','Только английский'],['en-ru','Английский → русский'],['ru-en','Русский → английский']]);mode.value=cfg.mode;
+  const accent=select([['en-GB','Британский'],['en-US','Американский']]);accent.value=cfg.accent;
   const rate=select([[.6,'0,6 × — очень медленно'],[.75,'0,75 × — медленно'],[.9,'0,9 ×'],[1,'1 × — обычно'],[1.15,'1,15 ×'],[1.3,'1,3 ×'],[1.5,'1,5 ×']]);rate.value=String(cfg.rate);if(!rate.value){cfg.rate=1;rate.value='1';}
   const repeat=select([[1,'Один раз'],[2,'Каждую пару дважды'],[3,'Каждую пару трижды']]);repeat.value=cfg.repeat;
   const change=()=>{
     const openScreen=overlay,readingOffset=overlayOffset;
     bulk.pause();clip.stop(false);clipSelected=false;
-    cfg.mode=mode.value;cfg.rate=+rate.value;cfg.repeat=+repeat.value;bulk.mode=cfg.mode;bulk.repeat=cfg.repeat;bulk.segmentIndex=0;
+    cfg.mode=mode.value;cfg.accent=accent.value;cfg.rate=+rate.value;cfg.repeat=+repeat.value;bulk.mode=cfg.mode;bulk.repeat=cfg.repeat;bulk.segmentIndex=0;
     storage.write('settings',cfg);curriculum=makeCurriculum(data,cfg,trainers);renderDays();
     for(const [key,node] of views)if(key.startsWith('day-')){node.remove();views.delete(key);scrollPositions.delete(key);}
     if(currentKey.startsWith('day-')){const key=currentKey;currentKey='';show(key);if(openScreen){setOverlay(openScreen);overlayOffset=readingOffset;}}
     saveProgress();updatePlayer();
   };
-  mode.addEventListener('change',change);rate.addEventListener('change',change);repeat.addEventListener('change',change);
-  settingsGrid.append(field('Что слушать',mode),field('Скорость',rate),field('Повтор слова или фразы',repeat));
+  mode.addEventListener('change',change);accent.addEventListener('change',change);rate.addEventListener('change',change);repeat.addEventListener('change',change);
+  settingsGrid.append(field('Что слушать',mode),field('Обычное произношение',accent),field('Скорость',rate),field('Повтор слова или фразы',repeat));
   for(const [lang,title] of [['en-GB','Британский голос'],['en-US','Американский голос'],['ru-RU','Русский голос']]){
     const s=el('select');s.setAttribute('aria-label',title);voiceControls[lang]=s;
     s.addEventListener('change',()=>{bulk.pause();clip.stop(false);clipSelected=false;cfg.voices[lang]=s.value;storage.write('settings',cfg);updatePlayer();});settingsGrid.append(field(title,s));
   }
   const loopLabel=el('label','inline-field'),loop=el('input');loop.type='checkbox';loopLabel.append(loop,document.createTextNode('Повторять выбранный курс или день целиком'));loop.addEventListener('change',()=>{cfg.loop=loop.checked;bulk.loop=cfg.loop;});
   const settingsActions=el('div','actions');settingsActions.append(button('Обновить голоса',refreshVoices));
-  settings.append(settingsGrid,loopLabel,settingsActions,el('p','muted','Выберите отдельные британский, американский и русский голоса. Если нужного голоса нет, место сохранится. Качество звучания зависит от голосов устройства; транскрипция и служебные значки не читаются.'));
+  settings.append(settingsGrid,loopLabel,settingsActions,el('p','muted','Обычные слова и фразы звучат в выбранном варианте. В сравнении Британии и США каждая сторона сохраняет своё произношение; алфавит и правила чтения следуют британской модели. Транскрипция дана для британского варианта. В списках можно выбрать голоса устройства. Если нужного голоса нет, место сохранится.'));
   const currentNode=el('div','player-current');currentNode.hidden=true;
   playerPanel.append(playerHeading,row,status,progressRow,error,settings,currentNode);workspace.append(playerPanel);
   function pageScroll(y){requestAnimationFrame(()=>{if(window.parent!==window)post({height:Math.ceil(shell.getBoundingClientRect().height),scroll:y});else window.scrollTo({top:y,behavior:'instant'});});}
@@ -293,7 +294,7 @@ renderVocabulary(data.vocabulary);
   function nextLevel(){const note=el('aside','next-level');note.append(el('h2','','Продолжение — A2'),el('p','','A2 будет построен по тому же принципу: понятные правила, слова с разными примерами, повторение и озвучка в удобном темпе.'),el('p','','Сначала пройдите бесплатный A1 и попробуйте этот способ учиться. Приобретайте A2, только если метод вам подходит и вы хотите продолжить.'));return note;}
   days.append(authorAdvice(),nextLevel());
 
-  const coverage=screen('coverage','Что вы отрабатываете на A1','Уровень описывает то, что человек умеет делать с языком. У CEFR нет единого обязательного списка английских слов; здесь собраны основные навыки и темы, а расширение к A2 отмечено отдельно.');pendingViews.set('coverage',()=>{
+  const coverage=screen('coverage','Что вы отрабатываете на A1','Уровень описывает то, что человек умеет делать с языком. У CEFR нет единого обязательного списка английских слов; здесь собраны основные навыки и темы A1. В словаре есть и дополнительная лексика; третьи формы глаголов и некоторые конструкции даны для дальнейшего изучения. Не каждое слово и предложение ограничено уровнем A1.');pendingViews.set('coverage',()=>{
 
   const coverageGrid=el('div','coverage');for(const [title,text,ids] of [
     ['Чтение и произношение','Буквы, диктовка, ударение, гласные, согласные, сочетания, окончания и частые исключения.',['reading']],
@@ -311,7 +312,8 @@ renderVocabulary(data.vocabulary);
   });
   renderDays();refreshVoices();
   const savedQueue=storage.read('queue',null),savedProgress=storage.read('progress',null);
-  if(savedQueue&&savedProgress&&savedQueue.version===savedProgress.version&&savedQueue.version===data.version){const units=savedQueue.ids.map(id=>curriculum.map.get(id));if(units.length&&units.every(Boolean)&&savedProgress.unitIndex<units.length){bulk.units=units;bulkLabel=savedProgress.label||savedQueue.label;lastQueue={...savedQueue,version:data.version};storage.write('queue',lastQueue);bulk.unitIndex=savedProgress.unitIndex;bulk.segmentIndex=savedProgress.segmentIndex||0;bulk.activeMs=(savedProgress.elapsed||0)*1000;bulk.mode=savedProgress.mode||cfg.mode;bulk.repeat=savedProgress.repeat||cfg.repeat;bulk.status='paused';}}
+  const restored=restoreListening(data,curriculum,savedQueue,savedProgress);
+  if(restored){bulk.units=restored.units;bulkLabel=savedProgress.label||savedQueue.label;lastQueue={...savedQueue,ids:restored.units.map(u=>u.pair.id),version:data.version};storage.write('queue',lastQueue);bulk.unitIndex=restored.unitIndex;bulk.segmentIndex=restored.segmentIndex;bulk.activeMs=(savedProgress.elapsed||0)*1000;bulk.mode=savedProgress.mode||cfg.mode;bulk.repeat=savedProgress.repeat||cfg.repeat;bulk.status='paused';saveProgress();}
   updatePlayer();show(decodeURIComponent(location.hash.slice(1))||storage.read('view','days'));
   window.speechSynthesis?.addEventListener?.('voiceschanged',refreshVoices);const progressTick=()=>{if(bulk.status==='playing'||clip.status==='playing')updatePlayer();};let tick=setInterval(progressTick,1000);
   window.addEventListener('pageshow',e=>{if(e.persisted){clearInterval(tick);tick=setInterval(progressTick,1000);updatePlayer();}});

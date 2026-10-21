@@ -47,11 +47,11 @@ export function spellingPair(value,data) {
   const text=value.trim();
   if(!text || text.length>70 || !/^[A-Za-z\d@._+ -]+$/.test(text)) throw new Error('Для диктовки используйте латинские буквы, цифры, пробел, точку, плюс, дефис, подчёркивание и знак почты; до 70 знаков.');
   const parts=[...text].map(c=>{
-    if(/[A-Za-z]/.test(c)) {const a=data.alphabet[c.toUpperCase().charCodeAt(0)-65];return {en:c.toUpperCase(),ipa:a.ipa.slice(1,-1)};}
+    if(/[A-Za-z]/.test(c)) {const a=data.alphabet[c.toUpperCase().charCodeAt(0)-65];return {en:c.toUpperCase(),speak:a.speak||c.toUpperCase(),ipa:a.ipa.slice(1,-1)};}
     const en=/\d/.test(c)?SMALL[+c]:({'@':'at','.':'dot','-':'dash','_':'underscore','+':'plus',' ':'space'})[c];
     return {en,ipa:data.phonemeDictionary[en]};
   });
-  return {id:'spell-'+text,en:parts.map(x=>x.en).join(' · '),speak:parts.map(x=>x.en).join('. '),ipa:'/'+parts.map(x=>x.ipa).join(' ')+'/',ru:'По буквам: '+(/[A-Za-z]/.test(text)?'последовательность из '+parts.length+' знаков':text),lang:'en-GB'};
+  return {id:'spell-'+text,en:parts.map(x=>x.en).join(' · '),speak:parts.map(x=>x.speak||x.en).join('. '),ipa:'/'+parts.map(x=>x.ipa).join(' ')+'/',ru:'По буквам: '+(/[A-Za-z]/.test(text)?'последовательность из '+parts.length+' знаков':text),lang:'en-GB',fixedAccent:true};
 }
 export function timePair(hour,minute,dictionary) {
   if(!Number.isInteger(hour)||hour<0||hour>23||!Number.isInteger(minute)||minute<0||minute>59) throw new Error('Время: часы от 0 до 23, минуты от 0 до 59.');

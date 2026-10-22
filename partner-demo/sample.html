@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru" data-light="rose">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#281d2f">
+  <meta name="description" content="Образец сайта. Предложение к обсуждению: оформление, материалы и движения выбираете вы.">
+  <title>Образец · Персональный эскиз</title>
+  <link rel="preload" href="/assets/fonts/syolana-script.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="/partner-demo/sample/assets/camera-a-v2.jpg" as="image">
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/partner-demo/sample/proposal.css?v=20261022-1">
+</head>
+<body class="sample-proposal">
+  <div class="kp-backdrop" aria-hidden="true"></div>
+  <div class="kp-stage" id="kp-stage" aria-hidden="true">
+    <video class="kp-media is-visible" id="kp-route" muted playsinline preload="auto" poster="/partner-demo/sample/assets/camera-a-v2.jpg"><source src="/partner-demo/sample/assets/camera-route-v2.mp4" type="video/mp4"></video>
+    <div class="kp-light kp-light-evening"></div><div class="kp-light kp-light-soft"></div>
+  </div>
+  <div class="kp-shade" aria-hidden="true"></div>
+  <a class="skip-link" href="#kp-content">К содержанию</a>
+  <header class="kp-header" data-proposal-chrome data-contact-obstacle>
+    <a class="kp-partner-mark" href="#kp-content"><strong>Образец</strong><small>Место для вашего логотипа</small></a>
+    <div class="kp-top-actions">
+      <button type="button" class="kp-icon" data-open="#kp-light-dialog" aria-label="Выбрать свет"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z"/></svg></button>
+      <button type="button" class="kp-icon" id="kp-sound" aria-label="Звук атмосферы" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4V5ZM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg></button>
+      <button type="button" class="kp-icon" id="kp-zen" aria-label="Созерцание" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button type="button" class="kp-icon" id="kp-fullscreen" aria-label="На весь экран" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></svg></button>
+    </div>
+  </header>
+  <main class="kp-page" id="kp-content" data-proposal-chrome>
+    <section class="kp-hero" aria-labelledby="kp-title">
+      <div class="kp-intro">
+        <span class="kp-eyebrow">Персональный эскиз · Предложение к обсуждению</span>
+        <h1 id="kp-title">Образец</h1>
+        <p class="kp-lead">Так может выглядеть ваш будущий сайт.</p>
+        <p class="kp-subtitle">Тексты, материалы, разделы и движения — по вашему выбору.</p>
+        <div class="kp-actions"><button type="button" class="btn primary" id="kp-enter">Посмотреть пространство</button><a class="btn" href="#kp-discuss">Обсудить эскиз ↓</a></div>
+        <div class="kp-camera-inline" role="group" aria-label="Камера"><button type="button" class="btn" data-camera="left">← Повернуть камеру</button><button type="button" class="btn" data-camera="right" disabled>Вернуться →</button><button type="button" class="kp-text-button" data-pause aria-pressed="false">Пауза</button></div>
+        <p class="kp-draft-note">Это предварительное предложение. Всё на странице можно изменить по вашим пожеланиям.</p>
+      </div>
+      <p class="kp-scene-label"><span class="kp-live-dot" aria-hidden="true"></span><span data-view-label>Павильон над водой</span></p>
+    </section>
+    <nav class="main-nav kp-nav" aria-label="Разделы эскиза"><a href="#kp-idea">Идея</a><a href="#kp-sections">Ваши разделы</a><a href="#kp-materials">Материалы</a><a href="#kp-discuss">Обсудить</a></nav>
+    <section class="kp-panel kp-light-picker" aria-labelledby="kp-light-title">
+      <div><span class="kp-eyebrow">Варианты для эскиза</span><h2 id="kp-light-title">Выберите свет</h2><p>Какое настроение вам ближе? Оттенки и оформление подберём вместе.</p></div>
+      <div class="kp-light-options" role="group" aria-label="Свет эскиза"><button type="button" data-light="rose" aria-pressed="true"><i class="kp-swatch kp-swatch-rose" aria-hidden="true"></i>Розовое золото</button><button type="button" data-light="evening" aria-pressed="false"><i class="kp-swatch kp-swatch-evening" aria-hidden="true"></i>Мягкий вечер</button><button type="button" data-light="soft" aria-pressed="false"><i class="kp-swatch kp-swatch-soft" aria-hidden="true"></i>Жемчужный свет</button></div>
+    </section>
+    <section class="kp-section" id="kp-idea" aria-labelledby="kp-idea-title">
+      <span class="kp-eyebrow">Идея · Для обсуждения</span><h2 id="kp-idea-title">Пространство по вашему замыслу</h2><p class="kp-section-intro">Показываем направление оформления, а не готовый сайт. Вы можете выбрать другую атмосферу, композицию, цвета и поведение камеры.</p>
+      <div class="kp-grid kp-grid-three"><article class="kp-panel"><span class="kp-step">01</span><h3>Ваше оформление</h3><p>Поставим выбранный вами логотип. Подберём заголовки, кнопки и расположение блоков.</p></article><article class="kp-panel"><span class="kp-step">02</span><h3>Ваши материалы</h3><p>Добавим те тексты, фотографии, видео и публикации, которые вы захотите показать.</p></article><article class="kp-panel"><span class="kp-step">03</span><h3>Ваше пространство</h3><p>Согласуем движения камеры и персонажей. В этом эскизе пока можно попробовать один маршрут.</p></article></div>
+    </section>
+    <section class="kp-section" id="kp-sections" aria-labelledby="kp-sections-title">
+      <span class="kp-eyebrow">Пример структуры · Можно изменить</span><h2 id="kp-sections-title">Какие разделы нужны вам?</h2><p class="kp-section-intro">Названия и тексты ниже — примеры для обсуждения. Содержание будущего сайта определяете вы.</p>
+      <div class="kp-grid kp-section-cards"><article class="kp-panel"><span class="kp-placeholder-label">Место для вашего текста</span><h3>Приветствие</h3><p>Здесь может быть короткое обращение к посетителям — вашими словами и в вашем стиле.</p></article><article class="kp-panel"><span class="kp-placeholder-label">Место для ваших публикаций</span><h3>Лента</h3><p>Выберите посты, фото или видео. Подписи, порядок и внешний вид карточек согласуем с вами.</p></article><article class="kp-panel"><span class="kp-placeholder-label">Место для выбранных материалов</span><h3>Проекты и ссылки</h3><p>Добавим нужные вам разделы, кнопки и ссылки. Их состав можно полностью изменить.</p></article><article class="kp-panel kp-open-card"><span class="kp-placeholder-label">Ваш вариант</span><h3>Что добавить ещё?</h3><p>Расскажите, что вы хотели бы видеть на сайте. Покажите примеры, которые вам нравятся.</p><a class="kp-inline-link" href="#kp-discuss">Рассказать о пожеланиях ↗</a></article></div>
+    </section>
+    <section class="kp-section" id="kp-materials" aria-labelledby="kp-materials-title">
+      <span class="kp-eyebrow">Следующий шаг · После обсуждения</span><h2 id="kp-materials-title">Пришлите то, что хотите разместить</h2>
+      <div class="kp-panel kp-materials-panel"><p>Можно начать с нескольких материалов. Мы предложим расположение блоков и покажем обновлённый эскиз.</p><ul><li>Логотип или желаемый вариант написания имени.</li><li>Тексты, фотографии, видео и выбранные посты.</li><li>Ссылки, названия разделов и пожелания к оформлению.</li><li>Идеи для пространства и движений персонажей.</li></ul><p class="kp-muted">Материалы и изменения добавляем после согласования с вами.</p></div>
+    </section>
+    <section class="kp-panel kp-discuss" id="kp-discuss" aria-labelledby="kp-discuss-title"><span class="kp-eyebrow">Персональный эскиз · Для рассмотрения</span><h2 id="kp-discuss-title">Что вам хочется изменить?</h2><p>Расскажите, какие тексты и разделы вы хотите, пришлите выбранные материалы или просто опишите впечатления. Всё подстроим под ваше решение.</p><p>Для обсуждения используйте удобную кнопку связи справа.</p><button type="button" class="btn" data-open="#kp-help-dialog">Как попробовать камеру</button></section>
+    <footer class="kp-footer"><p>Персональный эскиз · Предложение к обсуждению</p><a class="syolana-credit kp-credit" href="https://syolana.com/" target="_blank" rel="noopener noreferrer"><img src="/partner-demo/sample/assets/syolana-partner-logo.svg" width="28" height="28" alt=""><span>Сайт создан на Syolana</span></a></footer>
+  </main>
+  <div class="kp-watermark-rail" aria-hidden="true"><div class="kp-marquee"><span>syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · syolana.com · </span></div></div>
+  <button type="button" class="btn kp-exit" id="kp-exit" hidden>Вернуть интерфейс ×</button>
+  <aside class="kp-camera-panel" id="kp-camera-panel" aria-label="Управление камерой" hidden><p>Ведите пальцем или мышью влево и вправо.</p><div class="kp-camera-buttons"><button type="button" class="btn" data-camera="left" aria-label="Повернуть камеру влево">←</button><button type="button" class="btn" data-pause aria-pressed="false">Пауза</button><button type="button" class="btn" data-camera="home">Начальный ракурс</button><button type="button" class="btn" data-camera="right" aria-label="Вернуть камеру вправо" disabled>→</button></div><small>Камера возвращается по вашей команде.</small></aside>
+  <button type="button" class="btn kp-play-prompt" id="kp-play-prompt" hidden>Продолжить движение ▶</button>
+  <dialog class="kp-dialog" id="kp-light-dialog"><div class="kp-dialog-head"><h2>Свет эскиза</h2><button type="button" class="kp-icon" data-close aria-label="Закрыть">×</button></div><p>Выберите настроение. Цвета будущего сайта можно подобрать по вашим пожеланиям.</p><div class="kp-light-options" role="group" aria-label="Выбрать свет"><button type="button" data-light="rose" aria-pressed="true"><i class="kp-swatch kp-swatch-rose" aria-hidden="true"></i>Розовое золото</button><button type="button" data-light="evening" aria-pressed="false"><i class="kp-swatch kp-swatch-evening" aria-hidden="true"></i>Мягкий вечер</button><button type="button" data-light="soft" aria-pressed="false"><i class="kp-swatch kp-swatch-soft" aria-hidden="true"></i>Жемчужный свет</button></div></dialog>
+  <dialog class="kp-dialog" id="kp-help-dialog"><div class="kp-dialog-head"><h2>Попробуйте пространство</h2><button type="button" class="kp-icon" data-close aria-label="Закрыть">×</button></div><p>«Посмотреть пространство» скрывает интерфейс. Ведите пальцем или мышью влево и вправо, чтобы менять положение камеры. Стрелки запускают плавное движение по доступному маршруту.</p><p>«Пауза» останавливает движение. Обратное движение начинается только по нажатию правой стрелки или по вашему жесту. На клавиатуре работают стрелки, пробел, Home и Escape.</p><p>В этом эскизе показан один маршрут. Остальные направления, движения и реакции подберём вместе с вами.</p></dialog>
+  <div class="sr-only" id="kp-status" role="status" aria-live="polite"></div>
+  <noscript><p class="kp-panel">Для движения камеры включите JavaScript. Тексты эскиза доступны на странице.</p></noscript>
+  <script type="module" data-syolana-contact-dock src="/avito-dock.js"></script>
+  <script type="module" src="/partner-demo/sample/proposal.js?v=20261022-1"></script>
+</body>
+</html>
+

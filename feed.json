@@ -3,12 +3,43 @@
     "id": "services-and-prices",
     "category": "Услуги",
     "title": "Что создадим для вас?",
-    "text": "Сайт с живой темой — бесплатно до 31.12.2026. Оформление с общими темами на 2027 год — 12 000 ₽.\n\nАнимированный баннер на 10 секунд — 10 000 ₽. Клипы, мультфильмы и личные видеоподарки — цена по задаче.\n\nНовая индивидуальная анимированная 3D-тема под ваш бренд — стоимость по проекту.\n\nДополнительно: помощь с размещением — 2 900 ₽, подключение ленты — 5 000 ₽, помощь с доменом — 1 000 ₽. Домен и хостинг оплачиваются отдельно.\n\nАнглийский A1 — бесплатно. Все опубликованные платные языковые курсы — 650 ₽ за 30 дней.\n\nНапишите, что хотите создать. Состав, цену и срок согласуем до оплаты.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "text": "Выберите нужную услугу ниже. Индивидуальные работы оцениваем после описания задачи; состав, цену и срок согласуем до оплаты.",
+    "href": "#/contact",
     "linkLabel": "Обсудить проект",
     "pinned": true,
-    "lead": "Для своего дела, творческого проекта или подарка близкому.",
+    "lead": "Сайты в вашем стиле, доработки, автоматизация и видео. Для разовых задач и постоянного сотрудничества.",
     "offers": [
+      {
+        "post": "custom-sites",
+        "title": "Сайт в вашем стиле",
+        "price": "После оценки задачи",
+        "summary": "Лендинг, сайт услуг или портфолио. Ваш дизайн или разработка под задачу.",
+        "featured": true
+      },
+      {
+        "post": "site-updates",
+        "title": "Доработки готового сайта",
+        "price": "После оценки задачи",
+        "summary": "Новые страницы, мобильная версия, исправления и обновления."
+      },
+      {
+        "post": "data-automation",
+        "title": "Таблицы, отчёты и автоматизация",
+        "price": "После оценки задачи",
+        "summary": "Очистка и сверка данных, объединение файлов, отчёты и документы."
+      },
+      {
+        "post": "business-materials",
+        "title": "Материалы для вашего дела",
+        "price": "После оценки задачи",
+        "summary": "Презентации, каталоги, документы и статичные баннеры."
+      },
+      {
+        "post": "ongoing-support",
+        "title": "Постоянное сотрудничество",
+        "price": "После оценки задачи",
+        "summary": "Для агентств и компаний: согласованный объём задач на каждый период."
+      },
       {
         "post": "welcome-design",
         "title": "Сайт с живой темой",
@@ -26,13 +57,6 @@
         "title": "Клипы и мультфильмы",
         "price": "Цена по задаче",
         "summary": "История для бренда, клип на песню или личный видеоподарок."
-      },
-      {
-        "post": "individual-3d-theme",
-        "title": "Индивидуальная 3D-тема",
-        "price": "Стоимость по проекту",
-        "summary": "Новый живой мир сайта — под характер, цвета и идею вашего бренда.",
-        "featured": true
       }
     ],
     "extras": [
@@ -55,16 +79,54 @@
         "post": "site-domain",
         "title": "Помощь с доменом",
         "price": "1 000 ₽"
+      },
+      {
+        "post": "individual-3d-theme",
+        "title": "Индивидуальная 3D-тема",
+        "price": "Стоимость по проекту",
+        "summary": "Новый живой мир сайта — под характер, цвета и идею вашего бренда.",
+        "featured": true
       }
     ],
     "note": "Домен и хостинг — отдельно. Платные дополнения — по желанию. Состав и срок согласуем до оплаты.",
     "translations": {
       "en": {
         "title": "What shall we create for you?",
-        "text": "A website with a living theme is free until 31 December 2026. Site styling with shared themes for 2027 costs 12,000 ₽.\n\nA 10-second animated banner costs 10,000 ₽. Music videos, animated films and personal video gifts are quoted to your brief.\n\nA new animated 3D theme designed for your brand is priced per project.\n\nOptional help: publishing — 2,900 ₽; connecting a feed — 5,000 ₽; domain assistance — 1,000 ₽. Domain and hosting fees are separate.\n\nEnglish A1 is free. All published paid language courses cost 650 ₽ for 30 days.\n\nTell us what you would like to create. Scope, price and delivery time are agreed before payment.",
+        "text": "Choose a service below. Custom work is assessed after your brief; scope, price and deadline are agreed before payment.",
         "linkLabel": "Discuss my project",
-        "lead": "For your business, a creative project or a gift for someone you love.",
+        "lead": "Websites in your style, improvements, automation and video. One-off tasks and ongoing collaboration.",
         "offers": [
+          {
+            "post": "custom-sites",
+            "title": "A website in your own style",
+            "price": "Quoted after assessment",
+            "summary": "A landing page, service website or portfolio, using your design or a custom one.",
+            "featured": true
+          },
+          {
+            "post": "site-updates",
+            "title": "Improve an existing website",
+            "price": "Quoted after assessment",
+            "summary": "New pages, mobile layouts, fixes and updates."
+          },
+          {
+            "post": "data-automation",
+            "title": "Spreadsheets, reports and automation",
+            "price": "Quoted after assessment",
+            "summary": "Data cleaning and reconciliation, merged files, reports and documents."
+          },
+          {
+            "post": "business-materials",
+            "title": "Materials for your business",
+            "price": "Quoted after assessment",
+            "summary": "Presentations, catalogues, documents and static banners."
+          },
+          {
+            "post": "ongoing-support",
+            "title": "Ongoing collaboration",
+            "price": "Quoted after assessment",
+            "summary": "For agencies and businesses: an agreed scope for each period."
+          },
           {
             "post": "welcome-design",
             "title": "A website with a living theme",
@@ -82,13 +144,6 @@
             "title": "Music videos and animated films",
             "price": "Quoted to your brief",
             "summary": "A brand story, a music video or a personal video gift."
-          },
-          {
-            "post": "individual-3d-theme",
-            "title": "A custom 3D theme",
-            "price": "Priced per project",
-            "summary": "A new living world for your website, shaped around your brand.",
-            "featured": true
           }
         ],
         "extras": [
@@ -111,16 +166,54 @@
             "post": "site-domain",
             "title": "Domain assistance",
             "price": "1 000 ₽"
+          },
+          {
+            "post": "individual-3d-theme",
+            "title": "A custom 3D theme",
+            "price": "Priced per project",
+            "summary": "A new living world for your website, shaped around your brand.",
+            "featured": true
           }
         ],
         "note": "Domain and hosting fees are separate. Paid extras are optional. Scope and delivery time are agreed before payment."
       },
       "es": {
         "title": "¿Qué creamos para ti?",
-        "text": "Un sitio con tema vivo es gratis hasta el 31/12/2026. El diseño con temas compartidos para 2027 cuesta 12 000 ₽.\n\nUn banner animado de 10 segundos cuesta 10 000 ₽. Videoclips, cortos de animación y regalos en vídeo: precio según el encargo.\n\nUn nuevo tema 3D animado para tu marca se presupuesta por proyecto.\n\nServicios opcionales: publicación, 2 900 ₽; conexión del feed, 5 000 ₽; ayuda con el dominio, 1 000 ₽. Dominio y alojamiento se pagan aparte.\n\nInglés A1 es gratis. Todos los cursos de pago publicados cuestan 650 ₽ por 30 días.\n\nCuéntanos qué quieres crear. Alcance, precio y plazo se acuerdan antes del pago.",
+        "text": "Elige un servicio. Valoramos los trabajos a medida tras conocer la tarea; acordamos alcance, precio y plazo antes del pago.",
         "linkLabel": "Hablar de mi proyecto",
-        "lead": "Para tu negocio, tu proyecto creativo o un regalo especial.",
+        "lead": "Sitios con tu estilo, mejoras, automatización y vídeo. Tareas puntuales y colaboración continua.",
         "offers": [
+          {
+            "post": "custom-sites",
+            "title": "Un sitio con tu estilo",
+            "price": "Presupuesto tras evaluación",
+            "summary": "Página de presentación, servicios o portafolio, con tu diseño o uno a medida.",
+            "featured": true
+          },
+          {
+            "post": "site-updates",
+            "title": "Mejoras de un sitio existente",
+            "price": "Presupuesto tras evaluación",
+            "summary": "Páginas nuevas, adaptación móvil, correcciones y actualizaciones."
+          },
+          {
+            "post": "data-automation",
+            "title": "Tablas, informes y automatización",
+            "price": "Presupuesto tras evaluación",
+            "summary": "Limpieza y comparación de datos, unión de archivos, informes y documentos."
+          },
+          {
+            "post": "business-materials",
+            "title": "Materiales para tu negocio",
+            "price": "Presupuesto tras evaluación",
+            "summary": "Presentaciones, catálogos, documentos y banners estáticos."
+          },
+          {
+            "post": "ongoing-support",
+            "title": "Colaboración continua",
+            "price": "Presupuesto tras evaluación",
+            "summary": "Para agencias y empresas: un alcance acordado para cada periodo."
+          },
           {
             "post": "welcome-design",
             "title": "Un sitio con tema vivo",
@@ -138,13 +231,6 @@
             "title": "Videoclips y animación",
             "price": "Precio según el encargo",
             "summary": "La historia de tu marca, un videoclip o un regalo en vídeo."
-          },
-          {
-            "post": "individual-3d-theme",
-            "title": "Un tema 3D a medida",
-            "price": "Presupuesto por proyecto",
-            "summary": "Un nuevo mundo vivo para tu sitio, inspirado en tu marca.",
-            "featured": true
           }
         ],
         "extras": [
@@ -167,16 +253,54 @@
             "post": "site-domain",
             "title": "Ayuda con el dominio",
             "price": "1 000 ₽"
+          },
+          {
+            "post": "individual-3d-theme",
+            "title": "Un tema 3D a medida",
+            "price": "Presupuesto por proyecto",
+            "summary": "Un nuevo mundo vivo para tu sitio, inspirado en tu marca.",
+            "featured": true
           }
         ],
         "note": "Dominio y alojamiento se pagan aparte. Los extras son opcionales. Alcance y plazo se acuerdan antes del pago."
       },
       "fr": {
         "title": "Que créons-nous pour vous ?",
-        "text": "Un site avec thème vivant est gratuit jusqu’au 31/12/2026. L’habillage avec les thèmes communs pour 2027 coûte 12 000 ₽.\n\nUne bannière animée de 10 secondes coûte 10 000 ₽. Clips, films d’animation et cadeaux vidéo : tarif selon votre projet.\n\nUn nouveau thème 3D animé conçu pour votre marque est chiffré sur mesure.\n\nEn option : mise en ligne, 2 900 ₽ ; connexion du fil, 5 000 ₽ ; aide au domaine, 1 000 ₽. Domaine et hébergement se paient séparément.\n\nL’anglais A1 est gratuit. Tous les cours payants publiés coûtent 650 ₽ pour 30 jours.\n\nDites-nous ce que vous souhaitez créer. Contenu, prix et délai sont convenus avant paiement.",
+        "text": "Choisissez un service. Les missions sur mesure sont évaluées après votre description ; périmètre, prix et délai sont convenus avant paiement.",
         "linkLabel": "Parler de mon projet",
-        "lead": "Pour votre activité, un projet créatif ou un cadeau à un proche.",
+        "lead": "Sites à votre image, améliorations, automatisation et vidéo. Missions ponctuelles et collaboration suivie.",
         "offers": [
+          {
+            "post": "custom-sites",
+            "title": "Un site à votre image",
+            "price": "Devis après évaluation",
+            "summary": "Page de présentation, site de services ou portfolio, selon votre maquette ou sur mesure.",
+            "featured": true
+          },
+          {
+            "post": "site-updates",
+            "title": "Améliorer un site existant",
+            "price": "Devis après évaluation",
+            "summary": "Nouvelles pages, adaptation mobile, corrections et mises à jour."
+          },
+          {
+            "post": "data-automation",
+            "title": "Tableaux, rapports et automatisation",
+            "price": "Devis après évaluation",
+            "summary": "Nettoyage et rapprochement de données, fusion de fichiers, rapports et documents."
+          },
+          {
+            "post": "business-materials",
+            "title": "Supports pour votre activité",
+            "price": "Devis après évaluation",
+            "summary": "Présentations, catalogues, documents et bannières fixes."
+          },
+          {
+            "post": "ongoing-support",
+            "title": "Collaboration suivie",
+            "price": "Devis après évaluation",
+            "summary": "Pour agences et entreprises : un périmètre convenu pour chaque période."
+          },
           {
             "post": "welcome-design",
             "title": "Un site avec thème vivant",
@@ -194,13 +318,6 @@
             "title": "Clips et films d’animation",
             "price": "Tarif selon votre projet",
             "summary": "Une histoire de marque, un clip musical ou un cadeau vidéo."
-          },
-          {
-            "post": "individual-3d-theme",
-            "title": "Un thème 3D sur mesure",
-            "price": "Devis sur mesure",
-            "summary": "Un nouvel univers vivant pour votre site, à l’image de votre marque.",
-            "featured": true
           }
         ],
         "extras": [
@@ -223,12 +340,169 @@
             "post": "site-domain",
             "title": "Aide au nom de domaine",
             "price": "1 000 ₽"
+          },
+          {
+            "post": "individual-3d-theme",
+            "title": "Un thème 3D sur mesure",
+            "price": "Devis sur mesure",
+            "summary": "Un nouvel univers vivant pour votre site, à l’image de votre marque.",
+            "featured": true
           }
         ],
         "note": "Domaine et hébergement se paient séparément. Les options payantes sont facultatives. Contenu et délai sont convenus avant paiement."
       }
     },
     "publishedAt": "2026-10-19T17:12:28.178686+00:00"
+  },
+  {
+    "id": "custom-sites",
+    "category": "Дизайн",
+    "title": "Сайт в вашем стиле",
+    "text": "Лендинг, сайт услуг или портфолио — с нужной вам структурой и оформлением. Можно работать по вашему макету или разработать дизайн под задачу.\n\nВыбирать тему Syolana необязательно. Для индивидуального сайта состав, стоимость, срок, правки, исходники и права на результат согласуем отдельно. Обязательного ежегодного продления такого оформления нет.\n\nРасскажите, для кого сайт и что посетитель должен на нём сделать. Если есть макет или примеры — пришлите ссылку.",
+    "href": "#/contact/site",
+    "linkLabel": "Обсудить задачу",
+    "media": [],
+    "publishedAt": "2026-10-21T16:42:54.757170+00:00",
+    "translations": {
+      "en": {
+        "category": "Design",
+        "title": "A website in your own style",
+        "text": "A landing page, service website or portfolio with the structure and style you need. We can use your design or create one around your brief.\n\nSyolana themes are optional. Scope, price, deadline, revisions, source files and rights are agreed separately for a custom site. This design does not require an annual renewal.\n\nTell us who the website is for and what visitors should do. Send a link to any designs or examples.",
+        "linkLabel": "Discuss a project"
+      },
+      "es": {
+        "category": "Diseño",
+        "title": "Un sitio con tu estilo",
+        "text": "Una página de presentación, sitio de servicios o portafolio con la estructura y estilo que necesitas. Podemos seguir tu maqueta o crear un diseño para tu proyecto.\n\nLos temas Syolana son opcionales. Acordamos por separado alcance, precio, plazo, revisiones, archivos fuente y derechos. Este diseño no exige renovación anual.\n\nCuéntanos para quién es el sitio y qué deben hacer sus visitantes. Envía un enlace a los diseños o ejemplos que tengas.",
+        "linkLabel": "Hablar de un proyecto"
+      },
+      "fr": {
+        "category": "Design",
+        "title": "Un site à votre image",
+        "text": "Une page de présentation, un site de services ou un portfolio selon la structure et le style souhaités. Nous pouvons intégrer votre maquette ou concevoir un design adapté.\n\nLes thèmes Syolana sont facultatifs. Périmètre, prix, délai, retouches, sources et droits sont convenus séparément. Ce design ne nécessite pas de renouvellement annuel.\n\nIndiquez à qui le site s’adresse et ce que ses visiteurs doivent pouvoir faire. Envoyez vos maquettes ou exemples.",
+        "linkLabel": "Parler d’un projet"
+      }
+    }
+  },
+  {
+    "id": "site-updates",
+    "category": "Дизайн",
+    "title": "Доработки готового сайта",
+    "text": "Новая страница, мобильная версия, исправление вёрстки, обновление материалов или ускорение отдельных элементов. Можно начать с одной конкретной задачи.\n\nСначала посмотрим сайт и техническую среду, уточним нужный результат и доступ. После проверки предложим посильный объём, цену, срок и способ передачи.\n\nПришлите ссылку и опишите, что сейчас работает неудобно или что нужно добавить.",
+    "href": "#/contact/site",
+    "linkLabel": "Обсудить задачу",
+    "media": [],
+    "publishedAt": "2026-10-21T16:42:54.757193+00:00",
+    "translations": {
+      "en": {
+        "category": "Design",
+        "title": "Improve an existing website",
+        "text": "A new page, mobile layout, styling fix, content update or improvement to individual elements. Start with one specific task.\n\nFirst we review the website and technical environment, the intended result and access needed. Then we propose a feasible scope, price, deadline and handover.\n\nSend a link and explain what needs improving or adding.",
+        "linkLabel": "Discuss a project"
+      },
+      "es": {
+        "category": "Diseño",
+        "title": "Mejoras de un sitio existente",
+        "text": "Una página nueva, adaptación móvil, corrección visual, actualización de contenido o mejora de elementos concretos. Podemos empezar con una sola tarea.\n\nPrimero revisamos el sitio, el entorno técnico, el resultado y los accesos necesarios. Después proponemos un alcance viable, precio, plazo y entrega.\n\nEnvía un enlace y explica qué quieres mejorar o añadir.",
+        "linkLabel": "Hablar de un proyecto"
+      },
+      "fr": {
+        "category": "Design",
+        "title": "Améliorer un site existant",
+        "text": "Une nouvelle page, une version mobile, une correction de mise en page, une mise à jour ou une amélioration ciblée. Commençons par une tâche précise.\n\nNous examinons d’abord le site, son environnement technique, le résultat et les accès nécessaires. Puis nous proposons un périmètre réalisable, un prix, un délai et une remise.\n\nEnvoyez un lien et expliquez ce qu’il faut améliorer ou ajouter.",
+        "linkLabel": "Parler d’un projet"
+      }
+    }
+  },
+  {
+    "id": "data-automation",
+    "category": "Автоматизация",
+    "title": "Таблицы, отчёты и автоматизация",
+    "text": "Объединить файлы, убрать точные повторы, сверить данные, подготовить отчёт или документы — поможем сократить повторяющуюся ручную работу.\n\nРаботаем с подходящими задачами в Excel, CSV, JSON, Python и JavaScript. Сначала нужны пример исходных данных, образец результата и правила проверки. Конфиденциальные сведения для первого обсуждения лучше заменить учебными.\n\nСостав, стоимость, техническую среду и передачу согласуем после проверки примера. Боты и интеграции оцениваются отдельно.",
+    "href": "#/contact/data",
+    "linkLabel": "Обсудить задачу",
+    "media": [],
+    "publishedAt": "2026-10-21T16:42:54.757200+00:00",
+    "translations": {
+      "en": {
+        "category": "Automation",
+        "title": "Spreadsheets, reports and automation",
+        "text": "Merge files, remove exact duplicates, reconcile data or prepare reports and documents to reduce repetitive manual work.\n\nWe assess suitable tasks involving Excel, CSV, JSON, Python and JavaScript. Start with sample input, the expected output and validation rules. Replace confidential information with sample data for the first discussion.\n\nScope, price, technical environment and handover are agreed after reviewing the sample. Bots and integrations need a separate assessment.",
+        "linkLabel": "Discuss a project"
+      },
+      "es": {
+        "category": "Automatización",
+        "title": "Tablas, informes y automatización",
+        "text": "Unir archivos, eliminar duplicados exactos, comparar datos o preparar informes y documentos para reducir tareas manuales repetitivas.\n\nValoramos tareas adecuadas con Excel, CSV, JSON, Python y JavaScript. Necesitamos datos de ejemplo, el resultado esperado y las reglas de comprobación. Sustituye la información confidencial por datos ficticios al empezar.\n\nAcordamos alcance, precio, entorno técnico y entrega tras revisar el ejemplo. Los bots y las integraciones se evalúan aparte.",
+        "linkLabel": "Hablar de un proyecto"
+      },
+      "fr": {
+        "category": "Automatisation",
+        "title": "Tableaux, rapports et automatisation",
+        "text": "Fusionner des fichiers, supprimer les doublons exacts, rapprocher des données ou préparer des rapports et documents pour réduire les tâches répétitives.\n\nNous étudions les missions adaptées avec Excel, CSV, JSON, Python et JavaScript. Fournissez des données d’exemple, le résultat attendu et les règles de contrôle. Remplacez les informations confidentielles par des exemples au premier échange.\n\nPérimètre, prix, environnement et remise sont convenus après examen. Bots et intégrations font l’objet d’une évaluation distincte.",
+        "linkLabel": "Parler d’un projet"
+      }
+    }
+  },
+  {
+    "id": "business-materials",
+    "category": "Материалы",
+    "title": "Материалы для вашего дела",
+    "text": "Презентации, коммерческие предложения, каталоги, шаблоны документов и статичные баннеры — в стиле вашего проекта.\n\nСогласуем содержание, формат, исходники, правки и условия использования. Вы передаёте достоверные сведения и материалы, на которые у вас есть права.\n\nПришлите текст, пример оформления и расскажите, где будете использовать результат. Цена и срок — после оценки объёма.",
+    "href": "#/contact/data",
+    "linkLabel": "Обсудить задачу",
+    "media": [],
+    "publishedAt": "2026-10-21T16:42:54.757204+00:00",
+    "translations": {
+      "en": {
+        "category": "Materials",
+        "title": "Materials for your business",
+        "text": "Presentations, proposals, catalogues, document templates and static banners in your project’s style.\n\nWe agree on content, format, source files, revisions and usage terms. Supply accurate information and materials you have the right to use.\n\nSend the text, a design example and the intended use. Price and deadline follow a scope assessment.",
+        "linkLabel": "Discuss a project"
+      },
+      "es": {
+        "category": "Materiales",
+        "title": "Materiales para tu negocio",
+        "text": "Presentaciones, propuestas, catálogos, plantillas de documentos y banners estáticos con el estilo de tu proyecto.\n\nAcordamos contenido, formato, archivos fuente, revisiones y uso. Facilita datos veraces y materiales que tengas derecho a utilizar.\n\nEnvía los textos, un ejemplo de diseño y el uso previsto. Precio y plazo tras valorar el alcance.",
+        "linkLabel": "Hablar de un proyecto"
+      },
+      "fr": {
+        "category": "Supports",
+        "title": "Supports pour votre activité",
+        "text": "Présentations, propositions commerciales, catalogues, modèles de documents et bannières fixes dans le style de votre projet.\n\nNous convenons du contenu, du format, des sources, des retouches et des droits d’utilisation. Fournissez des informations exactes et des contenus que vous pouvez utiliser.\n\nEnvoyez les textes, un exemple visuel et l’usage prévu. Le prix et le délai suivent l’évaluation du périmètre.",
+        "linkLabel": "Parler d’un projet"
+      }
+    }
+  },
+  {
+    "id": "ongoing-support",
+    "category": "Услуги",
+    "title": "Постоянное сотрудничество",
+    "text": "Для агентств и компаний, которым регулярно нужны новые страницы, исправления, обновления и работа с данными.\n\nНачнём с одной оплачиваемой задачи. После успешной сдачи можно согласовать регулярную работу: перечень задач, объём, стоимость, сроки и порядок приёмки на каждый период. Без обещания безлимитных работ и круглосуточной доступности.\n\nРаботаем в вашем стиле, общаемся письменно, передаём согласованные исходники. Пришлите ближайшую задачу и расскажите, какая помощь нужна регулярно.",
+    "href": "#/contact/support",
+    "linkLabel": "Обсудить задачу",
+    "media": [],
+    "publishedAt": "2026-10-21T16:42:54.757207+00:00",
+    "translations": {
+      "en": {
+        "category": "Services",
+        "title": "Ongoing collaboration",
+        "text": "For agencies and businesses that regularly need new pages, fixes, updates and work with data.\n\nStart with one paid task. After successful delivery, agree on ongoing work with defined tasks, scope, price, deadlines and acceptance for each period. Unlimited work and round-the-clock availability are not included.\n\nWe follow your style, communicate in writing and hand over the agreed source files. Send your next task and explain the support you need regularly.",
+        "linkLabel": "Discuss a project"
+      },
+      "es": {
+        "category": "Servicios",
+        "title": "Colaboración continua",
+        "text": "Para agencias y empresas que necesitan páginas nuevas, correcciones, actualizaciones y trabajo con datos de forma regular.\n\nEmpezamos con una tarea remunerada. Tras entregarla, podemos acordar tareas, alcance, precio, plazos y aceptación para cada periodo. No se incluyen trabajos ilimitados ni disponibilidad permanente.\n\nSeguimos tu estilo, nos comunicamos por escrito y entregamos los archivos fuente acordados. Envía la próxima tarea y explica qué apoyo necesitas regularmente.",
+        "linkLabel": "Hablar de un proyecto"
+      },
+      "fr": {
+        "category": "Services",
+        "title": "Collaboration suivie",
+        "text": "Pour les agences et entreprises ayant régulièrement besoin de pages, corrections, mises à jour et traitements de données.\n\nCommençons par une mission rémunérée. Après sa livraison, convenons des tâches, du périmètre, du prix, des délais et de la validation pour chaque période. Le travail illimité et la disponibilité permanente ne sont pas inclus.\n\nNous suivons votre style, échangeons par écrit et remettons les sources convenues. Envoyez votre prochaine tâche et précisez vos besoins réguliers.",
+        "linkLabel": "Parler d’un projet"
+      }
+    }
   },
   {
     "id": "welcome-design",
@@ -312,7 +586,7 @@
     "category": "Дизайн",
     "title": "Ваш бренд — целый живой мир",
     "text": "Хотите, чтобы сайт узнавали с первого взгляда? Создадим для него новую индивидуальную анимированную 3D-тему под ваш бренд или деятельность.\n\nПродумываем вместе образ, цвета, свет, глубину и движение. Морской мир для вашего проекта, необычный город или совсем новая сцена — начнём с того, какое впечатление вы хотите оставить.\n\nЭто отдельный заказ: стоимость, состав, сроки и условия использования рассчитываем индивидуально. Создание такой темы не входит в общий пакет.\n\nРасскажите, чем вы занимаетесь, и пришлите логотип или несколько примеров настроения — обсудим ваш будущий мир.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "href": "#/contact/site",
     "linkLabel": "Обсудить мою 3D-тему",
     "media": [],
     "translations": {
@@ -357,7 +631,7 @@
     "category": "Видео",
     "title": "10 секунд, которые оживят ваш сайт",
     "text": "Анимированный баннер — 10 000 ₽. Один сюжет на 10 секунд с плавным повтором: для первого экрана сайта, презентации или страницы проекта.\n\nВключены две согласованные пропорции для телефона и компьютера, статичная обложка и два собранных списка правок по утверждённой идее. Вы получаете самостоятельные видеофайлы: продлевать общую тему для их использования не нужно.\n\nСначала согласуем идею, форматы и срок. Сложные сюжеты и другая длительность рассчитываются отдельно.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "href": "#/contact/video",
     "linkLabel": "Заказать баннер",
     "media": [
       {
@@ -438,7 +712,7 @@
     "category": "Видео",
     "title": "Ваша идея — как маленькое кино",
     "text": "Клип на песню, мультфильм, ролик о бренде или видеопрезентация — создадим историю по вашему заданию. Для своего дела, творчества или важного события.\n\nПоможем с идеей, подберём визуальный стиль и соберём ролик. Стоимость зависит от длительности, сюжета и сложности; цену, форматы, правки и срок согласуем до начала работы.\n\nПришлите песню, краткую задумку или пример того, что вам нравится. С этого и начнём.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "href": "#/contact/video",
     "linkLabel": "Обсудить мой ролик",
     "media": [
       {
@@ -482,7 +756,7 @@
     "category": "Видео",
     "title": "Подарите близкому главную роль",
     "text": "Ваша история знакомства, семейное приключение или любимый человек в сказочном мире — создадим персональный мультфильм или видеопоздравление.\n\nДля дня рождения, годовщины, свадьбы или просто тёплого сюрприза. Пришлите историю и материалы, которые можно использовать, — вместе найдём красивую идею.\n\nЦена по задаче. Длительность, формат, состав и срок согласуем заранее.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "href": "#/contact/video",
     "linkLabel": "Хочу видеоподарок",
     "media": [
       {
@@ -526,7 +800,7 @@
     "category": "Дизайн",
     "title": "Живое оформление на 2027 год",
     "text": "Сайт и все общие темы Syolana на 2027 год — 12 000 ₽. Меняйте атмосферу сайта под настроение и выбирайте новые общие темы после их выхода.\n\nЭто отдельное продолжение по вашему желанию. Общий период заканчивается 31 декабря 2027 года по Москве; при подключении в течение года оставшийся срок и индивидуальную цену согласуем заранее. Автоматических списаний нет.\n\nТемы используются вместе с подписью Syolana и не передаются в исключительную собственность. Новая индивидуальная 3D-тема заказывается отдельно.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "href": "#/contact/site",
     "linkLabel": "Выбрать оформление на 2027 год",
     "media": [
       {
@@ -576,7 +850,7 @@
     "category": "Дизайн",
     "title": "Поможем вашему сайту выйти в интернет",
     "text": "Помощь с размещением — 2 900 ₽ за работу. Для тех, кто получил готовый файл и хочет, чтобы сайт открывался по ссылке.\n\nСогласуем выбранный хостинг и поможем с публикацией. Уже купленный домен подключаем в рамках этого пакета при технической возможности — без повторной оплаты настройки.\n\nДомен, хостинг и их продление оплачиваются отдельно. Учётные записи и доступы остаются у вас; необходимые действия подтверждает владелец.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "href": "#/contact/site",
     "linkLabel": "Помочь с публикацией",
     "media": [
       {
@@ -625,7 +899,7 @@
     "category": "Дизайн",
     "title": "Один пост — и новости уже на сайте",
     "text": "Подключение ленты — 5 000 ₽. Публикуйте в привычном открытом канале или группе, а сайт будет показывать новые доступные записи.\n\nСначала проверим совместимость источника и согласуем, что можно перенести: тексты, изображения, ссылки и доступные медиа. Возможности зависят от правил и технического доступа самой площадки.\n\nПришлите ссылку на открытый источник — проверим подключение до начала работы.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "href": "#/contact/site",
     "linkLabel": "Проверить мою ленту",
     "media": [
       {
@@ -674,7 +948,7 @@
     "category": "Дизайн",
     "title": "Красивый адрес для вашего проекта",
     "text": "Помощь с доменом — 1 000 ₽ за работу. Предложим до 5 вариантов имени, поможем с регистрацией и стандартными настройками для одного сайта при технической возможности.\n\nДомен оформляется на вас. Его регистрацию и продление вы оплачиваете напрямую регистратору.\n\nЕсли домен уже куплен и вы заказываете размещение за 2 900 ₽, его подключение входит в этот пакет — отдельно за ту же настройку платить не нужно.",
-    "href": "https://www.avito.ru/brands/i223140984",
+    "href": "#/contact/site",
     "linkLabel": "Подобрать адрес сайта",
     "media": [
       {

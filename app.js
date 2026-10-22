@@ -32,6 +32,7 @@ import { lessons } from "./content.js";
 import { renderFeed, feedEditor } from "./feed.js";
 import {mountShowcaseBanner} from './video-showcase.js';
 import {registerFeedCopy,renderServices,mountServicesNavigation} from './services.js';
+import {renderProjectContact} from './project-services.js';
 import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
 
 registerTranslations({'Ключи и подписки':['Keys and subscriptions','Claves y suscripciones','Clés et abonnements']});
@@ -484,15 +485,6 @@ function applyEntitlement(data) {
     siteTimer = setTimeout(() => route(), ms);
   }
 }
-function contactPage() {
-  const box=el("article","card stack legal-page");
-  box.append(el("h1","","Связаться с Syolana"));
-  box.append(el("h3","","Идея, сайт или языковой доступ"),el("p","","Создание сайта, условия обслуживания, ключ доступа и поддержка — в официальном профиле Syolana на Авито: avito.ru/brands/i223140984. Состав работы, цену и сроки согласуем до оплаты."));
-  box.append(el("h3","","Для заявлений о нарушении прав"),el("p","","Я также могу отвечать с официальной почты syolana@yandex.ru. По этому адресу принимаются и юридически значимые заявления. Не отправляйте по почте пароли, ключи доступа и реквизиты карты."));
-  box.append(link("Сведения об исполнителе","legal-info/index.html","text-link"));
-  box.append(link("Связаться на Авито",businessContact(),"btn"),link("Условия доступа","#/offer","text-link"),link("Как используются данные","#/privacy","text-link"));
-  $("page").append(box);
-}
 
 function terms() {
   const box=el("article","card stack legal-page");
@@ -570,16 +562,18 @@ async function route() {
   document.documentElement.style.setProperty("--prose", moodColors.neutral);
   $("page").replaceChildren();
   window.scrollTo({ top: 0, behavior: "instant" });
-  document.title = "Syolana · Темы, сайты и языки";
+  document.title = "Syolana · Сайты, видео и автоматизация";
   document.querySelector('#footer>span').textContent='© Syolana. Все права защищены.';
   const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
   const [view, a, b, c, d] = parts;
+  document.body.classList.toggle('project-contact-view',view==='contact');
   const managedView=['site','site-editor','create-site'].includes(view);
   document.body.classList.toggle('managed-site-view',view==='site');
   if(view==='site')$('page').dataset.i18nSkip='partner-content';else $('page').removeAttribute('data-i18n-skip');
   document.body.classList.toggle('managed-editor-view',view==='site-editor'||view==='create-site');
   $('main-nav').hidden=managedView;
   const informationTitles = {
+    join: "Сайты под вашу задачу",
     legal: "Правовая информация", offer: "Предварительные условия",
     privacy: "Конфиденциальность", terms: "Как заказать сайт",
     report: "Обращения о нарушениях", contact: "Контакты",
@@ -621,7 +615,7 @@ async function route() {
       const lessonCleanup = cleanup;
       cleanup = (...args) => { lessonCleanup(...args); removeAttribution(); };
     } else if (view === "join") join();
-    else if (view === "contact") contactPage();
+    else if (view === "contact") $("page").append(renderProjectContact(a));
     else if (["studio", "editor", "admin"].includes(view) && config.legacyStudioEnabled !== true) {
       $("page").append(
         heading("КАБИНЕТ ПАРТНЁРА", "Настройки на вашем сайте", "Кабинет подключается отдельно на инфраструктуре владельца сайта. Ссылку на него вы получаете после настройки. В режиме VK записи создаются и исправляются во ВКонтакте."),
@@ -868,3 +862,4 @@ async function openLesson(key, anchor, token) {
   }
   lessonFrame(key, anchor);
 }
+

@@ -1,5 +1,6 @@
 import {el,link} from './utils.js';
 import {registerTranslations} from './i18n.js';
+import {renderProjectExamples,renderProjectSteps} from './project-services.js';
 
 registerTranslations({
  'Услуги':['Services','Servicios','Services'],
@@ -57,10 +58,12 @@ export function renderServices(post,{standalone=false}={}){
  }
  extras.append(list);
  const actions=el('div','row services-actions');
- actions.append(link('Обсудить мой проект',post.href,'btn primary'),link('Бесплатно собрать эскиз','#/create-site','text-link'));
+ actions.append(link('Обсудить мой проект','#/contact','btn primary'),link('Бесплатно собрать эскиз','#/create-site','text-link'));
  const learning=el('div','services-learning');
  learning.append(link('Английский A1 — бесплатно','#/lesson/en/a1/course','text-link'),link('Все платные курсы — 650 ₽ / 30 дней','#/languages','text-link'));
- section.append(head,offers,extras,el('p','services-note',post.note),actions,learning);
+ section.append(head,offers,extras,el('p','services-note',post.note),actions);
+ if(standalone)section.append(renderProjectExamples(),renderProjectSteps());
+ section.append(learning);
  return section;
 }
 

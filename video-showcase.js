@@ -2,6 +2,8 @@ import catalog from './video-showcase.json' with {type:'json'};
 import {registerTranslations,tr} from './i18n.js';
 import './video-copy.js';
 
+registerTranslations({"Сайты, видео и автоматизация": ["Websites, video and automation", "Sitios, vídeo y automatización", "Sites, vidéo et automatisation"], "Для компаний, авторов и агентств. Создаём сайты в вашем стиле, дорабатываем страницы и упрощаем работу с данными.": ["For businesses, creators and agencies. We build websites in your style, improve existing pages and simplify work with data.", "Para empresas, creadores y agencias. Creamos sitios con tu estilo, mejoramos páginas y simplificamos el trabajo con datos.", "Pour les entreprises, les créateurs et les agences. Nous créons des sites à votre image, améliorons vos pages et simplifions le travail sur vos données."], "Обсудить задачу": ["Discuss a project", "Hablar de un proyecto", "Parler d’un projet"], "Задача и условия — в переписке. Стоимость и срок согласуем заранее.": ["We discuss the brief and terms in writing. Price and delivery time are agreed in advance.", "Acordamos el trabajo y las condiciones por escrito. Precio y plazo se fijan de antemano.", "Besoin et conditions se discutent par écrit. Le prix et le délai sont convenus à l’avance."]});
+
 registerTranslations({
  'Включить звук видео':['Turn video sound on','Activar el sonido del vídeo','Activer le son de la vidéo'],
  'Выключить звук видео':['Mute video','Silenciar el vídeo','Couper le son de la vidéo'],
@@ -146,13 +148,12 @@ export function mountShowcaseBanner(banner,{random=Math.random,contactURL='https
  const make=(tag,className,text)=>{const node=doc.createElement(tag);node.className=className;if(text)node.textContent=tr(text);return node;};
  const copy=make('div','showcase-copy'),words=make('div','showcase-words'),kicker=make('div','showcase-kicker');
  const brand=make('div','banner-brandmark syolana-passport-button'),logo=doc.createElement('img');logo.src=new URL('assets/logo.svg',doc.baseURI).href;logo.width=20;logo.height=20;logo.alt='';logo.decoding='async';brand.append(logo,make('span','','SYOLANA'));
- kicker.append(brand,make('span','','САЙТЫ И ВИДЕО'));
- words.append(kicker,make('h2','showcase-title','Сайты и видео по вашей идее'),make('p','showcase-description','Дизайн сайтов, живые темы, клипы и мультфильмы на заказ — для бренда или в подарок близкому.'));
- const actions=make('div','showcase-actions'),site=make('a','btn primary','Оформить сайт'),order=make('a','btn banner-secondary','Заказать видео'),course=make('a','btn banner-secondary showcase-course','Английский A1 — бесплатно');
- try{const url=new URL(contactURL);order.href=url.protocol==='https:'&&!url.username&&!url.password?url.href:'https://www.avito.ru/brands/i223140984';}catch{order.href='https://www.avito.ru/brands/i223140984';}
- order.target='_blank';order.rel='noopener noreferrer';site.href='#/create-site';course.href='#/lesson/en/a1/course';actions.append(site,order,course);
- copy.append(words,actions,make('p','showcase-note','Стоимость и сроки согласуем под вашу задачу.'));
+ kicker.append(brand,make('span','','SYOLANA · НА ЗАКАЗ'));
+ words.append(kicker,make('h2','showcase-title','Сайты, видео и автоматизация'),make('p','showcase-description','Для компаний, авторов и агентств. Создаём сайты в вашем стиле, дорабатываем страницы и упрощаем работу с данными.'));
+ const actions=make('div','showcase-actions'),site=make('a','btn primary','Обсудить задачу'),order=make('a','btn banner-secondary','Заказать видео'),course=make('a','btn banner-secondary showcase-course','Английский A1 — бесплатно');
+ order.href='#/contact/video';site.href='#/contact';course.href='#/lesson/en/a1/course';actions.append(site,order,course);
+ copy.append(words,actions,make('p','showcase-note','Задача и условия — в переписке. Стоимость и срок согласуем заранее.'));
  player.classList.add('showcase-film');banner.classList.add('showcase-hero');banner.style.setProperty('--showcase-backdrop','url("'+mediaURL(entry.poster)+'")');
- banner.replaceChildren(player,copy);
+ banner.replaceChildren(copy,player);
  return selected;
 }

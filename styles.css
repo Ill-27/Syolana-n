@@ -4102,3 +4102,30 @@ h1,h2,h3,h4,h5,h6{overflow-wrap:break-word;word-break:normal;hyphens:manual;text
 
 /* Inactive invitations keep their geometry without covering the scene. */
 #flight-layer .flight-planet[hidden]{display:grid!important;visibility:hidden}
+
+/* Clear project enquiries and practical examples. */
+#banner.showcase-hero[hidden]{display:none!important}
+.project-contact-view #syolana-official-notice{display:none!important}
+.project-contact{padding:clamp(24px,4vw,48px);max-width:960px;margin-inline:auto}
+.project-contact h1{margin-block:10px 18px;font:400 clamp(2.5rem,6vw,4.6rem)/1.12 var(--heading);text-wrap:balance}
+.project-contact-lead{max-width:65ch;font-size:1.02rem;line-height:1.75}
+.project-contact-actions{display:flex;flex-wrap:wrap;gap:12px;margin-block:24px 10px}
+.project-contact-actions .btn{min-height:50px;display:inline-flex;align-items:center;justify-content:center;padding:13px 22px;white-space:normal;text-align:center}
+.project-email{margin:0 0 30px!important;overflow-wrap:anywhere}
+.project-brief{padding-inline-start:23px;display:grid;gap:12px;line-height:1.7}
+.project-recurring,.project-steps{border-top:1px solid var(--panel-border);padding-top:22px;margin-top:28px}
+.project-recurring h2,.project-steps h2,.project-examples>h2{font:400 clamp(1.7rem,4vw,2.6rem)/1.2 var(--heading);margin:0 0 12px;color:var(--accent)}
+.project-theme-terms{margin-top:22px}.project-theme-terms>summary{cursor:pointer;line-height:1.6;padding-block:10px}.project-theme-terms>.card{margin-block:18px;padding:20px}
+.project-examples{border-top:1px solid var(--panel-border);margin-top:32px;padding-top:28px}
+.project-example-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:22px}
+.project-example{min-width:0;padding:20px;border:1px solid var(--panel-border);border-radius:18px;background:linear-gradient(145deg,#ffffff08,transparent)}
+.project-example h3{font:600 1.02rem/1.45 var(--body,system-ui);margin:18px 0 10px}
+.project-example p{font-size:.9rem;line-height:1.65;max-width:55ch}
+.project-example .text-link{display:inline-flex;align-items:center;min-height:44px;margin-top:8px}
+.project-example-art{position:relative;height:140px;overflow:hidden;border-radius:10px;background:#ede9e2;padding:22px;display:grid;grid-template-columns:1.1fr 1fr;gap:12px;align-content:center}
+.project-example-art i{display:block;height:12px;background:#9f6957;border-radius:3px;font-style:normal}
+.project-example-art i:first-child{grid-column:1/-1;width:70%;height:24px}.project-example-art i:last-child{background:#293a36;width:70%}
+[data-example=data] .project-example-art{background:#152c39;color:#d2e7e9;grid-template-columns:1fr 1fr 1fr 1fr;align-items:center}
+[data-example=data] .project-example-art i{height:auto;width:auto;grid-column:auto;background:transparent;font:400 24px/1.5 ui-monospace,monospace;border-bottom:1px solid #ffffff30;border-radius:0}
+[data-example=data] .project-example-art b{font:400 72px/1 Georgia,serif;color:#99c9be}
+@media(max-width:650px){.project-example-grid{grid-template-columns:1fr}.project-contact{padding:24px 20px}.project-contact-actions{display:grid;grid-template-columns:1fr}.project-contact-actions .btn{width:100%}.project-contact h1{font-size:clamp(2.1rem,10vw,3.4rem)}.project-example-art{height:120px}.project-brief{padding-inline-start:20px}}

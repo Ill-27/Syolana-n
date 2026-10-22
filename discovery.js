@@ -46,7 +46,7 @@ export function setupDiscovery({ theme, zen, player, contactURL = "#/contact" })
       eyebrow: "ДЛЯ АВТОРОВ И ПРОЕКТОВ",
       title: "Ваше творчество может жить так же",
       text:
-        "Сайт, живые темы, музыкальный плеер и ваше содержание собираются в одно пространство. Сначала — готовый результат и 7 дней тест-драйва.",
+        "Сайт, живые темы, музыкальный плеер и ваше содержание собираются в одно пространство. Посмотрите примеры и выберите подходящий вариант.",
       label: "Посмотреть условия",
       href: "#/join",
     },
@@ -61,6 +61,7 @@ export function setupDiscovery({ theme, zen, player, contactURL = "#/contact" })
   function eligibleForTip() {
     return (
       !snoozed &&
+      /^(?:#\/)?(?:languages|songs)(?:\/|$)/.test(location.hash) &&
       !document.hidden &&
       !document.body.matches(".reading,.zen,.no-effects,.information-view") &&
       !document.querySelector("dialog[open]")

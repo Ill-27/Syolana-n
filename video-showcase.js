@@ -1,6 +1,8 @@
+import {liveAtelierPreview,openAtelierExample,atelierGlyph} from './atelier-media.js';
 import catalog from './video-showcase.json' with {type:'json'};
 import {registerTranslations,tr} from './i18n.js';
 import './video-copy.js';
+import {atelierText,atelierMail,ATELIER_AVITO} from './atelier.js';
 
 registerTranslations({"Сайты, видео и автоматизация": ["Websites, video and automation", "Sitios, vídeo y automatización", "Sites, vidéo et automatisation"], "Для компаний, авторов и агентств. Создаём сайты в вашем стиле, дорабатываем страницы и упрощаем работу с данными.": ["For businesses, creators and agencies. We build websites in your style, improve existing pages and simplify work with data.", "Para empresas, creadores y agencias. Creamos sitios con tu estilo, mejoramos páginas y simplificamos el trabajo con datos.", "Pour les entreprises, les créateurs et les agences. Nous créons des sites à votre image, améliorons vos pages et simplifions le travail sur vos données."], "Обсудить задачу": ["Discuss a project", "Hablar de un proyecto", "Parler d’un projet"], "Задача и условия — в переписке. Стоимость и срок согласуем заранее.": ["We discuss the brief and terms in writing. Price and delivery time are agreed in advance.", "Acordamos el trabajo y las condiciones por escrito. Precio y plazo se fijan de antemano.", "Besoin et conditions se discutent par écrit. Le prix et le délai sont convenus à l’avance."]});
 
@@ -67,6 +69,16 @@ function installStyle(doc){
 @media(prefers-reduced-motion:reduce){#banner.showcase-hero .showcase-actions .btn{transition:none}}
 .feed-post>.syolana-video{margin:20px 0!important}
 @supports not (aspect-ratio:16/9){.syolana-video{height:0;padding-top:56.25%}}
+
+#banner.showcase-hero .showcase-copy{padding:clamp(24px,3.3vw,44px);gap:24px}
+#banner.showcase-hero .showcase-title{font-size:clamp(2.8rem,5.4vw,4.4rem);margin-bottom:20px}
+#banner.showcase-hero .showcase-description{font-size:clamp(1rem,1.4vw,1.12rem);line-height:1.8}
+#banner.showcase-hero .showcase-actions{display:flex;flex-wrap:wrap;gap:12px}
+#banner.showcase-hero .showcase-actions>.text-link{flex-basis:100%;color:#f4eeff;padding:6px 0;text-underline-offset:5px}
+#banner.showcase-hero .showcase-actions .primary{background:rgba(231,216,255,.2)!important;color:#fff!important;border:1px solid rgba(237,222,255,.5)!important;box-shadow:inset 0 1px 0 #ffffff24,0 6px 22px #0002}
+#banner.showcase-hero .showcase-note{font-size:.81rem;line-height:1.7;max-width:620px}
+@media(min-width:1000px){#banner.showcase-hero{display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:stretch;border-radius:28px}#banner.showcase-hero>.showcase-film{height:100%;aspect-ratio:auto;min-height:360px}#banner.showcase-hero>.showcase-film>video{object-fit:contain!important}}
+@media(max-width:640px){#banner.showcase-hero{border-radius:24px}#banner.showcase-hero .showcase-copy{padding:26px 23px;gap:20px}#banner.showcase-hero .showcase-actions .btn{flex:1 1 135px;font-size:13px}#banner.showcase-hero .showcase-note{font-size:.77rem;padding-right:48px}#banner.showcase-hero .showcase-actions>.text-link{padding-right:48px;box-sizing:border-box}}
 `;doc.head.append(style);
 }
 function documentPlayers(doc){
@@ -138,22 +150,17 @@ export function createShowcaseVideo(entry,{doc=document,priority=false}={}){
 }
 
 export function showcaseEntry(id){return catalog.videos.find(video=>video.id===id);}
-export function mountShowcaseBanner(banner,{random=Math.random,contactURL='https://www.avito.ru/brands/i223140984'}={}){
+export function mountShowcaseBanner(banner){
  const doc=banner.ownerDocument;
- if(!selections.has(doc))selections.set(doc,selectBannerVariant(random));
- const selected=selections.get(doc);banner.dataset.videoVariant=selected;
- if(banner.querySelector('[data-showcase-video]'))return selected;
- const entry=showcaseEntry(selected),player=createShowcaseVideo(entry,{doc,priority:true});
- if(!player)return selected;
- const make=(tag,className,text)=>{const node=doc.createElement(tag);node.className=className;if(text)node.textContent=tr(text);return node;};
+ if(banner.dataset.showcaseBook)return 'book';
+ installStyle(doc);
+ const make=(tag,cls,text)=>{const e=doc.createElement(tag);e.className=cls;if(text)e.textContent=tr(text);return e;};
  const copy=make('div','showcase-copy'),words=make('div','showcase-words'),kicker=make('div','showcase-kicker');
  const brand=make('div','banner-brandmark syolana-passport-button'),logo=doc.createElement('img');logo.src=new URL('assets/logo.svg',doc.baseURI).href;logo.width=20;logo.height=20;logo.alt='';logo.decoding='async';brand.append(logo,make('span','','SYOLANA'));
- kicker.append(brand,make('span','','SYOLANA · НА ЗАКАЗ'));
- words.append(kicker,make('h2','showcase-title','Сайты, видео и автоматизация'),make('p','showcase-description','Для компаний, авторов и агентств. Создаём сайты в вашем стиле, дорабатываем страницы и упрощаем работу с данными.'));
- const actions=make('div','showcase-actions'),site=make('a','btn primary','Обсудить задачу'),order=make('a','btn banner-secondary','Заказать видео'),course=make('a','btn banner-secondary showcase-course','Английский A1 — бесплатно');
- order.href='#/contact/video';site.href='#/contact';course.href='#/lesson/en/a1/course';actions.append(site,order,course);
- copy.append(words,actions,make('p','showcase-note','Задача и условия — в переписке. Стоимость и срок согласуем заранее.'));
- player.classList.add('showcase-film');banner.classList.add('showcase-hero');banner.style.setProperty('--showcase-backdrop','url("'+mediaURL(entry.poster)+'")');
- banner.replaceChildren(copy,player);
- return selected;
+ kicker.append(brand,make('span','',atelierText('brand')),atelierGlyph('scissors','atelier-banner-glyph',doc));
+ words.append(kicker,make('h2','showcase-title',atelierText('title')),make('p','showcase-description',atelierText('description')));
+ const actions=make('div','showcase-actions'),mail=make('a','btn primary',atelierText('request')),avito=make('a','btn banner-secondary',atelierText('avito')),example=make('button','text-link',atelierText('examples_link'));
+ mail.href=atelierMail();avito.href=ATELIER_AVITO;avito.target='_blank';avito.rel='noopener noreferrer';example.type='button';example.onclick=()=>openAtelierExample('book');actions.append(mail,avito,example);
+ copy.append(words,actions,make('p','showcase-note',atelierText('hero_note')));
+ const preview=liveAtelierPreview('book',{hero:true,doc});preview.classList.add('showcase-film');banner.classList.add('showcase-hero');banner.dataset.showcaseBook='true';banner.replaceChildren(copy,preview);return 'book';
 }

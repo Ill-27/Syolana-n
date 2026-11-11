@@ -65,6 +65,7 @@ function installStyles() {
   style.id = "syolana-trust-ui-style";
   style.textContent = `
 #syolana-official-notice{--trust-text:#fffdfb;--trust-muted:rgba(255,253,251,.84);--trust-soft:rgba(255,253,251,.68);position:relative;isolation:isolate;overflow:hidden;margin:18px 0 28px;padding:26px 25px 23px;border:1px solid color-mix(in srgb,var(--panel-border,rgba(255,255,255,.18)) 88%,rgba(255,255,255,.13));border-radius:calc(var(--radius,24px) * .96);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018) 56%),color-mix(in srgb,var(--panel-bg,rgba(18,19,31,.78)) 94%,rgba(5,7,12,.88))!important;box-shadow:0 20px 58px rgba(0,0,0,.2),0 0 32px color-mix(in srgb,var(--panel-glow,transparent) 80%,transparent),inset 0 1px 0 rgba(255,255,255,.075);backdrop-filter:blur(20px) saturate(118%);-webkit-backdrop-filter:blur(20px) saturate(118%);color:var(--trust-text)!important}
+#syolana-official-notice>summary{position:relative;z-index:2;display:flex;align-items:center;gap:12px;cursor:pointer;font:600 .9rem/1.5 var(--body,system-ui);text-align:left;list-style:none}#syolana-official-notice>summary:after{content:"+";margin-left:auto;font-size:1.3em}#syolana-official-notice[open]>summary:after{content:"−"}#syolana-official-notice:not([open]){padding:18px 22px;margin:20px 0}#syolana-official-notice:not([open]) .syolana-trust-shield{animation:none}
 #syolana-official-notice::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 13% 8%,color-mix(in srgb,var(--accent,#e5d6ff) 11%,transparent),transparent 31%),linear-gradient(115deg,transparent 0 45%,rgba(255,255,255,.028) 50%,transparent 56%);opacity:.85}
 .syolana-trust-auth{position:relative;z-index:1;display:inline-flex;align-items:center;gap:10px;min-height:34px;color:var(--trust-text)!important}.syolana-trust-icon{position:relative;display:grid;place-items:center;flex:0 0 auto;width:34px;height:34px;border:1px solid rgba(255,255,255,.21);border-radius:12px;background:rgba(255,255,255,.045);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 20px color-mix(in srgb,var(--accent,#e5d6ff) 10%,transparent);overflow:hidden}.syolana-trust-shield{width:21px;height:21px;filter:drop-shadow(0 0 6px rgba(255,255,255,.14));animation:syolanaTrustShield 8s ease-in-out infinite}.syolana-trust-kicker{position:relative;margin:0;font:650 .7rem/1.2 var(--body,system-ui)!important;letter-spacing:.145em;text-transform:uppercase;color:transparent!important;background:linear-gradient(105deg,#fff 0%,#dff7ff 18%,#f7e8ff 37%,#fff1cb 50%,#dff7ff 63%,#fff 82%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;text-shadow:0 0 14px rgba(255,255,255,.08);animation:syolanaPassportSheen 8s ease-in-out infinite alternate}.syolana-trust-auth::after{content:"";position:absolute;left:-8px;right:-10px;top:2px;height:30px;border-radius:999px;background:linear-gradient(105deg,transparent 22%,rgba(222,247,255,.06) 36%,rgba(250,229,255,.13) 47%,rgba(255,241,197,.12) 53%,rgba(222,247,255,.06) 62%,transparent 78%);background-size:260% 100%;mix-blend-mode:screen;pointer-events:none;animation:syolanaPassportSheen 8s ease-in-out infinite alternate}
 .syolana-trust-title{position:relative;z-index:1;margin:15px 0 15px!important;color:var(--trust-text)!important;font-family:var(--display,"Syolana Script","Cormorant Garamond",Georgia,serif)!important;font-size:clamp(2rem,4.6vw,3rem)!important;font-weight:400!important;line-height:1.08!important;letter-spacing:.01em!important;text-wrap:balance;text-shadow:0 2px 16px rgba(0,0,0,.32),0 0 24px color-mix(in srgb,var(--accent,#e5d6ff) 10%,transparent)!important;opacity:1!important}
@@ -88,24 +89,21 @@ function renderNotice() {
 
   let notice = document.getElementById("syolana-official-notice");
   if (!notice) {
-    notice = document.createElement("section");
+    notice = document.createElement("details");
     notice.id = "syolana-official-notice";
     notice.className = "syolana-official-notice";
     notice.dataset.i18nSkip = "trust";
-    notice.setAttribute("role", "note");
-    const nav = document.getElementById("main-nav");
-    if (nav) nav.insertAdjacentElement("afterend", notice);
-    else shell.prepend(notice);
+
+    const footer = document.getElementById("footer");
+    if (footer) footer.insertBefore(notice,footer.querySelector(".network-note"));
+    else shell.append(notice);
   }
 
   const title = t("Официальные адреса Syolana");
   notice.setAttribute("aria-label", title);
   notice.innerHTML = `
-    <div class="syolana-trust-auth">
-      <span class="syolana-trust-icon">${shieldMark()}</span>
-      <p class="syolana-trust-kicker">${t("Проверка подлинности")}</p>
-    </div>
-    <h2 class="syolana-trust-title">${title}</h2>
+    <summary class="syolana-trust-summary">${shieldMark()}<span>${title}</span></summary>
+    <p class="syolana-trust-title">${t("Проверка подлинности")}</p>
     <div class="syolana-trust-copy">
       <p>${t("У Syolana два сайта: основной и резервный на Яндексе. Оба указаны ниже.")}</p>
       <p><strong>${t("Вопросы и заказы — через кнопки справа: почта, ВКонтакте и Авито.")}</strong></p>

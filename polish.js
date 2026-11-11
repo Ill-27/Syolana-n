@@ -14,7 +14,7 @@ function polishNetworkNotice(){
 }
 function keepGlobalNavigation(){
  const partnerView=document.body.classList.contains('managed-site-view'),nav=document.getElementById('main-nav'),banner=document.getElementById('banner');
- if(nav&&!partnerView){nav.hidden=false;set(nav.querySelector('[data-nav="join"]'),'Сайт');}
+ if(nav&&!partnerView){nav.hidden=false;set(nav.querySelector('[data-nav="join"] .nav-label')||nav.querySelector('[data-nav="join"]'),'Ателье');}
  if(banner&&!banner.classList.contains('showcase-hero')&&!partnerView&&!document.body.classList.contains('information-view')){banner.hidden=false;set(banner.querySelector('h1,h2,h3,strong'),'Сделаем вам сайт на Syolana');}
 }
 function polishLanguageIntro(){
@@ -73,6 +73,6 @@ function previewLiveTheme(id){const option=document.querySelector(`.theme-option
 function wireBuilderThemePreview(){document.querySelectorAll('.builder-theme-choice input[type="radio"]').forEach(input=>{if(input.dataset.previewWired)return;input.dataset.previewWired='true';input.addEventListener('change',()=>{if(input.checked&&input.value)previewLiveTheme(input.value);});});}
 function rewritePrivateMedia(){if(!isShortYandex)return;document.querySelectorAll('img[src^="/api/course-access/"],video[src^="/api/course-access/"]').forEach(media=>{const src=media.getAttribute('src'),next=src?API_ORIGIN+src:src;if(next&&next!==src)media.setAttribute('src',next);});}
 function cleanLegacyAccess(){document.querySelectorAll('#loading.access-screen>.access-details,#loading.access-screen>.owner-preview,.managed-owner-login').forEach(el=>el.remove());}
-function wireSameRouteTop(){if(document.documentElement.dataset.sameRouteTop)return;document.documentElement.dataset.sameRouteTop='1';document.addEventListener('click',event=>{const a=event.target.closest('a[href]');if(!a)return;let u;try{u=new URL(a.href,location.href);}catch{return;}if(u.origin!==location.origin||u.pathname!==location.pathname||u.search!==location.search||u.hash!==location.hash)return;event.preventDefault();window.scrollTo({top:0,behavior:'smooth'});document.getElementById('page')?.focus({preventScroll:true});});}
+function wireSameRouteTop(){if(document.documentElement.dataset.sameRouteTop)return;document.documentElement.dataset.sameRouteTop='1';document.addEventListener('click',event=>{if(event.defaultPrevented)return;const a=event.target.closest('a[href]');if(!a)return;if(a.closest('#main-nav')&&document.body.classList.contains('atelier-shell'))return;let u;try{u=new URL(a.href,location.href);}catch{return;}if(u.origin!==location.origin||u.pathname!==location.pathname||u.search!==location.search||u.hash!==location.hash)return;event.preventDefault();window.scrollTo({top:0,behavior:'smooth'});document.getElementById('page')?.focus({preventScroll:true});});}
 function run(){keepGlobalNavigation();polishNetworkNotice();polishLanguageIntro();addTryFirstNotes();polishPartnerCopy();removeTrialPromise();polishLegalCopy();polishCreator();enhanceCreatorThemeSelect();wireBuilderThemePreview();rewritePrivateMedia();cleanLegacyAccess();wireSameRouteTop();}
 export {run as polishView};

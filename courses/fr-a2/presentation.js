@@ -1,8 +1,8 @@
 // Display and navigation helpers do not own or interrupt the speech queue.
 export const COURSE_VIEWS = [
-  ['days', 'Курс по дням'], ['reading', 'Чтение и звуки'],
+  ['days', 'Курс по дням'], ['reading', 'Понимать связную речь'],
   ['grammar', 'Правила и конструкции'], ['vocabulary', 'Словарь'],
-  ['variants', 'Франция и другие страны'], ['trainers', 'Повторение до автоматизма'],
+  ['trainers', 'Повторение до автоматизма'],
   ['practice', 'Говорите, читайте и пишите'], ['coverage', 'Что входит в A2']
 ];
 
@@ -10,7 +10,7 @@ export function displayIPA(value) {
   return '[' + String(value || '').trim().replace(/^[/\[]|[/\]]$/g, '') + ']';
 }
 export function displayText(value) {
-  return String(value || '').replace(/\/([A-Za-zəɪʊɑɒɔɜθðʃʒŋˈˌːæʌɡɛɹɚɝʔɾ .()-]+)\//g, '[$1]');
+  return String(value || '');
 }
 export function topicTitle(section) {
   return section.title.replace(/^\d+\.\s*/, '');
@@ -26,9 +26,9 @@ export function dayDescription(day, groups) {
   const ids = [...new Set(day.words.map(w => w.group))];
   const vocabulary = ids.map(id => groups.find(g => g.id === id)?.title).filter(Boolean);
   return {
-    title: day.number === 1 ? 'Сначала — чтение и звуки' : topics[0] || 'Закрепляем слова и фразы',
+    title: topics[0] || 'Слова и ситуации A2',
     topics, vocabulary,
-    extras: [...new Set(day.extras.map(u => u.kind === 'comparison' ? 'региональные варианты французского' : 'бытовые ситуации'))]
+    extras: [...new Set(day.extras.map(u => 'бытовые ситуации'))]
   };
 }
 

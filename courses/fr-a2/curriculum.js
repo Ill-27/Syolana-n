@@ -1,5 +1,19 @@
-import {secondsFor} from './audio.js?v=20261012-fr-a2-1';
-import {trainerGroups} from './trainers.js?v=20261012-fr-a2-1';
+import {secondsFor} from './audio.js?v=20261023-fr-a2-review-1';
+import {trainerGroups} from './trainers.js?v=20261023-fr-a2-review-1';
+
+export function explanationPair(id,text,ru='') {
+  return {id:'fr-a2-explanation-'+id,en:text,ru,ipa:'',phoneticIPA:'',lang:'fr-FR',tag:'Пояснение'};
+}
+export function restoreQueue(savedQueue,savedProgress,data,curriculum) {
+  const allowed=new Set([data.version,...(data.progressCompatibility?.versions||[])]);
+  if(!savedQueue||!savedProgress||savedQueue.version!==savedProgress.version||!allowed.has(savedQueue.version)||!Array.isArray(savedQueue.ids))return null;
+  const cursor=Number.isInteger(savedProgress.unitIndex)&&savedProgress.unitIndex>=0?savedProgress.unitIndex:0;
+  const units=[],seen=new Set();let unitIndex=0;
+  savedQueue.ids.forEach((id,i)=>{const unit=curriculum.map.get(id);if(unit&&!seen.has(id)){seen.add(id);if(i<cursor)unitIndex++;units.push(unit);}});
+  if(!units.length||unitIndex>=units.length)return null;
+  const sameVersion=savedQueue.version===data.version;
+  return {units,unitIndex,segmentIndex:sameVersion?Math.max(0,savedProgress.segmentIndex||0):0,elapsed:sameVersion?Math.max(0,savedProgress.elapsed||0):0};
+}
 
 export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={},preparedGroups) {
   const units=[],map=new Map(),rules=[],groups=preparedGroups??trainerGroups(data);
@@ -17,12 +31,13 @@ export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={},preparedGro
   }
   for(const section of data.rules){
     const list=[];
-    for(const item of section.items){
-      if(item.instruction)list.push(unit(item.instruction,'rule',section.id,item.body));
+    for(const [index,item] of section.items.entries()){
+      if(item.bodyFr)list.push(unit(explanationPair('rule-'+section.id+'-'+index,item.bodyFr,item.body),'rule',section.id));
+      else if(item.instruction)list.push(unit(item.instruction,'rule',section.id,item.body));
       for(const p of item.pairs)list.push(unit(p,'rule',section.id));
     }
     if(section.id==='read-alphabet')for(const p of data.alphabet)list.push(unit(p,'rule',section.id));
-    if(['read-vowels','read-consonants'].includes(section.id))for(const p of data.phonetics.filter(p=>section.id==='read-consonants'?p.type==='Согласный':p.type!=='Согласный'))list.push(unit(p.example,'rule',section.id,p.mouth));
+    if(['read-vowels','read-consonants'].includes(section.id))for(const p of data.phonetics.filter(p=>section.id==='read-consonants'?p.type==='Согласный':p.type!=='Согласный')){if(p.mouthFr)list.push(unit(explanationPair('sound-'+p.id,p.mouthFr,p.mouth),'rule',section.id));list.push(unit(p.example,'rule',section.id,p.mouth));}
     rules.push({section,units:list});
     if(section.id==='numbers')repetition(['numbers','ordinals','time','calendar','dates','prices','measurements']);
     if(section.id==='contacts')repetition(['contacts']);
@@ -33,11 +48,11 @@ export function makeCurriculum(data,{rate=1,repeat=1,target=1800}={},preparedGro
     if(section.id==='comparison')repetition(['comparison-patterns']);
   }
   repetition(groups.filter(g=>g.pairs.some(p=>!map.has(p.id))).map(g=>g.id));
-  const words=data.vocabulary.map(w=>({word:w,units:[unit(w.head,'word','vocabulary',w.note,w.id),...w.forms.map(p=>unit(p,'word','vocabulary','',w.id)),...w.examples.map(p=>unit(p,'word','vocabulary','',w.id))]}));
+  const words=data.vocabulary.map(w=>({word:w,units:[unit(w.head,'word','vocabulary',w.note,w.id),...(w.noteFr?[unit(explanationPair('note-'+w.id,w.noteFr,w.note),'word','vocabulary','',w.id)]:[]),...w.forms.map(p=>unit(p,'word','vocabulary','',w.id)),...w.examples.map(p=>unit(p,'word','vocabulary','',w.id))]}));
   const extras=[];
-  // Keep each UK/US comparison and each conversation together in one day.
-  for(const v of data.variants)extras.push([unit(v.uk,'comparison','variants',v.note),unit(v.us,'comparison','variants')]);
-  for(const p of data.practice)extras.push([...p.pairs,...(p.model?[p.model]:[])].map(pair=>unit(pair,'practice','practice')));
+  // Keep each regional comparison and each conversation together in one day.
+  for(const [index,v] of data.variants.entries())extras.push([unit(v.uk,'comparison','variants'),unit(v.us,'comparison','variants'),...(v.noteFr?[unit(explanationPair('variant-'+index,v.noteFr,v.note),'comparison','variants')]:[])]);
+  for(const p of data.practice)extras.push([...(p.taskFr?[explanationPair('task-'+p.id,p.taskFr,p.task)]:[]),...p.pairs,...(p.model?[p.model]:[])].map(pair=>unit(pair,'practice','practice')));
   const total=units.reduce((s,u)=>s+duration(u),0),count=Math.max(2,Math.ceil(total/target));
   const lessons=Array.from({length:count},(_,i)=>({id:'day-'+(i+1),number:i+1,rules:[],words:[],extras:[],units:[],seconds:0}));
   const foundation=rules.filter(r=>r.section.area==='reading'),later=rules.filter(r=>r.section.area!=='reading');

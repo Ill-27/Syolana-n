@@ -1,0 +1,31 @@
+html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,[contenteditable=true]{-webkit-user-select:text;user-select:text}
+.demo-watermark{position:fixed;z-index:220;left:50%;transform:translateX(-50%);pointer-events:none;font:600 10px/14px system-ui,sans-serif;letter-spacing:.2em;color:#f7edff;opacity:.78;white-space:nowrap;text-shadow:0 1px 5px #000b;-webkit-user-select:none;user-select:none}
+.demo-watermark-top{top:73px}.demo-watermark-bottom{bottom:9px}
+html[data-syolana-demo=book] #text-scroll{bottom:70px}
+html[data-syolana-demo=book] .signature{bottom:23px}
+html[data-syolana-demo=glamping] .demo-watermark-top,html[data-syolana-demo=studio] .demo-watermark-top{top:6px}
+html[data-syolana-demo=glamping] .demo-watermark-bottom,html[data-syolana-demo=studio] .demo-watermark-bottom{bottom:6px}
+html[data-syolana-demo=glamping] body:after,html[data-syolana-demo=studio] body:after{content:"";position:fixed;z-index:210;inset:0;pointer-events:none;background:linear-gradient(#101823a8 0 25px,transparent 25px calc(100% - 25px),#101823a8 calc(100% - 25px));backdrop-filter:none}
+html[data-syolana-demo=glamping] .site-header{top:26px}
+html[data-demo-preview=true]{scrollbar-width:none}
+html[data-demo-preview=true] body{pointer-events:none}
+html[data-demo-preview=true] .world canvas{filter:blur(4px) saturate(.86)}
+html[data-demo-preview=true] .topbar{top:12px;left:18px;right:18px}
+html[data-demo-preview=true] .topbar .brand{width:38px;height:38px;border-radius:13px}
+html[data-demo-preview=true] .topbar .brand img{width:28px;height:28px}
+html[data-demo-preview=true] .header-tools,html[data-demo-preview=true] .reader-dock,html[data-demo-preview=true] #reader-controls-open,html[data-demo-preview=true] .signature,html[data-demo-preview=true] .right-rail,html[data-demo-preview=true] .left-rail,html[data-demo-preview=true] .scene-copyright{display:none!important}
+html[data-demo-preview=true] #text-scroll{inset:65px 0 28px;scrollbar-width:none}
+html[data-demo-preview=true] .demo-watermark-top{top:49px;font-size:8px}
+html[data-demo-preview=true] .demo-watermark-bottom{font-size:8px;bottom:7px}
+html[data-demo-preview=true] .chapter-heading{padding:12px 0 27px}
+html[data-demo-preview=true] .chapter-heading h2{font-size:42px}
+html[data-demo-preview=true] .reader-layout{padding:12px 28px 0;display:block}
+html[data-demo-preview=true] .reading-scene p{font-size:17px;line-height:1.8}
+html[data-demo-preview=true] .scene-heading{padding-bottom:17px;margin-bottom:16px}
+html[data-demo-preview=true] .scene-heading h3{font-size:28px}
+@media(max-width:600px){html[data-syolana-demo=book] .demo-watermark-top{top:65px}html[data-demo-preview=true][data-syolana-demo=book] .demo-watermark-top{top:49px}}
+@media print{body>*{display:none!important}body:after{display:block!important;content:"syolana.com · Демонстрационный образец оформления";color:#222;font:18px/1.8 system-ui;padding:40px;background:none!important;position:static!important}.demo-watermark{display:block!important;color:#222;text-shadow:none}}
+
+html[data-demo-paused=true] *,html[data-demo-paused=true] *:before,html[data-demo-paused=true] *:after{animation-play-state:paused!important}
+
+#resume[hidden],html[data-demo-preview=true] .resume{display:none!important}

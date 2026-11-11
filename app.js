@@ -33,6 +33,7 @@ import { renderFeed, feedEditor } from "./feed.js";
 import {mountShowcaseBanner} from './video-showcase.js';
 import {registerFeedCopy,renderServices,mountServicesNavigation} from './services.js';
 import {renderProjectContact} from './project-services.js';
+import {renderAtelierHome,renderAtelierDetails} from './atelier.js';
 import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
 
 registerTranslations({'Ключи и подписки':['Keys and subscriptions','Claves y suscripciones','Clés et abonnements']});
@@ -228,7 +229,9 @@ function platformPromo(kind = "themes") {
   return article;
 }
 
-async function home(token) {
+function home(){ $("page").append(renderAtelierHome()); }
+
+async function feedPage(token) {
   const pinned=renderServices(initialFeed.find(post=>post.pinned));
   $("banner").after(pinned);
   cleanup=()=>pinned.remove();
@@ -295,14 +298,14 @@ async function home(token) {
 function servicesPage(){
   const pinned=renderServices(initialFeed.find(post=>post.pinned),{standalone:true});
   $("banner").after(pinned);cleanup=()=>pinned.remove();
-  $("page").append(link('Назад в ленту','#/','text-link'));
+  $("page").append(link('Вернуться в ателье','#/','text-link'));
 }
 function feedPostPage(id){
   const post=initialFeed.find(post=>!post.pinned&&post.id===id);
   $("page").append(link('Услуги и цены','#/services','text-link'));
   if(!post){$("page").append(el('p','empty','Публикация не найдена.'));return;}
   const list=el('div','feed-list single-post');renderFeed(list,[post],{single:true});
-  $("page").append(list,link('Назад в ленту','#/','text-link'));
+  $("page").append(list,link('Вернуться в ателье','#/','text-link'));
 }
 function languages(lang = "en") {
   if (!lessons[lang]) lang = "en";
@@ -416,13 +419,8 @@ async function songPage(id, token) {
   const promo=songCoursePromo([songLanguage(song)]);
   $('page').append(introduction,...(promo?[promo]:[]),poems,rights,notes,link('К списку песен','#/songs','btn'));
 }
-function join() {
-  $("page").append(heading("ТЕМЫ И ШАБЛОНЫ · 7 ДНЕЙ ЗНАКОМСТВА", "Ваш сайт. Ваши материалы. Общая забота о дизайне.", "Готовый шаблон с живыми темами и понятным редактором. Домен, хостинг и размещение — по вашему выбору. Для авторов, мастеров, студий и небольших проектов."));
-  const grid=el("div","grid two");
-  for(const [title,paragraphs] of [["Начните с готовой основы",["Выберите блоки, расставьте их по порядку и заполните своими текстами. Добавьте фотографии, контакты и публикации, выберите тему — без написания кода. Редактор подсказывает следующий шаг и показывает результат до публикации.","Вы выбираете домен, хостинг и место размещения. Помощь с первоначальной настройкой можно согласовать отдельно. Содержание, домен и материалы остаются вашими."]],["Попробуйте спокойно",["Демо-сайт и редактор доступны для знакомства до заказа. Цена настройки и дальнейшего обслуживания зависит от объёма проекта; вы узнаете её до оплаты.","В оплаченный период обслуживания включён доступ ко всем опубликованным платным языковым курсам Syolana. Для изучения языков без сайта есть отдельная подписка — 650 ₽ за 30 дней."]]]){const card=el("section","card stack");card.append(el("h2","",title),...paragraphs.map(t=>el("p","",t)));grid.append(card);}
-  $("page").append(grid);
-  const practical=el("section","card stack partner-practical");practical.append(el("h3","","Как это работает"),el("p","","Syolana предоставляет темы, шаблон, готовые блоки и редактор. Вы добавляете свои материалы и скачиваете готовый сайт. Домен, хостинг и размещение выбираете самостоятельно; подключение серверных функций согласуется отдельно."),el("p","","Сохраните основной и запасной адреса Syolana. При ограничениях интернета доступность конкретного адреса зависит от оператора. Для вашего сайта можно выбрать подходящий домен и место размещения; доступ во всех сетях не гарантируется."),el("p","","На сайте сохраняется нейтральная подпись «Сайт создан на Syolana». Обновления оформления предоставляются по условиям обслуживания. Файлы сайта, домен и материалы остаются у владельца. Стоимость домена, хостинга и дополнительных серверных функций согласуется отдельно и не входит в шаблон автоматически."),el("p","","Иногда творческий проект вдохновляет нас на новую тему или песню. Такой подарок возможен по отдельной договорённости: он не входит в обязательный состав обслуживания и не обещается каждому партнёру."),link("Обсудить мой сайт",businessContact(),"btn primary"),link("Создать и опубликовать сайт","#/create-site","btn primary"),link("Попробовать редактор без входа","partner-demo/studio/","btn"),link("Партнёр: Артивид",config.artividUrl||"https://ill-27.github.io/Immersivebooks/","btn"),link("Условия сотрудничества","#/offer","text-link"));$("page").append(practical);
-}
+function join(){positionView();}
+
 async function publicSite(slug, token) {
   document.body.classList.add("partner-site");
   const data = await api.request("public/" + encodeURIComponent(slug));
@@ -547,8 +545,40 @@ function report() {
   $("page").append(box);
 }
 
+let atelierActive=false;
+const atelierPanels=new Map();
+function atelierTab(view,kind,token){
+ const host=$('page'),key=view+(kind?'/'+kind:'');
+ if(!atelierActive){
+  cleanup();clearPositionView();cleanup=()=>{};clearTimeout(siteTimer);clearTimeout(accessTimer);
+  document.body.classList.remove('reading','partner-site');theme.setBlocked(false);host.replaceChildren();atelierPanels.clear();
+ }
+ atelierActive=true;document.body.classList.add('atelier-shell');document.body.classList.remove('information-view','managed-site-view','managed-editor-view');
+ document.body.classList.toggle('project-contact-view',view==='contact');host.removeAttribute('data-i18n-skip');
+ $('banner').hidden=false;$('provider-notice').hidden=false;$('main-nav').hidden=false;
+ const minimum=Math.max(240,window.scrollY+window.innerHeight-host.getBoundingClientRect().top-window.scrollY-180);host.style.minHeight=minimum+'px';
+ for(const panel of atelierPanels.values()){panel.hidden=true;panel.dataset.i18nSkip='inactive-atelier';}
+ let panel=atelierPanels.get(key);
+ if(!panel){
+  panel=el('section','atelier-tab-panel');panel.dataset.atelierPanel=key;
+  if(view==='home')panel.append(renderAtelierHome());
+  else if(view==='join')panel.append(renderAtelierDetails());
+  else if(view==='services'){panel.append(renderServices(initialFeed.find(post=>post.pinned),{standalone:true}),link('Вернуться в ателье','#/','text-link'));}
+  else panel.append(renderProjectContact(kind));
+  atelierPanels.set(key,panel);host.append(panel);
+ }
+ panel.hidden=false;panel.removeAttribute('data-i18n-skip');
+ for(const a of $('main-nav').querySelectorAll('[data-nav]'))a.setAttribute('aria-current',a.dataset.nav===view?'page':'false');
+ document.title='Syolana · Ателье сайтов — авторское иммерсивное оформление';
+ finishUI();
+ if(!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)panel.animate?.([{opacity:.25},{opacity:1}],{duration:180,easing:'ease-out'});
+}
+
 async function route() {
   const token = ++routeToken;
+  const routeParts=(location.hash.replace(/^#\/?/, '')||'home').split('/');
+  if(['home','join','services','contact'].includes(routeParts[0])){atelierTab(routeParts[0],routeParts[1]||'',token);return;}
+  atelierActive=false;atelierPanels.clear();document.body.classList.remove('atelier-shell');$('page').style.minHeight='';
   const preserveAudio = /^#\/book\//.test(location.hash) || /^#\/s\/[^/]+\/book\//.test(location.hash);
   cleanup({ preserveAudio });
   clearPositionView();
@@ -562,7 +592,7 @@ async function route() {
   document.documentElement.style.setProperty("--prose", moodColors.neutral);
   $("page").replaceChildren();
   window.scrollTo({ top: 0, behavior: "instant" });
-  document.title = "Syolana · Сайты, видео и автоматизация";
+  document.title = "Syolana · Ателье сайтов — авторское иммерсивное оформление";
   document.querySelector('#footer>span').textContent='© Syolana. Все права защищены.';
   const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
   const [view, a, b, c, d] = parts;
@@ -573,13 +603,13 @@ async function route() {
   document.body.classList.toggle('managed-editor-view',view==='site-editor'||view==='create-site');
   $('main-nav').hidden=managedView;
   const informationTitles = {
-    join: "Сайты под вашу задачу",
+    join: "Ателье сайтов",
     legal: "Правовая информация", offer: "Предварительные условия",
     privacy: "Конфиденциальность", terms: "Как заказать сайт",
     report: "Обращения о нарушениях", contact: "Контакты",
     'site':'Авторский сайт','site-editor':'Мастерская сайта','create-site':'Создать сайт',
     'song':'История песни','owner-sites':'Мои партнёрские сайты',
-    services:'Услуги и цены',post:'Подробнее об услуге',
+    services:'Дополнительные услуги',post:'Подробнее об услуге',
   };
   const informationView = Boolean(informationTitles[view]);
   $("banner").hidden = informationView;
@@ -596,7 +626,8 @@ async function route() {
     else if(view==='site-editor'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) {const {mountManagedEditor}=await import('./managed-sites.js');const next=await mountManagedEditor($('page'),a,{isCurrent:()=>token===routeToken});if(token===routeToken)cleanup=next||(()=>{});else next?.();}
     else if(view==='site'&&/^[a-z0-9][a-z0-9-]{2,49}$/.test(a||'')) {const {mountManagedSite}=await import('./managed-sites.js');await mountManagedSite($('page'),a,{isCurrent:()=>token===routeToken,selectTheme:id=>theme.select(id)});}
     else if(view==='owner-sites'){const {mountOwnerSites}=await import('./owner-sites.js');const next=await mountOwnerSites($('page'),{isCurrent:()=>token===routeToken});if(token===routeToken)cleanup=next;else next?.();}
-    else if (view === "home") await home(token);
+    else if (view === "home") home();
+    else if (view === "feed") await feedPage(token);
     else if (view === "services") servicesPage();
     else if (view === "post") feedPostPage(a);
     else if (view === "library" || view === "book") { location.replace((config.artividUrl || "https://ill-27.github.io/Immersivebooks/") + (view === "book" ? "#/book/"+encodeURIComponent(a)+"/"+(Number(b)||0) : "#/")); return; }
@@ -651,6 +682,11 @@ async function route() {
   }
   if(token===routeToken)finishUI();
 }
+$('main-nav').addEventListener('click',event=>{
+ const a=event.target.closest('a[data-nav]');if(!a||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||event.button>0)return;
+ const targetURL=new URL(a.href,document.baseURI),hash=targetURL.hash;if(targetURL.origin!==location.origin||!['#/','#/join','#/services','#/contact/site'].includes(hash))return;
+ event.preventDefault();if(location.hash===hash)return;window.history.pushState(null,'',hash);route();
+});
 window.addEventListener("hashchange", route);
 await route();
 

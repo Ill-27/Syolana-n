@@ -48,6 +48,7 @@ export function createOwnerVault({nativeFetch, crypto = globalThis.crypto, stora
     return new Response(text, {headers:{'Content-Type':'application/json', 'Cache-Control':'no-store'}});
   }
   async function handle(path, method, body) {
+    if(path.split('/').includes('sr-a1'))return null;
     const endpoint = path.split('/').filter(Boolean).at(-1);
     if (method === 'POST' && endpoint === 'key-login' && await unlock(String(body?.key || '').trim())) return json(session());
     if (!read()) return null;

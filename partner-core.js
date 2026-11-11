@@ -201,7 +201,7 @@ function buildBanner(config) {
     make(
       "p",
       "banner-invitation",
-      c.invitation || "7 дней тест-драйва · без предоплаты",
+      c.invitation || "Оформление под ваш проект",
     ),
   );
 

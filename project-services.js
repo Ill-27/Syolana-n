@@ -1,8 +1,8 @@
 import {el,link} from './utils.js';
 import {registerTranslations} from './i18n.js';
 const lines=[
-['Обсудим вашу задачу','Let’s discuss your project','Hablemos de tu proyecto','Parlons de votre projet'],
-['Напишите, что нужно сделать. Можно прислать ссылку, макет или пример результата. Готовое техническое задание не обязательно.','Tell us what you need. Send a link, design or example if available. A complete technical brief is not required.','Cuéntanos qué necesitas. Puedes enviar un enlace, diseño o ejemplo. No hace falta un documento técnico completo.','Expliquez votre besoin. Vous pouvez joindre un lien, une maquette ou un exemple. Un cahier des charges complet n’est pas nécessaire.'],
+['Запросите примеры или эскиз','Request examples or a sketch','Pide ejemplos o un boceto','Demandez des exemples ou une esquisse'],
+['Напишите в личном сообщении по почте или на Авито. Пришлите ссылку на сайт и пару слов о желаемой атмосфере: покажем примеры и обсудим эскиз для вашего проекта. Готовое техническое задание не обязательно.','Send an email or a private message on Avito. Share your website link and a few words about the atmosphere you want: we will show examples and discuss a sketch for your project. A complete technical brief is not required.','Escribe por correo o en un mensaje privado en Avito. Envía el enlace y unas palabras sobre la atmósfera que buscas: mostraremos ejemplos y hablaremos de un boceto para tu proyecto. No hace falta un documento técnico completo.','Écrivez par e-mail ou en message privé sur Avito. Envoyez le lien et quelques mots sur l’ambiance souhaitée : nous montrerons des exemples et discuterons d’une esquisse pour votre projet. Un cahier des charges complet n’est pas nécessaire.'],
 ['Написать на почту','Send an email','Escribir por correo','Écrire par e-mail'],
 ['Написать во ВКонтакте','Message us on VK','Escribir por VK','Écrire sur VK'],
 ['Написать на Авито','Message us on Avito','Escribir por Avito','Écrire sur Avito'],
@@ -51,7 +51,7 @@ export function renderProjectContact(kind=''){
  const topic={site:15,data:16,video:17,support:18}[kind];
  if(topic){const p=el('p','notice');p.append(el('span','',t(14)),': ',el('strong','',t(topic)));root.append(p);}
  const actions=el('div','project-contact-actions'),subject='Задача для Syolana'+(topic?' — '+t(topic):'');
- actions.append(link(t(2),'mailto:syolana@yandex.ru?subject='+encodeURIComponent(subject),'btn primary'),link(t(3),'https://vk.ru/club242389282','btn'),link(t(4),'https://www.avito.ru/brands/i223140984','btn'));
+ actions.append(link(t(2),'mailto:syolana@yandex.ru?subject='+encodeURIComponent(subject),'btn primary'),link(t(4),'https://www.avito.ru/brands/i223140984','btn'),link(t(3),'https://vk.ru/club242389282','btn'));
  const address=el('p','project-email');address.append(link('syolana@yandex.ru','mailto:syolana@yandex.ru','text-link'));
  const list=el('ol','project-brief');for(const i of [6,7,8])list.append(el('li','',t(i)));
  const repeat=el('section','project-recurring');repeat.append(el('h2','',t(11)),el('p','',t(12)));

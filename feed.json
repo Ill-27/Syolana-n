@@ -2,25 +2,62 @@
   {
     "id": "services-and-prices",
     "category": "Услуги",
-    "title": "Что создадим для вас?",
-    "text": "Выберите нужную услугу ниже. Индивидуальные работы оцениваем после описания задачи; состав, цену и срок согласуем до оплаты.",
+    "title": "Ателье сайтов и дополнительные услуги",
+    "text": "Главное — авторское иммерсивное оформление сайтов и книг. Видео и техническую помощь можно согласовать отдельно.",
     "href": "#/contact",
-    "linkLabel": "Обсудить проект",
+    "linkLabel": "Запросить примеры или эскиз",
     "pinned": true,
-    "lead": "Сайты в вашем стиле, доработки, автоматизация и видео. Для разовых задач и постоянного сотрудничества.",
+    "lead": "Главное — авторское иммерсивное оформление сайтов и книг. Видео и техническую помощь можно согласовать отдельно.",
     "offers": [
       {
         "post": "custom-sites",
-        "title": "Сайт в вашем стиле",
-        "price": "После оценки задачи",
-        "summary": "Лендинг, сайт услуг или портфолио. Ваш дизайн или разработка под задачу.",
+        "title": "Новый наряд для вашего сайта",
+        "price": "Стоимость по проекту",
+        "summary": "Шрифты, кнопки, панели и цельный образ под ваш проект.",
         "featured": true
       },
       {
         "post": "site-updates",
         "title": "Доработки готового сайта",
-        "price": "После оценки задачи",
-        "summary": "Новые страницы, мобильная версия, исправления и обновления."
+        "price": "Стоимость по проекту",
+        "summary": "Обновим структуру, мобильную версию и понятные действия.",
+        "featured": false
+      },
+      {
+        "post": "welcome-design",
+        "title": "Иммерсивное оформление сайтов и книг",
+        "price": "Стоимость по проекту",
+        "summary": "Живые фоны, свет и движение в атмосфере места или истории.",
+        "featured": false
+      }
+    ],
+    "extras": [
+      {
+        "post": "video-brand-story",
+        "title": "Анимированный баннер",
+        "price": "10 000 ₽",
+        "summary": "10 секунд, плавный повтор и версии для телефона и компьютера."
+      },
+      {
+        "post": "video-your-world",
+        "title": "Клипы и мультфильмы",
+        "price": "Цена по задаче",
+        "summary": "История для бренда, клип на песню или личный видеоподарок."
+      },
+      {
+        "post": "site-publishing",
+        "title": "Помощь с размещением",
+        "price": "2 900 ₽"
+      },
+      {
+        "post": "site-feed",
+        "title": "Подключение ленты",
+        "price": "5 000 ₽"
+      },
+      {
+        "post": "site-domain",
+        "title": "Помощь с доменом",
+        "price": "1 000 ₽"
       },
       {
         "post": "data-automation",
@@ -41,46 +78,6 @@
         "summary": "Для агентств и компаний: согласованный объём задач на каждый период."
       },
       {
-        "post": "welcome-design",
-        "title": "Сайт с живой темой",
-        "price": "Бесплатно до 31.12.2026",
-        "summary": "Одна страница, ваши материалы и готовый файл сайта."
-      },
-      {
-        "post": "video-brand-story",
-        "title": "Анимированный баннер",
-        "price": "10 000 ₽",
-        "summary": "10 секунд, плавный повтор и версии для телефона и компьютера."
-      },
-      {
-        "post": "video-your-world",
-        "title": "Клипы и мультфильмы",
-        "price": "Цена по задаче",
-        "summary": "История для бренда, клип на песню или личный видеоподарок."
-      }
-    ],
-    "extras": [
-      {
-        "post": "site-2027",
-        "title": "Сайт и общие темы на 2027 год",
-        "price": "12 000 ₽"
-      },
-      {
-        "post": "site-publishing",
-        "title": "Помощь с размещением",
-        "price": "2 900 ₽"
-      },
-      {
-        "post": "site-feed",
-        "title": "Подключение ленты",
-        "price": "5 000 ₽"
-      },
-      {
-        "post": "site-domain",
-        "title": "Помощь с доменом",
-        "price": "1 000 ₽"
-      },
-      {
         "post": "individual-3d-theme",
         "title": "Индивидуальная 3D-тема",
         "price": "Стоимость по проекту",
@@ -88,26 +85,63 @@
         "featured": true
       }
     ],
-    "note": "Домен и хостинг — отдельно. Платные дополнения — по желанию. Состав и срок согласуем до оплаты.",
+    "note": "Состав, стоимость, сроки, подключение и поддержку согласуем до оплаты. Размещение и домен — по договорённости.",
     "translations": {
       "en": {
-        "title": "What shall we create for you?",
-        "text": "Choose a service below. Custom work is assessed after your brief; scope, price and deadline are agreed before payment.",
-        "linkLabel": "Discuss my project",
-        "lead": "Websites in your style, improvements, automation and video. One-off tasks and ongoing collaboration.",
+        "title": "Website atelier and additional services",
+        "text": "Our focus is original immersive design for websites and books. Video and technical work can be arranged separately.",
+        "linkLabel": "Request examples or a sketch",
+        "lead": "Our focus is original immersive design for websites and books. Video and technical work can be arranged separately.",
         "offers": [
           {
             "post": "custom-sites",
-            "title": "A website in your own style",
-            "price": "Quoted after assessment",
-            "summary": "A landing page, service website or portfolio, using your design or a custom one.",
+            "title": "A new outfit for your website",
+            "price": "Quoted for your project",
+            "summary": "Fonts, buttons, panels and a consistent look shaped around your project.",
             "featured": true
           },
           {
             "post": "site-updates",
             "title": "Improve an existing website",
-            "price": "Quoted after assessment",
-            "summary": "New pages, mobile layouts, fixes and updates."
+            "price": "Quoted for your project",
+            "summary": "Refresh the structure, mobile layout and clear visitor actions.",
+            "featured": false
+          },
+          {
+            "post": "welcome-design",
+            "title": "Immersive design for websites and books",
+            "price": "Quoted for your project",
+            "summary": "Living backgrounds, light and motion that evoke a place or a story.",
+            "featured": false
+          }
+        ],
+        "extras": [
+          {
+            "post": "video-brand-story",
+            "title": "An animated banner",
+            "price": "10 000 ₽",
+            "summary": "10 seconds, a smooth loop, and phone and desktop versions."
+          },
+          {
+            "post": "video-your-world",
+            "title": "Music videos and animated films",
+            "price": "Quoted to your brief",
+            "summary": "A brand story, a music video or a personal video gift."
+          },
+          {
+            "post": "site-publishing",
+            "title": "Help publishing your site",
+            "price": "2 900 ₽"
+          },
+          {
+            "post": "site-feed",
+            "title": "Connect a feed",
+            "price": "5 000 ₽"
+          },
+          {
+            "post": "site-domain",
+            "title": "Domain assistance",
+            "price": "1 000 ₽"
           },
           {
             "post": "data-automation",
@@ -128,46 +162,6 @@
             "summary": "For agencies and businesses: an agreed scope for each period."
           },
           {
-            "post": "welcome-design",
-            "title": "A website with a living theme",
-            "price": "Free until 31 Dec 2026",
-            "summary": "One page, your content and a ready website file."
-          },
-          {
-            "post": "video-brand-story",
-            "title": "An animated banner",
-            "price": "10 000 ₽",
-            "summary": "10 seconds, a smooth loop, and phone and desktop versions."
-          },
-          {
-            "post": "video-your-world",
-            "title": "Music videos and animated films",
-            "price": "Quoted to your brief",
-            "summary": "A brand story, a music video or a personal video gift."
-          }
-        ],
-        "extras": [
-          {
-            "post": "site-2027",
-            "title": "Site styling and shared themes for 2027",
-            "price": "12 000 ₽"
-          },
-          {
-            "post": "site-publishing",
-            "title": "Help publishing your site",
-            "price": "2 900 ₽"
-          },
-          {
-            "post": "site-feed",
-            "title": "Connect a feed",
-            "price": "5 000 ₽"
-          },
-          {
-            "post": "site-domain",
-            "title": "Domain assistance",
-            "price": "1 000 ₽"
-          },
-          {
             "post": "individual-3d-theme",
             "title": "A custom 3D theme",
             "price": "Priced per project",
@@ -175,26 +169,63 @@
             "featured": true
           }
         ],
-        "note": "Domain and hosting fees are separate. Paid extras are optional. Scope and delivery time are agreed before payment."
+        "note": "Scope, price, timing, integration and support are agreed before payment. Hosting and domain arrangements are agreed separately."
       },
       "es": {
-        "title": "¿Qué creamos para ti?",
-        "text": "Elige un servicio. Valoramos los trabajos a medida tras conocer la tarea; acordamos alcance, precio y plazo antes del pago.",
-        "linkLabel": "Hablar de mi proyecto",
-        "lead": "Sitios con tu estilo, mejoras, automatización y vídeo. Tareas puntuales y colaboración continua.",
+        "title": "Atelier de sitios y servicios adicionales",
+        "text": "Nos centramos en el diseño inmersivo de autor para sitios y libros. Vídeo y ayuda técnica se acuerdan por separado.",
+        "linkLabel": "Pedir ejemplos o un boceto",
+        "lead": "Nos centramos en el diseño inmersivo de autor para sitios y libros. Vídeo y ayuda técnica se acuerdan por separado.",
         "offers": [
           {
             "post": "custom-sites",
-            "title": "Un sitio con tu estilo",
-            "price": "Presupuesto tras evaluación",
-            "summary": "Página de presentación, servicios o portafolio, con tu diseño o uno a medida.",
+            "title": "Una nueva imagen para tu sitio",
+            "price": "Presupuesto por proyecto",
+            "summary": "Tipografías, botones, paneles y una imagen coherente para tu proyecto.",
             "featured": true
           },
           {
             "post": "site-updates",
             "title": "Mejoras de un sitio existente",
-            "price": "Presupuesto tras evaluación",
-            "summary": "Páginas nuevas, adaptación móvil, correcciones y actualizaciones."
+            "price": "Presupuesto por proyecto",
+            "summary": "Renovamos estructura, diseño móvil y acciones claras.",
+            "featured": false
+          },
+          {
+            "post": "welcome-design",
+            "title": "Diseño inmersivo para sitios y libros",
+            "price": "Presupuesto por proyecto",
+            "summary": "Fondos vivos, luz y movimiento que evocan un lugar o una historia.",
+            "featured": false
+          }
+        ],
+        "extras": [
+          {
+            "post": "video-brand-story",
+            "title": "Un banner animado",
+            "price": "10 000 ₽",
+            "summary": "10 segundos, un bucle suave y versiones para móvil y ordenador."
+          },
+          {
+            "post": "video-your-world",
+            "title": "Videoclips y animación",
+            "price": "Precio según el encargo",
+            "summary": "La historia de tu marca, un videoclip o un regalo en vídeo."
+          },
+          {
+            "post": "site-publishing",
+            "title": "Ayuda para publicar tu sitio",
+            "price": "2 900 ₽"
+          },
+          {
+            "post": "site-feed",
+            "title": "Conectar el feed",
+            "price": "5 000 ₽"
+          },
+          {
+            "post": "site-domain",
+            "title": "Ayuda con el dominio",
+            "price": "1 000 ₽"
           },
           {
             "post": "data-automation",
@@ -215,46 +246,6 @@
             "summary": "Para agencias y empresas: un alcance acordado para cada periodo."
           },
           {
-            "post": "welcome-design",
-            "title": "Un sitio con tema vivo",
-            "price": "Gratis hasta el 31/12/2026",
-            "summary": "Una página, tu contenido y el archivo listo."
-          },
-          {
-            "post": "video-brand-story",
-            "title": "Un banner animado",
-            "price": "10 000 ₽",
-            "summary": "10 segundos, un bucle suave y versiones para móvil y ordenador."
-          },
-          {
-            "post": "video-your-world",
-            "title": "Videoclips y animación",
-            "price": "Precio según el encargo",
-            "summary": "La historia de tu marca, un videoclip o un regalo en vídeo."
-          }
-        ],
-        "extras": [
-          {
-            "post": "site-2027",
-            "title": "Diseño y temas compartidos para 2027",
-            "price": "12 000 ₽"
-          },
-          {
-            "post": "site-publishing",
-            "title": "Ayuda para publicar tu sitio",
-            "price": "2 900 ₽"
-          },
-          {
-            "post": "site-feed",
-            "title": "Conectar el feed",
-            "price": "5 000 ₽"
-          },
-          {
-            "post": "site-domain",
-            "title": "Ayuda con el dominio",
-            "price": "1 000 ₽"
-          },
-          {
             "post": "individual-3d-theme",
             "title": "Un tema 3D a medida",
             "price": "Presupuesto por proyecto",
@@ -262,26 +253,63 @@
             "featured": true
           }
         ],
-        "note": "Dominio y alojamiento se pagan aparte. Los extras son opcionales. Alcance y plazo se acuerdan antes del pago."
+        "note": "Acordamos alcance, precio, plazos, integración y soporte antes del pago. Alojamiento y dominio se acuerdan por separado."
       },
       "fr": {
-        "title": "Que créons-nous pour vous ?",
-        "text": "Choisissez un service. Les missions sur mesure sont évaluées après votre description ; périmètre, prix et délai sont convenus avant paiement.",
-        "linkLabel": "Parler de mon projet",
-        "lead": "Sites à votre image, améliorations, automatisation et vidéo. Missions ponctuelles et collaboration suivie.",
+        "title": "Atelier de sites et services complémentaires",
+        "text": "Notre spécialité est l’habillage immersif de sites et de livres. Vidéo et assistance technique peuvent être convenues séparément.",
+        "linkLabel": "Demander des exemples ou une esquisse",
+        "lead": "Notre spécialité est l’habillage immersif de sites et de livres. Vidéo et assistance technique peuvent être convenues séparément.",
         "offers": [
           {
             "post": "custom-sites",
-            "title": "Un site à votre image",
-            "price": "Devis après évaluation",
-            "summary": "Page de présentation, site de services ou portfolio, selon votre maquette ou sur mesure.",
+            "title": "Une nouvelle tenue pour votre site",
+            "price": "Devis selon votre projet",
+            "summary": "Typographies, boutons, panneaux et une allure cohérente pour votre projet.",
             "featured": true
           },
           {
             "post": "site-updates",
             "title": "Améliorer un site existant",
-            "price": "Devis après évaluation",
-            "summary": "Nouvelles pages, adaptation mobile, corrections et mises à jour."
+            "price": "Devis selon votre projet",
+            "summary": "Renouvelons structure, présentation mobile et actions claires.",
+            "featured": false
+          },
+          {
+            "post": "welcome-design",
+            "title": "Habillage immersif de sites et de livres",
+            "price": "Devis selon votre projet",
+            "summary": "Décors vivants, lumière et mouvement pour évoquer un lieu ou un récit.",
+            "featured": false
+          }
+        ],
+        "extras": [
+          {
+            "post": "video-brand-story",
+            "title": "Une bannière animée",
+            "price": "10 000 ₽",
+            "summary": "10 secondes, une boucle fluide et des versions mobile et ordinateur."
+          },
+          {
+            "post": "video-your-world",
+            "title": "Clips et films d’animation",
+            "price": "Tarif selon votre projet",
+            "summary": "Une histoire de marque, un clip musical ou un cadeau vidéo."
+          },
+          {
+            "post": "site-publishing",
+            "title": "Aide à la mise en ligne",
+            "price": "2 900 ₽"
+          },
+          {
+            "post": "site-feed",
+            "title": "Connexion d’un fil",
+            "price": "5 000 ₽"
+          },
+          {
+            "post": "site-domain",
+            "title": "Aide au nom de domaine",
+            "price": "1 000 ₽"
           },
           {
             "post": "data-automation",
@@ -302,46 +330,6 @@
             "summary": "Pour agences et entreprises : un périmètre convenu pour chaque période."
           },
           {
-            "post": "welcome-design",
-            "title": "Un site avec thème vivant",
-            "price": "Gratuit jusqu’au 31/12/2026",
-            "summary": "Une page, vos contenus et un fichier prêt à publier."
-          },
-          {
-            "post": "video-brand-story",
-            "title": "Une bannière animée",
-            "price": "10 000 ₽",
-            "summary": "10 secondes, une boucle fluide et des versions mobile et ordinateur."
-          },
-          {
-            "post": "video-your-world",
-            "title": "Clips et films d’animation",
-            "price": "Tarif selon votre projet",
-            "summary": "Une histoire de marque, un clip musical ou un cadeau vidéo."
-          }
-        ],
-        "extras": [
-          {
-            "post": "site-2027",
-            "title": "Habillage et thèmes communs pour 2027",
-            "price": "12 000 ₽"
-          },
-          {
-            "post": "site-publishing",
-            "title": "Aide à la mise en ligne",
-            "price": "2 900 ₽"
-          },
-          {
-            "post": "site-feed",
-            "title": "Connexion d’un fil",
-            "price": "5 000 ₽"
-          },
-          {
-            "post": "site-domain",
-            "title": "Aide au nom de domaine",
-            "price": "1 000 ₽"
-          },
-          {
             "post": "individual-3d-theme",
             "title": "Un thème 3D sur mesure",
             "price": "Devis sur mesure",
@@ -349,7 +337,7 @@
             "featured": true
           }
         ],
-        "note": "Domaine et hébergement se paient séparément. Les options payantes sont facultatives. Contenu et délai sont convenus avant paiement."
+        "note": "Périmètre, prix, délais, intégration et suivi sont convenus avant paiement. Hébergement et domaine sont précisés séparément."
       }
     },
     "publishedAt": "2026-10-19T17:12:28.178686+00:00"
@@ -357,32 +345,32 @@
   {
     "id": "custom-sites",
     "category": "Дизайн",
-    "title": "Сайт в вашем стиле",
-    "text": "Лендинг, сайт услуг или портфолио — с нужной вам структурой и оформлением. Можно работать по вашему макету или разработать дизайн под задачу.\n\nВыбирать тему Syolana необязательно. Для индивидуального сайта состав, стоимость, срок, правки, исходники и права на результат согласуем отдельно. Обязательного ежегодного продления такого оформления нет.\n\nРасскажите, для кого сайт и что посетитель должен на нём сделать. Если есть макет или примеры — пришлите ссылку.",
+    "title": "Новый наряд для вашего сайта",
+    "text": "Авторское оформление под характер вашего проекта: шрифты, цвета, кнопки, полупрозрачные панели и живая атмосфера. Можно обновить существующий сайт или создать отдельную страницу.\n\nНапример, для глэмпинга — лес, вода и светлячки; для студии — мягкий свет и природные оттенки; для книги — меняющийся мир истории. Содержание и действия для посетителя остаются понятными.\n\nПришлите ссылку на сайт и расскажите, какой образ вам близок. Примеры или эскиз можно запросить в личном сообщении по почте или на Авито. Способ подключения, состав, стоимость, сроки и передачу файлов согласуем заранее.",
     "href": "#/contact/site",
-    "linkLabel": "Обсудить задачу",
-    "media": [],
+    "linkLabel": "Запросить примеры или эскиз",
     "publishedAt": "2026-10-21T16:42:54.757170+00:00",
     "translations": {
       "en": {
         "category": "Design",
-        "title": "A website in your own style",
-        "text": "A landing page, service website or portfolio with the structure and style you need. We can use your design or create one around your brief.\n\nSyolana themes are optional. Scope, price, deadline, revisions, source files and rights are agreed separately for a custom site. This design does not require an annual renewal.\n\nTell us who the website is for and what visitors should do. Send a link to any designs or examples.",
-        "linkLabel": "Discuss a project"
+        "title": "A new outfit for your website",
+        "text": "Original design shaped around your project: typography, colours, buttons, translucent panels and a living atmosphere. Refresh your existing site or create a separate page.\n\nFor example: forest, water and fireflies for glamping; soft light and natural colours for a studio; a changing story world for a book. Content and visitor actions stay clear.\n\nSend your website link and the mood you have in mind. Ask for examples or a sketch by email or a private message on Avito. Integration, scope, price, timing and handover are agreed in advance.",
+        "linkLabel": "Request examples or a sketch"
       },
       "es": {
         "category": "Diseño",
-        "title": "Un sitio con tu estilo",
-        "text": "Una página de presentación, sitio de servicios o portafolio con la estructura y estilo que necesitas. Podemos seguir tu maqueta o crear un diseño para tu proyecto.\n\nLos temas Syolana son opcionales. Acordamos por separado alcance, precio, plazo, revisiones, archivos fuente y derechos. Este diseño no exige renovación anual.\n\nCuéntanos para quién es el sitio y qué deben hacer sus visitantes. Envía un enlace a los diseños o ejemplos que tengas.",
-        "linkLabel": "Hablar de un proyecto"
+        "title": "Una nueva imagen para tu sitio",
+        "text": "Diseño de autor adaptado a tu proyecto: tipografías, colores, botones, paneles translúcidos y una atmósfera viva. Actualizamos un sitio existente o creamos una página independiente.\n\nPor ejemplo: bosque, agua y luciérnagas para un glamping; luz suave y tonos naturales para un estudio; un mundo cambiante para un libro. El contenido y las acciones siguen siendo claros.\n\nEnvía el enlace y la atmósfera que imaginas. Pide ejemplos o un boceto por correo o en un mensaje privado en Avito. Acordamos integración, alcance, precio, plazos y entrega de antemano.",
+        "linkLabel": "Pedir ejemplos o un boceto"
       },
       "fr": {
         "category": "Design",
-        "title": "Un site à votre image",
-        "text": "Une page de présentation, un site de services ou un portfolio selon la structure et le style souhaités. Nous pouvons intégrer votre maquette ou concevoir un design adapté.\n\nLes thèmes Syolana sont facultatifs. Périmètre, prix, délai, retouches, sources et droits sont convenus séparément. Ce design ne nécessite pas de renouvellement annuel.\n\nIndiquez à qui le site s’adresse et ce que ses visiteurs doivent pouvoir faire. Envoyez vos maquettes ou exemples.",
-        "linkLabel": "Parler d’un projet"
+        "title": "Une nouvelle tenue pour votre site",
+        "text": "Un habillage original adapté à votre projet : typographies, couleurs, boutons, panneaux translucides et atmosphère vivante. Nous renouvelons un site existant ou créons une page distincte.\n\nPar exemple : forêt, eau et lucioles pour un glamping ; lumière douce et tons naturels pour un studio ; univers changeant pour un livre. Contenus et actions restent clairs.\n\nEnvoyez le lien et l’ambiance souhaitée. Demandez des exemples ou une esquisse par e-mail ou en message privé sur Avito. Intégration, périmètre, prix, délais et remise sont convenus à l’avance.",
+        "linkLabel": "Demander des exemples ou une esquisse"
       }
-    }
+    },
+    "media": []
   },
   {
     "id": "site-updates",
@@ -507,79 +495,29 @@
   {
     "id": "welcome-design",
     "category": "Дизайн",
-    "title": "Ваше дело — на красивом живом сайте",
-    "text": "Базовый сайт — бесплатно до 31 декабря 2026 года по Москве. Для мастера, небольшого бизнеса, творческого проекта или портфолио.\n\nОдна страница до 6 блоков: услуги, работы, о вас и кнопка связи. Добавим ваши материалы — до 6 000 знаков и 10 изображений — и одну из текущих тем. Передадим готовый HTML-файл с инструкцией. Включён один собранный список правок по согласованной структуре.\n\nПродолжение оформления на 2027 год — по желанию, за 12 000 ₽. Новые темы в бесплатный вариант не входят. Домен, хостинг и дополнительные работы оплачиваются отдельно.\n\nПришлите название проекта, тексты и фотографии — или начните с бесплатного эскиза.",
-    "href": "#/create-site",
-    "linkLabel": "Собрать эскиз бесплатно",
-    "media": [
-      {
-        "src": "assets/services/site-still-3e2204d0a688.jpg",
-        "width": 1536,
-        "height": 1152,
-        "alt": "Сайт с живой темой Syolana — бесплатный запуск до 31 декабря 2026 года"
-      }
-    ],
-    "detailMedia": [
-      {
-        "src": "assets/services/site-scope.webp",
-        "smallSrc": "assets/services/site-scope-768.webp",
-        "width": 1600,
-        "height": 1200,
-        "alt": "Что входит в базовый сайт Syolana"
-      }
-    ],
-    "detailsLabel": "Что входит в бесплатный сайт",
+    "title": "Иммерсивное оформление сайтов и книг",
+    "text": "Иммерсия — это погружение в атмосферу. Свет, тени, движение облаков и воды, частицы и музыка по желанию помогают почувствовать характер места или истории.\n\nНа сайте базы отдыха может жить тихий лес. На странице книги — дождливый город, который меняется вместе с повествованием. Эффекты поддерживают содержание: текст остаётся читаемым, а важные кнопки — заметными.\n\nПосмотрите демонстрационный образец или запросите примеры и эскиз в личном сообщении по почте или на Авито. Стоимость, состав и способ подключения согласуем под ваш проект.",
+    "href": "#/contact/site",
+    "linkLabel": "Запросить примеры или эскиз",
     "translations": {
       "en": {
-        "title": "A living website for your business",
-        "text": "A basic site is free until 31 December 2026, Moscow time. For an independent professional, a small business, a creative project or a portfolio.\n\nOne page with up to 6 sections: services, work, about you and a contact button. We add your content — up to 6,000 characters and 10 images — and one current theme. You receive a ready HTML file and instructions. One consolidated revision list within the agreed structure is included.\n\nContinuing the styling in 2027 is optional and costs 12,000 ₽. New themes are not included in the free option. Domain, hosting and extra work are charged separately.\n\nSend your project name, text and photos, or start with a free sketch.",
-        "linkLabel": "Create a free sketch",
-        "media": [
-          {
-            "alt": "A website for your business: free launch until 31 December 2026"
-          }
-        ],
-        "detailMedia": [
-          {
-            "alt": "What the basic Syolana site includes"
-          }
-        ],
-        "detailsLabel": "What the free site includes"
+        "title": "Immersive design for websites and books",
+        "text": "Immersion means feeling an atmosphere. Light, shadows, moving clouds and water, particles and optional music help convey a place or a story.\n\nA holiday website can become a quiet forest. A book page can become a rainy city that changes with the narrative. Effects support the content: text stays readable and important buttons stay visible.\n\nExplore the demonstration or ask for examples and a sketch by email or a private message on Avito. Price, scope and integration are agreed for your project.",
+        "linkLabel": "Request examples or a sketch"
       },
       "es": {
-        "title": "Un sitio vivo para tu negocio",
-        "text": "El sitio básico es gratis hasta el 31 de diciembre de 2026, hora de Moscú. Para profesionales, pequeños negocios, proyectos creativos o portafolios.\n\nUna página de hasta 6 bloques: servicios, trabajos, presentación y botón de contacto. Añadimos tu contenido — hasta 6 000 caracteres y 10 imágenes — y un tema actual. Recibes el archivo HTML listo e instrucciones. Se incluye una lista conjunta de cambios dentro de la estructura acordada.\n\nContinuar con el diseño en 2027 es opcional y cuesta 12 000 ₽. Los temas nuevos no forman parte de la opción gratuita. Dominio, alojamiento y trabajos extra se pagan aparte.\n\nEnvía el nombre de tu proyecto, textos y fotos, o empieza con un boceto gratis.",
-        "linkLabel": "Crear un boceto gratis",
-        "media": [
-          {
-            "alt": "Un sitio para tu negocio: lanzamiento gratis hasta el 31 de diciembre de 2026"
-          }
-        ],
-        "detailMedia": [
-          {
-            "alt": "Qué incluye el sitio básico Syolana"
-          }
-        ],
-        "detailsLabel": "Qué incluye el sitio gratis"
+        "title": "Diseño inmersivo para sitios y libros",
+        "text": "La inmersión te hace sentir una atmósfera. Luz, sombras, nubes y agua en movimiento, partículas y música opcional transmiten el carácter de un lugar o una historia.\n\nUn sitio de vacaciones puede convertirse en un bosque tranquilo. La página de un libro, en una ciudad lluviosa que cambia con el relato. Los efectos acompañan el contenido: textos legibles y botones visibles.\n\nMira la demostración o pide ejemplos y un boceto por correo o en un mensaje privado en Avito. Acordamos precio, alcance e integración para tu proyecto.",
+        "linkLabel": "Pedir ejemplos o un boceto"
       },
       "fr": {
-        "title": "Un site vivant pour votre activité",
-        "text": "Le site de base est gratuit jusqu’au 31 décembre 2026, heure de Moscou. Pour un indépendant, une petite entreprise, un projet créatif ou un portfolio.\n\nUne page de 6 sections maximum : services, réalisations, présentation et bouton de contact. Nous intégrons vos contenus — 6 000 caractères et 10 images maximum — et un thème actuel. Vous recevez un fichier HTML prêt et des instructions. Une liste regroupée de corrections dans la structure convenue est incluse.\n\nPoursuivre l’habillage en 2027 est facultatif et coûte 12 000 ₽. Les nouveaux thèmes ne sont pas inclus dans l’offre gratuite. Domaine, hébergement et travaux supplémentaires se paient séparément.\n\nEnvoyez le nom du projet, vos textes et photos, ou commencez par une esquisse gratuite.",
-        "linkLabel": "Créer une esquisse gratuite",
-        "media": [
-          {
-            "alt": "Un site pour votre activité : lancement gratuit jusqu’au 31 décembre 2026"
-          }
-        ],
-        "detailMedia": [
-          {
-            "alt": "Ce que comprend le site Syolana de base"
-          }
-        ],
-        "detailsLabel": "Ce que comprend le site gratuit"
+        "title": "Habillage immersif de sites et de livres",
+        "text": "L’immersion fait ressentir une atmosphère. Lumière, ombres, nuages et eau en mouvement, particules et musique facultative évoquent un lieu ou une histoire.\n\nUn site de séjour peut devenir une forêt paisible. Une page de livre, une ville pluvieuse qui évolue avec le récit. Les effets accompagnent les contenus : textes lisibles et boutons visibles.\n\nExplorez la démonstration ou demandez des exemples et une esquisse par e-mail ou en message privé sur Avito. Prix, périmètre et intégration sont convenus pour votre projet.",
+        "linkLabel": "Demander des exemples ou une esquisse"
       }
     },
-    "publishedAt": "2026-10-19T17:12:27.178686+00:00"
+    "publishedAt": "2026-10-19T17:12:27.178686+00:00",
+    "media": []
   },
   {
     "id": "individual-3d-theme",
@@ -798,52 +736,29 @@
   {
     "id": "site-2027",
     "category": "Дизайн",
-    "title": "Живое оформление на 2027 год",
-    "text": "Сайт и все общие темы Syolana на 2027 год — 12 000 ₽. Меняйте атмосферу сайта под настроение и выбирайте новые общие темы после их выхода.\n\nЭто отдельное продолжение по вашему желанию. Общий период заканчивается 31 декабря 2027 года по Москве; при подключении в течение года оставшийся срок и индивидуальную цену согласуем заранее. Автоматических списаний нет.\n\nТемы используются вместе с подписью Syolana и не передаются в исключительную собственность. Новая индивидуальная 3D-тема заказывается отдельно.",
+    "title": "Подключаемые темы и поддержка",
+    "text": "Живые темы, фирменные шрифты и обновления Syolana могут подключаться к сайту как отдельный слой оформления. Срок доступа, стоимость, поддержку, продление и условия отключения согласуем для каждого проекта.\n\nВладелец может отказаться от подключаемого оформления. Если доступ отключён по согласованным условиям, ваши тексты, фотографии, базовая структура и переданные файлы не удаляются. Автоматических списаний и продления нет.",
     "href": "#/contact/site",
-    "linkLabel": "Выбрать оформление на 2027 год",
-    "media": [
-      {
-        "src": "assets/services/site-terms.webp",
-        "smallSrc": "assets/services/site-terms-768.webp",
-        "width": 1600,
-        "height": 1200,
-        "alt": "Условия пробного оформления и пакет на 2027 год за 12 000 рублей"
-      }
-    ],
+    "linkLabel": "Запросить примеры или эскиз",
     "translations": {
       "en": {
-        "title": "Living site styling for 2027",
-        "text": "Site styling and all shared Syolana themes for 2027 cost 12,000 ₽. Change your site’s atmosphere and choose new shared themes as they are released.\n\nContinuing is a separate, optional choice. The shared period ends on 31 December 2027, Moscow time. If you join during the year, we agree on the remaining period and an individual price in advance. There are no automatic charges.\n\nThemes are used with the Syolana credit and are not transferred into exclusive ownership. A new custom 3D theme is commissioned separately.",
-        "linkLabel": "Choose styling for 2027",
-        "media": [
-          {
-            "alt": "Trial styling terms and the 2027 package for 12,000 rubles"
-          }
-        ]
+        "title": "Connected themes and support",
+        "text": "Living themes, signature fonts and Syolana updates can be connected as a separate design layer. Access duration, price, support, renewal and disconnection terms are agreed for each project.\n\nThe owner can choose to stop using the connected design. If access is disabled under the agreed terms, your text, photos, basic structure and delivered files are not deleted. There are no automatic charges or renewals.",
+        "linkLabel": "Request examples or a sketch"
       },
       "es": {
-        "title": "Diseño vivo para 2027",
-        "text": "El diseño y todos los temas compartidos Syolana para 2027 cuestan 12 000 ₽. Cambia el ambiente de tu sitio y elige los nuevos temas compartidos cuando se publiquen.\n\nContinuar es una decisión opcional e independiente. El periodo común termina el 31 de diciembre de 2027, hora de Moscú. Si te incorporas durante el año, acordamos antes el tiempo restante y un precio individual. No hay cobros automáticos.\n\nLos temas se usan con la firma Syolana y no se transfieren en propiedad exclusiva. Un nuevo tema 3D a medida se encarga aparte.",
-        "linkLabel": "Elegir diseño para 2027",
-        "media": [
-          {
-            "alt": "Condiciones de prueba y paquete 2027 por 12 000 rublos"
-          }
-        ]
+        "title": "Temas conectados y soporte",
+        "text": "Los temas vivos, tipografías propias y actualizaciones de Syolana pueden conectarse como una capa de diseño independiente. Acordamos duración, precio, soporte, renovación y desconexión para cada proyecto.\n\nEl propietario puede dejar de usar el diseño conectado. Si se desactiva el acceso según lo acordado, no se borran textos, fotos, estructura básica ni archivos entregados. No hay cobros ni renovaciones automáticos.",
+        "linkLabel": "Pedir ejemplos o un boceto"
       },
       "fr": {
-        "title": "Un habillage vivant pour 2027",
-        "text": "L’habillage et tous les thèmes communs Syolana pour 2027 coûtent 12 000 ₽. Changez l’ambiance de votre site et choisissez les nouveaux thèmes communs dès leur sortie.\n\nLa poursuite est une décision distincte et facultative. La période commune se termine le 31 décembre 2027, heure de Moscou. En cas de souscription en cours d’année, la durée restante et un tarif individuel sont convenus à l’avance. Aucun prélèvement automatique.\n\nLes thèmes s’utilisent avec la signature Syolana et ne sont pas cédés en propriété exclusive. Un nouveau thème 3D sur mesure fait l’objet d’une commande séparée.",
-        "linkLabel": "Choisir l’habillage pour 2027",
-        "media": [
-          {
-            "alt": "Conditions d’essai et offre 2027 à 12 000 roubles"
-          }
-        ]
+        "title": "Thèmes connectés et suivi",
+        "text": "Les thèmes vivants, polices spécifiques et mises à jour Syolana peuvent former une couche graphique distincte. Durée d’accès, prix, suivi, renouvellement et désactivation sont convenus pour chaque projet.\n\nLe propriétaire peut renoncer à cet habillage. Si l’accès est désactivé selon les conditions convenues, vos textes, photos, structure de base et fichiers remis ne sont pas supprimés. Aucun prélèvement ni renouvellement automatique.",
+        "linkLabel": "Demander des exemples ou une esquisse"
       }
     },
-    "publishedAt": "2026-10-19T17:12:22.178686+00:00"
+    "publishedAt": "2026-10-19T17:12:22.178686+00:00",
+    "media": []
   },
   {
     "id": "site-publishing",

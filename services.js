@@ -1,4 +1,5 @@
 import {el,link} from './utils.js';
+import {atelierGlyph} from './atelier-media.js';
 import {registerTranslations} from './i18n.js';
 import {renderProjectExamples,renderProjectSteps} from './project-services.js';
 
@@ -6,9 +7,9 @@ registerTranslations({
  'Услуги':['Services','Servicios','Services'],
  'Услуги и цены':['Services and prices','Servicios y precios','Services et tarifs'],
  'ЗАКРЕПЛЕНО · УСЛУГИ И ЦЕНЫ':['PINNED · SERVICES AND PRICES','FIJADO · SERVICIOS Y PRECIOS','ÉPINGLÉ · SERVICES ET TARIFS'],
- 'Оформление на 2027 год и дополнительные услуги':['Styling for 2027 and optional extras','Diseño para 2027 y servicios opcionales','Habillage 2027 et options'],
+ 'Дополнительные услуги':['Additional services','Servicios adicionales','Services complémentaires'],
  'Обсудить мой проект':['Discuss my project','Hablar de mi proyecto','Parler de mon projet'],
- 'Бесплатно собрать эскиз':['Create a free sketch','Crear un boceto gratis','Créer une esquisse gratuite'],
+ 'Собрать эскиз':['Create a sketch','Crear un boceto','Créer une esquisse'],
  'Английский A1 — бесплатно':['English A1 — free','Inglés A1 — gratis','Anglais A1 — gratuit'],
  'Все платные курсы — 650 ₽ / 30 дней':['All paid courses — 650 ₽ / 30 days','Todos los cursos de pago — 650 ₽ / 30 días','Tous les cours payants — 650 ₽ / 30 jours'],
  'Назад в ленту':['Back to the feed','Volver al feed','Retour au fil'],
@@ -50,7 +51,7 @@ export function renderServices(post,{standalone=false}={}){
   offers.append(item);
  }
  const extras=el('details','services-extras');
- extras.append(el('summary','','Оформление на 2027 год и дополнительные услуги'));
+ extras.append(el('summary','','Дополнительные услуги'));
  const list=el('ul','services-extra-list');
  for(const offer of post.extras){
   const row=el('li'),item=link('','#/post/'+encodeURIComponent(offer.post),'service-extra');
@@ -58,20 +59,14 @@ export function renderServices(post,{standalone=false}={}){
  }
  extras.append(list);
  const actions=el('div','row services-actions');
- actions.append(link('Обсудить мой проект','#/contact','btn primary'),link('Бесплатно собрать эскиз','#/create-site','text-link'));
- const learning=el('div','services-learning');
- learning.append(link('Английский A1 — бесплатно','#/lesson/en/a1/course','text-link'),link('Все платные курсы — 650 ₽ / 30 дней','#/languages','text-link'));
+ actions.append(link('Обсудить мой проект','#/contact','btn primary'),link('Собрать эскиз','#/create-site','text-link'));
  section.append(head,offers,extras,el('p','services-note',post.note),actions);
  if(standalone)section.append(renderProjectExamples(),renderProjectSteps());
- section.append(learning);
+
  return section;
 }
 
 export function mountServicesNavigation(banner,nav){
- if(!nav.querySelector('[data-nav="services"]')){
-  const item=link('Услуги и цены','#/services');item.dataset.nav='services';
-  nav.querySelector('[data-nav="home"]')?.after(item);
- }
- const note=banner.querySelector('.showcase-note');
- if(note&&!note.querySelector('a'))note.append(' ',link('Услуги и цены ↓','#/services','showcase-price-link'));
+ const rows=[['Главная','#/','home'],['Ателье','#/join','join'],['Ещё услуги','#/services','services'],['Запросить эскиз','#/contact/site','contact']];
+ nav.replaceChildren(...rows.map(([label,href,key])=>{const item=link(label,href);item.dataset.nav=key;item.replaceChildren(atelierGlyph(key==='home'?'pattern':key==='join'?'scissors':key==='services'?'spool':'needle'),el('span','nav-label',label));return item}));
 }

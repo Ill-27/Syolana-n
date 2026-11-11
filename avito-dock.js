@@ -73,7 +73,7 @@ export function mountAvitoDock(link) {
   if (mounted.has(link)) { mounted.get(link).refresh(); return mounted.get(link); }
   const doc = link.ownerDocument, win = doc.defaultView;
   installStyle(doc);
-  let preference = {position: 1, compact: false};
+  let preference = {position: 1, compact: win.innerWidth < 800};
   try {
     const saved = JSON.parse(win.localStorage.getItem(STORAGE));
     if (Number.isFinite(saved?.position)) preference.position = clamp(saved.position, 0, 1);

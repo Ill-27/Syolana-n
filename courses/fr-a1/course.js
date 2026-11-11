@@ -1,9 +1,9 @@
 import {mountCourseBranding} from '../../course-branding.js?v=20261007-language-marks-3';
 import {loadCourse,mountAccountPanel,sessionMark,watchSession} from './access.js?v=20261017-owner-1';
-import {SpeechPlayer,secondsFor} from './audio.js?v=20261009-fr-a1-1';
-import {makeCurriculum,remainingSeconds} from './curriculum.js?v=20261009-fr-a1-1';
-import {trainerGroups} from './trainers.js?v=20261009-fr-a1-1';
-import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261009-fr-a1-1';
+import {SpeechPlayer,secondsFor} from './audio.js?v=20261022-fr-a1-review-1';
+import {makeCurriculum,remainingSeconds,explanationPair,restoreQueue} from './curriculum.js?v=20261022-fr-a1-review-1';
+import {trainerGroups} from './trainers.js?v=20261022-fr-a1-review-1';
+import {COURSE_VIEWS,displayIPA,displayText,topicTitle,dayDescription,resolveView,entriesLabel} from './presentation.js?v=20261022-fr-a1-review-1';
 
 const el=(tag,cls='',text='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text)n.textContent=displayText(text);return n;};
 const button=(text,fn,cls='')=>{const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;};
@@ -30,7 +30,8 @@ async function init(){
   const cfg={mode:'en',rate:Math.max(.55,Math.min(1.5,Number(saved.rate)||1)),repeat:[1,2,3].includes(saved.repeat)?saved.repeat:1,voices:saved.voices||{},loop:false};
   let curriculum=makeCurriculum(data,cfg,trainers),bulkLabel='Курс',activePair=null,lastQueue=null,clipSelected=false;
   let voices=window.speechSynthesis?.getVoices()||[],voiceControls={},currentKey='',returnKey='days',pageOffset=0,overlay=null,overlayOffset=0;
-  const learned=new Set(storage.read('learned',[]));
+  const currentWordIds=new Set(data.vocabulary.map(w=>w.id));
+  const learned=new Set(storage.read('learned',[]).filter(id=>currentWordIds.has(id)));
   const app=document.getElementById('app'),shell=el('div','shell');app.append(shell);
   const views=new Map(),scrollPositions=new Map(),pendingViews=new Map();
 
@@ -39,7 +40,7 @@ async function init(){
     if(p.tag)card.append(el('span','pair-tag',p.tag));
     const content=el('div','pair-content'),en=el('div','en',p.en);en.lang=p.lang;
     const ip=el('div','ipa',displayIPA(p.ipa));ip.setAttribute('aria-label',p.ipaLabel||'Транскрипция');
-    const ru=el('div','ru',p.ru);ru.lang='ru';content.append(en,ip,ru);
+    const ru=el('div','ru',p.ru);ru.lang='ru';content.append(en);if(p.ipa)content.append(ip);content.append(ru);
     if(p.phoneticIPA){const precise=el('div','precise-ipa','IPA '+p.phoneticIPA);precise.setAttribute('aria-label','Международная фонетическая запись');content.append(precise);}
     card.append(content);
     if(actions){const a=el('div','pair-actions');a.append(button('▶ Французский',()=>playClip(p,'en'),'listen-small'));card.append(a);}
@@ -100,7 +101,7 @@ async function init(){
   }
   const loopLabel=el('label','inline-field'),loop=el('input');loop.type='checkbox';loopLabel.append(loop,document.createTextNode('Повторять выбранный курс или день целиком'));loop.addEventListener('change',()=>{cfg.loop=loop.checked;bulk.loop=cfg.loop;});
   const settingsActions=el('div','actions');settingsActions.append(button('Обновить голоса',refreshVoices));
-  settings.append(settingsGrid,loopLabel,settingsActions,el('p','muted','Один французский голос читает все французские слова, включая региональные слова. Предпочтителен голос Франции; если его нет, используется доступный французский голос. Русский перевод и транскрипция остаются на экране. Качество звучания зависит от голосов устройства; транскрипция и служебные значки не читаются.'));
+  settings.append(settingsGrid,loopLabel,settingsActions,el('p','muted','Один французский голос читает все французские слова, включая региональные слова. Используется голос Франции с языком fr-FR. Если его нет, добавьте его в настройках речи устройства. Русский перевод и транскрипция остаются на экране. Качество звучания зависит от голосов устройства; транскрипция и служебные значки не читаются.'));
   const currentNode=el('div','player-current');currentNode.hidden=true;
   playerPanel.append(playerHeading,row,status,progressRow,error,settings,currentNode);workspace.append(playerPanel);
   function pageScroll(y){requestAnimationFrame(()=>{if(window.parent!==window)post({height:Math.ceil(shell.getBoundingClientRect().height),scroll:y});else window.scrollTo({top:y,behavior:'instant'});});}
@@ -129,7 +130,7 @@ async function init(){
   function refreshVoices(){
     voices=window.speechSynthesis?.getVoices()||[];
     for(const [lang,s] of Object.entries(voiceControls)){
-      const list=voices.filter(v=>(lang==='fr-FR' ? v.lang.toLowerCase().replace('_','-').split('-')[0]==='fr' : v.lang.toLowerCase().replace('_','-')===lang.toLowerCase()));s.replaceChildren();
+      const list=voices.filter(v=>(lang==='fr-FR' ? v.lang.toLowerCase().replace('_','-')==='fr-fr' : v.lang.toLowerCase().replace('_','-')===lang.toLowerCase()));s.replaceChildren();
       const autoLabel='Автоматически: '+(lang==='ru-RU'?'русский':'французский')+' голос';const auto=el('option','',autoLabel);auto.value='';s.append(auto);
       list.forEach((v,i)=>{const o=el('option','',`Голос ${i+1} · ${v.localService?'на устройстве':'через интернет'}`);o.value=v.voiceURI;s.append(o);});
       auto.textContent=list.length?autoLabel:'Нужный голос пока не найден';s.disabled=!list.length;
@@ -175,16 +176,17 @@ async function init(){
 
   function ruleBody(s){
     const body=el('div','lesson-body');
-    for(const item of s.items){
-      if(s.items.length>1)body.append(el('h2','',item.title));body.append(el('p','explanation',item.body));
-      if(item.instruction){const i=el('div','instruction');i.append(el('span','instruction-label','Краткое правило — по-испански'),pairNode(item.instruction));body.append(i);}
+    for(const [index,item] of s.items.entries()){
+      if(s.items.length>1)body.append(el('h2','',item.title));
+      if(item.bodyFr)body.append(pairNode(explanationPair('rule-'+s.id+'-'+index,item.bodyFr,item.body)));
+      else {body.append(el('p','explanation',item.body));if(item.instruction)body.append(pairNode(item.instruction));}
       const pairs=el('div','pairs');pairs.append(...item.pairs.map(p=>pairNode(p)));body.append(pairs);
     }
-    if(s.id==='read-alphabet'){const a=el('div','alphabet');a.append(...data.alphabet.map(p=>pairNode(p)));body.append(el('h2','','Все 27 букв по порядку'),a);}
+    if(s.id==='read-alphabet'){const a=el('div','alphabet');a.append(...data.alphabet.map(p=>pairNode(p)));body.append(el('h2','','Все 26 букв по порядку'),a);}
     if(['read-vowels','read-consonants'].includes(s.id)){
       const sounds=el('div','sounds');
       for(const sound of data.phonetics.filter(p=>s.id==='read-consonants'?p.type==='Согласный':p.type!=='Согласный')){
-        const a=el('article','sound');a.append(el('span','symbol',displayIPA(sound.symbol)),el('span','badge',sound.type),el('p','',sound.mouth),pairNode(sound.example));sounds.append(a);
+        const a=el('article','sound');a.append(el('span','symbol',displayIPA(sound.symbol)),el('span','badge',sound.type));if(sound.mouthFr)a.append(pairNode(explanationPair('sound-'+sound.id,sound.mouthFr,sound.mouth)));else a.append(el('p','',sound.mouth));a.append(pairNode(sound.example));sounds.append(a);
       }body.append(el('h2','','Звуки: как поставить рот и что произнести'),sounds);
     }
     const actions=el('div','actions');actions.append(button('▶ Слушать эту тему',()=>start(curriculum.all.filter(u=>u.section===s.id),topicTitle(s))));body.append(actions);return body;
@@ -218,7 +220,7 @@ async function init(){
 topicIndex(reading,data.rules.filter(s=>s.area==='reading'));
   });
   
-  const grammar=screen('grammar','Правила, которые превращаются в речь','Понятный русский разбор, короткое испанское правило и примеры. Открывайте одну тему и возвращайтесь к оглавлению в любой момент.');pendingViews.set('grammar',()=>{
+  const grammar=screen('grammar','Правила, которые превращаются в речь','Понятный русский разбор, короткое французское правило и примеры. Открывайте одну тему и возвращайтесь к оглавлению в любой момент.');pendingViews.set('grammar',()=>{
 topicIndex(grammar,data.rules.filter(s=>s.area!=='reading'));
   });
   
@@ -231,7 +233,7 @@ topicIndex(grammar,data.rules.filter(s=>s.area!=='reading'));
   function wordNode(w,{open=false}={}){
     const d=el('details','word-entry');d.dataset.word=w.id;const summary=el('summary'),head=el('span','word-head'),en=el('span','en',w.head.en);en.lang=w.head.lang;
     head.append(en,el('span','ipa',displayIPA(w.head.ipa)),el('span','ru',w.head.ru));summary.append(head,el('span','badge',w.level));d.append(summary);let rendered=false;
-    const fill=()=>{if(rendered)return;rendered=true;const body=el('div','word-body');body.append(el('p','note',w.note),pairNode(w.head));
+    const fill=()=>{if(rendered)return;rendered=true;const body=el('div','word-body');const note=el('div','note');if(w.noteFr){const french=el('p','',w.noteFr);french.lang='fr-FR';note.append(french,button('▶ Пояснение',()=>playClip(explanationPair('note-'+w.id,w.noteFr,w.note),'en'),'listen-small'));}if(w.note)note.append(el('p','ru',w.note));body.append(note,pairNode(w.head));
       if(w.forms.length){body.append(el('h3','','Формы и устойчивые сочетания'));const f=el('div','forms');f.append(...w.forms.map(p=>pairNode(p)));body.append(f);}
       body.append(el('h3','','Четыре разных примера'));const pairs=el('div','pairs');pairs.append(...w.examples.map(p=>pairNode(p)));body.append(pairs);
       const actions=el('div','actions');actions.append(button('▶ Слушать слово и примеры',()=>start(curriculum.all.filter(u=>u.owner===w.id),'Словарная статья')));
@@ -253,7 +255,7 @@ renderVocabulary(data.vocabulary);
 
   const variants=screen('variants','Франция и другие страны','Сравнивайте слова, конструкции и записи произношения. Все французские варианты читает один выбранный французский голос.');pendingViews.set('variants',()=>{
 
-  const variantList=el('div','variant-grid');for(const v of data.variants){const c=el('article','variant-card');c.append(el('span','card-label','Франция'),pairNode(v.uk),el('span','card-label',v.us.tag||'Другие страны'),pairNode(v.us),el('p','',v.note));variantList.append(c);}variants.append(variantList,el('p','muted','Внутри каждой страны есть разные акценты. Здесь сравниваются варианты Франции, Бельгии, Швейцарии и Канады.'));
+  const variantList=el('div','variant-grid');for(const v of data.variants){const c=el('article','variant-card');c.append(el('span','card-label','Франция'),pairNode(v.uk),el('span','card-label',v.us.tag||'Другие страны'),pairNode(v.us),v.noteFr?pairNode(explanationPair('variant-'+data.variants.indexOf(v),v.noteFr,v.note)):el('p','',v.note));variantList.append(c);}variants.append(variantList,el('p','muted','Внутри каждой страны есть разные акценты. Здесь сравниваются варианты Франции, Бельгии, Швейцарии и Канады.'));
   
   });
   const repetition=screen('trainers','Повторение до автоматизма','Готовые списки без ввода ответов. Читайте по порядку, повторяйте вслух, слушайте весь список или отдельную запись.');pendingViews.set('trainers',()=>{
@@ -269,7 +271,7 @@ renderVocabulary(data.vocabulary);
       const sequence=data.rules.filter(r=>(r.area==='reading')===(s.area==='reading')),i=sequence.indexOf(s),actions=el('nav','page-turns');actions.setAttribute('aria-label','Переход между темами');
       if(i>0)actions.append(button('← '+topicTitle(sequence[i-1]),()=>go(sequence[i-1].id)));if(i<sequence.length-1)actions.append(button(topicTitle(sequence[i+1])+' →',()=>go(sequence[i+1].id)));node.append(actions);
     }else if(view.type==='day'){
-      const day=view.day,info=dayDescription(day,data.groups),node=screen(view.key,info.title,'Сначала разберите темы ниже. Затем переходите к словам и их примерам. Озвучка читает материал в том же порядке.','ДЕНЬ '+day.number+' · ≈ '+duration(day.seconds)+' ИСПАНСКОЙ РЕЧИ');
+      const day=view.day,info=dayDescription(day,data.groups),node=screen(view.key,info.title,'Сначала разберите темы ниже. Затем переходите к словам и их примерам. Озвучка читает материал в том же порядке.','ДЕНЬ '+day.number+' · ≈ '+duration(day.seconds)+' ФРАНЦУЗСКОЙ РЕЧИ');
       const actions=el('div','actions');actions.append(button('▶ Слушать день '+day.number,()=>start(day.units,'День '+day.number),'primary'));node.append(actions);
       const outline=el('details','day-outline');outline.append(el('summary','','Что входит в этот день'));const contents=el('ul');info.topics.forEach(t=>contents.append(el('li','',t)));info.vocabulary.forEach(t=>contents.append(el('li','','Слова: '+t)));outline.append(contents);node.append(outline);
       if(day.rules.length){node.append(el('h2','section-label',day.number===1?'Правила чтения':'Сначала — правила и повторение'));
@@ -287,7 +289,7 @@ renderVocabulary(data.vocabulary);
 
   const practice=screen('practice','Говорите, читайте и пишите','Составьте свой ответ, прочитайте его вслух и сравните с образцом. Ваши ответы и заметки сохраняются на этом устройстве.');
   pendingViews.set('practice',()=>{
-  for(const p of data.practice){const d=el('details','practice');d.append(el('summary','',p.title));const body=el('div','practice-body');body.append(el('p','',p.task));const pairs=el('div','pairs');pairs.append(...p.pairs.map(x=>pairNode(x)));body.append(pairs);
+  for(const p of data.practice){const d=el('details','practice');d.append(el('summary','',p.title));const body=el('div','practice-body');if(p.taskFr)body.append(pairNode(explanationPair('task-'+p.id,p.taskFr,p.task)));else body.append(el('p','',p.task));const pairs=el('div','pairs');pairs.append(...p.pairs.map(x=>pairNode(x)));body.append(pairs);
     const input=el('textarea');input.rows=3;input.placeholder='Ваш ответ или заметка';input.setAttribute('aria-label','Ваш ответ: '+p.title);input.value=storage.read('note.'+p.id,'');input.addEventListener('input',()=>storage.write('note.'+p.id,input.value));body.append(input);
     if(p.model){const model=el('details','model-answer');model.append(el('summary','','Посмотреть образец ответа'),pairNode(p.model));body.append(model);}const actions=el('div','actions');actions.append(button('▶ Слушать фразы ситуации',()=>start(unitsFor([...p.pairs,...(p.model?[p.model]:[])]),p.title)));body.append(actions);d.append(body);practice.append(d);
   }
@@ -309,13 +311,13 @@ renderVocabulary(data.vocabulary);
     ['Грамматика','Настоящее время во всех лицах и числах, род и согласование, артикли, вопросы, отрицание, местоимения, количество, время и предлоги.',['grammar']],
     ['Лексика','Дом, люди, еда, одежда, здоровье, поездки, работа, досуг и календарь.',['vocabulary','trainers']]
   ]){const c=el('article','coverage-card');c.append(el('h2','',title),el('p','',text));const actions=el('div','actions');ids.forEach(id=>actions.append(button(COURSE_VIEWS.find(([key])=>key===id)[1],()=>go(id),'quiet')));c.append(actions);coverageGrid.append(c);}coverage.append(coverageGrid,el('p','muted','Русская запись — подсказка чтения: носовой гласный отмечен тильдой, ю и ё обозначают округлённые гласные без начального й. Ударение отмечает конец ритмической группы. Смотрите раздел чтения и слушайте французский голос; русские буквы не передают все звуки точно.'));
-  const sources=el('footer','sources');sources.append(el('h2','','Ориентиры содержания'));for(const source of data.sources){const p=el('p'),a=el('a','',source.title);a.href=source.url;a.target='_blank';a.rel='noopener';p.append(a);sources.append(p);}sources.append(el('p','muted','Версия '+data.version+'. Настройки, место прослушивания и заметки сохраняются в этом браузере.'));coverage.append(sources);
+  const sources=el('footer','sources');sources.append(el('h2','','Ориентиры содержания'));for(const source of data.sources){const p=el('p'),a=el('a','',source.title);a.href=source.url;a.target='_blank';a.rel='noopener';p.append(a);sources.append(p);}sources.append(el('p','muted','Версия '+data.version+'. Настройки, место прослушивания и заметки сохраняются в этом браузере.'));for(const license of data.licenses||[]){const details=el('details');details.append(el('summary','',license.title),el('pre','',license.text));sources.append(details);}coverage.append(sources);
 
   
   });
   renderDays();refreshVoices();
   const savedQueue=storage.read('queue',null),savedProgress=storage.read('progress',null);
-  if(savedQueue&&savedProgress&&savedQueue.version===savedProgress.version&&savedQueue.version===data.version){const units=savedQueue.ids.map(id=>curriculum.map.get(id));if(units.length&&units.every(Boolean)&&savedProgress.unitIndex<units.length){bulk.units=units;bulkLabel=savedProgress.label||savedQueue.label;lastQueue={...savedQueue,version:data.version};storage.write('queue',lastQueue);bulk.unitIndex=savedProgress.unitIndex;bulk.segmentIndex=savedProgress.segmentIndex||0;bulk.activeMs=(savedProgress.elapsed||0)*1000;bulk.mode=savedProgress.mode||cfg.mode;bulk.repeat=savedProgress.repeat||cfg.repeat;bulk.status='paused';}}
+  const restored=restoreQueue(savedQueue,savedProgress,data,curriculum);if(restored){bulk.units=restored.units;bulkLabel=savedProgress.label||savedQueue.label;lastQueue={...savedQueue,version:data.version,ids:restored.units.map(u=>u.pair.id)};storage.write('queue',lastQueue);bulk.unitIndex=restored.unitIndex;bulk.segmentIndex=restored.segmentIndex;bulk.activeMs=restored.elapsed*1000;bulk.mode=savedProgress.mode||cfg.mode;bulk.repeat=savedProgress.repeat||cfg.repeat;bulk.status='paused';}
   updatePlayer();show(decodeURIComponent(location.hash.slice(1))||storage.read('view','days'));
   window.speechSynthesis?.addEventListener?.('voiceschanged',refreshVoices);const progressTick=()=>{if(bulk.status==='playing'||clip.status==='playing')updatePlayer();};let tick=setInterval(progressTick,1000);
   window.addEventListener('pageshow',e=>{if(e.persisted){clearInterval(tick);tick=setInterval(progressTick,1000);updatePlayer();}});

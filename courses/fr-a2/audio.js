@@ -1,42 +1,31 @@
 // Speech is a queue of typed content, never a scrape of page text or IPA.
 export const LANGUAGES = ['fr-FR'];
-export function cleanSpeech(text, lang) {
-  if (String(lang).toLowerCase().replace('_','-').split('-')[0] !== 'fr') throw new Error('Этот курс озвучивается только по-французски.');
-  let s = String(text || '').normalize('NFC');
-  if (lang === 'ru-RU') {
-    s = s.replace(/\bA2\b/g, 'начальный уровень').replace(/\bA2\b/g, 'следующий уровень')
-      .replace(/\bIPA\b/g, 'фонетическая транскрипция')
-      .replace(/([а-яё]+)\(([^)]*)\)/gi, '$1')
-      .replace(/([а-яё]+)\(-[^)]*\)/gi, '$1')
-      .replace(/([а-яё]+)\s*\/\s*[а-яё]+/gi, '$1');
-    // Optional endings in the text are useful visually but are not spoken.
-    s = s.replace(/\([^)]*\)/g, '').replace(/(?<=[а-яё])-(?=[а-яё])/gi, '');
-    if (/[A-Za-z]/.test(s)) throw new Error('В русском фрагменте осталось слово другого языка. Озвучка остановлена.');
-  } else {
-    if (/[А-Яа-яЁё]/.test(s)) throw new Error('В французском фрагменте осталось слово другого языка. Озвучка остановлена.');
-    // Do not synthesize phonetic notation or addresses as arbitrary punctuation.
-    if (/[əɪʊɑɔɜθðʃʒŋˈˌː]/.test(s)) throw new Error('Транскрипция предназначена для чтения глазами.');
-    s = s.replace(/(?<=[A-Za-z])-(?=[A-Za-z])/g, ' ');
-  }
-  s = s.replace(/[\/\\|_*<>={}\[\]«»“”]/g, ' ').replace(/[—–]/g, ', ')
-    .replace(/\s+/g, ' ').trim();
-  return s;
+export function cleanSpeech(text,lang) {
+  if(String(lang).toLowerCase().replace('_','-')!=='fr-fr')throw new Error('Выберите французский голос Франции.');
+  let value=String(text||'').normalize('NFC');
+  if(/[А-Яа-яЁё]/.test(value))throw new Error('Во французском фрагменте осталось слово другого языка.');
+  if(/[ɐ-ʯˈˌː̃]/.test(value))throw new Error('Транскрипция предназначена для чтения глазами.');
+  return value.replace(/[\/\\|_*<>={}\[\]«»“”]/g,' ').replace(/[—–]/g,', ').replace(/\s+/g,' ').trim();
 }
-export function voiceFor(lang, voices, selectedURI = '') {
-  const normal = x => String(x).toLowerCase().replace('_', '-');
-  if (normal(lang).split('-')[0] !== 'fr') return null;
-  const candidates = voices.filter(v => normal(v.lang).split('-')[0] === 'fr');
-  if (selectedURI) {
-    const chosen = candidates.find(v => v.voiceURI === selectedURI);
-    if (chosen) return chosen;
-  }
-  const preferred = candidates.filter(v => normal(v.lang) === 'fr-fr');
-  return preferred.find(v => v.localService) || preferred[0] || candidates.find(v => v.localService) || candidates[0] || null;
+export function voiceFor(lang,voices,selectedURI='') {
+  const normal=value=>String(value).toLowerCase().replace('_','-');
+  if(normal(lang)!=='fr-fr')return null;
+  const available=voices.filter(voice=>normal(voice.lang)==='fr-fr');
+  return available.find(voice=>voice.voiceURI===selectedURI)||available.find(voice=>voice.localService)||available[0]||null;
 }
 export function segmentsFor(unit, mode = 'en', repeat = 1) {
   const p = unit.pair;
-  const en = p?.en ? { text: cleanSpeech(p.speak || p.en, 'fr-FR'), lang: 'fr-FR', pair: p } : null;
-  const base = [en].filter(x => x?.text);
+  const text=p?.en?cleanSpeech(p.speak||p.en,'fr-FR'):'';
+  const chunks=[];
+  // Short complete sentences keep long explanations responsive to pause/resume.
+  for(const sentence of text.split(/(?<=[.!?])\s+/u)){
+    if(!sentence)continue;
+    if(sentence.length<=180){chunks.push(sentence);continue;}
+    let chunk='';
+    for(const word of sentence.split(/\s+/)){if(chunk&&chunk.length+word.length+1>180){chunks.push(chunk);chunk='';}chunk+=(chunk?' ':'')+word;}
+    if(chunk)chunks.push(chunk);
+  }
+  const base=chunks.map(text=>({text,lang:'fr-FR',pair:p}));
   const list = Array.from({ length: Math.min(3, Math.max(1, repeat)) }, () => base).flat();
   return list;
 }
@@ -67,7 +56,7 @@ export class SpeechPlayer {
     try {
       const required = new Set(units.flatMap(u => segmentsFor(u, mode, this.repeat).map(s => s.lang)));
       const missing = [...required].filter(lang => !voiceFor(lang, this.voices(), this.settings().voices?.[lang]));
-      if (missing.length) { this.fail('Не найден ' + missing.map(l => ({ 'fr-FR': 'французский', 'ru-RU': 'русский' })[l] + ' голос').join(', ') + '. Добавьте нужный голос в настройках речи устройства и нажмите «Обновить голоса».'); return false; }
+      if (missing.length) { this.fail('Не найден ' + missing.map(l => ({ 'fr-FR': 'французский', 'ru-RU': 'русский' })[l] + ' голос').join(', ') + '. Добавьте французский голос Франции в настройках речи устройства и нажмите «Обновить голоса».'); return false; }
     } catch (e) { this.fail(e.message); return false; }
     if (!units.length || this.unitIndex === units.length) { this.status = 'ended'; this.emit(); return true; }
     this.status = 'playing'; this.activeStart = this.now(); this.emit(); this.next(); return true;
@@ -85,8 +74,9 @@ export class SpeechPlayer {
     const segment = segments[this.segmentIndex], cfg = this.settings();
     const voice = voiceFor(segment.lang, this.voices(), cfg.voices?.[segment.lang]);
     if (!voice) { this.fail('Нужный голос стал недоступен. Обновите список голосов.'); return; }
-    const token = ++this.token, u = new this.Utterance(segment.text);
-    this.utterance = u; u.lang = voice.lang || segment.lang; u.voice = voice; u.rate = Math.max(0.55, Math.min(1.5, cfg.rate || 1)); u.pitch = 1; u.volume = 1;
+    let u;try{u=new this.Utterance(segment.text);}catch{this.fail('Не удалось подготовить озвучку. Место сохранено.');return;}
+    const token=++this.token;
+    this.utterance = u; u.lang = segment.lang; u.voice = voice; u.rate = Math.max(0.55, Math.min(1.5, cfg.rate || 1)); u.pitch = 1; u.volume = 1;
     this.onUnit(unit, this.unitIndex, segment); this.emit();
     u.onend = () => {
       if (token !== this.token || this.status !== 'playing') return;
@@ -101,7 +91,7 @@ export class SpeechPlayer {
     this.timer = setTimeout(() => {
       if (token === this.token && this.status === 'playing') this.fail('Голос перестал отвечать. Место сохранено. Нажмите «Продолжить», чтобы повторить текущую фразу.');
     }, Math.min(180, estimated * 2 + 15) * 1000);
-    this.synth.speak(u);
+    try{this.synth.speak(u);}catch{this.fail('Не удалось начать озвучку. Место сохранено; повторите запуск.');}
   }
   pause() {
     if (this.status !== 'playing') return;

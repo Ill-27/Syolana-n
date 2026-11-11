@@ -2544,21 +2544,6 @@
     "Diseño de sitios asociados",
     "Habillage des sites partenaires"
   ],
-  "Для всех партнёров тестовое оформление бесплатно до 00:00 1 января 2027 года по Москве. Продолжение в 2027 году подключается вручную после отдельного согласования и оплаты: до 00:00 1 января 2028 года по Москве. Для подключившихся в течение 2027 года окончание то же, поэтому срок может быть короче 12 месяцев; индивидуальная цена и состав согласуются до оплаты. Бесплатный период сам по себе не становится платным. Автоматических списаний и продления нет. После окончания срока отключаются темы, фирменные шрифты и обновления Syolana; ваш HTML-файл, домен, собственные тексты, фото и базовая структура сайта остаются у вас.": [
-    "For all partners, trial design is free until 00:00 on 1 January 2027, Moscow time. Continuing in 2027 is enabled manually after a separate agreement and payment, until 00:00 on 1 January 2028, Moscow time. Partners joining during 2027 have the same end date, so the term may be shorter than 12 months; the individual price and scope are agreed before payment. The free period does not turn into a paid one automatically. There are no automatic charges or renewals. When the term ends, Syolana themes, branded fonts and updates stop; your HTML file, domain, own texts, photos and basic site structure remain yours.",
-    "Para todos los socios, el diseño de prueba es gratuito hasta las 00:00 del 1 de enero de 2027, hora de Moscú. La continuación en 2027 se activa manualmente tras un acuerdo y pago independientes, hasta las 00:00 del 1 de enero de 2028, hora de Moscú. Quienes se incorporen durante 2027 tendrán la misma fecha de finalización, por lo que el plazo puede ser inferior a 12 meses; el precio individual y el contenido se acuerdan antes del pago. El período gratuito no se convierte automáticamente en uno de pago. No hay cobros ni renovaciones automáticas. Al finalizar el plazo se desactivan los temas, las fuentes de marca y las actualizaciones de Syolana; conservas tu archivo HTML, dominio, textos, fotos y estructura básica del sitio.",
-    "Pour tous les partenaires, l’habillage d’essai est gratuit jusqu’au 1er janvier 2027 à 00 h 00, heure de Moscou. La poursuite en 2027 est activée manuellement après un accord et un paiement distincts, jusqu’au 1er janvier 2028 à 00 h 00, heure de Moscou. Les partenaires rejoignant le service en cours d’année 2027 ont la même échéance : leur durée peut donc être inférieure à 12 mois ; le prix individuel et le contenu sont convenus avant le paiement. La période gratuite ne devient pas automatiquement payante. Il n’y a ni prélèvement ni renouvellement automatique. À l’échéance, les thèmes, les polices de marque et les mises à jour de Syolana sont désactivés ; vous conservez votre fichier HTML, domaine, textes, photos et structure de base du site."
-  ],
-  "В календарном файле оформления указан только общий период: тест до 2027 года или оплаченный период 2027 года. Он не отправляет запросы к базе лицензий и не содержит идентификатор партнёра, посетителя или устройства. Проверка срока выполняется в браузере. При загрузке тем и шрифтов хостинг получает обычные сетевые запросы и может вести свои журналы. Переписка, оплата и сведения, которые владелец сам добавил на свой сайт, учитываются отдельно.": [
-    "The calendar design file specifies only a shared period: a trial ending in 2027 or the paid 2027 period. It sends no requests to the licence database and contains no partner, visitor or device identifier. The browser checks the term. When themes and fonts load, hosting receives ordinary network requests and may keep its own logs. Messages, payments and information the owner adds to their site must be considered separately.",
-    "El archivo de diseño por calendario solo indica un período común: la prueba que termina en 2027 o el período de pago de 2027. No envía solicitudes a la base de licencias ni contiene identificadores de socios, visitantes o dispositivos. El navegador comprueba el plazo. Al cargar temas y fuentes, el alojamiento recibe solicitudes de red normales y puede guardar sus propios registros. Los mensajes, los pagos y la información que el propietario añade a su sitio se consideran por separado.",
-    "Le fichier d’habillage à échéance commune indique uniquement une période : l’essai se terminant en 2027 ou la période payante de 2027. Il n’envoie aucune requête à la base de licences et ne contient aucun identifiant de partenaire, de visiteur ou d’appareil. Le navigateur vérifie l’échéance. Lors du chargement des thèmes et des polices, l’hébergement reçoit des requêtes réseau ordinaires et peut conserver ses propres journaux. Les messages, les paiements et les informations ajoutées par le propriétaire sur son site doivent être examinés séparément."
-  ],
-  "Для нового файла оформления владелец Syolana разрешает полный адрес сайта и код оформления в закрытом серверном списке. Оплата за 2027 год отмечается отдельно. Посетители не регистрируются в этом списке. Проверка оформления передаёт серверу домен и путь сайта без строки поиска и фрагмента; запросы выполняются без cookie и Referer. Приложение не записывает сведения об устройствах, IP-адресах, местонахождении и просмотрах посетителей. Хостинг получает сетевые запросы и может вести собственные журналы. Переписка, оплата и домены, позволяющие определить физическое лицо, требуют отдельной оценки по законодательству о персональных данных.": [
-    "For a new design file, the Syolana owner approves the full website address and design code in a private server list. Payment for 2027 is recorded separately. Visitors are not registered in this list. Design checks send the website domain and path without query parameters or fragments; requests use no cookies or Referer. The application does not record visitors’ devices, IP addresses, locations or page views. The hosting provider receives network requests and may keep its own logs. Correspondence, payments and domains that identify an individual need a separate assessment under personal data law.",
-    "Para un nuevo archivo de diseño, la titular de Syolana autoriza la dirección completa del sitio y el código de diseño en una lista privada del servidor. El pago de 2027 se registra por separado. Los visitantes no se registran en esta lista. La comprobación envía el dominio y la ruta del sitio sin parámetros de consulta ni fragmentos; las solicitudes no utilizan cookies ni Referer. La aplicación no registra los dispositivos, direcciones IP, ubicaciones ni páginas vistas de los visitantes. El proveedor de alojamiento recibe solicitudes de red y puede mantener sus propios registros. La correspondencia, los pagos y los dominios que permitan identificar a una persona requieren una evaluación independiente según la legislación de protección de datos.",
-    "Pour un nouveau fichier de présentation, la propriétaire de Syolana autorise l’adresse complète du site et le code de présentation dans une liste privée du serveur. Le paiement pour 2027 est enregistré séparément. Les visiteurs ne sont pas inscrits dans cette liste. La vérification transmet le domaine et le chemin du site sans paramètres de requête ni fragment ; les requêtes n’utilisent ni cookies ni Referer. L’application n’enregistre pas les appareils, adresses IP, positions ou pages consultées des visiteurs. L’hébergeur reçoit les requêtes réseau et peut conserver ses propres journaux. Les échanges, les paiements et les domaines permettant d’identifier une personne nécessitent une évaluation distincte au regard de la législation sur les données personnelles."
-  ],
   "Сведения об исполнителе": [
     "Service provider details",
     "Datos de la prestadora",
@@ -2633,5 +2618,65 @@
     "Language materials offer",
     "Oferta de materiales de idiomas",
     "Offre de supports linguistiques"
+  ],
+  "Ателье": [
+    "Atelier",
+    "Atelier",
+    "Atelier"
+  ],
+  "Примеры оформления или эскиз для вашего проекта можно запросить в личном сообщении: по": [
+    "Ask for design examples or a sketch for your project in a private message by",
+    "Pide ejemplos de diseño o un boceto para tu proyecto por mensaje privado: por",
+    "Demandez des exemples ou une esquisse pour votre projet en message privé : par"
+  ],
+  "или на": [
+    "or on",
+    "o en",
+    "ou sur"
+  ],
+  ". Состав, стоимость и сроки согласуем до оплаты.": [
+    ". Scope, price and timing are agreed before payment.",
+    ". Acordamos alcance, precio y plazos antes del pago.",
+    ". Périmètre, prix et délais sont convenus avant paiement."
+  ],
+  "Как устроено оформление Syolana": [
+    "How Syolana design works",
+    "Cómo funciona el diseño Syolana",
+    "Comment fonctionne l’habillage Syolana"
+  ],
+  "Syolana создаёт авторское оформление и живую атмосферу для сайтов и книг. Способ подключения, файлы, стоимость и сроки согласуем под ваш проект. Ваши материалы остаются у вас.": [
+    "Syolana creates original design and a living atmosphere for websites and books. Integration, files, price and timing are agreed for your project. Your content stays yours.",
+    "Syolana crea diseños de autor y atmósferas vivas para sitios y libros. Acordamos integración, archivos, precio y plazos para tu proyecto. Conservas tus materiales.",
+    "Syolana crée un habillage original et une atmosphère vivante pour les sites et les livres. Intégration, fichiers, prix et délais sont convenus pour votre projet. Vos contenus restent à vous."
+  ],
+  "Иммерсивное оформление сайта": [
+    "Immersive website design",
+    "Diseño web inmersivo",
+    "Habillage immersif de site"
+  ],
+  "Авторский образ, живой фон, свет, движение и понятные действия для посетителей. Состав, стоимость и срок согласуем под ваш проект.": [
+    "An original look, living backgrounds, light, motion and clear visitor actions. Scope, price and timing are agreed for your project.",
+    "Imagen de autor, fondos vivos, luz, movimiento y acciones claras. Acordamos alcance, precio y plazos para tu proyecto.",
+    "Une allure originale, des décors vivants, lumière, mouvement et actions claires. Périmètre, prix et délais sont convenus pour votre projet."
+  ],
+  "Стоимость и поддержка": [
+    "Price and support",
+    "Precio y soporte",
+    "Prix et suivi"
+  ],
+  "Стоимость оформления и дополнительных работ согласуем до оплаты. Для подключаемых тем отдельно фиксируем срок доступа, поддержку и условия отключения.": [
+    "Design and additional work are priced before payment. Access duration, support and disconnection terms for connected themes are agreed separately.",
+    "Acordamos el precio del diseño y extras antes del pago. Duración, soporte y desconexión de temas conectados se fijan por separado.",
+    "Le prix du design et des travaux complémentaires est convenu avant paiement. Durée, suivi et désactivation des thèmes connectés sont précisés séparément."
+  ],
+  "Вернуться в ателье": [
+    "Back to the atelier",
+    "Volver al atelier",
+    "Retour à l’atelier"
+  ],
+  "Для подключаемого оформления владелец Syolana разрешает адрес сайта и код оформления в закрытом серверном списке. Срок и условия доступа задаются для каждого подключения. Посетители не регистрируются в этом списке. Проверка оформления передаёт серверу домен и путь сайта без строки поиска и фрагмента; запросы выполняются без cookie и Referer. Приложение не записывает сведения об устройствах, IP-адресах, местонахождении и просмотрах посетителей. Хостинг получает сетевые запросы и может вести собственные журналы. Переписка, оплата и домены, позволяющие определить физическое лицо, требуют отдельной оценки по законодательству о персональных данных.": [
+    "For connected design, the Syolana owner approves the site address and design code in a private server registry. Access duration and terms are set for each connection. Visitors are not registered there. Design checks send the site domain and path without the query or fragment, cookies or Referer. The application does not record device details, IP addresses, location or visitor views. Hosting receives network requests and may keep its own logs. Correspondence, payments and domains identifying a person require a separate personal-data assessment.",
+    "Para el diseño conectado, la propietaria de Syolana autoriza la dirección y el código de diseño en un registro privado del servidor. Duración y condiciones se fijan para cada conexión. Los visitantes no se registran allí. La comprobación envía dominio y ruta sin consulta ni fragmento, cookies o Referer. La aplicación no registra dispositivos, direcciones IP, ubicación ni visitas. El alojamiento recibe solicitudes y puede conservar sus propios registros. Correspondencia, pagos y dominios que identifiquen a una persona requieren una evaluación aparte de datos personales.",
+    "Pour le design connecté, la propriétaire de Syolana autorise l’adresse et le code graphique dans un registre serveur privé. Durée et conditions sont fixées pour chaque connexion. Les visiteurs n’y sont pas inscrits. La vérification transmet le domaine et le chemin sans requête ni fragment, cookies ou Referer. L’application n’enregistre ni appareils, ni adresses IP, ni localisation, ni consultations. L’hébergement reçoit les requêtes et peut tenir ses propres journaux. Correspondance, paiements et domaines permettant d’identifier une personne nécessitent une analyse distincte des données personnelles."
   ]
 }

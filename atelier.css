@@ -35,10 +35,7 @@ html{scrollbar-gutter:stable}
 .atelier-examples-intro{max-width:790px;margin:-8px 0 30px;line-height:1.9}
 .atelier-preview{position:relative;min-width:0}
 .atelier-preview-surface{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;isolation:isolate;background:rgba(13,18,29,.28);contain:layout paint}
-.atelier-preview-surface>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(4px) brightness(.7) saturate(.85);transform:scale(1.04);transition:opacity .35s}
-.atelier-preview-surface>iframe{position:absolute;inset:0;width:var(--preview-width,760px);height:var(--preview-height,570px);transform:scale(var(--preview-scale,1));transform-origin:0 0;border:0;opacity:0;transition:opacity .3s;pointer-events:none;background:transparent}
-.atelier-preview-surface.preview-loaded>iframe{opacity:1}
-.atelier-preview-surface.preview-loaded>img{opacity:0}
+.atelier-preview-surface>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
 .atelier-preview-open{position:relative;display:flex;align-items:center;justify-content:center;gap:14px;width:100%;min-height:49px;padding:13px 18px;border:0;border-top:1px solid #f3dfff20;background:rgba(13,18,29,.3);font:600 12px/1.5 var(--body,system-ui);letter-spacing:.02em;color:#faf3ff;cursor:pointer}
 .atelier-preview-open:after{content:"↗";font-size:19px;font-weight:400}
 .atelier-preview-open:hover{background:#ffffff14}
@@ -71,7 +68,9 @@ html{scrollbar-gutter:stable}
 .atelier-detail>.card>p{margin-top:22px}
 .atelier-shell .text-link{text-underline-offset:5px;overflow-wrap:anywhere}
 .atelier-shell #main-nav{gap:12px;scroll-margin-top:100px}
-.atelier-shell #main-nav a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;transition:background-color .18s,border-color .18s}
+.atelier-shell #main-nav a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;transition:background-color .18s,border-color .18s;-webkit-tap-highlight-color:transparent}
+.atelier-shell #main-nav a:focus:not(:focus-visible){outline:none;box-shadow:none}
+.atelier-shell #main-nav a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .atelier-shell #main-nav .atelier-glyph{width:23px;height:23px;opacity:.85}
 .atelier-shell .syolana-copyright-corner{opacity:.3;pointer-events:none}
 .atelier-shell .syolana-copyright-corner a{pointer-events:auto}
@@ -82,7 +81,7 @@ html{scrollbar-gutter:stable}
 .atelier-viewing{overflow:hidden}
 @media(max-width:1000px){.atelier-grid{grid-template-columns:1fr 1fr}.atelier-grid>.atelier-card:last-child{grid-column:1/-1}.atelier-examples .atelier-grid>.atelier-card:last-child .atelier-preview-surface{aspect-ratio:16/8}.atelier-steps{gap:24px}}
 @media(max-width:760px){.atelier-shell #page{padding:26px 18px;margin-block:26px 30px}.atelier-shell .atelier-home,.atelier-shell .atelier-detail{gap:37px}.atelier-grid,.atelier-steps,.atelier-extra-grid{grid-template-columns:1fr;gap:20px}.atelier-grid>.atelier-card:last-child{grid-column:auto}.atelier-intro{padding:23px 0 25px}.atelier-intro>.atelier-glyph{width:75px;height:75px;right:-6px;top:-8px;opacity:.25}.atelier-intro h1{font-size:clamp(2.15rem,8.4vw,3.6rem);line-height:1.25;max-width:100%;margin-bottom:25px}.atelier-intro>p:last-child{font-size:1rem;line-height:1.95}.atelier-home h2,.atelier-detail h2{font-size:clamp(2.05rem,8.1vw,3rem);line-height:1.3}.atelier-card{padding:25px 22px}.atelier-card h3{font-size:2.15rem;line-height:1.3}.atelier-card p{font-size:.96rem}.atelier-card>.atelier-glyph{width:39px;height:39px;right:18px}.atelier-examples .atelier-card-copy{padding:24px 22px 28px}.atelier-examples .atelier-grid>.atelier-card:last-child .atelier-preview-surface{aspect-ratio:4/3}.atelier-step{padding-top:22px}.atelier-faq details{padding:20px 18px}.atelier-faq summary{font-size:.96rem}.atelier-invitation{padding:29px 22px}.atelier-actions .btn{width:100%;padding:13px 17px}.atelier-invitation>.atelier-glyph{width:55px;height:55px;right:14px;top:20px}.atelier-extras{padding:22px 18px}.atelier-hobby{font-size:.85rem}.atelier-hobby .row{display:grid;gap:16px}.atelier-detail>.card{padding:25px 20px}.atelier-shell #main-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px}.atelier-shell #main-nav a{padding:10px 7px;font-size:.76rem;white-space:normal;text-align:center;line-height:1.5}.atelier-shell #main-nav .atelier-glyph{width:20px;height:20px}.atelier-shell [data-syolana-signature]{font-size:21px!important;right:9px!important;letter-spacing:0;max-width:68px}.atelier-shell .syolana-avito-shell{right:8px!important}.atelier-shell .syolana-copyright-corner{opacity:.19;max-width:150px}.atelier-shell #footer{padding:29px 17px}.atelier-shell #music-dock{max-width:calc(100% - 22px)}}
-@media(prefers-reduced-motion:reduce){.atelier-preview-surface>img,.atelier-preview-surface>iframe,.atelier-shell #main-nav a{transition:none}.atelier-shell *{scroll-behavior:auto}}
+@media(prefers-reduced-motion:reduce){.atelier-shell #main-nav a{transition:none}.atelier-shell *{scroll-behavior:auto}}
 
 .atelier-preview-overlay{position:absolute;inset:0;opacity:0;border:0;z-index:2;height:100%;min-height:0}.atelier-preview-overlay:focus-visible{opacity:1;background:#121a28a6}.atelier-banner-glyph{width:33px;height:33px;margin-left:auto;opacity:.7;rotate:8deg}.atelier-example-link{align-self:flex-start;margin-top:23px;min-height:44px;padding:8px 0;background:none;border:0;text-decoration:underline;text-align:left;font:600 .85rem/1.6 var(--body,system-ui);cursor:pointer}.atelier-tab-panel{min-width:0}
 .showcase-actions>button.text-link{background:transparent;border:0;color:inherit;text-align:left;font:inherit;cursor:pointer;justify-content:flex-start}
@@ -98,24 +97,21 @@ html{scrollbar-gutter:stable}
 .atelier-shell #main-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;justify-items:stretch;gap:12px;max-width:840px;margin:24px auto 34px;padding:0}
 .atelier-shell #main-nav>a{box-sizing:border-box;width:100%;max-width:none;min-width:0;min-height:50px;height:100%;margin:0;grid-column:auto;transform:none;position:relative;z-index:1;border-radius:26px}
 .atelier-shell #main-nav .nav-label{white-space:normal}
-.atelier-preview-surface>iframe{transition:opacity .18s;will-change:auto}
-.atelier-preview-surface>img{filter:none;transform:none;transition:opacity .18s}
 .atelier-preview-surface{background:#222537;border:0}
 .atelier-viewer{position:fixed;inset:0;width:min(1500px,calc(100vw - 24px));max-width:none;height:calc(100dvh - 24px);max-height:none;padding:0;margin:auto;border:1px solid #f1e2fa38;border-radius:20px;overflow:hidden;background:rgba(22,23,35,.18);box-shadow:0 24px 80px #0005;color:#fff}
+.atelier-viewer[data-preparing]{display:block;opacity:0;pointer-events:none}
 .atelier-viewer::backdrop{background:#10131dc2;backdrop-filter:blur(10px)}
 .atelier-viewer:before{box-sizing:border-box;content:'Syolana · Atelier';position:absolute;inset:0 0 auto;height:44px;padding:14px 18px;font:500 10px/1.5 system-ui;letter-spacing:.08em;color:#f6ebffb5;background:linear-gradient(90deg,#171b2b35,#30263b18);backdrop-filter:blur(10px);pointer-events:none;z-index:3}
-.atelier-viewer iframe,.atelier-viewer-poster{position:absolute;inset:44px 0 0;width:100%;height:calc(100% - 44px);border:0;object-fit:cover;object-position:top;background:transparent}
-.atelier-viewer iframe{opacity:0;transition:opacity .18s}.atelier-viewer.demo-ready iframe{opacity:1}.atelier-viewer.demo-ready .atelier-viewer-poster{opacity:0;pointer-events:none}
+.atelier-viewer iframe{position:absolute;inset:44px 0 0;width:100%;height:calc(100% - 44px);border:0;background:transparent}
+.atelier-viewer[data-stalled] iframe{visibility:hidden}
 .atelier-viewer-close{position:absolute;z-index:5;right:12px;top:0;display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 8px;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;color:#fff;font:500 11px/1.5 system-ui;cursor:pointer}
 .atelier-viewer-close:after{content:'×';font:300 24px/1 system-ui}.atelier-viewer-close:focus-visible{outline:1px solid #fff8;outline-offset:-4px}
-.atelier-viewing #content-shell,.atelier-viewing #chrome,.atelier-viewing #music-dock,.atelier-viewing .syolana-avito-shell,.atelier-viewing .syolana-copyright-corner{visibility:hidden}
 @media(max-width:760px){.atelier-shell #page{padding:30px 36px;margin:28px auto 36px}.atelier-shell #main-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.atelier-shell #main-nav>a{min-height:48px;padding:11px 8px;font-size:.79rem}.atelier-shell .atelier-card{padding:25px 22px}.atelier-shell .atelier-card-copy{padding:24px 22px 28px}.atelier-shell #page .glass,.atelier-shell #page .card{backdrop-filter:none;-webkit-backdrop-filter:none}.atelier-shell .syolana-contact-float,.atelier-shell #syolana-avito-float{width:48px;min-width:48px;height:48px;min-height:48px}.atelier-viewer{width:100%;height:100dvh;border:0;border-radius:0}.atelier-viewer-close{font-size:11px;right:12px}}
-.atelier-viewer-poster{filter:blur(5px);transform:scale(1.015)}.atelier-viewer-fallback{position:absolute;z-index:6;top:48%;left:50%;transform:translateX(-50%);max-width:85%;color:#fff;background:#171b2b90;border:1px solid #ffffff40;border-radius:20px;padding:14px 22px;font:500 13px/1.7 system-ui;text-align:center;text-decoration:underline}.atelier-viewer-fallback[hidden]{display:none}
+.atelier-viewer-fallback{position:absolute;z-index:6;top:48%;left:50%;transform:translateX(-50%);max-width:85%;color:#fff;background:#171b2b90;border:1px solid #ffffff40;border-radius:20px;padding:14px 22px;font:500 13px/1.7 system-ui;text-align:center;text-decoration:underline}.atelier-viewer-fallback[hidden]{display:none}
 html{scrollbar-gutter:stable both-edges}
 .atelier-shell #main-nav{display:grid!important;overflow:visible!important;padding:0!important;margin:24px auto 30px!important;gap:12px!important;row-gap:12px!important}
 .atelier-shell #main-nav>a{min-height:50px!important;padding:11px 12px!important;margin:0!important;transform:none!important}
 @media(max-width:760px){.atelier-shell #main-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px!important}.atelier-shell #main-nav>a{padding:11px 7px!important;font-size:.79rem}}
 
-.atelier-preview-surface>img{object-position:top}
-
 .atelier-viewer{background-image:var(--viewer-backdrop);background-size:cover;background-position:center top}
+[aria-busy="true"]{cursor:progress}

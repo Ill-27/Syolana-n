@@ -572,7 +572,6 @@ function atelierTab(view,kind,token){
  for(const a of $('main-nav').querySelectorAll('[data-nav]'))a.setAttribute('aria-current',a.dataset.nav===view?'page':'false');
  document.title='Syolana · Ателье сайтов — авторское иммерсивное оформление';
  finishUI();
- if(!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)panel.animate?.([{opacity:.25},{opacity:1}],{duration:180,easing:'ease-out'});
 }
 
 async function route() {

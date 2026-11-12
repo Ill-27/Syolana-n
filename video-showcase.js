@@ -1,4 +1,4 @@
-import {liveAtelierPreview,openAtelierExample,atelierGlyph} from './atelier-media.js';
+import {openAtelierExample} from './atelier-media.js';
 import catalog from './video-showcase.json' with {type:'json'};
 import {registerTranslations,tr} from './i18n.js';
 import './video-copy.js';
@@ -125,7 +125,7 @@ export function createShowcaseVideo(entry,{doc=document,priority=false}={}){
   selected=chooseVideoSource(entry,win);const source=mediaURL(selected.src,doc.baseURI);if(!source)return;
   loaded=true;video.src=source;video.preload=priority?'auto':'metadata';open.href=source;
  }
- const suppressed=()=>doc.hidden||doc.body.classList.contains('zen')||Boolean(root.closest('[hidden],[inert]'));
+ const suppressed=()=>doc.hidden||doc.body.classList.contains('zen')||doc.body.classList.contains('atelier-viewing')||Boolean(root.closest('[hidden],[inert]'));
  function start(){
   if(destroyed||(!visible&&video.muted)||suppressed())return;
   if(reduced&&!manuallyStarted){play.hidden=false;return;}
@@ -150,17 +150,23 @@ export function createShowcaseVideo(entry,{doc=document,priority=false}={}){
 }
 
 export function showcaseEntry(id){return catalog.videos.find(video=>video.id===id);}
-export function mountShowcaseBanner(banner){
+export function mountShowcaseBanner(banner,{random=Math.random,contactURL='https://www.avito.ru/brands/i223140984'}={}){
  const doc=banner.ownerDocument;
- if(banner.dataset.showcaseBook)return 'book';
- installStyle(doc);
- const make=(tag,cls,text)=>{const e=doc.createElement(tag);e.className=cls;if(text)e.textContent=tr(text);return e;};
+ if(!selections.has(doc))selections.set(doc,selectBannerVariant(random));
+ const selected=selections.get(doc);banner.dataset.videoVariant=selected;
+ if(banner.querySelector('[data-showcase-video]'))return selected;
+ const entry=showcaseEntry(selected),player=createShowcaseVideo(entry,{doc,priority:true});
+ if(!player)return selected;
+ const make=(tag,className,text)=>{const node=doc.createElement(tag);node.className=className;if(text)node.textContent=tr(text);return node;};
  const copy=make('div','showcase-copy'),words=make('div','showcase-words'),kicker=make('div','showcase-kicker');
  const brand=make('div','banner-brandmark syolana-passport-button'),logo=doc.createElement('img');logo.src=new URL('assets/logo.svg',doc.baseURI).href;logo.width=20;logo.height=20;logo.alt='';logo.decoding='async';brand.append(logo,make('span','','SYOLANA'));
- kicker.append(brand,make('span','',atelierText('brand')),atelierGlyph('scissors','atelier-banner-glyph',doc));
+ kicker.append(brand,make('span','',atelierText('brand')));
  words.append(kicker,make('h2','showcase-title',atelierText('title')),make('p','showcase-description',atelierText('description')));
- const actions=make('div','showcase-actions'),mail=make('a','btn primary',atelierText('request')),avito=make('a','btn banner-secondary',atelierText('avito')),example=make('button','text-link',atelierText('examples_link'));
- mail.href=atelierMail();avito.href=ATELIER_AVITO;avito.target='_blank';avito.rel='noopener noreferrer';example.type='button';example.onclick=()=>openAtelierExample('book');actions.append(mail,avito,example);
+ const actions=make('div','showcase-actions'),site=make('a','btn primary',atelierText('request')),order=make('a','btn banner-secondary',atelierText('avito')),example=make('button','text-link',atelierText('examples_link'));
+ site.href=atelierMail();order.href=ATELIER_AVITO;order.target='_blank';order.rel='noopener noreferrer';example.type='button';example.addEventListener('click',()=>openAtelierExample('book'));actions.append(site,order,example);
  copy.append(words,actions,make('p','showcase-note',atelierText('hero_note')));
- const preview=liveAtelierPreview('book',{hero:true,doc});preview.classList.add('showcase-film');banner.classList.add('showcase-hero');banner.dataset.showcaseBook='true';banner.replaceChildren(copy,preview);return 'book';
+ player.classList.add('showcase-film');banner.classList.add('showcase-hero');banner.style.setProperty('--showcase-backdrop','url("'+mediaURL(entry.poster)+'")');
+ banner.replaceChildren(copy,player);
+ return selected;
 }
+

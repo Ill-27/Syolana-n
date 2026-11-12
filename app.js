@@ -545,6 +545,7 @@ function report() {
   $("page").append(box);
 }
 
+window.addEventListener('syolana:atelier-viewer',event=>theme.setBlocked(Boolean(event.detail?.open)));
 let atelierActive=false;
 const atelierPanels=new Map();
 function atelierTab(view,kind,token){

@@ -2,61 +2,82 @@ import {el,button} from './utils.js';
 import {registerTranslations,tr} from './i18n.js';
 
 registerTranslations({
- 'Иммерсивная книга — живой образец':['Immersive book — live example','Libro inmersivo — ejemplo vivo','Livre immersif — exemple vivant'],
- 'Открыть и прочитать':['Open and read','Abrir y leer','Ouvrir et lire'],
  'Открыть живой макет':['Open the live design','Abrir el diseño vivo','Ouvrir la maquette vivante'],
  'Закрыть пример':['Close example','Cerrar ejemplo','Fermer l’exemple'],
  'Живой пример оформления':['Live design example','Ejemplo de diseño vivo','Exemple d’habillage vivant'],
+ 'Открыть пример отдельной страницей':['Open the example in a separate page','Abrir el ejemplo en otra página','Ouvrir l’exemple sur une page séparée'],
  'Книга · единый мягкий фон':['Book · one soft backdrop','Libro · fondo suave unificado','Livre · décor doux et continu'],
  'Глэмпинг · стеклянные блоки':['Glamping · glass panels','Glamping · paneles de cristal','Glamping · panneaux de verre'],
  'Студия · смешанное оформление':['Studio · a combined design','Estudio · diseño combinado','Studio · habillage mixte']
 });
-
 const designs={
- book:{src:'examples/book.html',poster:'assets/atelier/scene-3e91dca1d27d3e.webp',width:440,label:'Книга · единый мягкий фон'},
- glamping:{src:'examples/glamping.html',poster:'assets/atelier/scene-662c9e320fb3c0.webp',width:760,label:'Глэмпинг · стеклянные блоки'},
- studio:{src:'examples/studio.html',poster:'themes/previews/amber-forest.jpg',width:760,label:'Студия · смешанное оформление'}
+ book:{src:'examples/book.html',poster:'assets/atelier/preview-book.jpg',backdrop:'assets/atelier/scene-3e91dca1d27d3e.webp',width:440,height:330,label:'Книга · единый мягкий фон'},
+ glamping:{src:'examples/glamping.html',poster:'assets/atelier/preview-glamping.jpg',backdrop:'assets/atelier/scene-662c9e320fb3c0.webp',width:760,height:570,label:'Глэмпинг · стеклянные блоки'},
+ studio:{src:'examples/studio.html',poster:'assets/atelier/preview-studio.jpg',backdrop:'themes/previews/amber-forest.jpg',width:760,height:570,label:'Студия · смешанное оформление'}
 };
-let observer,resize,eventsReady=false,viewer;
-const previews=new Map();
-const motion=()=>!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-function dimensions(state){const width=state.root.getBoundingClientRect().width;if(!width)return;const scale=width/state.spec.width;state.root.style.setProperty('--preview-scale',String(scale));state.root.style.setProperty('--preview-width',state.spec.width+'px');state.root.style.setProperty('--preview-height',Math.ceil(state.root.getBoundingClientRect().height/scale)+'px');}
+let visibilityObserver,warmObserver,resizeObserver,eventsReady=false,viewer,viewerTimer;
+const previews=new Map(),motion=()=>!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+function dimensions(state){
+ const width=state.root.getBoundingClientRect().width;
+ if(!width||Math.abs(width-(state.width||0))<.5)return;state.width=width;
+ state.root.style.setProperty('--preview-scale',String(width/state.spec.width));
+ state.root.style.setProperty('--preview-width',state.spec.width+'px');state.root.style.setProperty('--preview-height',state.spec.height+'px');
+}
 function tell(state){state.frame?.contentWindow?.postMessage({syolanaPreviewState:true,active:state.visible&&!document.hidden&&!viewer?.open&&motion()},location.origin);}
+function release(state){state.frame?.remove();state.frame=null;state.root.classList.remove('preview-loaded');}
 function activate(state){
- if(state.frame||!state.root.isConnected||!motion())return;
- const frame=el('iframe');frame.title=tr(state.spec.label);frame.src=state.spec.src+'?preview=card';frame.tabIndex=-1;frame.setAttribute('aria-hidden','true');frame.setAttribute('sandbox','allow-scripts allow-same-origin');frame.loading='lazy';frame.referrerPolicy='no-referrer';
- state.frame=frame;dimensions(state);state.root.append(frame);frame.addEventListener('load',()=>{tell(state);state.root.classList.add('preview-loaded');});
+ if(state.frame||!state.root.isConnected||viewer?.open||!motion())return;
+ const frame=el('iframe');frame.title=tr(state.spec.label);frame.tabIndex=-1;frame.setAttribute('aria-hidden','true');frame.setAttribute('sandbox','allow-scripts allow-same-origin');frame.loading='eager';frame.referrerPolicy='no-referrer';
+ state.frame=frame;dimensions(state);frame.src=state.spec.src+'?preview=card';frame.addEventListener('load',()=>{tell(state);frame.contentWindow?.postMessage({syolanaRequestReady:true},location.origin);});state.root.append(frame);
 }
 function initialize(){
  if(eventsReady)return;eventsReady=true;
- if(typeof window.IntersectionObserver==='function')observer=new window.IntersectionObserver(rows=>{for(const row of rows){const state=previews.get(row.target);if(!state)continue;state.visible=row.isIntersecting;if(state.visible)activate(state);tell(state);}},{rootMargin:'100px 0px',threshold:0});
- if(typeof window.ResizeObserver==='function')resize=new window.ResizeObserver(rows=>{for(const row of rows){const state=previews.get(row.target);if(state)dimensions(state);}});
+ if(typeof window.IntersectionObserver==='function'){
+  visibilityObserver=new window.IntersectionObserver(rows=>{for(const row of rows){const state=previews.get(row.target);if(!state)continue;state.visible=row.isIntersecting;if(state.visible)activate(state);tell(state);}},{threshold:0});
+  warmObserver=new window.IntersectionObserver(rows=>{for(const row of rows){const state=previews.get(row.target);if(!state)continue;state.near=row.isIntersecting;if(state.near)activate(state);else release(state);}},{rootMargin:'650px 0px',threshold:0});
+ }
+ if(typeof window.ResizeObserver==='function')resizeObserver=new window.ResizeObserver(rows=>{for(const row of rows){const state=previews.get(row.target);if(state)dimensions(state);}});
  document.addEventListener('visibilitychange',()=>{for(const state of previews.values())tell(state);});
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin)return;
-  for(const state of previews.values())if(event.source===state.frame?.contentWindow&&event.data?.syolanaPreviewReady){tell(state);return;}
-  if(event.source===viewer?.querySelector('iframe')?.contentWindow&&event.data?.syolanaDemoSound)window.dispatchEvent(new Event('syolana:foreground-media'));
+  for(const state of previews.values())if(event.source===state.frame?.contentWindow){
+   if(event.data?.syolanaPreviewReady)tell(state);
+   if(event.data?.syolanaDemoReady){state.root.classList.add('preview-loaded');tell(state);}return;
+  }
+  if(event.source===viewer?.querySelector('iframe')?.contentWindow){
+   if(event.data?.syolanaDemoReady){clearTimeout(viewerTimer);viewer.classList.add('demo-ready');viewer.querySelector('.atelier-viewer-fallback').hidden=true;}
+   if(event.data?.syolanaDemoSound)window.dispatchEvent(new Event('syolana:foreground-media'));
+  }
  });
- window.addEventListener('resize',()=>{for(const state of previews.values())if(state.visible)dimensions(state);},{passive:true});
 }
 export function openAtelierExample(kind){
- const spec=designs[kind];if(!spec)return;
- initialize();
+ const spec=designs[kind];if(!spec)return;initialize();
  if(!viewer){
   viewer=el('dialog','atelier-viewer');viewer.setAttribute('aria-label',tr('Живой пример оформления'));
-  const close=button(tr('Закрыть пример'),()=>viewer.close(),'atelier-viewer-close');viewer.append(close);document.body.append(viewer);
-  viewer.addEventListener('close',()=>{viewer.querySelector('iframe')?.remove();document.body.classList.remove('atelier-viewing');for(const state of previews.values())tell(state);});
+  const close=button(tr('Закрыть пример'),()=>viewer.close(),'atelier-viewer-close');close.setAttribute('aria-label',tr('Закрыть пример'));viewer.append(close);
+  const fallback=el('a','atelier-viewer-fallback',tr('Открыть пример отдельной страницей'));fallback.target='_blank';fallback.rel='noopener';fallback.hidden=true;viewer.append(fallback);document.body.append(viewer);
+  viewer.addEventListener('close',()=>{clearTimeout(viewerTimer);viewer.querySelector('iframe')?.remove();viewer.querySelector('.atelier-viewer-poster')?.remove();document.body.classList.remove('atelier-viewing');window.dispatchEvent(new CustomEvent('syolana:atelier-viewer',{detail:{open:false}}));for(const state of previews.values())if(state.near)activate(state);});
  }
- viewer.querySelector('iframe')?.remove();const frame=el('iframe');frame.src=spec.src;frame.title=tr(spec.label);frame.referrerPolicy='no-referrer';frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox');frame.allowFullscreen=true;viewer.append(frame);
- document.body.classList.add('atelier-viewing');viewer.showModal();for(const state of previews.values())tell(state);
+ viewer.querySelector('iframe')?.remove();viewer.querySelector('.atelier-viewer-poster')?.remove();viewer.classList.remove('demo-ready');
+ viewer.style.setProperty('--viewer-backdrop','url("'+spec.backdrop+'")');const fallback=viewer.querySelector('.atelier-viewer-fallback');fallback.hidden=true;fallback.href=spec.src;
+ const poster=el('img','atelier-viewer-poster');poster.src=spec.backdrop;poster.alt='';poster.decoding='async';viewer.append(poster);
+ for(const state of previews.values())release(state);
+ document.body.classList.add('atelier-viewing');window.dispatchEvent(new CustomEvent('syolana:atelier-viewer',{detail:{open:true}}));
+ const frame=el('iframe');frame.title=tr(spec.label);frame.referrerPolicy='no-referrer';frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox');frame.allowFullscreen=true;
+ frame.addEventListener('load',()=>frame.contentWindow?.postMessage({syolanaRequestReady:true},location.origin));frame.src=spec.src;viewer.append(frame);if(!viewer.open)viewer.showModal();
+ viewerTimer=setTimeout(()=>{if(viewer.open&&!viewer.classList.contains('demo-ready'))fallback.hidden=false;},7000);
 }
-export function liveAtelierPreview(kind,{hero=false,doc=document,action=true}={}){
- const make=(tag,cls,text)=>{const e=doc.createElement(tag);if(cls)e.className=cls;if(text)e.textContent=text;return e;};
- const spec=designs[kind],root=make('div','atelier-preview'+(hero?' atelier-preview-hero':''));root.dataset.previewKind=kind;
- const surface=make('div','atelier-preview-surface'),poster=make('img');poster.src=spec.poster;poster.alt='';poster.decoding='async';poster.loading=hero?'eager':'lazy';poster.width=760;poster.height=570;surface.append(poster);
- const open=make('button','atelier-preview-open',hero?'Открыть и прочитать':'Открыть живой макет');open.type='button';open.onclick=()=>openAtelierExample(kind);open.setAttribute('aria-label',hero?'Открыть и прочитать':spec.label);const arrow=doc.createElementNS('http://www.w3.org/2000/svg','svg'),arrowPath=doc.createElementNS('http://www.w3.org/2000/svg','path');arrow.setAttribute('viewBox','0 0 20 20');arrow.setAttribute('aria-hidden','true');arrowPath.setAttribute('d','M4 16 16 4M4 4h12v12');arrowPath.setAttribute('fill','none');arrowPath.setAttribute('stroke','currentColor');arrowPath.setAttribute('stroke-width','1.25');arrow.append(arrowPath);open.append(arrow);if(!action){open.classList.add('atelier-preview-overlay');}root.append(surface,open);
- const state={root:surface,spec,visible:false,frame:null};
- queueMicrotask(()=>{if(!root.isConnected||typeof window==='undefined'||!window.IntersectionObserver)return;initialize();for(const [node,old]of previews)if(!node.isConnected){observer?.unobserve(node);resize?.unobserve(node);previews.delete(node);}previews.set(surface,state);observer?.observe(surface);resize?.observe(surface);if(!observer&&typeof window.IntersectionObserver==='function')activate(state);});
+export function liveAtelierPreview(kind,{doc=document,action=true}={}){
+ const make=(tag,cls,text)=>{const e=doc.createElement(tag);if(cls)e.className=cls;if(text)e.textContent=text;return e;},spec=designs[kind];
+ const root=make('div','atelier-preview');root.dataset.previewKind=kind;
+ const surface=make('div','atelier-preview-surface'),poster=make('img');poster.src=spec.poster;poster.alt='';poster.decoding='async';poster.loading='eager';poster.width=spec.width;poster.height=spec.height;surface.append(poster);
+ const open=make('button','atelier-preview-open','Открыть живой макет');open.type='button';open.onclick=()=>openAtelierExample(kind);open.setAttribute('aria-label',spec.label);if(!action)open.classList.add('atelier-preview-overlay');root.append(surface,open);
+ const state={root:surface,spec,visible:false,near:false,frame:null};
+ queueMicrotask(()=>{
+  if(!root.isConnected||typeof window==='undefined'||!window.IntersectionObserver)return;initialize();
+  for(const [node,old] of previews)if(!node.isConnected){release(old);visibilityObserver?.unobserve(node);warmObserver?.unobserve(node);resizeObserver?.unobserve(node);previews.delete(node);}
+  previews.set(surface,state);warmObserver?.observe(surface);visibilityObserver?.observe(surface);resizeObserver?.observe(surface);
+ });
  return root;
 }
 

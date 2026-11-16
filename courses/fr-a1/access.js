@@ -1,3 +1,4 @@
+import {currentFrenchEdition} from './presentation.js?v=20261116-current-1';
 import {createCourseAccess} from '../subscription-access.js?v=20261023-owner-serbian-1';
 export function validateCourse(d){
   if(!d||d.schema!=='syolana.course.v1'||d.courseId!=='fr-a1')throw new Error('Выберите приватный файл французского A1 Syolana.');
@@ -17,5 +18,6 @@ export function validateCourse(d){
 }
 
 const access=createCourseAccess({course:'fr-a1',title:'французского A1',validateCourse});
-export const loadCourse=access.loadCourse,mountAccountPanel=access.mountAccountPanel,monitorAccess=access.monitorAccess,watchSession=access.watchSession,sessionMark=access.sessionMark;
+export const loadCourse=async()=>currentFrenchEdition(await access.loadCourse());
+export const mountAccountPanel=access.mountAccountPanel,monitorAccess=access.monitorAccess,watchSession=access.watchSession,sessionMark=access.sessionMark;
 

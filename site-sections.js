@@ -31,7 +31,7 @@ const copy=[
  ['Языки, которые становятся понятнее','Languages that start making sense','Idiomas que empiezan a tener sentido','Des langues qui deviennent plus claires'],
  ['Курсы Syolana устроены по уровням: слова и формы, примеры, понятные правила, произношение и практика. Открывайте материал в браузере и занимайтесь в удобном темпе.','Syolana courses are organised by level: words and forms, examples, clear rules, pronunciation and practice. Open the material in your browser and study at your own pace.','Los cursos de Syolana se organizan por niveles: palabras y formas, ejemplos, reglas claras, pronunciación y práctica. Abre el material en tu navegador y estudia a tu ritmo.','Les cours Syolana sont organisés par niveau : mots et formes, exemples, règles claires, prononciation et pratique. Ouvrez le contenu dans votre navigateur et avancez à votre rythme.'],
  ['Сначала познакомьтесь с курсом','Start by exploring a course','Empieza explorando un curso','Commencez par découvrir un cours'],
- ['Английский A1 открыт бесплатно. Можно сразу посмотреть, как устроены словарь, объяснения и задания, послушать материал и понять, подходит ли вам такой способ учиться.','English A1 is freely accessible. Explore the vocabulary, explanations and exercises, listen to the material and see whether this way of learning suits you.','Inglés A1 es de acceso gratuito. Explora el vocabulario, las explicaciones y los ejercicios, escucha el material y comprueba si esta forma de aprender te resulta adecuada.','L’anglais A1 est accessible gratuitement. Découvrez le vocabulaire, les explications et les exercices, écoutez le contenu et voyez si cette façon d’apprendre vous convient.'],
+ ['Начните с бесплатного английского A1: попробуйте словарь, объяснения, задания и озвучку, чтобы понять, подходит ли вам этот формат. Во всех языках используется одна методика — после знакомства с ней будет проще выбрать следующий курс.','Start with free English A1: try the vocabulary, explanations, exercises and audio to see whether this format suits you. All languages use the same method, so this introduction will help you choose your next course.','Empieza con Inglés A1 gratuito: prueba el vocabulario, las explicaciones, los ejercicios y el audio para ver si este formato te conviene. Todos los idiomas siguen el mismo método; conocerlo te ayudará a elegir el próximo curso.','Commencez par l’anglais A1 gratuit : essayez le vocabulaire, les explications, les exercices et l’audio pour voir si ce format vous convient. Toutes les langues suivent la même méthode ; cette découverte vous aidera à choisir votre prochain cours.'],
  ['Открыть английский A1','Open English A1','Abrir Inglés A1','Ouvrir l’anglais A1'],
  ['Слова в контексте','Words in context','Palabras en contexto','Les mots en contexte'],
  ['Изучайте значение и нужные формы, затем смотрите, как слово работает в разных предложениях.','Learn the meaning and relevant forms, then see how the word works in different sentences.','Aprende el significado y las formas necesarias y observa cómo funciona la palabra en distintas frases.','Apprenez le sens et les formes utiles, puis voyez comment le mot fonctionne dans différentes phrases.'],
@@ -47,7 +47,7 @@ const copy=[
  ['Как заниматься','How to study','Cómo estudiar','Comment étudier'],
  ['Начните с небольшой порции слов и примеров. Разберите одно правило, послушайте материал и составьте несколько своих предложений. Возвращайтесь регулярно: курс можно проходить с телефона или компьютера.','Start with a small set of words and examples. Study one rule, listen to the material and write a few sentences of your own. Return regularly: you can use a phone or a computer.','Empieza con unas palabras y ejemplos. Estudia una regla, escucha el material y escribe unas frases propias. Vuelve con regularidad: puedes usar el teléfono o el ordenador.','Commencez par quelques mots et exemples. Étudiez une règle, écoutez le contenu et composez quelques phrases. Revenez régulièrement : le cours s’utilise sur téléphone ou ordinateur.'],
  ['Вопросы о занятиях и доступе','Questions about studying and access','Preguntas sobre el estudio y el acceso','Questions sur les cours et l’accès'],
- ['Если не получается открыть материал или выбрать уровень, напишите мне. Условия платного доступа уточняйте перед оплатой; бесплатный английский A1 можно открыть сразу.','Write to me if you cannot open the material or choose a level. Check paid access terms before payment; free English A1 is available immediately.','Escríbeme si no puedes abrir el material o elegir un nivel. Consulta las condiciones del acceso de pago antes de pagar; Inglés A1 gratuito está disponible directamente.','Écrivez-moi si vous ne parvenez pas à ouvrir le contenu ou à choisir un niveau. Vérifiez les conditions de l’accès payant avant tout paiement ; l’anglais A1 gratuit est accessible immédiatement.'],
+ ['Все предложения и пожелания по другим языкам и уровням присылайте на syolana@yandex.ru. Если нужна помощь с выбором курса или доступом, тоже напишите — отвечу в переписке.','Send all suggestions and wishes for other languages and levels to syolana@yandex.ru. Write there too if you need help choosing or opening a course; I reply in writing.','Envía todas tus sugerencias y peticiones de otros idiomas y niveles a syolana@yandex.ru. Escribe también si necesitas ayuda para elegir o abrir un curso; respondo por escrito.','Envoyez toutes vos suggestions et demandes concernant d’autres langues et niveaux à syolana@yandex.ru. Écrivez aussi si vous avez besoin d’aide pour choisir ou ouvrir un cours ; je réponds par écrit.'],
  ['Написать по почте','Write by email','Escribir por correo','Écrire par e-mail'],
  ['Вернуться на главную','Back to the home page','Volver al inicio','Retour à l’accueil'],
  ['Идеи сюжетов, а не примеры готовых работ','Story ideas, not completed work samples','Ideas de guion, no muestras de trabajos terminados','Idées de récits, et non exemples de réalisations'],
@@ -66,8 +66,37 @@ export function renderCartoons(){
  contacts(root,22,23,'Примеры мультфильмов и моя идея',24);root.append(link(c(47),'#/','text-link'));return root;
 }
 export function renderLearning(){
- const root=intro('book',26,27),start=card(28,29,'book');start.classList.add('section-course-start');start.append(link(c(30),'#/lesson/en/a1/course','btn primary'));root.append(start);
+ const root=el('article','atelier-home section-page learning-page'),header=el('header','learning-header');header.append(el('p','eyebrow','SYOLANA · Изучение языков'),el('h1','','Курсы языков'),el('p','learning-start-note','Начните с английского A1 бесплатно — так вы поймёте, подходит ли вам формат. Во всех языках одна методика.'));root.append(header,renderCourseLinks());
  const grid=el('div','section-pair section-features');for(const [t,b] of [[31,32],[33,34],[35,36],[37,38]])grid.append(card(t,b,'book'));root.append(grid);
  const catalog=card(39,40,'book');catalog.append(link(c(41),'#/languages','btn'));root.append(catalog,card(42,43));
  contacts(root,44,45,'Вопрос о языковом курсе',46);root.append(link(c(47),'#/','text-link'));return root;
+}
+
+registerTranslations({
+ 'SYOLANA · Изучение языков':['SYOLANA · Language learning','SYOLANA · Idiomas','SYOLANA · Apprentissage des langues'],
+ 'Курсы языков':['Language courses','Cursos de idiomas','Cours de langues'],
+ 'Начните с английского A1 бесплатно — так вы поймёте, подходит ли вам формат. Во всех языках одна методика.':['Start with free English A1 to see if the format suits you. All languages use the same method.','Empieza con Inglés A1 gratuito para ver si el formato te conviene. Todos los idiomas siguen el mismo método.','Commencez par l’anglais A1 gratuit pour voir si le format vous convient. Toutes les langues suivent la même méthode.'],
+ 'Языки и цены':['Languages and prices','Idiomas y precios','Langues et tarifs'],
+ 'Открыт для всех':['Open to everyone','Abierto a todos','Ouvert à tous'],
+ 'Английский A1':['English A1','Inglés A1','Anglais A1'],
+ 'Английский A2':['English A2','Inglés A2','Anglais A2'],
+ 'Французский A1':['French A1','Francés A1','Français A1'],
+ 'Испанский A1':['Spanish A1','Español A1','Espagnol A1'],
+ 'Бесплатно':['Free','Gratis','Gratuit'],
+ 'Начать бесплатно':['Start for free','Empezar gratis','Commencer gratuitement'],
+ 'Открыть курс':['Open course','Abrir el curso','Ouvrir le cours'],
+ '650 ₽ / 30 дней':['650 ₽ / 30 days','650 ₽ / 30 días','650 ₽ / 30 jours'],
+ 'В общей подписке':['Included in one subscription','Incluido en una suscripción','Inclus dans un abonnement'],
+ 'Одна подписка за 650 ₽ на 30 дней открывает английский A2, французский A1 и испанский A1 вместе. Это общая цена за все три курса. Автоматического продления и списаний нет.':['One subscription of 650 ₽ for 30 days includes English A2, French A1 and Spanish A1 together. This is the total price for all three courses. No automatic renewal or charges.','Una suscripción de 650 ₽ por 30 días incluye Inglés A2, Francés A1 y Español A1. Es el precio total de los tres cursos. Sin renovación ni cargos automáticos.','Un abonnement de 650 ₽ pour 30 jours comprend l’anglais A2, le français A1 et l’espagnol A1. Il s’agit du prix total des trois cours. Sans renouvellement ni prélèvement automatique.']
+});
+export function renderCourseLinks(){
+ const section=el('section','learning-courses');section.setAttribute('aria-label','Языки и цены');
+ const grid=el('div','learning-course-grid');
+ for(const [code,name,route,free] of [['Aa','Английский A1','en/a1',true],['Aa','Английский A2','en/a2',false],['Àa','Французский A1','fr/a1',false],['Ññ','Испанский A1','es/a1',false]]){
+  const item=link('','#/lesson/'+route+'/course','learning-course-card'+(free?' is-free':''));
+  const mark=el('span','learning-course-mark',code);mark.setAttribute('aria-hidden','true');
+  item.append(mark,el('h2','',name),el('strong','learning-course-price',free?'Бесплатно':'650 ₽ / 30 дней'),el('span','learning-course-term',free?'Открыт для всех':'В общей подписке'),el('span','learning-course-action',free?'Начать бесплатно':'Открыть курс'));
+  item.dataset.course=route;grid.append(item);
+ }
+ section.append(grid,el('p','learning-subscription','Одна подписка за 650 ₽ на 30 дней открывает английский A2, французский A1 и испанский A1 вместе. Это общая цена за все три курса. Автоматического продления и списаний нет.'));return section;
 }

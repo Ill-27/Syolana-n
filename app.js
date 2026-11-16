@@ -33,7 +33,7 @@ import { renderFeed, feedEditor } from "./feed.js";
 import {mountShowcaseBanner} from './video-showcase.js';
 import {registerFeedCopy,renderServices,mountServicesNavigation} from './services.js';
 import {renderProjectContact} from './project-services.js';
-import {renderCartoons,renderLearning} from './site-sections.js';
+import {renderCartoons,renderLearning,renderCourseLinks} from './site-sections.js';
 import {renderAtelierHome,renderAtelierDetails} from './atelier.js';
 import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
 
@@ -318,13 +318,14 @@ function languages(lang = "en") {
     el("p", "", "Каждый курс собран по уровням и дневным блокам. У слов — четыре разных примера, у правил — объяснения и практика. Материал можно читать и слушать с переводом, в том числе во время привычных дел. А затем вернуться к экрану, произнести фразы и закрепить их письменно."),
     el("p", "", "Моя рекомендация — слушать каждый день: новую часть или повторение предыдущей. И каждый день немного писать от руки: в тетради или стилусом на телефоне и планшете. В моём опыте такая запись помогает вниманию и памяти. Вы сами выбираете темп."),
     link("Попробовать английский A1 бесплатно", "#/lesson/en/a1/course", "btn primary"));
-  $("page").append(intro);
+  $("page").append(renderCourseLinks(),intro);
   const tabs = el("div", "pill-tabs language-tabs");
   for (const [key, value] of Object.entries(lessons)) { const item=link(value.name, "#/languages/"+key,"btn");item.setAttribute("aria-current",key===lang?"page":"false");tabs.append(item); }
   $("page").append(tabs);
   const levels=el("div","grid two language-levels");
   for (const [level,description] of Object.entries({A1:"Основы языка и первые повседневные разговоры",A2:"Больше слов, времен и уверенности в обычных ситуациях"})) {
     const key=lang+"/"+level.toLowerCase()+"/course",published=Boolean(lessonFiles[key]),free=lang==="en"&&level==="A1";
+    if(!published)continue;
     const item=el("article","card stack language-level");item.dataset.level=level;
     item.append(el("span","badge",free?"БЕСПЛАТНО ДЛЯ ВСЕХ":published?"В ОБЩЕЙ ПОДПИСКЕ":"ГОТОВИТСЯ"),el("h3","course-level",data.name+" "+level),el("p","",description),el("p","course-price",free?"Бесплатно":published?"650 ₽ / 30 дней · все платные курсы":"Дата появится после подготовки"),published?link(free?"Начать бесплатно":"Открыть курс", "#/lesson/"+key,"btn primary"):link("Предложить следующий язык",businessContact("Хочу изучать "+data.name+" "+level,"languages"),"text-link"));
     if(published&&!free)item.append(coursePurchaseButton());

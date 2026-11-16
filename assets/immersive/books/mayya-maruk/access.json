@@ -2,8 +2,8 @@
   "schema": 1,
   "bookId": "mayya-maruk-brak-619023",
   "enabled": true,
-  "revision": "MM07",
-  "style": "https://syolana.com/assets/immersive/books/mayya-maruk/mm07/presentation-dc554354c3581666.css",
-  "runtime": "https://syolana.com/assets/immersive/books/mayya-maruk/mm07/presentation-315cd8ccde286ecd.js",
+  "revision": "MM08",
+  "style": "https://syolana.com/assets/immersive/books/mayya-maruk/mm08/presentation-0a20a2f8a6e7a866.css",
+  "runtime": "https://syolana.com/assets/immersive/books/mayya-maruk/mm08/presentation-4828cee307acf8e2.js",
   "assets": "https://syolana.com/assets/immersive/books/mayya-maruk/mm07/assets-11ad74818d6226a2.json"
 }

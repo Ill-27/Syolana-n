@@ -46,3 +46,21 @@ export function resolveView(raw, data, curriculum, trainers) {
   if (word) return {key, type: 'word', word};
   return {key: 'days', type: 'days'};
 }
+
+// The current edition uses the same verified access as existing licenses.
+export async function currentFrenchEdition(previous,{fetcher=globalThis.fetch,crypto=globalThis.crypto}={}){
+ const version='2026-11-15.fr.a1.pronunciation-and-listening.4';
+ if(previous.version===version)return previous;
+ const response=await fetcher(new URL('../../owner-vault/fr-a1-current.json?v=20261116-current-1',import.meta.url),{cache:'no-store'});
+ if(!response.ok)throw Error('Не удалось загрузить обновлённый французский A1. Проверьте интернет и повторите.');
+ const record=await response.json();if(record.schema!=='syolana.fr-a1.current.v1'||record.version!==version)throw Error('Обновите страницу французского A1.');
+ const material=JSON.stringify(previous.vocabulary.map(w=>[w.id,w.head.en,w.head.ru,...w.examples.map(p=>p.en)]));
+ const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(material));
+ const key=await crypto.subtle.importKey('raw',digest,'AES-GCM',false,['decrypt']);
+ const decode=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+ const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:decode(record.iv),additionalData:new TextEncoder().encode(record.schema)},key,decode(record.ciphertext));
+ const raw=await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',raw)),b=>b.toString(16).padStart(2,'0')).join('');
+ if(hash!==record.dataSha256)throw Error('Не удалось проверить обновлённый материал.');
+ return JSON.parse(new TextDecoder().decode(raw));
+}

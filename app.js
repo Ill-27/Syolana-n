@@ -33,6 +33,7 @@ import { renderFeed, feedEditor } from "./feed.js";
 import {mountShowcaseBanner} from './video-showcase.js';
 import {registerFeedCopy,renderServices,mountServicesNavigation} from './services.js';
 import {renderProjectContact} from './project-services.js';
+import {renderCartoons,renderLearning} from './site-sections.js';
 import {renderAtelierHome,renderAtelierDetails} from './atelier.js';
 import { setupDiscovery } from "./discovery.js?v=20261009-platform-1";
 
@@ -554,7 +555,7 @@ function atelierTab(view,kind,token){
   cleanup();clearPositionView();cleanup=()=>{};clearTimeout(siteTimer);clearTimeout(accessTimer);
   document.body.classList.remove('reading','partner-site');theme.setBlocked(false);host.replaceChildren();atelierPanels.clear();
  }
- atelierActive=true;document.body.classList.add('atelier-shell');document.body.classList.remove('information-view','managed-site-view','managed-editor-view');
+ atelierActive=true;document.body.classList.toggle('section-page-view',['cartoons','learn'].includes(view));document.body.classList.add('atelier-shell');document.body.classList.remove('information-view','managed-site-view','managed-editor-view');
  document.body.classList.toggle('project-contact-view',view==='contact');host.removeAttribute('data-i18n-skip');
  $('banner').hidden=false;$('provider-notice').hidden=false;$('main-nav').hidden=false;
  const minimum=Math.max(240,window.scrollY+window.innerHeight-host.getBoundingClientRect().top-window.scrollY-180);host.style.minHeight=minimum+'px';
@@ -564,21 +565,24 @@ function atelierTab(view,kind,token){
   panel=el('section','atelier-tab-panel');panel.dataset.atelierPanel=key;
   if(view==='home')panel.append(renderAtelierHome());
   else if(view==='join')panel.append(renderAtelierDetails());
+  else if(view==='cartoons')panel.append(renderCartoons());
+  else if(view==='learn')panel.append(renderLearning());
   else if(view==='services'){panel.append(renderServices(initialFeed.find(post=>post.pinned),{standalone:true}),link('Вернуться в ателье','#/','text-link'));}
   else panel.append(renderProjectContact(kind));
   atelierPanels.set(key,panel);host.append(panel);
  }
  panel.hidden=false;panel.removeAttribute('data-i18n-skip');
+ if(['cartoons','learn'].includes(view))window.scrollTo({top:0,behavior:'instant'});
  for(const a of $('main-nav').querySelectorAll('[data-nav]'))a.setAttribute('aria-current',a.dataset.nav===view?'page':'false');
- document.title='Syolana · Ателье сайтов — авторское иммерсивное оформление';
+ document.title=({cartoons:'Мультфильмы по вашей идее · Syolana',learn:'Изучение языков · Syolana'})[view]||'Syolana · Ателье сайтов — авторское иммерсивное оформление';
  finishUI();
 }
 
 async function route() {
   const token = ++routeToken;
   const routeParts=(location.hash.replace(/^#\/?/, '')||'home').split('/');
-  if(['home','join','services','contact'].includes(routeParts[0])){atelierTab(routeParts[0],routeParts[1]||'',token);return;}
-  atelierActive=false;atelierPanels.clear();document.body.classList.remove('atelier-shell');$('page').style.minHeight='';
+  if(['home','join','services','contact','cartoons','learn'].includes(routeParts[0])){atelierTab(routeParts[0],routeParts[1]||'',token);return;}
+  atelierActive=false;atelierPanels.clear();document.body.classList.remove('atelier-shell','section-page-view');$('page').style.minHeight='';
   const preserveAudio = /^#\/book\//.test(location.hash) || /^#\/s\/[^/]+\/book\//.test(location.hash);
   cleanup({ preserveAudio });
   clearPositionView();
@@ -619,7 +623,7 @@ async function route() {
   document
     .querySelectorAll("[data-nav]")
     .forEach((x) =>
-      x.setAttribute("aria-current", x.dataset.nav === view ? "page" : "false"),
+      x.setAttribute("aria-current", x.dataset.nav === (['languages','lesson'].includes(view)?'learn':view) ? "page" : "false"),
     );
   try {
     if (['create-site','site-editor','studio','editor','admin'].includes(view) && config.legacyStudioEnabled!==true) {positionView();}
@@ -684,7 +688,7 @@ async function route() {
 }
 $('main-nav').addEventListener('click',event=>{
  const a=event.target.closest('a[data-nav]');if(!a||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||event.button>0)return;
- const targetURL=new URL(a.href,document.baseURI),hash=targetURL.hash;if(targetURL.origin!==location.origin||!['#/','#/join','#/services','#/contact/site'].includes(hash))return;
+ const targetURL=new URL(a.href,document.baseURI),hash=targetURL.hash;if(targetURL.origin!==location.origin||!['#/','#/join','#/services','#/contact/site','#/cartoons','#/learn'].includes(hash))return;
  event.preventDefault();if(location.hash===hash)return;window.history.pushState(null,'',hash);route();
 });
 window.addEventListener("hashchange", route);
@@ -898,4 +902,5 @@ async function openLesson(key, anchor, token) {
   }
   lessonFrame(key, anchor);
 }
+
 

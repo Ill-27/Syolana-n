@@ -75,7 +75,9 @@ const paths={
  spool:'M18 13c0-8 30-8 30 0s-30 8-30 0Zm2 1 2 30m24-30-2 30M17 45c0-8 32-8 32 0s-32 8-32 0Zm6-23 21 5m-21 2 21 5m-21 2 21 4M46 45c19 2 9 13 0 11',
  needle:'M19 48 44 11c5-7 10-4 7 3L24 52l-8 7 3-11Zm24-32 5-7M45 12C22-2 5 12 15 21c6 6 15-3 21 3',
  pattern:'m15 8 14 5 14-5 10 16-10 9v20H16V33L5 24 15 8Zm14 5v14m-13 8h27M23 51l1-9h12l1 9M9 22l9 6m30-6-8 6',
- ruler:'M8 17 45 6l13 41-38 12L8 17Zm9 1 4 10m4-12 3 7m5-10 4 10m4-12 3 7M16 38l4 12m4-15 2 7m6-9 4 10m4-12 2 7'
+ ruler:'M8 17 45 6l13 41-38 12L8 17Zm9 1 4 10m4-12 3 7m5-10 4 10m4-12 3 7M16 38l4 12m4-15 2 7m6-9 4 10m4-12 2 7',
+ film:'M12 15h40v37H12V15Zm0 12h40M22 15l5-9m10 9 5-9M28 33l12 7-12 7V33Z',
+ book:'M32 16C23 9 12 11 7 14v39c9-5 17-3 25 2 8-5 16-7 25-2V14c-8-4-17-3-25 2Zm0 0v39'
 };
 export function atelierGlyph(kind='needle',className='atelier-glyph',doc=document){
  const ns='http://www.w3.org/2000/svg',svg=doc.createElementNS(ns,'svg'),path=doc.createElementNS(ns,'path');svg.setAttribute('viewBox','0 0 64 64');svg.setAttribute('aria-hidden','true');svg.setAttribute('class',className);path.setAttribute('d',paths[kind]||paths.needle);path.setAttribute('fill','none');path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width','1.1');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.append(path);return svg;

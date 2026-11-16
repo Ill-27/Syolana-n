@@ -67,6 +67,7 @@ export function renderServices(post,{standalone=false}={}){
 }
 
 export function mountServicesNavigation(banner,nav){
- const rows=[['Главная','#/','home'],['Ателье','#/join','join'],['Ещё услуги','#/services','services'],['Запросить эскиз','#/contact/site','contact']];
- nav.replaceChildren(...rows.map(([label,href,key])=>{const item=link(label,href);item.dataset.nav=key;item.replaceChildren(atelierGlyph(key==='home'?'pattern':key==='join'?'scissors':key==='services'?'spool':'needle'),el('span','nav-label',label));return item}));
+ const rows=[['Главная','#/','home'],['Ателье','#/join','join'],['Мультфильмы','#/cartoons','cartoons'],['Изучение языков','#/learn','learn'],['Ещё услуги','#/services','services'],['Запросить эскиз','#/contact/site','contact']];
+ nav.replaceChildren(...rows.map(([label,href,key])=>{const item=link(label,href);item.dataset.nav=key;item.replaceChildren(atelierGlyph(key==='home'?'pattern':key==='join'?'scissors':key==='cartoons'?'film':key==='learn'?'book':key==='services'?'spool':'needle'),el('span','nav-label',label));return item}));
 }
+

@@ -550,6 +550,7 @@ function report() {
 window.addEventListener('syolana:atelier-viewer',event=>theme.setBlocked(Boolean(event.detail?.open)));
 let atelierActive=false;
 const atelierPanels=new Map();
+let readerLandingPending=new URLSearchParams(location.search).get('from')==='reader';
 function atelierTab(view,kind,token){
  const host=$('page'),key=view+(kind?'/'+kind:'');
  if(!atelierActive){
@@ -573,13 +574,22 @@ function atelierTab(view,kind,token){
   atelierPanels.set(key,panel);host.append(panel);
  }
  panel.hidden=false;panel.removeAttribute('data-i18n-skip');
- if(['cartoons','learn'].includes(view))window.scrollTo({top:0,behavior:'instant'});
+ if(readerLandingPending&&['cartoons','learn'].includes(view)){
+  readerLandingPending=false;
+  const landingHash=location.hash;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   if(location.hash!==landingHash)return;
+   const top=Math.max(0,window.scrollY+host.getBoundingClientRect().top-Math.min(90,window.innerHeight*.12));
+   window.scrollTo({top,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  }));
+ }
  for(const a of $('main-nav').querySelectorAll('[data-nav]'))a.setAttribute('aria-current',a.dataset.nav===view?'page':'false');
  document.title=({cartoons:'Мультфильмы по вашей идее · Syolana',learn:'Изучение языков · Syolana'})[view]||'Syolana · Ателье сайтов — авторское иммерсивное оформление';
  finishUI();
 }
 
 async function route() {
+  for(const video of document.querySelectorAll('.animation-video'))if(!video.paused)video.pause();
   const token = ++routeToken;
   const routeParts=(location.hash.replace(/^#\/?/, '')||'home').split('/');
   if(['home','join','services','contact','cartoons','learn'].includes(routeParts[0])){atelierTab(routeParts[0],routeParts[1]||'',token);return;}
@@ -693,6 +703,7 @@ $('main-nav').addEventListener('click',event=>{
  event.preventDefault();if(location.hash===hash)return;window.history.pushState(null,'',hash);route();
 });
 window.addEventListener("hashchange", route);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)for(const video of document.querySelectorAll('.animation-video'))if(!video.paused)video.pause();});
 await route();
 
 function lessonFrame(key, anchor = "") {
@@ -903,5 +914,6 @@ async function openLesson(key, anchor, token) {
   }
   lessonFrame(key, anchor);
 }
+
 
 

@@ -59,8 +59,36 @@ function icon(name){const node=el('span','section-icon');node.setAttribute('aria
 function intro(kind,title,lead){const root=el('article','atelier-home section-page');const hero=el('header','atelier-intro section-intro');const label=el('p','eyebrow','SYOLANA · ');label.append(el('span','',c(kind==='film'?0:1)));hero.append(icon(kind),label,el('h1','',c(title)),el('p','section-lead',c(lead)));root.append(hero);return root;}
 function card(title,body,kind='spark'){const root=el('section','atelier-card section-card');root.append(icon(kind),el('h2','',c(title)),el('p','',c(body)));return root;}
 function contacts(root,title,body,subject,buttonIndex){const box=el('section','atelier-invitation section-contact');box.append(el('h2','',c(title)),el('p','',c(body)));const row=el('div','atelier-actions');row.append(link(c(buttonIndex),'mailto:syolana@yandex.ru?subject='+encodeURIComponent(subject),'btn primary'),link('Telegram · @syolana_com','https://t.me/syolana_com','btn'));const email=el('p','section-email');email.append(link('syolana@yandex.ru','mailto:syolana@yandex.ru','text-link'));box.append(row,email);root.append(box);}
+function renderCartoonExamples(){
+ const section=el('section','animation-examples');section.setAttribute('aria-labelledby','animation-examples-title');
+ const title=el('h2','','Видео-примеры');title.id='animation-examples-title';
+ const note=el('p','animation-examples-note','Эти ролики — примеры возможной подачи. Стиль, сюжет и сцены подбираем под вашу идею и согласуем в переписке. Больше образцов можно запросить');
+ note.append(document.createTextNode(' '),link('по почте','mailto:syolana@yandex.ru?subject='+encodeURIComponent('Больше примеров мультфильмов'),'text-link'),document.createTextNode(' '),el('span','','или в'),document.createTextNode(' '),link('Telegram','https://t.me/syolana_com','text-link'),document.createTextNode('.'));
+ const grid=el('div','animation-grid');
+ const samples=[['family-story','Семейная история',714,1280],['winter-story','Зимнее настроение',704,1280],['active-story','История в движении',1280,720],['work-story','История о вашем деле',704,1280],['family-intro','Знакомство с героями',720,1280]];
+ for(const [id,label,width,height]of samples){
+  const card=el('figure','animation-sample'+(width>height?' is-landscape':''));
+  const video=el('video','animation-video');video.controls=true;video.preload='none';video.playsInline=true;video.width=width;video.height=height;video.poster='assets/animation/'+id+'.jpg';video.setAttribute('aria-label',label);
+  const source=document.createElement('source');source.src='assets/animation/'+id+'.mp4';source.type='video/mp4';video.append(source,link('Открыть видео',source.src,'text-link'));
+  video.addEventListener('play',()=>{for(const other of grid.querySelectorAll('video'))if(other!==video&&!other.paused)other.pause();});
+  card.append(video,el('figcaption','',label));grid.append(card);
+ }
+ section.append(title,note,grid);return section;
+}
+registerTranslations({
+ 'Видео-примеры':['Video examples','Ejemplos en vídeo','Exemples vidéo'],
+ 'Эти ролики — примеры возможной подачи. Стиль, сюжет и сцены подбираем под вашу идею и согласуем в переписке. Больше образцов можно запросить':['These clips show possible approaches. We choose the style, story and scenes to suit your idea and agree on them in writing. Request more examples','Estos vídeos muestran posibles enfoques. Elegimos el estilo, la historia y las escenas según tu idea y los acordamos por escrito. Pide más ejemplos','Ces clips présentent quelques possibilités. Le style, le récit et les scènes sont adaptés à votre idée et convenus par écrit. Demandez d’autres exemples'],
+ 'по почте':['by email','por correo','par e-mail'],
+ 'или в':['or on','o en','ou sur'],
+ 'Семейная история':['A family story','Una historia familiar','Une histoire de famille'],
+ 'Зимнее настроение':['A winter mood','Ambiente invernal','Une ambiance hivernale'],
+ 'История в движении':['A story in motion','Una historia en movimiento','Une histoire en mouvement'],
+ 'История о вашем деле':['A story about your work','Una historia sobre tu actividad','Une histoire autour de votre activité'],
+ 'Знакомство с героями':['Meet the characters','Conoce a los personajes','Rencontrez les personnages'],
+ 'Открыть видео':['Open video','Abrir el vídeo','Ouvrir la vidéo']
+});
 export function renderCartoons(){
- const root=intro('film',2,3),overview=el('div','section-pair');overview.append(card(4,5,'film'),card(6,7));root.append(overview);
+ const root=intro('film',2,3),overview=el('div','section-pair');overview.append(card(4,5,'film'),card(6,7));root.append(overview,renderCartoonExamples());
  const ideas=el('section','section-ideas');ideas.append(el('p','eyebrow',c(8)),el('p','fine',c(48)));const grid=el('div','section-storyboard');for(const [n,t,b] of [['01',9,10],['02',11,12],['03',13,14]]){const item=el('section','section-story');item.append(el('span','section-number',n),el('h3','',c(t)),el('p','',c(b)));grid.append(item);}ideas.append(grid);root.append(ideas);
  const steps=el('section','section-process');steps.append(el('h2','',c(15)));const list=el('ol','section-steps');for(const [t,b] of [[16,17],[18,19],[20,21]]){const item=el('li','');item.append(el('h3','',c(t)),el('p','',c(b)));list.append(item);}steps.append(list);root.append(steps);
  contacts(root,22,23,'Примеры мультфильмов и моя идея',24);root.append(link(c(47),'#/','text-link'));return root;

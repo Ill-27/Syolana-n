@@ -21,22 +21,25 @@
     import("./course-branding.js?v=20261006-language-marks-1").then(({mountCourseBranding})=>mountCourseBranding({course:route,cards:true})).catch(()=>{});
     const main = document.querySelector("main");
     if (!main) return;
-    let lastHeight = 0,
-      scheduled = 0;
-    function size() {
-      scheduled = 0;
-      const height = Math.ceil(main.getBoundingClientRect().height + 20);
-      if (height !== lastHeight) {
-        lastHeight = height;
-        send({ height });
+    // English A1 reports the whole reader height, including its contents and audio panels.
+    if (route !== "lesson/en/a1/course") {
+      let lastHeight = 0,
+        scheduled = 0;
+      function size() {
+        scheduled = 0;
+        const height = Math.ceil(main.getBoundingClientRect().height + 20);
+        if (height !== lastHeight) {
+          lastHeight = height;
+          send({ height });
+        }
       }
+      const resize = () => {
+        if (!scheduled) scheduled = requestAnimationFrame(size);
+      };
+      new ResizeObserver(resize).observe(main);
+      resize();
+      document.fonts?.ready.then(resize);
     }
-    const resize = () => {
-      if (!scheduled) scheduled = requestAnimationFrame(size);
-    };
-    new ResizeObserver(resize).observe(main);
-    resize();
-    document.fonts?.ready.then(resize);
     document.addEventListener(
       "play",
       (event) => {

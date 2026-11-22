@@ -1,5 +1,5 @@
 const PREFIX='syolana-public-';
-const CACHE=PREFIX+'bf5f1e09ec1e11f9';
+const CACHE=PREFIX+'bb18f5183f1e5f36';
 const IMMUTABLE_CACHE=PREFIX+'immutable-v1';
 function allowed(request){
  const url=new URL(request.url);
